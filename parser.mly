@@ -18,8 +18,9 @@
 %token ALLCREATE
 %token DOT COMMA SEMI EOF
 
-%nonassoc IN
+%left IN
 %right SEMI
+%nonassoc LET
 %right if_assoc
 %right arrow_assoc
 %nonassoc tuple_assoc
@@ -32,11 +33,20 @@
 %left DOT
 
 %start toplevel 
-%type <Syntax.expr> toplevel
+%type <Syntax.decl> toplevel
 %% 
 
 toplevel:
-  | expr EOF { $1 }
+  | expr EOF { DExpr($1) }
+/* global.ml をパースするためのもの */ 
+	| decls
+		{ DDecl($1) }
+;
+
+decls:
+	| EOF { [] }
+	| LET var EQ expr decls
+		{ ($2,$4) :: $5 }
 ;
 
 

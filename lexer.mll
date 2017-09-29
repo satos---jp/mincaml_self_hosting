@@ -5,7 +5,7 @@ let ident = alpha (alpha | digit)*
 
 rule main = parse
 | space+       { main lexbuf }
-| "open"       { (* open文は飛ばす *) Lexing.new_line lexbuf; main lexbuf }
+| "open"[^'\n']*"\n" { (* open文は飛ばす *) main lexbuf }
 | "(*"         { comment lexbuf }
 | "let"        { Parser.LET }
 | "rec"        { Parser.REC }

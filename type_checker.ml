@@ -37,8 +37,6 @@ let ops = [
 	("geq",[TyInt;TyInt],TyInt);
 ]
 
-
-
 (* 環境は、 (旧変数名,(新変数名,型)) *)
 (* 返り値は、 (新ast,制約,型) *)
 let rec type_infer ast env = 
@@ -168,29 +166,27 @@ let rec unify cs =
 
 
 let genv = [
+	("false",TyInt);
+	("e",TyFloat);
 	("fiszero",TyFun(TyFloat,TyInt));
 	("fispos",TyFun(TyFloat,TyInt));
 	("fisneg",TyFun(TyFloat,TyInt));
 	("fless",TyFun(TyFloat,TyInt));
 	("fabs",TyFun(TyFloat,TyInt));
+	("floor",TyFun(TyFloat,TyInt));
 	("fsqr",TyFun(TyFloat,TyInt));
 	("fneg",TyFun(TyFloat,TyInt));
 	("fhalf",TyFun(TyFloat,TyInt));
 	("sqrt",TyFun(TyFloat,TyInt));
-	("screen",TyArr(TyFloat));
-	("read_float",TyFun(TyTuple([]),TyFloat));
 	("sin",TyFun(TyFloat,TyFloat));
 	("cos",TyFun(TyFloat,TyFloat));
-	("screenx_dir",TyArr(TyFloat));
-	("screeny_dir",TyArr(TyFloat));
-	("screenz_dir",TyArr(TyFloat));
-	("viewpoint",TyArr(TyFloat));
+	("atan",TyFun(TyFloat,TyFloat));
+	("int_of_float",TyFun(TyFloat,TyInt));
+	("float_of_int",TyFun(TyInt,TyFloat));
 	("read_int",TyFun(TyTuple([]),TyInt));
-	("light",TyArr(TyFloat));
-	("beam",TyArr(TyFloat));
-	("solver_dist",TyArr(TyFloat));
-	("objects",TyArr(TyTuple([TyFloat;TyFloat;TyFloat;TyFloat;TyFloat;TyFloat;TyFloat;TyFloat;TyFloat;TyFloat])));
-	("n_objects",TyArr(TyInt));
+	("read_float",TyFun(TyTuple([]),TyFloat));
+	("print_char",TyFun(TyInt,TyTuple([])));
+	("print_int",TyFun(TyInt,TyTuple([])));
 	("and_net",TyArr(TyArr(TyInt)));
 	("or_net",TyArr(TyArr(TyInt)));
 ]

@@ -18,6 +18,10 @@ type expr =
   | EArrCrt    of expr * expr
   | EArrRead   of expr * expr
   | EArrWrite  of expr * expr * expr
+ 
+type decl = 
+  | DDecl      of (name * expr) list
+  | DExpr      of expr
 
 				  
 let print_name = print_string 

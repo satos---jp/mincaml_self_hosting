@@ -18,7 +18,8 @@ let s2a fname =
 				nl := (!nl) + cl + 1;
 				ln := (!ln) + 1
 			done;
-			Printf.printf "line %d\n" (!ln);
+			let nld = st - (!nl) + 1 in
+			Printf.printf "line %d char %d-%d\n" (if nld == 1 then (!ln)+1 else (!ln)) nld (gl - (!nl) + 1);
 			let _ = seek_in ic st in
 			let rec f np res = 
 				if np == gl then res else
@@ -26,7 +27,4 @@ let s2a fname =
 			in
 			let ts = f st "" in
 			print_string (ts ^ "\n");
-			(Printf.printf "parse error near characters %d-%d\n" 
-        (Parsing.symbol_start ())
-        (Parsing.symbol_end ()));
 			raise (Failure "source2ast failed"))
