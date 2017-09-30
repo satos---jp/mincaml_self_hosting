@@ -15,7 +15,7 @@ and expr_base =
   | EIf        of expr * expr * expr
   | ELet       of name * expr * expr
   | ELetRec    of name * (name list) * expr * expr
-  | EApp       of expr * expr
+  | EApp       of expr * (expr list)
   | ETuple     of (expr list)
   | ELetTuple  of (name list) * expr * expr
   | EArrCrt    of expr * expr

@@ -138,10 +138,10 @@ Error: This expression has type float but an expression was expected of type
 		{ debug (ELet($2,$4,$6)) }
 	| LET REC rec_vars EQ expr IN expr 
 		{  debug (ELetRec(List.hd $3,List.tl $3,$5,$7)) }
+/* カリー化できないらしい!! (まあMinCamlプログラミングがつらくなる) */
 	| simple_expr app_exprs
 		%prec app_assoc
-		{ List.fold_left 
-			(fun r -> fun a ->  debug (EApp(r,a))) $1 $2 }
+		{ debug (EApp($1,$2)) }
 	| tuple_exprs                 
 		%prec tuple_assoc
 		{ debug (ETuple($1))  }

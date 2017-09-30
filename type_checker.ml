@@ -166,10 +166,14 @@ let rec type_infer astdeb env =
 			(ELet(fn1,te2,te3),(tt2,fn1rt,deb2) :: c2 @ c3,tt3)
 		)
 	| EApp(e1,e2) -> (
-			let te1,c1,tt1,_ = type_infer e1 env in
-			let te2,c2,tt2,deb2 = type_infer e2 env in
+		(* カリー化できないのでがんばる *)
+			let te1,c1,tt1,deb1 = type_infer e1 env in
 			let rt = gentype () in
-				(EApp(te1,te2),(tt1,TyFun(tt2,rt),deb2) :: c1 @ c2,rt)
+			let res,rts,rc = 
+				List.fold_right (fun ne -> fun (tes,apps,nrc) ->
+				let te,tc,tt,_ = type_infer ne env in
+					(te :: tes,TyFun(tt,apps),tc @ nrc)) e2 ([],rt,[]) in
+				(EApp(te1,res),(tt1,rts,deb1) :: c1 @ rc,rt)
 		)
 	| ETuple(et) -> (
 		(* 制約集合の和をとるだけにする。 *)

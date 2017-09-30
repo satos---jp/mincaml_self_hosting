@@ -12,7 +12,7 @@ type kexp =
 	| KLet       of name * kexp * kexp
 	| KVar       of name
 	| KLetRec    of name * (name list) * kexp * kexp
-	| KApp       of name * name
+	| KApp       of name * (name list)
 	| KTuple     of (name list)
 	| KLetTuple  of (name list) * name * kexp
 	| KArrCrt    of name * name
@@ -27,8 +27,8 @@ let rec knorm (ast,deb) =
 	| EVar x -> KVar x
 	| EOp(s,xs) -> (
 			let vxs = List.map (fun e -> (e,genvar ())) xs in
-			List.fold_left (fun r -> fun (ne,nv) -> KLet(nv,knorm ne,r))
-			(KOp(s,List.map snd vxs)) vxs
+			List.fold_right (fun (ne,nv) -> fun r -> KLet(nv,knorm ne,r))
+			vxs (KOp(s,List.map snd vxs)) 
 		)
 	| EIf((EOp("eq",[e1;e2]),_),e3,e4) -> (
 			let v1 = genvar () in
@@ -44,12 +44,13 @@ let rec knorm (ast,deb) =
 		)
 	| ELet(v1,e2,e3) -> KLet(v1,knorm e2,knorm e3)
 	| ELetRec(v1,vs,e2,e3) -> KLetRec(v1,vs,knorm e2,knorm e3)
-	| EApp(e1,e2) -> (
+	| EApp(e1,es) -> (
 			let v1 = genvar () in
-			let v2 = genvar () in			
+			let exs = List.map (fun e -> (e,genvar ())) es in
 			KLet(v1,knorm e1,
-				KLet(v2,knorm e2,
-					KApp(v1,v2)))
+				List.fold_right (fun (ne,na) -> fun r -> KLet(na,knorm ne,r))
+				exs (KApp(v1,(List.map snd exs)))
+			)
 		)
 	| ETuple es -> (
 			let vxs = List.map (fun e -> (e,genvar ())) es in
