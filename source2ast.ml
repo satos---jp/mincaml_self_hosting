@@ -3,6 +3,7 @@ open Parser
 
 let s2a fname = 
 	let ic = open_in fname in
+	Syntax.filename := fname;
 	try
 		Parser.toplevel Lexer.main (Lexing.from_channel ic)
 	with

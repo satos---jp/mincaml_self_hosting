@@ -9,5 +9,7 @@ parser.mli
 parser.ml
 lexer.ml
 main
+*.exe
+o.txt
 
 

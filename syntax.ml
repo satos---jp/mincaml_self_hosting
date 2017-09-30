@@ -1,3 +1,5 @@
+open Debug
+
 type name = string 
 
 type const = 
@@ -5,7 +7,8 @@ type const =
 	| CFloat of float
 	| CBool of bool
 
-type expr =
+type expr = expr_base * Debug.debug_data
+and expr_base =
   | EConst of const
   | EVar       of name
   | EOp        of string * (expr list)
@@ -27,6 +30,7 @@ type decl =
 let print_name = print_string 
 
 let err = ref (-1,-1)
+let filename = ref ""
 
 (*
 let rec print_expr e =

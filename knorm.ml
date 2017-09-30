@@ -1,25 +1,27 @@
 open Syntax
+open Debug
 
 type name = string 
 
+(* デバッグ情報はいったん落とす(実装がつらい...) *) 
 type kexp = 
-  | KConst of Syntax.const
-  | KOp        of string * (name list)
-  | KIfEq      of name * name * kexp * kexp
-  | KIfLeq     of name * name * kexp * kexp
+	| KConst of Syntax.const
+	| KOp        of string * (name list)
+	| KIfEq      of name * name * kexp * kexp
+	| KIfLeq     of name * name * kexp * kexp
 	| KLet       of name * kexp * kexp
-  | KVar       of name
-  | KLetRec    of name * (name list) * kexp * kexp
-  | KApp       of name * name
-  | KTuple     of (name list)
-  | KLetTuple  of (name list) * name * kexp
-  | KArrCrt    of name * name
-  | KArrRead   of name * name
-  | KArrWrite  of name * name * name
+	| KVar       of name
+	| KLetRec    of name * (name list) * kexp * kexp
+	| KApp       of name * name
+	| KTuple     of (name list)
+	| KLetTuple  of (name list) * name * kexp
+	| KArrCrt    of name * name
+	| KArrRead   of name * name
+	| KArrWrite  of name * name * name
 
 let genvar = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@k_%d" !c)
 
-let rec knorm ast = 
+let rec knorm (ast,deb) = 
 	match ast with
 	| EConst x -> KConst x
 	| EVar x -> KVar x
@@ -28,7 +30,7 @@ let rec knorm ast =
 			List.fold_left (fun r -> fun (ne,nv) -> KLet(nv,knorm ne,r))
 			(KOp(s,List.map snd vxs)) vxs
 		)
-	| EIf(EOp("eq",[e1;e2]),e3,e4) -> (
+	| EIf((EOp("eq",[e1;e2]),_),e3,e4) -> (
 			let v1 = genvar () in
 			let v2 = genvar () in			
 			let k3 = knorm e3 in
@@ -38,7 +40,7 @@ let rec knorm ast =
 					KIfEq(v1,v2,k3,k4)))
 		)
 	| EIf(e1,e2,e3) -> (
-			knorm (EIf(EOp("eq",[e1;EConst(CBool true)]),e2,e3))
+			knorm ((EIf((EOp("eq",[e1;(EConst(CBool true),deb)]),deb),e2,e3)),deb)
 		)
 	| ELet(v1,e2,e3) -> KLet(v1,knorm e2,knorm e3)
 	| ELetRec(v1,vs,e2,e3) -> KLetRec(v1,vs,knorm e2,knorm e3)
@@ -81,5 +83,4 @@ let rec knorm ast =
 					KLet(v3,knorm e3,
 						KArrWrite(v1,v2,v3))))
 		)
-
 

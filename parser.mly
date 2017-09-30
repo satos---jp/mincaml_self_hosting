@@ -1,6 +1,12 @@
 %{
-  open Syntax
-	let hoge = ref [0]
+	open Syntax
+	
+	let debug expr = 
+		expr , 
+		(!Syntax.filename,
+			(Parsing.symbol_start ()),
+			(Parsing.symbol_end ()))
+
 %}
 
 %token <int>    INT
@@ -31,6 +37,7 @@
 %left app_assoc  /* appの結合の強さはこれくらいで、の指示 */
 %nonassoc NOT
 %left DOT
+%nonassoc unary_minus
 
 %start toplevel 
 %type <Syntax.decl> toplevel
@@ -56,24 +63,24 @@ simple_expr:
 	| LPAR expr RPAR
 		{ $2 }
 	| LPAR RPAR
-		{ ETuple([]) }
+		{ debug (ETuple([])) }
 	| BOOL
-		{ EConst(CBool $1) }
+		{ debug (EConst(CBool $1)) }
 	| INT 
-		{ EConst(CInt $1) }
+		{ debug (EConst(CInt $1)) }
 	| FLOAT
-		{ EConst(CFloat $1) }
+		{ debug (EConst(CFloat $1)) }
 	| var
-		{ EVar($1) }
+		{ debug (EVar($1)) }
 	| simple_expr DOT LPAR expr RPAR
-		{ EArrRead($1,$4) }
+		{ debug (EArrRead($1,$4)) }
 ;
 
 expr:
 	| simple_expr
 		{ $1 }
 	| NOT expr
-		{ EOp("not",[$2]) }
+		{ debug (EOp("not",[$2])) }
 /* 
 # -(5.4);;
 - : float = -5.4
@@ -81,65 +88,70 @@ expr:
 Error: This expression has type float but an expression was expected of type
          int
 なので、これの伝搬をしておく。
+
+また、結合強さはもとの-のままではだめで、 - 1.2 * 3.4 とかが -(1.2*3.4)とかになってしまう
 */
 	| MINUS expr
+		%prec unary_minus
 		{ match $2 with
-			| EConst(CFloat(f)) -> EConst(CFloat(-.f))
-			| _ -> EOp("minus",[$2]) }
+			| EConst(CFloat(f)),d2 -> EConst(CFloat(-.f)),d2
+			| _ ->  debug (EOp("minus",[$2])) }
 	| expr PLUS expr              
-		{ EOp("add",[$1;$3]) }
+		{ debug (EOp("add",[$1;$3])) }
 	| expr MINUS expr 
-		{ EOp("sub",[$1;$3]) }
+		{ debug (EOp("sub",[$1;$3])) }
 	| expr TIMES expr 
-		{ EOp("mul",[$1;$3]) }
+		{ debug (EOp("mul",[$1;$3])) }
 	| expr DIV expr 
-		{ EOp("div",[$1;$3]) }
+		{ debug (EOp("div",[$1;$3])) }
 	| expr FPLUS expr              
-		{ EOp("fadd",[$1;$3]) }
+		{ debug (EOp("fadd",[$1;$3])) }
 	| expr FMINUS expr 
-		{ EOp("fsub",[$1;$3]) }
+		{ debug (EOp("fsub",[$1;$3])) }
 	| expr FTIMES expr 
-		{ EOp("fmul",[$1;$3]) }
+		{ debug (EOp("fmul",[$1;$3])) }
 	| expr FDIV expr 
-		{ EOp("fdiv",[$1;$3]) }
+		{ debug (EOp("fdiv",[$1;$3])) }
 	| expr EQ expr 
-		{ EOp("eq",[$1;$3]) }
+		{ debug (EOp("eq",[$1;$3])) }
 	| expr NEQ expr 
-		{ EOp("neq",[$1;$3]) }
+		{ debug (EOp("neq",[$1;$3])) }
 	| expr LT expr 
-		{ EOp("lt",[$1;$3]) }
+		{ debug (EOp("lt",[$1;$3])) }
 	| expr LEQ expr 
-		{ EOp("leq",[$1;$3]) }
+		{ debug (EOp("leq",[$1;$3])) }
 	| expr GT expr 
-		{ EOp("gt",[$1;$3]) }
+		{ debug (EOp("gt",[$1;$3])) }
 	| expr GEQ expr 
-		{ EOp("geq",[$1;$3]) }
+		{ debug (EOp("geq",[$1;$3])) }
 	| expr SEMI
-		{ EOp("semi",[$1]) }
+		{ debug (EOp("semi",[$1])) }
 	| expr SEMI expr 
-		{ EOp("semi",[$1;$3]) }
+		{ debug (EOp("semi",[$1;$3])) }
 /*
 セミコロン1つだけもvalidらしい(本家パーザにはないが)
 */
 	| IF expr THEN expr ELSE expr
 		%prec if_assoc
-		{ EIf($2,$4,$6) }
+		{ debug (EIf($2,$4,$6)) }
 	| LET var EQ expr IN expr
-		{ ELet($2,$4,$6) }
-	| LET REC rec_vars EQ expr IN expr { ELetRec(List.hd $3,List.tl $3,$5,$7) }
+		{ debug (ELet($2,$4,$6)) }
+	| LET REC rec_vars EQ expr IN expr 
+		{  debug (ELetRec(List.hd $3,List.tl $3,$5,$7)) }
 	| simple_expr app_exprs
 		%prec app_assoc
 		{ List.fold_left 
-			(fun r -> fun a -> EApp(r,a)) $1 $2 }
+			(fun r -> fun a ->  debug (EApp(r,a))) $1 $2 }
 	| tuple_exprs                 
 		%prec tuple_assoc
-		{ ETuple($1)  }
+		{ debug (ETuple($1))  }
 	| LET LPAR tuple_vars EQ expr IN expr 
-		{ ELetTuple($3,$5,$7) }
-	| ALLCREATE simple_expr simple_expr             { EArrCrt($2,$3) }
+		{ debug (ELetTuple($3,$5,$7)) }
+	| ALLCREATE simple_expr simple_expr             
+		{ debug (EArrCrt($2,$3)) }
 	| simple_expr DOT LPAR expr RPAR ARROW expr 
 		%prec arrow_assoc
-		{ EArrWrite($1,$4,$7) }  
+		{ debug (EArrWrite($1,$4,$7)) }  
 	| error
     { Syntax.err := ((Parsing.symbol_start ()), (Parsing.symbol_end ()));
     	failwith "mly error" }
