@@ -61,27 +61,5 @@ let rec knorm (ast,deb) =
 			let v2 = genvar () in
 			KLet(v2,knorm e2,KLetTuple(v1,v2,knorm e3))
 		)
-	| EArrCrt(e1,e2) -> (
-			let v1 = genvar () in
-			let v2 = genvar () in			
-			KLet(v1,knorm e1,
-				KLet(v2,knorm e2,
-					KArrCrt(v1,v2)))
-		)
-	| EArrRead(e1,e2) -> (
-			let v1 = genvar () in
-			let v2 = genvar () in			
-			KLet(v1,knorm e1,
-				KLet(v2,knorm e2,
-					KArrRead(v1,v2)))
-		)
-	| EArrWrite(e1,e2,e3) -> (
-			let v1 = genvar () in
-			let v2 = genvar () in			
-			let v3 = genvar () in			
-			KLet(v1,knorm e1,
-				KLet(v2,knorm e2,
-					KLet(v3,knorm e3,
-						KArrWrite(v1,v2,v3))))
-		)
+	| EArrCrt _ | EArrRead _ | EArrWrite _  -> raise (Failure "ArrayOperation should be removed in type_checker.ml")
 

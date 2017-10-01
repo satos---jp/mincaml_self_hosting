@@ -189,22 +189,23 @@ let rec type_infer astdeb env =
 				(ELetTuple(List.map (fun (_,(x,_)) -> x) tns,te1,te2),
 				(tt1,TyTuple(List.map (fun (_,(_,x)) -> x) tns),deb1) :: c1 @ c2,tt2)
 		)
+(* Arr系のやつ、ぜんぶOpにしてしまっていいきがする*)
 	| EArrCrt(e1,e2) -> (
 			let te1,c1,tt1,deb1 = type_infer e1 env in
 			let te2,c2,tt2,_ = type_infer e2 env in
-				(EArrCrt(te1,te2),(tt1,TyInt,deb1) :: c1 @ c2,TyArr(tt2))
+				(EOp("ArrCrt",[te1;te2]),(tt1,TyInt,deb1) :: c1 @ c2,TyArr(tt2))
 		)
 	| EArrRead(e1,e2) -> (
 			let te1,c1,tt1,deb1 = type_infer e1 env in
 			let te2,c2,tt2,deb2 = type_infer e2 env in
 			let rt = gentype () in
-				(EArrCrt(te1,te2),(tt1,TyArr(rt),deb1) :: (tt2,TyInt,deb2) :: c1 @ c2,rt)
+				(EOp("ArrRead",[te1;te2]),(tt1,TyArr(rt),deb1) :: (tt2,TyInt,deb2) :: c1 @ c2,rt)
 		)
 	| EArrWrite(e1,e2,e3) -> (
 			let te1,c1,tt1,_ = type_infer e1 env in
 			let te2,c2,tt2,deb2 = type_infer e2 env in
 			let te3,c3,tt3,deb3 = type_infer e3 env in
-				(EArrWrite(te1,te2,te3),(tt1,TyArr(tt3),deb3) :: (tt2,TyInt,deb2) :: c1 @ c2 @ c3,TyTuple([]))
+				(EOp("ArrWrite",[te1;te2;te3]),(tt1,TyArr(tt3),deb3) :: (tt2,TyInt,deb2) :: c1 @ c2 @ c3,TyTuple([]))
 		)
 	) in
 	((rast,deb),rc,rt,deb)

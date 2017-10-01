@@ -24,6 +24,7 @@ if argc <= 1 then (
 	| _ -> raise (Failure "inputfile is not value")  in
 	let ast2 = Type_checker.check tast in
 	let kn = Knorm.knorm ast2 in
+	let cld = Closure_conv.conv kn in
 	()
 )
 
