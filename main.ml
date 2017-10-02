@@ -25,6 +25,8 @@ if argc <= 1 then (
 	let ast2 = Type_checker.check tast in
 	let kn = Knorm.knorm ast2 in
 	let cld = Closure_conv.conv kn in
+	List.iter (fun s -> Printf.printf "%s\n" s)
+	!Closure_conv.globals;
 	()
 )
 

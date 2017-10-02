@@ -15,9 +15,12 @@ type kexp =
 	| KApp       of name * (name list)
 	| KTuple     of (name list)
 	| KLetTuple  of (name list) * name * kexp
+(*
 	| KArrCrt    of name * name
 	| KArrRead   of name * name
 	| KArrWrite  of name * name * name
+*)
+
 
 let genvar = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@k_%d" !c)
 

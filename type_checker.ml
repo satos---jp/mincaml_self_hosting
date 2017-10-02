@@ -145,14 +145,14 @@ let rec type_infer astdeb env =
 				(EIf(te1,te2,te3),(tt1,TyInt,deb1) :: (tt2,tt3,deb3) :: c1 @ c2 @ c3,tt2)
 		)
 	| ELet(n1,e2,e3) -> (
-			let tn1 = genvar () in
+			let tn1 = (genvar ()) ^ "_" ^ n1 in
 			let te2,c2,tt2,_ = type_infer e2 env in
 			let te3,c3,tt3,_ = type_infer e3 ((n1,(tn1,tt2)) :: env) in
 			(ELet(tn1,te2,te3),c2 @ c3,tt3)
 		)
 	| ELetRec(f1,ns,e2,e3) -> (
 			(* fのα変換 *)
-			let fn1 = genvar () in
+			let fn1 = (genvar ()) ^ "_" ^ f1 in
 			(* fの返り値型 *)
 			let fn1rt = gentype () in
 			(* nsのα変換と、 型変数を作ったもの *)

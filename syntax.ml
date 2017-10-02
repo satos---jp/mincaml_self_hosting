@@ -6,6 +6,10 @@ type const =
 	| CInt of int
 	| CFloat of float
 	| CBool of bool
+	
+type comptype = 
+	| CmpEq
+	| CmpLt
 
 type expr = expr_base * Debug.debug_data
 and expr_base =
