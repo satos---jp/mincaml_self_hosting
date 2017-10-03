@@ -1,3 +1,24 @@
+
+
+ops = """ 
+	| Ominus | Oadd | Osub | Omul | Odiv
+	| Ofadd | Ofsub | Ofmul | Ofdiv
+	| Oeq | Oneq | Olt | Oleq | Ogt | Ogeq | Osemi1 | Osemi2 | Onot 
+	| OArrCrt | OArrRead | OArrWrite
+"""
+
+
+ops = ''.join(ops.split()).split('|')[1:]
+
+for s in ops:
+	s = '	| %s -> "%s"' % (s,s)
+	print s
+
+print ops
+
+exit(0)
+
+
 frs = """
 	| KConst of Syntax.const
 	| KOp        of string * (name list)

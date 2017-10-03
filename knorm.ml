@@ -6,7 +6,7 @@ type name = string
 (* デバッグ情報はいったん落とす(実装がつらい...) *) 
 type kexp = 
 	| KConst of Syntax.const
-	| KOp        of string * (name list)
+	| KOp        of Syntax.optype * (name list)
 	| KIfEq      of name * name * kexp * kexp
 	| KIfLeq     of name * name * kexp * kexp
 	| KLet       of name * kexp * kexp
@@ -33,7 +33,7 @@ let rec knorm (ast,deb) =
 			List.fold_right (fun (ne,nv) -> fun r -> KLet(nv,knorm ne,r))
 			vxs (KOp(s,List.map snd vxs)) 
 		)
-	| EIf((EOp("eq",[e1;e2]),_),e3,e4) -> (
+	| EIf((EOp(Oeq,[e1;e2]),_),e3,e4) -> (
 			let v1 = genvar () in
 			let v2 = genvar () in			
 			let k3 = knorm e3 in
@@ -43,7 +43,7 @@ let rec knorm (ast,deb) =
 					KIfEq(v1,v2,k3,k4)))
 		)
 	| EIf(e1,e2,e3) -> (
-			knorm ((EIf((EOp("eq",[e1;(EConst(CBool true),deb)]),deb),e2,e3)),deb)
+			knorm ((EIf((EOp(Oeq,[e1;(EConst(CBool true),deb)]),deb),e2,e3)),deb)
 		)
 	| ELet(v1,e2,e3) -> KLet(v1,knorm e2,knorm e3)
 	| ELetRec(v1,vs,e2,e3) -> KLetRec(v1,vs,knorm e2,knorm e3)
@@ -64,5 +64,4 @@ let rec knorm (ast,deb) =
 			let v2 = genvar () in
 			KLet(v2,knorm e2,KLetTuple(v1,v2,knorm e3))
 		)
-	| EArrCrt _ | EArrRead _ | EArrWrite _  -> raise (Failure "ArrayOperation should be removed in type_checker.ml")
 

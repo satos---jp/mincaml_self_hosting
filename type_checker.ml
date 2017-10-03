@@ -49,27 +49,26 @@ let gentype = let c = ref 0 in (fun () -> c := (!c)+1; TyVar(!c))
 
 
 let ops = [
-	("not",[TyInt],TyInt);
-	("minus",[TyInt],TyInt);
-	("add",[TyInt;TyInt],TyInt);
-	("sub",[TyInt;TyInt],TyInt);
-	("mul",[TyInt;TyInt],TyInt);
-	("div",[TyInt;TyInt],TyInt);
-	("fadd",[TyFloat;TyFloat],TyFloat);
-	("fsub",[TyFloat;TyFloat],TyFloat);
-	("fmul",[TyFloat;TyFloat],TyFloat);
-	("fdiv",[TyFloat;TyFloat],TyFloat);
-	("eq",[TyInt;TyInt],TyInt);
-	("neq",[TyInt;TyInt],TyInt);
-	("lt",[TyInt;TyInt],TyInt);
-	("leq",[TyInt;TyInt],TyInt);
-	("gt",[TyInt;TyInt],TyInt);
-	("geq",[TyInt;TyInt],TyInt);
+	(Onot,[TyInt],TyInt);
+	(Ominus,[TyInt],TyInt);
+	(Oadd,[TyInt;TyInt],TyInt);
+	(Osub,[TyInt;TyInt],TyInt);
+	(Omul,[TyInt;TyInt],TyInt);
+	(Odiv,[TyInt;TyInt],TyInt);
+	(Ofadd,[TyFloat;TyFloat],TyFloat);
+	(Ofsub,[TyFloat;TyFloat],TyFloat);
+	(Ofmul,[TyFloat;TyFloat],TyFloat);
+	(Ofdiv,[TyFloat;TyFloat],TyFloat);
+	(Oeq,[TyInt;TyInt],TyInt);
+	(Oneq,[TyInt;TyInt],TyInt);
+	(Olt,[TyInt;TyInt],TyInt);
+	(Oleq,[TyInt;TyInt],TyInt);
+	(Ogt,[TyInt;TyInt],TyInt);
+	(Ogeq,[TyInt;TyInt],TyInt);
 ]
 
 let genv = [
 	("false",TyInt);
-	("e",TyFloat);
 	("fiszero",TyFun(TyFloat,TyInt));
 	("fispos",TyFun(TyFloat,TyInt));
 	("fisneg",TyFun(TyFloat,TyInt));
@@ -118,14 +117,32 @@ let rec type_infer astdeb env =
 				(EOp(s,[te1;te2]),(tt1,TyInt) :: (tt2,TyInt) :: c1 @ c2,TyInt)
 		)
 *)
-	| EOp("semi",[e1;e2]) -> (
+	| EOp(Osemi2,[e1;e2]) -> (
 			let te1,c1,tt1,deb1 = type_infer e1 env in
 			let te2,c2,tt2,deb2 = type_infer e2 env in
-				(EOp("semi",[te1;te2]),(tt1,TyTuple([]),deb1) :: c1 @ c2,tt2)
+				(EOp(Osemi2,[te1;te2]),(tt1,TyTuple([]),deb1) :: c1 @ c2,tt2)
 		)
-	| EOp("semi",[e1]) -> (
+	| EOp(Osemi1,[e1]) -> (
 			let te1,c1,tt1,deb1 = type_infer e1 env in
-				(EOp("semi",[te1]),c1,tt1)
+				(EOp(Osemi1,[te1]),c1,tt1)
+		)
+(* Arr系のやつ、ぜんぶOpにしてしまっていいきがする*)
+	| EOp(OArrCrt,[e1;e2]) -> (
+			let te1,c1,tt1,deb1 = type_infer e1 env in
+			let te2,c2,tt2,_ = type_infer e2 env in
+				(EOp(OArrCrt,[te1;te2]),(tt1,TyInt,deb1) :: c1 @ c2,TyArr(tt2))
+		)
+	| EOp(OArrRead,[e1;e2]) -> (
+			let te1,c1,tt1,deb1 = type_infer e1 env in
+			let te2,c2,tt2,deb2 = type_infer e2 env in
+			let rt = gentype () in
+				(EOp(OArrRead,[te1;te2]),(tt1,TyArr(rt),deb1) :: (tt2,TyInt,deb2) :: c1 @ c2,rt)
+		)
+	| EOp(OArrWrite,[e1;e2;e3]) -> (
+			let te1,c1,tt1,_ = type_infer e1 env in
+			let te2,c2,tt2,deb2 = type_infer e2 env in
+			let te3,c3,tt3,deb3 = type_infer e3 env in
+				(EOp(OArrWrite,[te1;te2;te3]),(tt1,TyArr(tt3),deb3) :: (tt2,TyInt,deb2) :: c1 @ c2 @ c3,TyTuple([]))
 		)
 	| EOp(s,vs) -> (
 			let tects = List.map (fun x -> type_infer x env) vs in
@@ -136,7 +153,7 @@ let rec type_infer astdeb env =
 				let na,nts,rt = List.find (fun (x,_,_) -> x = s) ops in
 					(EOp(s,tes),(List.map2 (fun a b -> (a,b,deb)) nts tts) @ tcs,rt)
 			with
-				| Not_found -> raise (Failure ("operand " ^ s ^ " doesn't exist"))
+				| Not_found -> raise (Failure ("operand " ^ (op2str s) ^ " doesn't exist"))
 		)
 	| EIf(e1,e2,e3) -> (
 			let te1,c1,tt1,deb1 = type_infer e1 env in
@@ -163,7 +180,7 @@ let rec type_infer astdeb env =
 			let te2,c2,tt2,deb2 = type_infer e2 ((f1,(fn1,f1t)) :: tns @ env) in
 			(* e3についての推論 *)
 			let te3,c3,tt3,_ = type_infer e3 ((f1,(fn1,f1t)) :: env) in
-			(ELet(fn1,te2,te3),(tt2,fn1rt,deb2) :: c2 @ c3,tt3)
+			(ELetRec(fn1,List.map (fun (_,(x,_)) -> x) tns,te2,te3),(tt2,fn1rt,deb2) :: c2 @ c3,tt3)
 		)
 	| EApp(e1,e2) -> (
 		(* カリー化できないのでがんばる *)
@@ -188,24 +205,6 @@ let rec type_infer astdeb env =
 			let te2,c2,tt2,_ = type_infer e2 (tns @ env) in
 				(ELetTuple(List.map (fun (_,(x,_)) -> x) tns,te1,te2),
 				(tt1,TyTuple(List.map (fun (_,(_,x)) -> x) tns),deb1) :: c1 @ c2,tt2)
-		)
-(* Arr系のやつ、ぜんぶOpにしてしまっていいきがする*)
-	| EArrCrt(e1,e2) -> (
-			let te1,c1,tt1,deb1 = type_infer e1 env in
-			let te2,c2,tt2,_ = type_infer e2 env in
-				(EOp("ArrCrt",[te1;te2]),(tt1,TyInt,deb1) :: c1 @ c2,TyArr(tt2))
-		)
-	| EArrRead(e1,e2) -> (
-			let te1,c1,tt1,deb1 = type_infer e1 env in
-			let te2,c2,tt2,deb2 = type_infer e2 env in
-			let rt = gentype () in
-				(EOp("ArrRead",[te1;te2]),(tt1,TyArr(rt),deb1) :: (tt2,TyInt,deb2) :: c1 @ c2,rt)
-		)
-	| EArrWrite(e1,e2,e3) -> (
-			let te1,c1,tt1,_ = type_infer e1 env in
-			let te2,c2,tt2,deb2 = type_infer e2 env in
-			let te3,c3,tt3,deb3 = type_infer e3 env in
-				(EOp("ArrWrite",[te1;te2;te3]),(tt1,TyArr(tt3),deb3) :: (tt2,TyInt,deb2) :: c1 @ c2 @ c3,TyTuple([]))
 		)
 	) in
 	((rast,deb),rc,rt,deb)

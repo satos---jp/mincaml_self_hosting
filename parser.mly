@@ -73,14 +73,14 @@ simple_expr:
 	| var
 		{ debug (EVar($1)) }
 	| simple_expr DOT LPAR expr RPAR
-		{ debug (EArrRead($1,$4)) }
+		{ debug (EOp(OArrRead,[$1;$4])) }
 ;
 
 expr:
 	| simple_expr
 		{ $1 }
 	| NOT expr
-		{ debug (EOp("not",[$2])) }
+		{ debug (EOp(Onot,[$2])) }
 /* 
 # -(5.4);;
 - : float = -5.4
@@ -95,39 +95,39 @@ Error: This expression has type float but an expression was expected of type
 		%prec unary_minus
 		{ match $2 with
 			| EConst(CFloat(f)),d2 -> EConst(CFloat(-.f)),d2
-			| _ ->  debug (EOp("minus",[$2])) }
+			| _ ->  debug (EOp(Ominus,[$2])) }
 	| expr PLUS expr              
-		{ debug (EOp("add",[$1;$3])) }
+		{ debug (EOp(Oadd,[$1;$3])) }
 	| expr MINUS expr 
-		{ debug (EOp("sub",[$1;$3])) }
+		{ debug (EOp(Osub,[$1;$3])) }
 	| expr TIMES expr 
-		{ debug (EOp("mul",[$1;$3])) }
+		{ debug (EOp(Omul,[$1;$3])) }
 	| expr DIV expr 
-		{ debug (EOp("div",[$1;$3])) }
+		{ debug (EOp(Odiv,[$1;$3])) }
 	| expr FPLUS expr              
-		{ debug (EOp("fadd",[$1;$3])) }
+		{ debug (EOp(Ofadd,[$1;$3])) }
 	| expr FMINUS expr 
-		{ debug (EOp("fsub",[$1;$3])) }
+		{ debug (EOp(Ofsub,[$1;$3])) }
 	| expr FTIMES expr 
-		{ debug (EOp("fmul",[$1;$3])) }
+		{ debug (EOp(Ofmul,[$1;$3])) }
 	| expr FDIV expr 
-		{ debug (EOp("fdiv",[$1;$3])) }
+		{ debug (EOp(Ofdiv,[$1;$3])) }
 	| expr EQ expr 
-		{ debug (EOp("eq",[$1;$3])) }
+		{ debug (EOp(Oeq,[$1;$3])) }
 	| expr NEQ expr 
-		{ debug (EOp("neq",[$1;$3])) }
+		{ debug (EOp(Oneq,[$1;$3])) }
 	| expr LT expr 
-		{ debug (EOp("lt",[$1;$3])) }
+		{ debug (EOp(Olt,[$1;$3])) }
 	| expr LEQ expr 
-		{ debug (EOp("leq",[$1;$3])) }
+		{ debug (EOp(Oleq,[$1;$3])) }
 	| expr GT expr 
-		{ debug (EOp("gt",[$1;$3])) }
+		{ debug (EOp(Ogt,[$1;$3])) }
 	| expr GEQ expr 
-		{ debug (EOp("geq",[$1;$3])) }
+		{ debug (EOp(Ogeq,[$1;$3])) }
 	| expr SEMI
-		{ debug (EOp("semi",[$1])) }
+		{ debug (EOp(Osemi1,[$1])) }
 	| expr SEMI expr 
-		{ debug (EOp("semi",[$1;$3])) }
+		{ debug (EOp(Osemi2,[$1;$3])) }
 /*
 セミコロン1つだけもvalidらしい(本家パーザにはないが)
 */
@@ -148,10 +148,10 @@ Error: This expression has type float but an expression was expected of type
 	| LET LPAR tuple_vars EQ expr IN expr 
 		{ debug (ELetTuple($3,$5,$7)) }
 	| ALLCREATE simple_expr simple_expr             
-		{ debug (EArrCrt($2,$3)) }
+		{ debug (EOp(OArrCrt,[$2;$3])) }
 	| simple_expr DOT LPAR expr RPAR ARROW expr 
 		%prec arrow_assoc
-		{ debug (EArrWrite($1,$4,$7)) }  
+		{ debug (EOp(OArrWrite,[$1;$4;$7])) }  
 	| error
     { Syntax.err := ((Parsing.symbol_start ()), (Parsing.symbol_end ()));
     	failwith "mly error" }
