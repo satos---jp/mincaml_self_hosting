@@ -29,8 +29,7 @@ if argc <= 1 then (
 	let kn = Knorm.knorm ast2 in
 	let cls = Closure_conv.conv kn in
 	print_string (clos2str cls);
-	(* 
-	let vrt = List.map (fun (na,x) -> (na,Virtual.to_asms x)) cls in *)
+	let vrt = Virtual.to_virtual cls in
 	()
 )
 

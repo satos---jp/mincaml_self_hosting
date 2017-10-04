@@ -10,6 +10,8 @@ parser.ml
 lexer.ml
 main
 *.exe
-o.txt
+*.out
+*.txt
+.gdb_history
 
 
