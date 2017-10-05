@@ -205,7 +205,8 @@ let rec type_infer astdeb env =
 			(* fの型 *)
 			let f1t = TyFun(List.map (fun (_,(_,x)) -> x) tns,fn1rt) in
 			(* e2についての推論 *) 
-			let te2,c2,tt2,deb2 = type_infer e2 ((f1,(fn1,f1t)) :: tns @ env) in
+			let te2,c2,tt2,deb2 = type_infer e2 (tns @ [(f1,(fn1,f1t))] @ env) in
+			(* これは、関数名より変数名の方が先に調べられるみたい *) 
 			(* e3についての推論 *)
 			let te3,c3,tt3,_ = type_infer e3 ((f1,(fn1,f1t)) :: env) in
 			(TLetRec((fn1,f1t),List.map (fun (_,x) -> x) tns,te2,te3),(tt2,fn1rt,deb2) :: c2 @ c3,tt3)

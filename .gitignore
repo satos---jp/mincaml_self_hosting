@@ -11,6 +11,8 @@ lexer.ml
 main
 *.exe
 *.out
+*.o
+out.s
 *.txt
 .gdb_history
 

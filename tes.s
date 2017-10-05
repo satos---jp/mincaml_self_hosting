@@ -30,8 +30,12 @@ main:
 	fld dword [hoge]
 	fstp dword [ebp+0x8]
 	
+	push dword [ebp+0x8]
+	call [ebp+0x8]
 	mov eax,[hoge]
-	mov [[ebp]+0x8],eax
+	mov eax,[edi+0x10]
+	mov [edi-0x10],eax
+	mov [ebp+0x8],eax
 	add esp,0x10
 	pop ebp
 	ret

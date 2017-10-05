@@ -4,6 +4,7 @@ open Type_checker
 open Knorm
 open Closure_conv
 open Virtual
+open Emit_zatsu_x86
 
 (* let _ = Source2ast.s2a "../tes.ml" *)
 
@@ -30,6 +31,14 @@ if argc <= 1 then (
 	let cls = Closure_conv.conv kn in
 	print_string (clos2str cls);
 	let vrt = Virtual.to_virtual cls in
+	let asm = Emit_zatsu_x86.vir2asm vrt in
+	print_string asm;
+	let oc = open_out "out.s" in
+	output_string oc asm;
+	close_out oc;
+(*
+nasm out.s -f elf32 -g -o out.o; gcc -m32 out.o
+*)
 	()
 )
 

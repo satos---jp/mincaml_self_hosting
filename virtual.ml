@@ -15,11 +15,12 @@ type op =
 	| OpJcnd  of comptype * name * name * label
 	| OpLabel of label 
 	| OpJmp   of label 
-	| OpApp   of name * (name list) * name
+	| OpApp   of name * name * (name list)
 	| OpMakeTuple of name * (name list)
 	| OpDestTuple of (name list) * name
-	| OpMakeCls   of name * (name list) * name
+	| OpMakeCls   of name * name * (name list)
 	| OpRet       of name
+	| OpMainRet
 
 (*
 型情報について
@@ -56,22 +57,34 @@ let rec to_asms ast tov =
 					[OpJmp(lgl);OpLabel(lst)] @ (to_asms e2 tov) @ [OpLabel(lgl)]
 		)
 	| CVar(x) -> [OpMov(tov,x)]
-	| CApp(a,b) -> [OpApp(a,b,tov)]
+	| CApp(a,b) -> [OpApp(tov,a,b)]
 	| CTuple(vs) -> [OpMakeTuple(tov,vs)]
 	| CLetTuple(vs,ta,e1) -> OpDestTuple(vs,ta) :: (to_asms e1 tov)
-	| CClosure(na,vs) -> [OpMakeCls(na,vs,tov)]
+	| CClosure(na,vs) -> [OpMakeCls(tov,na,vs)]
 
-let rec collect_names ast = 
+let rec collect_names_rec ast = 
 	match ast with
 	| CConst _ -> []
 	| COp(_,vs) -> vs
-	| CLet(na,e1,e2) -> na :: (collect_names e1) @ (collect_names e2)
-	| CIf(cmpty,a,b,e1,e2) -> a :: b :: (collect_names e1) @ (collect_names e2)
+	| CLet(na,e1,e2) -> na :: (collect_names_rec e1) @ (collect_names_rec e2)
+	| CIf(cmpty,a,b,e1,e2) -> a :: b :: (collect_names_rec e1) @ (collect_names_rec e2)
 	| CVar(x) -> [x]
 	| CApp(a,b) -> a :: b
 	| CTuple(vs) -> vs
-	| CLetTuple(vs,ta,e1) -> ta :: vs @ (collect_names e1) 
+	| CLetTuple(vs,ta,e1) -> ta :: vs @ (collect_names_rec e1) 
 	| CClosure(_,vs) -> vs (* closureの名前はglobalにあるやつなので、変数ではない(ハズ) *)
+	
+let rec unique_name vs = 
+	match vs with
+	| [] -> []
+	| (x,t) :: xs -> 
+		try let _ = List.assoc x xs in unique_name xs
+		with
+			| Not_found -> (x,t) :: (unique_name xs)
+
+let collect_names ast = unique_name (collect_names_rec ast)
+
+let rec names2str vs = "[\n" ^ (String.concat ";\n" (List.map name2str vs)) ^ ";\n]\n"
 
 let rec to_virtual (defs,rd) = 
 	(List.map (fun (na,(vs1,vs2,bo)) -> 
@@ -84,7 +97,7 @@ let rec to_virtual (defs,rd) =
 			(na,vs1,vs2,((to_asms bo na) @ [OpRet((rv,rt))],(rv,rt) :: (collect_names bo)))) defs,
 	
 	let gvt = ("@global_ret_val",TyVar(-1)) in
-	(to_asms rd gvt,gvt :: (collect_names rd)))
+	((to_asms rd gvt) @ [OpMainRet],gvt :: (collect_names rd)))
 
 
 
