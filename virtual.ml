@@ -73,7 +73,8 @@ let rec collect_names_rec ast =
 	| CTuple(vs) -> vs
 	| CLetTuple(vs,ta,e1) -> ta :: vs @ (collect_names_rec e1) 
 	| CClosure(_,vs) -> vs (* closureの名前はglobalにあるやつなので、変数ではない(ハズ) *)
-	
+
+
 let rec unique_name vs = 
 	match vs with
 	| [] -> []
@@ -82,9 +83,11 @@ let rec unique_name vs =
 		with
 			| Not_found -> (x,t) :: (unique_name xs)
 
-let collect_names ast = unique_name (collect_names_rec ast)
+let remove_vals vs ws = List.filter (fun (x,_) -> not (List.mem x ws)) vs 
 
-let rec names2str vs = "[\n" ^ (String.concat ";\n" (List.map name2str vs)) ^ ";\n]\n"
+let collect_names ast vs = remove_vals (unique_name (collect_names_rec ast)) ((List.map fst vs) @ global_funcs)
+
+let names2str vs = "[\n" ^ (String.concat ";\n" (List.map name2str vs)) ^ ";\n]\n"
 
 let rec to_virtual (defs,rd) = 
 	(List.map (fun (na,(vs1,vs2,bo)) -> 
@@ -94,10 +97,10 @@ let rec to_virtual (defs,rd) =
 			| TyFun(_,x) -> x
 			| x -> raise (Failure ("Type " ^ (type2str x) ^ " is not function type"))
 		in
-			(na,vs1,vs2,((to_asms bo na) @ [OpRet((rv,rt))],(rv,rt) :: (collect_names bo)))) defs,
+			(na,vs1,vs2,((to_asms bo (rv,rt)) @ [OpRet((rv,rt))],(rv,rt) :: (collect_names bo (vs1 @ vs2))))) defs,
 	
 	let gvt = ("@global_ret_val",TyVar(-1)) in
-	((to_asms rd gvt) @ [OpMainRet],gvt :: (collect_names rd)))
+	((to_asms rd gvt) @ [OpMainRet],gvt :: (collect_names rd [])))
 
 
 

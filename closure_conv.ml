@@ -85,7 +85,7 @@ let rec remove_closure ast env =
 	| KLetRec((fn,ft),args,e1,e2) -> (
 			let te1 = remove_closure e1 env in
 			(* e1中に出ている、外側由来のものを加える  *)
-			let fvs = get_fvs te1 (env @ (List.map fst args)) in
+			let fvs = get_fvs te1 (env @ (List.map fst args) @ global_funcs) in
 			(* fvsのうち、globalsは除いてよい *)
 			let rfvs = List.filter (fun (x,_) -> not (List.mem x (List.map (fun ((x,_),_) -> x) !globals))) fvs in
 			(* 実装面倒なのでとりあえず全部クロージャで。 2つの値を持っておく。 *)

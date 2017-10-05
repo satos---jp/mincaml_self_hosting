@@ -87,6 +87,7 @@ let genv = [
 	("print_int",TyFun([TyInt],TyTuple([])));
 ]
 
+let global_funcs = List.map fst genv
 
 let zip2 = List.map2 (fun a -> fun b -> (a,b))
 let zip3 vs ws = List.map2 (fun (a,b) -> fun c -> (a,b,c)) (zip2 vs ws)

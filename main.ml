@@ -37,7 +37,7 @@ if argc <= 1 then (
 	output_string oc asm;
 	close_out oc;
 (*
-nasm out.s -f elf32 -g -o out.o; gcc -m32 out.o
+nasm lib.s -f elf32 -g -o lib.o; nasm out.s -f elf32 -g -o out.o; gcc -m32 out.o lib.o
 *)
 	()
 )
