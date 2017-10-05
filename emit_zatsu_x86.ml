@@ -53,13 +53,14 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		(List.map (fun (x,p) -> (x,p-(snd lvs_st))) (fst lvs_st)) @
 		(List.map (fun (x,p) -> (x,p+8)) (fst vs2_st)) in
 	let on_clos = fst vs1_st in
+	print_string ("On function " ^ fn ^ "\n");
 	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [ebp%+d]" s p) on_stack)) ^"\n");
 	print_string ((String.concat "\n" (List.map fst on_clos)) ^"\n");
 	let na2pt x = (
 		try ("ebp",List.assoc x on_stack)
 		with | Not_found -> 
 		try ("edi",List.assoc x on_clos)
-		with | Not_found -> ("@" ^ x,-1)
+		with | Not_found -> ("@" ^ x,-1) 
 	) in
 	let pt2s (a,b) = 
 		if String.get a 0 = '@' then String.sub a 1 ((String.length a)-1) else 
@@ -126,7 +127,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		| OpLabel x -> x ^ ":\n"
 		| OpJcnd(ct,(na,_),(nb,_),la) -> (
 				(Printf.sprintf "\tmov eax,%s\n\tmov ebx,%s\n" (na2s na) (na2s nb)) ^ 
-				(Printf.sprintf "\tcmp eax,ebx\n\t%s %s\n" (match ct with CmpEq -> "je" | CmpLt -> "jl") la)
+				(Printf.sprintf "\tcmp eax,ebx\n\t%s %s\n" (match ct with CmpEq -> "jne" | CmpLt -> "jl") la)
 			)
 		| OpJmp(la) -> Printf.sprintf "\tjmp %s\n" la
 		| OpDestTuple(vs,(tna,t)) -> (
@@ -152,9 +153,14 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 			)
 		| OpMakeCls((na,t),(fn,ft),vs) -> (
 				let (p,l) = na2pt na in
-				(Printf.sprintf "\tmov %s,%s\n" (pt2s (p,l+4)) fn) ^ (* この順が、再帰するのに本質だったりする *)
+				(Printf.sprintf "\tmov %s,%s\n" (pt2s (p,l+4)) fn) ^ (* この順が、再帰するのに本質だったりする  いーえ。*)
 				(Printf.sprintf "\tmov %s,esi\n" (na2s na)) ^ 
 				(make_vs_on_heap vs)
+			)
+		| OpSelfCls((na,t),(fn,ft)) -> (
+				let (p,l) = na2pt na in
+				(Printf.sprintf "\tmov %s,%s\n" (pt2s (p,l+4)) fn) ^ 
+				(Printf.sprintf "\tmov %s,edi\n" (na2s na)) 
 			)
 		| OpApp((na,nt),(fn,ft),vs) -> (
 				let nl = ref 0 in
@@ -218,16 +224,16 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 				biopr2s nr na nb "\txor edx,edx\n\tdiv ebx\n"
 			)
 		| OpOpr((nr,_),Olt,[(na,_);(nb,_)]) -> (
-				biopr2s nr na nb "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetg cl\n\tmov eax,ecx\n"
-			)
-		| OpOpr((nr,_),Oleq,[(na,_);(nb,_)]) -> (
-				biopr2s nr na nb "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetge cl\n\tmov eax,ecx\n"
-			)
-		| OpOpr((nr,_),Ogt,[(na,_);(nb,_)]) -> (
 				biopr2s nr na nb "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetl cl\n\tmov eax,ecx\n"
 			)
-		| OpOpr((nr,_),Ogeq,[(na,_);(nb,_)]) -> (
+		| OpOpr((nr,_),Oleq,[(na,_);(nb,_)]) -> (
 				biopr2s nr na nb "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetle cl\n\tmov eax,ecx\n"
+			)
+		| OpOpr((nr,_),Ogt,[(na,_);(nb,_)]) -> (
+				biopr2s nr na nb "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetgl cl\n\tmov eax,ecx\n"
+			)
+		| OpOpr((nr,_),Ogeq,[(na,_);(nb,_)]) -> (
+				biopr2s nr na nb "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetge cl\n\tmov eax,ecx\n"
 			)
 		| OpOpr((nr,_),Oeq,[(na,_);(nb,_)]) -> (
 				biopr2s nr na nb "\txor ecx,ecx\n\tcmp eax,ebx\n\tsete cl\n\tmov eax,ecx\n"
@@ -251,7 +257,7 @@ let vir2asm (funs,rd) =
 	"\ttimes 1000000 db 0\n" ^
 	"section .text\n" ^
 	"global main\n" ^ 
-	(String.concat "" (List.map func2asm funs)) ^	
+	(String.concat "" (List.map func2asm (List.rev funs))) ^	
 	(func2asm (("main",TyVar(-1)),[],[],rd))
 
 

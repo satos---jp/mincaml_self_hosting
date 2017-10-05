@@ -19,6 +19,7 @@ type op =
 	| OpMakeTuple of name * (name list)
 	| OpDestTuple of (name list) * name
 	| OpMakeCls   of name * name * (name list)
+	| OpSelfCls   of name * name
 	| OpRet       of name
 	| OpMainRet
 
@@ -61,6 +62,7 @@ let rec to_asms ast tov =
 	| CTuple(vs) -> [OpMakeTuple(tov,vs)]
 	| CLetTuple(vs,ta,e1) -> OpDestTuple(vs,ta) :: (to_asms e1 tov)
 	| CClosure(na,vs) -> [OpMakeCls(tov,na,vs)]
+	| CSelfClosure(na) -> [OpSelfCls(tov,na)]
 
 let rec collect_names_rec ast = 
 	match ast with
@@ -73,7 +75,7 @@ let rec collect_names_rec ast =
 	| CTuple(vs) -> vs
 	| CLetTuple(vs,ta,e1) -> ta :: vs @ (collect_names_rec e1) 
 	| CClosure(_,vs) -> vs (* closureの名前はglobalにあるやつなので、変数ではない(ハズ) *)
-
+	| CSelfClosure(_) -> []
 
 let rec unique_name vs = 
 	match vs with

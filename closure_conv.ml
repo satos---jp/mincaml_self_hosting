@@ -23,6 +23,7 @@ type cexp =
 	| CTuple     of (name list)
 	| CLetTuple  of (name list) * name * cexp
 	| CClosure   of name * (name list)
+	| CSelfClosure of name
 
 type globdef = (name list) * (name list) * cexp
 
@@ -49,6 +50,7 @@ let rec cexp2str_base ast d =
 	| CTuple(vs) -> [(d,(vs2str vs))]
 	| CLetTuple(vs,tn,e1) -> (d,"Let " ^ (vs2str vs) ^ " = " ^ (name2str tn)) :: [(d,"In")] @ (cexp2str_base e1 (d+1))
 	| CClosure(na,vs) -> [(d,"Closure <" ^ (name2str na) ^ "," ^ (vs2str vs) ^ ">")]
+	| CSelfClosure(fn) -> [(d,"SelfClosure " ^ (name2str fn))]
 
 let cexp2str ast = 
 	let ss = cexp2str_base ast 0 in
@@ -65,6 +67,7 @@ let clos2str (gs,v) =
 	(String.concat "" (List.map (fun (x,d) -> (name2str x) ^ "\n" ^ (def2str d)) (List.rev gs))) 
 	^ (cexp2str v) ^ "\n"
 
+(* ast中のenvにない変数がfvである *)
 let rec get_fvs ast env = 
 	let filter vs = List.filter (fun (x,_) -> not (List.mem x env)) vs in
 	(* Printf.printf "Ast ::\n%s\n" (cexp2str ast);
@@ -77,35 +80,42 @@ let rec get_fvs ast env =
 	| CApp(f,vs) -> filter (f :: vs)
 	| CLetTuple(vs,tp,e1) -> (filter [tp]) @ (get_fvs e1 ((List.map fst vs) @ env))
 	| CVar x -> (filter [x])
+	| CSelfClosure x -> []
 
 
-
-let rec remove_closure ast env = 
+(*
+envには、現在の変数一覧が入っていて、
+envにない変数をクロージャのための
+*)
+let rec remove_closure ast add_cls env = 
 	match ast with
 	| KLetRec((fn,ft),args,e1,e2) -> (
-			let te1 = remove_closure e1 env in
-			(* e1中に出ている、外側由来のものを加える  *)
-			let fvs = get_fvs te1 (env @ (List.map fst args) @ global_funcs) in
+			let te1 = remove_closure e1 add_cls env in
+			(* te1中に出ている、外側由来のものを集める  *)
+			let fvs = get_fvs te1 (fn :: env @ (List.map fst args) @ global_funcs) in
 			(* fvsのうち、globalsは除いてよい *)
 			let rfvs = List.filter (fun (x,_) -> not (List.mem x (List.map (fun ((x,_),_) -> x) !globals))) fvs in
 			(* 実装面倒なのでとりあえず全部クロージャで。 2つの値を持っておく。 *)
+			(* 再帰呼び出しのため、自身の特殊なクロージャを作る。後々ediで渡す。 *)
 			let global_name = gencname () in (* globalでの名前 *)
 			let realfunty = ft in (* ここ、クロージャの引数の型も持っとく必要がありそう？ *)
+			let to_add_closure = fun x -> CLet((fn,ft),CClosure((global_name,realfunty),rfvs),add_cls x) in
+			let tte1 = CLet((fn,ft),CSelfClosure((global_name,ft)),add_cls te1) in
 				(* Printf.printf "name %s :: type %s\n" fn (type2str ft); *)
-				globals := ((global_name,realfunty),(rfvs,args,te1)) :: !globals;
-				CLet((fn,ft),CClosure((global_name,realfunty),rfvs),remove_closure e2 (fn :: env))
+				globals := ((global_name,realfunty),(rfvs,args,tte1)) :: !globals;
+				to_add_closure (remove_closure e2 to_add_closure (fn :: env))
 		)
 	| KConst(a) -> CConst(a)
 	| KOp(a,b) -> COp(a,b)
-	| KIfEq(a,b,c,d) -> CIf(CmpEq,a,b,remove_closure c env,remove_closure d env)
-	| KIfLeq(a,b,c,d) -> CIf(CmpLt,a,b,remove_closure c env,remove_closure d env)
-	| KLet((a,t),b,c) -> CLet((a,t),remove_closure b env,remove_closure c (a :: env))
+	| KIfEq(a,b,c,d) -> CIf(CmpEq,a,b,remove_closure c add_cls env,remove_closure d add_cls env)
+	| KIfLeq(a,b,c,d) -> CIf(CmpLt,a,b,remove_closure c add_cls env,remove_closure d add_cls env)
+	| KLet((a,t),b,c) -> CLet((a,t),remove_closure b add_cls env,remove_closure c add_cls (a :: env))
 	| KVar(a) -> CVar(a)
 	| KTuple(a) -> CTuple(a)
-	| KLetTuple(a,b,c) -> CLetTuple(a,b,remove_closure c ((List.map fst a) @ env))
+	| KLetTuple(a,b,c) -> CLetTuple(a,b,remove_closure c add_cls ((List.map fst a) @ env))
 	| KApp(a,b) -> CApp(a,b)
 
 let conv ast = 
-	let ta = remove_closure ast [] in (!globals,ta)
+	let ta = remove_closure ast (fun x -> x) [] in (!globals,ta)
 
 
