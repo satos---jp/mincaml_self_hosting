@@ -112,6 +112,12 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		s ^ 
 		(Printf.sprintf "\tmov %s,eax\n" (na2s nr))
 	in
+	let fbiopr2s nr na nb s = 
+		(Printf.sprintf "\tfld %s\n" (na2s na)) ^
+		(Printf.sprintf "\tfld %s\n" (na2s nb)) ^
+		s ^ 
+		(Printf.sprintf "\tfstp %s\n" (na2s nr))
+	in
 	
 	fn ^ ":\n" ^ prologue ^ 
 	(String.concat "" (List.map (fun op -> 
@@ -120,8 +126,8 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		| OpMovi((na,t),CBool(v)) -> assert (t=TyBool); Printf.sprintf "\tmov %s,%d\n" (na2s na) (if v then 1 else 0)
 		| OpMovi((na,t),CFloat(v)) -> assert (t=TyFloat); (
 				let tag = gen_const () in
-					constfs := (!constfs) ^ (Printf.sprintf "%s:\n\t%f\n" tag v);
-					Printf.sprintf "\tmov eax,[%s]\n\tmov %s eax\n" tag (na2s na)
+					constfs := (!constfs) ^ (Printf.sprintf "%s:\n\tdd %f\n" tag v);
+					Printf.sprintf "\tmov eax,[%s]\n\tmov %s,eax\n" tag (na2s na)
 			)
 		| OpMov((na,t1),(nb,t2)) -> assert (t1=t2); mova2b (na,t1) (nb,t2)
 		| OpLabel x -> x ^ ":\n"
@@ -241,12 +247,26 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		| OpOpr((nr,_),Oneq,[(na,_);(nb,_)]) -> (
 				biopr2s nr na nb "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetne cl\n\tmov eax,ecx\n"
 			)
+		| OpOpr((nr,_),Ofadd,[(na,_);(nb,_)]) -> (
+				fbiopr2s nr na nb "\tfaddp\n"
+			)
+		| OpOpr((nr,_),Ofmul,[(na,_);(nb,_)]) -> (
+				fbiopr2s nr na nb "\tfmulp\n"
+			)
+		| OpOpr((nr,_),Ofsub,[(na,_);(nb,_)]) -> (
+				fbiopr2s nr na nb "\tfsubp\n"
+			)
+		| OpOpr((nr,_),Ofdiv,[(na,_);(nb,_)]) -> (
+				fbiopr2s nr na nb "\tfdivp\n"
+			)
 		| OpOpr(nr,Osemi2,[_;nb]) -> mova2b nr nb
 		| OpOpr(nr,Osemi1,[nb]) -> mova2b nr nb
 		| OpOpr(_,x,_) -> raise (Failure (op2str x))	
 	) ops))
 
-
+(*
+ nasm out.s -f elf32 -g -o out.o; gcc -m32 out.o
+*)
 
 let vir2asm (funs,rd) = 
 	"BITS 32\n" ^

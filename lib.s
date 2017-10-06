@@ -2,16 +2,33 @@ BITS 32
 
 section .text
 	
-global print_char
 print_char:
-	push ebp
-	mov ebp,esp
 	mov edx,1
-	lea ecx,[ebp+0x8]
+	lea ecx,[esp+0x4]
 	mov ebx,1
 	mov eax,4
 	int 0x80
-	pop ebp
 	ret
 
+float_of_int: ; int -> float
+	fild dword [esp+0x4]
+	fstp dword [esp-0x4]
+	mov eax,[esp-0x4]
+	ret
+
+int_of_float: ; float -> int
+	fld dword [esp+0x4]
+	fist dword [esp-0x4]
+	mov eax,[esp-0x4]
+	ret
+
+fless:
+	xor eax,eax
+	fld dword [esp+0x4]
+	fld dword [esp+0x8]
+	fcompp
+	fstsw ax
+	shr eax,8 
+	and eax,1
+	ret
 

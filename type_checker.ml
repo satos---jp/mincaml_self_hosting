@@ -84,7 +84,10 @@ let genv = [
 	("read_int",TyFun([TyTuple([])],TyInt));
 	("read_float",TyFun([TyTuple([])],TyFloat));
 	("print_char",TyFun([TyInt],TyTuple([])));
+(*
+これは自分でmlで実装する
 	("print_int",TyFun([TyInt],TyTuple([])));
+*)
 ]
 
 let global_funcs = List.map fst genv

@@ -19,4 +19,9 @@ print_char 10
 
 (*
 ./main lib.ml; nasm out.s -f elf32 -g -o out.o; gcc -m32 out.o 
+
+
+
+
+
 *)
