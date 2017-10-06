@@ -13,14 +13,15 @@ let argc = Array.length Sys.argv in
 if argc <= 1 then (
 	Printf.printf "Usage: %s filename\n" Sys.argv.(0)
 ) else (
-	let imps = Array.sub Sys.argv 2 (argc-2) in
-	let globasts = Array.map Source2ast.s2a imps in
 	let ast = Source2ast.s2a Sys.argv.(1) in
+	Array.set Sys.argv 1 "lib.ml";
+	let imps = (Array.sub Sys.argv 1 (argc-1)) in
+	let globasts = Array.map Source2ast.s2a imps in
 	let tast = match ast with
 	| DExpr east -> (
 		Array.fold_right (fun gast -> fun gr -> 
 				match gast with
-				| DDecl xs -> (List.fold_right (fun (na,(ne,de)) -> fun r -> (Syntax.ELet(na,(ne,de),r),de)) xs gr)
+				| DDecl xs -> (List.fold_right (fun f -> fun r -> (f r)) xs gr)
 				| _ -> raise (Failure "globs is not decl")
 			) globasts east 
 		)

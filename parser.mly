@@ -1,12 +1,9 @@
 %{
 	open Syntax
-	
-	let debug expr = 
-		expr , 
-		(!Syntax.filename,
-			(Parsing.symbol_start ()),
-			(Parsing.symbol_end ()))
 
+	let debug_data () = (!Syntax.filename, (Parsing.symbol_start ()), (Parsing.symbol_end ()))
+	
+	let debug expr = (expr , (debug_data ()))
 %}
 
 %token <int>    INT
@@ -53,7 +50,9 @@ toplevel:
 decls:
 	| EOF { [] }
 	| LET var EQ expr decls
-		{ ($2,$4) :: $5 }
+		{ let dd = debug_data () in (fun x -> (ELet($2,$4,x),dd)) :: $5 }
+	| LET REC rec_vars EQ expr decls
+		{ let dd = debug_data () in (fun x -> (ELetRec(List.hd $3,List.tl $3,$5,x),dd)) :: $6 }
 ;
 
 

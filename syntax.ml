@@ -66,10 +66,9 @@ and expr_base =
 
  
 type decl = 
-  | DDecl      of (name * expr) list
+  | DDecl      of (expr -> expr) list
   | DExpr      of expr
 
-				  
 let print_name = print_string 
 
 let err = ref (-1,-1)
