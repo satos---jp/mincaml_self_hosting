@@ -57,7 +57,12 @@ let rec to_asms ast tov =
 				OpJcnd(cmpty,a,b,lst) :: (to_asms e1 tov) @ 
 					[OpJmp(lgl);OpLabel(lst)] @ (to_asms e2 tov) @ [OpLabel(lgl)]
 		)
-	| CVar(x) -> [OpMov(tov,x)]
+	| CVar(x) -> (
+		if List.mem (fst x) global_funcs then 
+			to_asms (CClosure(x,[])) tov
+		else
+			[OpMov(tov,x)]
+		)
 	| CApp(a,b) -> [OpApp(tov,a,b)]
 	| CTuple(vs) -> [OpMakeTuple(tov,vs)]
 	| CLetTuple(vs,ta,e1) -> OpDestTuple(vs,ta) :: (to_asms e1 tov)
@@ -101,7 +106,7 @@ let rec to_virtual (defs,rd) =
 		in
 			(na,vs1,vs2,((to_asms bo (rv,rt)) @ [OpRet((rv,rt))],(rv,rt) :: (collect_names bo (vs1 @ vs2))))) defs,
 	
-	let gvt = ("@global_ret_val",TyVar(-1)) in
+	let gvt = ("@global_ret_val",TyInt) in
 	((to_asms rd gvt) @ [OpMainRet],gvt :: (collect_names rd [])))
 
 

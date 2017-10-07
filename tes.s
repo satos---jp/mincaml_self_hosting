@@ -30,6 +30,7 @@ main:
 	fld dword [hoge]
 	fstp dword [ebp+0x8]
 	
+	
 	push dword [ebp+0x8]
 	call [ebp+0x8]
 	mov eax,[hoge]

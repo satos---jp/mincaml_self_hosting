@@ -65,11 +65,15 @@ and texp_base =
 
 
 let genv = [
-	("false",TyInt);
+(* アセンブラで実装した*)
+	("fless",TyFun([TyFloat;TyFloat],TyInt));
+	("int_of_float",TyFun([TyFloat],TyInt));
+	("float_of_int",TyFun([TyInt],TyFloat));
+	("print_char",TyFun([TyInt],TyTuple([])));
+	("read_char",TyFun([TyTuple([])],TyInt));
 	("fiszero",TyFun([TyFloat],TyInt));
 	("fispos",TyFun([TyFloat],TyInt));
 	("fisneg",TyFun([TyFloat],TyInt));
-	("fless",TyFun([TyFloat;TyFloat],TyInt));
 	("fabs",TyFun([TyFloat],TyFloat));
 	("floor",TyFun([TyFloat],TyFloat));
 	("fsqr",TyFun([TyFloat],TyFloat)); (* x -> x^2 のほう *)
@@ -79,14 +83,12 @@ let genv = [
 	("sin",TyFun([TyFloat],TyFloat));
 	("cos",TyFun([TyFloat],TyFloat));
 	("atan",TyFun([TyFloat],TyFloat));
-	("int_of_float",TyFun([TyFloat],TyInt));
-	("float_of_int",TyFun([TyInt],TyFloat));
+(*
+	mlで実装した
+	("false",TyInt);
+	("print_int",TyFun([TyInt],TyTuple([])));
 	("read_int",TyFun([TyTuple([])],TyInt));
 	("read_float",TyFun([TyTuple([])],TyFloat));
-	("print_char",TyFun([TyInt],TyTuple([])));
-(*
-これは自分でmlで実装する
-	("print_int",TyFun([TyInt],TyTuple([])));
 *)
 ]
 
@@ -281,16 +283,19 @@ let rec unify cs =
 	match cs with
 	| [] -> []
 	| (t1,t2,deb) :: xs -> if t1 == t2 then unify xs else (
-		match t1,t2 with
-		| TyVar x,y | y,TyVar x -> (
-				if ty_var_appear y x then 
-					raise (TypeError(t1,t2,deb)) else 
-					(x,y) :: (unify (constrs_subst (x,y) xs))
-			)
-		| TyArr a,TyArr b -> unify ((a,b,deb) :: xs)
-		| TyFun(vs,b),TyFun(cs,d) -> unify ((b,d,deb) :: (List.map2 (fun a -> fun c -> (a,c,deb)) vs cs) @ xs)
-		| TyTuple ps,TyTuple qs -> unify ((List.map2 (fun a b -> (a,b,deb)) ps qs) @ xs)
-		| _ -> raise (TypeError(t1,t2,deb))
+		try 
+			match t1,t2 with
+			| TyVar x,y | y,TyVar x -> (
+					if ty_var_appear y x then 
+						raise (TypeError(t1,t2,deb)) else 
+						(x,y) :: (unify (constrs_subst (x,y) xs))
+				)
+			| TyArr a,TyArr b -> unify ((a,b,deb) :: xs)
+			| TyFun(vs,b),TyFun(cs,d) -> unify ((b,d,deb) :: (List.map2 (fun a -> fun c -> (a,c,deb)) vs cs) @ xs)
+			| TyTuple ps,TyTuple qs -> unify ((List.map2 (fun a b -> (a,b,deb)) ps qs) @ xs)
+			| _ -> raise (TypeError(t1,t2,deb))
+		with 
+			| Invalid_argument("List.map2") -> raise (TypeError(t1,t2,deb))
 	)
 
 

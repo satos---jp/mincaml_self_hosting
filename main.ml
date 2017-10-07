@@ -30,7 +30,7 @@ if argc <= 1 then (
 	let ast2 = Type_checker.check tast in
 	let kn = Knorm.knorm ast2 in
 	let cls = Closure_conv.conv kn in
-	print_string (clos2str cls);
+	(* print_string (clos2str cls); *)
 	let vrt = Virtual.to_virtual cls in
 	let asm = Emit_zatsu_x86.vir2asm vrt in
 	print_string asm;

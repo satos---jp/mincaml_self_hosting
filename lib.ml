@@ -1,3 +1,4 @@
+let false = 0
 let rec mod_ a b = a-(a/b)*b
 let rec print_int_base x = 
 	if x < 10 then (if 0 < x then print_char (x+48) else ()) else
@@ -7,5 +8,28 @@ let rec print_int_base x =
 let rec print_int x = 
 	if x = 0 then print_char 48
 	else (if x < 0 then print_char 45; print_int_base (0-x) else print_int_base x)
+
+
+
+let rec read_int x = 
+	let rec f acc = 
+		let n = read_char () in
+			if (n-47)*(58-n)>0 then f (acc*10+(n-48)) else acc
+	in
+		let c = read_char () in
+			if c = 45 then -(f 0) else f (c-48)
+
+let rec read_float x = 
+	let rec g b acc = 
+		let n = read_char () in
+			if (n-47)*(58-n)>0 then g (b *. 0.1) (acc+.b*.(float_of_int (n-48))) else acc
+	in
+	let rec f acc = 
+		let n = read_char () in
+			if (n-47)*(58-n)>0 then f (acc*.10.0+.(float_of_int (n-48))) else g 0.1 acc
+	in
+		let c = read_char () in
+			if c = 45 then (0.0 -.(f 0.0)) else f (float_of_int (c-48))
+
 
 
