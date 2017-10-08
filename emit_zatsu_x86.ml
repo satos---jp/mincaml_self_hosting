@@ -76,7 +76,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		cs ^ (Printf.sprintf "\tadd esi,%d\n" !nl)
 	) in
 	let prologue = (Printf.sprintf "\tpush ebp\n\tmov ebp,esp\n\tsub esp,%d\n" (snd lvs_st)) ^	
-		if fn = "main" then "\tmov esi,global_heap\n" else ""
+		if fn = "_main" then "\tmov esi,global_heap\n" else ""
 	in
 	let epilogue = (Printf.sprintf "\tadd esp,%d\n\tpop ebp\n\tret\n" (snd lvs_st)) in
 	
@@ -267,19 +267,23 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 
 (*
  nasm out.s -f elf32 -g -o out.o; gcc -m32 out.o
+ nasm out.s -f win32 -g -o out.o; gcc -m32 out.o
+
 *)
 
 let vir2asm (funs,rd) = 
 	"BITS 32\n" ^
+	"%include \"libio_win.s\"\n" ^
 	"%include \"lib.s\"\n" ^
 	"section .data\n" ^
 	!constfs ^
+	"section .bss\n" ^
 	"global_heap:\n" ^
-	"\ttimes 0x1000000 db 0\n" ^
+	"\tresb 0x10000000\n" ^
 	"section .text\n" ^
-	"global main\n" ^ 
+	"global _main\n" ^ 
 	(String.concat "" (List.map func2asm (List.rev funs))) ^	
-	(func2asm (("main",TyVar(-1)),[],[],rd))
+	(func2asm (("_main",TyVar(-1)),[],[],rd))
 
 
 
