@@ -39,6 +39,10 @@ if argc <= 1 then (
 	close_out oc;
 (*
 nasm lib.s -f elf32 -g -o lib.o; nasm out.s -f elf32 -g -o out.o; gcc -m32 out.o lib.o
+
+17903‚ÅSEGV.
+17900 ‚Ì [ebp-368]‚ª‚â‚Î‚¢B
+
 *)
 	()
 )

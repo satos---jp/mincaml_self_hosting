@@ -3,7 +3,7 @@ open Debug
 
 
 open Type_checker
-type name = string * ty
+type name = string * (ty * debug_data)
 
 (* デバッグ情報はいったん落とす(実装がつらい...) *) 
 
@@ -48,9 +48,10 @@ let rec knorm (ast,nt) =
 					KIfEq((v1,t1),(v2,t2),k3,k4)))
 		)
 	| TIf(e1,e2,e3) -> (
+			let (_,(_,d)) = e1 in
 			let tast = TIf(
-									(TOp(Oeq,[e1;(TConst(CBool true),TyBool)]),TyBool)
-									,e2,e3) in
+				(TOp(Oeq,[e1;(TConst(CBool true),(TyBool,d))]),(TyBool,d))
+				,e2,e3) in
 			knorm (tast,nt)
 		)
 	| TLet(v1,e2,e3) -> KLet(v1,knorm e2,knorm e3)

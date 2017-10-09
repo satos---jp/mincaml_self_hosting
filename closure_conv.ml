@@ -1,5 +1,6 @@
 open Knorm
 open Syntax
+open Debug
 
 let gencname = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@cls_%d" !c)
 
@@ -11,7 +12,7 @@ let gencname = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@cls_%d"
 
 
 open Type_checker
-type name = string * ty
+type name = string * (ty * debug_data)
 
 type cexp = 
 	| CConst of Syntax.const
@@ -32,8 +33,9 @@ let globals = ref ([] : (name * globdef) list)
 
 (*
 program .. cexp,globdef list 
-
 *)
+
+let name2str (na,(ty,_)) = na ^ " : " ^ (type2str ty)
 
 
 let vs2str vs = "(" ^ (String.concat " , " (List.map name2str vs)) ^ ")"

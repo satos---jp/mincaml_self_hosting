@@ -2,8 +2,8 @@ open Closure_conv
 open Syntax
 
 open Type_checker
-type name = string * ty
-
+open Debug
+type name = string * (ty * debug_data)
 
 let genlabel = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@label_%d" !c)
 
@@ -98,15 +98,17 @@ let names2str vs = "[\n" ^ (String.concat ";\n" (List.map name2str vs)) ^ ";\n]\
 
 let rec to_virtual (defs,rd) = 
 	(List.map (fun (na,(vs1,vs2,bo)) -> 
+		let rd = snd (snd na) in
 		let rv = "@ret_val_" ^ (fst na) in
 		let rt = 
-			match snd na with
+			match fst (snd na) with
 			| TyFun(_,x) -> x
 			| x -> raise (Failure ("Type " ^ (type2str x) ^ " is not function type"))
 		in
-			(na,vs1,vs2,((to_asms bo (rv,rt)) @ [OpRet((rv,rt))],(rv,rt) :: (collect_names bo (vs1 @ vs2))))) defs,
+		let rtd = (rt,rd) in
+			(na,vs1,vs2,((to_asms bo (rv,rtd)) @ [OpRet((rv,rtd))],(rv,rtd) :: (collect_names bo (vs1 @ vs2))))) defs,
 	
-	let gvt = ("@global_ret_val",TyInt) in
+	let gvt = ("@global_ret_val",(TyInt,("",-1,-1))) in
 	((to_asms rd gvt) @ [OpMainRet],gvt :: (collect_names rd [])))
 
 

@@ -1,6 +1,7 @@
 open Virtual
 open Syntax
 open Type_checker
+open Debug
 (* とりあえず、雑にx86コードを生成する *)
 
 let constfs = ref ""
@@ -115,15 +116,15 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 	fn ^ ":\n" ^ prologue ^ 
 	(String.concat "" (List.map (fun op -> 
 		match op with
-		| OpMovi((na,t),CInt(v)) -> assert (t=TyInt); Printf.sprintf "\tmov %s,%d\n" (na2s na) v
-		| OpMovi((na,t),CBool(v)) -> assert (t=TyBool); Printf.sprintf "\tmov %s,%d\n" (na2s na) (if v then 1 else 0)
-		| OpMovi((na,t),CFloat(v)) -> assert (t=TyFloat); (
+		| OpMovi((na,(t,d)),CInt(v)) -> assert (t=TyInt); Printf.sprintf "\tmov %s,%d\n" (na2s na) v
+		| OpMovi((na,(t,d)),CBool(v)) -> assert (t=TyBool); Printf.sprintf "\tmov %s,%d\n" (na2s na) (if v then 1 else 0)
+		| OpMovi((na,(t,d)),CFloat(v)) -> assert (t=TyFloat); (
 				let tag = gen_const () in
 					constfs := (!constfs) ^ (Printf.sprintf "%s:\n\tdd %f\n" tag v);
 					Printf.sprintf "\tmov eax,[%s]\n\tmov %s,eax\n" tag (na2s na)
 			)
-		| OpMov((na,t1),(nb,t2)) -> assert (t1=t2); 
-			mova2b (na,t1) (nb,t2)
+		| OpMov((na,(t1,d1)),(nb,(t2,d2))) -> assert (t1=t2); 
+			(mova2b (na,t1) (nb,t2)) ^ "; " ^ (debug2simple d1) ^ (debug2simple d2) ^ "\n"
 		| OpLabel x -> x ^ ":\n"
 		| OpJcnd(ct,(na,_),(nb,_),la) -> (
 				(Printf.sprintf "\tmov eax,%s\n\tmov ebx,%s\n" (na2s na) (na2s nb)) ^ 

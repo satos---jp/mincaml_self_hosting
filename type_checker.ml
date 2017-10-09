@@ -49,9 +49,9 @@ let gentype = let c = ref 0 in (fun () -> c := (!c)+1; TyVar(!c))
 
 let name2str (na,ty) = na ^ " : " ^ (type2str ty)
 
-type name = string * ty
+type name = string * (ty * debug_data)
 
-type texp = texp_base * ty
+type texp = texp_base * (ty * debug_data)
 and texp_base =
   | TConst of const
   | TVar       of name
@@ -113,7 +113,7 @@ let rec type_infer astdeb env =
 	| EVar(x) -> (
 			try (
 				let tv,tt = List.assoc x env in
-				(TVar((tv,tt)),[],tt)
+				(TVar((tv,(tt,deb))),[],tt)
 			)
 			with
 				| Not_found -> raise (Failure("undefined variable " ^ x))
@@ -197,9 +197,9 @@ let rec type_infer astdeb env =
 		)
 	| ELet(n1,e2,e3) -> (
 			let tn1 = (genvar ()) ^ "_" ^ n1 in
-			let te2,c2,tt2,_ = type_infer e2 env in
+			let te2,c2,tt2,deb2 = type_infer e2 env in
 			let te3,c3,tt3,_ = type_infer e3 ((n1,(tn1,tt2)) :: env) in
-			(TLet((tn1,tt2),te2,te3),c2 @ c3,tt3)
+			(TLet((tn1,(tt2,deb2)),te2,te3),c2 @ c3,tt3)
 		)
 	| ELetRec(f1,ns,e2,e3) -> (
 			(* fのα変換 *)
@@ -215,7 +215,7 @@ let rec type_infer astdeb env =
 			(* これは、関数名より変数名の方が先に調べられるみたい *) 
 			(* e3についての推論 *)
 			let te3,c3,tt3,_ = type_infer e3 ((f1,(fn1,f1t)) :: env) in
-			(TLetRec((fn1,f1t),List.map (fun (_,x) -> x) tns,te2,te3),(tt2,fn1rt,deb2) :: c2 @ c3,tt3)
+			(TLetRec((fn1,(f1t,deb2)),List.map (fun (_,(x,t)) -> (x,(t,deb2))) tns,te2,te3),(tt2,fn1rt,deb2) :: c2 @ c3,tt3)
 		)
 	| EApp(e1,e2) -> (
 		(* カリー化できないのでがんばる *)
@@ -238,11 +238,11 @@ let rec type_infer astdeb env =
 			let te1,c1,tt1,deb1 = type_infer e1 env in
 			let tns = List.map (fun x -> (x,(genvar (),gentype ()))) ns in
 			let te2,c2,tt2,_ = type_infer e2 (tns @ env) in
-				(TLetTuple(List.map (fun (_,x) -> x) tns,te1,te2),
+				(TLetTuple(List.map (fun (_,(x,t)) -> (x,(t,deb1))) tns,te1,te2),
 				(tt1,TyTuple(List.map (fun (_,(_,x)) -> x) tns),deb1) :: c1 @ c2,tt2)
 		)
 	) in
-	((rast,rt),rc,rt,deb)
+	((rast,(rt,deb)),rc,rt,deb)
 
 let rec print_constrs_sub cs =
         match cs with
@@ -299,10 +299,10 @@ let rec unify cs =
 	)
 
 
-let rec ast_subst sub (ast,nt) = 
+let rec ast_subst sub (ast,(nt,deb)) = 
 	let f = ast_subst sub in
 	let mf = List.map f in
-	let nf (x,t) = (x,ty_subst sub t) in
+	let nf (x,(t,d)) = (x,(ty_subst sub t,d)) in
 	let mnf = List.map nf in
 	let tast = match ast with
 	| TConst _ -> ast
@@ -315,7 +315,7 @@ let rec ast_subst sub (ast,nt) =
   | TTuple(es) -> TTuple(mf es)
   | TLetTuple(vs,e1,e2) -> TLetTuple(mnf vs,f e1,f e2)
   in
-  	(tast,ty_subst sub nt)
+  	(tast,(ty_subst sub nt,deb))
  
 let ast_subst_rec subs ast = List.fold_left (fun r -> fun nsub -> ast_subst nsub r) ast subs 
 

@@ -1,5 +1,7 @@
 type debug_data = string * int * int
 
+let debug2simple (fname,st,gl) = Printf.sprintf "file %s char %d-%d " fname st gl
+
 let data2str (fname,st,gl) = 
 	let ic = open_in fname in
 	Printf.printf "%d %d\n" st gl;
