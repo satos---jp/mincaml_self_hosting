@@ -56,7 +56,7 @@ let rec cexp2str_base ast d =
 
 let cexp2str ast = 
 	let ss = cexp2str_base ast 0 in
-		String.concat "\n" (List.map (fun (d,s) -> (String.make (d*2) ' ') ^ s) ss) ^ "\n"
+		(String.concat "\n" (List.map (fun (d,s) -> (String.make (d*2+10) ' ') ^ s) ss)) ^ "\n"
 		
 
 let name2str (x,t) = x ^ " : " ^ (type2str t)
@@ -66,7 +66,7 @@ let def2str (vs1,vs2,e) = "Func " ^ (vs2str vs1) ^ (vs2str vs2) ^ "[\n" ^ (cexp2
 
 
 let clos2str (gs,v) = 
-	(String.concat "" (List.map (fun (x,d) -> (name2str x) ^ "\n" ^ (def2str d)) (List.rev gs))) 
+	(String.concat "" (List.map (fun ((x,_),bo) -> x ^ "\n" ^ (def2str bo)) (List.rev gs))) 
 	^ (cexp2str v) ^ "\n"
 
 (* ast’†‚Ìenv‚É‚È‚¢•Ï”‚ªfv‚Å‚ ‚é *)

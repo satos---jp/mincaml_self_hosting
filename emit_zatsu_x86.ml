@@ -116,15 +116,17 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 	fn ^ ":\n" ^ prologue ^ 
 	(String.concat "" (List.map (fun op -> 
 		match op with
-		| OpMovi((na,(t,d)),CInt(v)) -> assert (t=TyInt); Printf.sprintf "\tmov %s,%d\n" (na2s na) v
-		| OpMovi((na,(t,d)),CBool(v)) -> assert (t=TyBool); Printf.sprintf "\tmov %s,%d\n" (na2s na) (if v then 1 else 0)
+		| OpMovi((na,(t,d)),CInt(v)) -> assert (t=TyInt); 
+			(Printf.sprintf "\tmov %s,%d\n" (na2s na) v) ^ "; " ^ (debug_data2simple d) ^ "\n"
+		| OpMovi((na,(t,d)),CBool(v)) -> assert (t=TyBool); 
+			(Printf.sprintf "\tmov %s,%d\n" (na2s na) (if v then 1 else 0)) ^ "; " ^ (debug_data2simple d) ^ "\n"
 		| OpMovi((na,(t,d)),CFloat(v)) -> assert (t=TyFloat); (
 				let tag = gen_const () in
 					constfs := (!constfs) ^ (Printf.sprintf "%s:\n\tdd %f\n" tag v);
 					Printf.sprintf "\tmov eax,[%s]\n\tmov %s,eax\n" tag (na2s na)
 			)
 		| OpMov((na,(t1,d1)),(nb,(t2,d2))) -> assert (t1=t2); 
-			(mova2b (na,t1) (nb,t2)) ^ "; " ^ (debug2simple d1) ^ (debug2simple d2) ^ "\n"
+			(mova2b (na,t1) (nb,t2)) ^ "; " ^ (debug_data2simple d1) ^ (debug_data2simple d2) ^ "\n"
 		| OpLabel x -> x ^ ":\n"
 		| OpJcnd(ct,(na,_),(nb,_),la) -> (
 				(Printf.sprintf "\tmov eax,%s\n\tmov ebx,%s\n" (na2s na) (na2s nb)) ^ 
@@ -144,13 +146,14 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 				(Printf.sprintf "\tmov %s,esi\n" (na2s na)) ^ 
 				(make_vs_on_heap vs)
 			)
-		| OpMakeCls((na,t),(fn,ft),vs) -> (
+		| OpMakeCls((na,(_,d1)),(fn,(_,d2)),vs) -> (
 				"\tmov edx,esi\n" ^ 
 				(make_vs_on_heap vs) ^
 				"\tmov dword [esi+4],edx\n" ^ 
 				(Printf.sprintf "\tmov dword [esi],%s\n" fn) ^ 
 				(Printf.sprintf "\tmov %s,esi\n" (na2s na)) ^ 
-				"\tadd esi,8\n"
+				"\tadd esi,8\n"^
+				"; " ^ (debug_data2simple d1) ^ " "^ (debug_data2simple d2) ^ "\n"
 			)
 		| OpSelfCls((na,t),(fn,ft)) -> (
 				(Printf.sprintf "\tmov dword [esi],%s\n" fn) ^ 

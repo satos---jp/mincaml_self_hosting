@@ -1,11 +1,23 @@
+{
+(* Ocamlのlexerのhogeな仕様のせいで、pos_lnum と pos_bol は自分で更新しないといけない!!  *)
+open Lexing
+
+(* 参考 http://mamewo.ddo.jp/ml.html の lexing_module の項 *)
+
+let newline lexbuf =
+  lexbuf.lex_curr_p <-
+    { lexbuf.lex_curr_p with pos_lnum = lexbuf.lex_curr_p.pos_lnum + 1; pos_bol = lexbuf.lex_curr_p.pos_cnum;  }
+}
+
 let digit = ['0'-'9']
-let space = ' ' | '\t' | '\r' | '\n'
+let space = ' ' | '\t' | '\r'
 let alpha = ['a'-'z' 'A'-'Z' '_' ] 
 let ident = alpha (alpha | digit)* 
 
 rule main = parse
+| "\n" { newline lexbuf; main lexbuf }
 | space+       { main lexbuf }
-| "open"[^'\n']*"\n" { (* open文は飛ばす *) main lexbuf }
+| "open"[^'\n']*"\n" { (* open文は飛ばす *) newline lexbuf; main lexbuf }
 | "(*"         { comment lexbuf }
 | "let"        { Parser.LET }
 | "rec"        { Parser.REC }
@@ -55,6 +67,7 @@ let true = 1 とかがあるのでエラーになる。
 | _            { failwith ("Unknown Token: " ^ Lexing.lexeme lexbuf)}
 
 and comment = parse
+| "\n" { newline lexbuf; comment lexbuf }
 | "*)"       { main lexbuf }
 | _          { comment lexbuf }
 

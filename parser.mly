@@ -1,9 +1,8 @@
 %{
 	open Syntax
-
-	let debug_data () = (!Syntax.filename, (Parsing.symbol_start ()), (Parsing.symbol_end ()))
+	open Debug
 	
-	let debug expr = (expr , (debug_data ()))
+	let debug expr = (expr , (get_debug_data ()))
 %}
 
 %token <int>    INT
@@ -50,9 +49,9 @@ toplevel:
 decls:
 	| EOF { [] }
 	| LET var EQ expr decls
-		{ let dd = debug_data () in (fun x -> (ELet($2,$4,x),dd)) :: $5 }
+		{ let dd = get_debug_data () in (fun x -> (ELet($2,$4,x),dd)) :: $5 }
 	| LET REC rec_vars EQ expr decls
-		{ let dd = debug_data () in (fun x -> (ELetRec(List.hd $3,List.tl $3,$5,x),dd)) :: $6 }
+		{ let dd = get_debug_data () in (fun x -> (ELetRec(List.hd $3,List.tl $3,$5,x),dd)) :: $6 }
 ;
 
 
@@ -152,15 +151,7 @@ Error: This expression has type float but an expression was expected of type
 		%prec arrow_assoc
 		{ debug (EOp(OArrWrite,[$1;$4;$7])) }  
 	| error
-    { Syntax.err := ((Parsing.symbol_start ()), (Parsing.symbol_end ()));
-    	failwith "mly error" }
-/*
-    { failwith 
-    	
-        (Printf.sprintf "parse error near characters %d-%d"
-           (Parsing.symbol_start ())
-           (Parsing.symbol_end ())) }
-*/
+		{ failwith (debug_data2str (get_debug_data ())) }
 ;
 
 tuple_exprs:

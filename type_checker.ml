@@ -116,45 +116,8 @@ let rec type_infer astdeb env =
 				(TVar((tv,(tt,deb))),[],tt)
 			)
 			with
-				| Not_found -> raise (Failure("undefined variable " ^ x))
+				| Not_found -> raise (Failure("undefined variable " ^ x ^ " at " ^ (debug_data2str deb)))
 		)
-(*
-	| EOp("add" as s,[e1;e2]) | EOp("sub" as s,[e1;e2]) | EOp("mul" as s,[e1;e2]) | EOp("div" as s,[e1;e2]) -> (
-			let te1,c1,tt1 = type_infer e1 env in
-			let te2,c2,tt2 = type_infer e2 env in
-				(EOp(s,[te1;te2]),(tt1,TyInt) :: (tt2,TyInt) :: c1 @ c2,TyInt)
-		)
-*)
-(*
-	| EOp(Osemi2,[e1;e2]) -> (
-			let te1,c1,tt1,deb1 = type_infer e1 env in
-			let te2,c2,tt2,deb2 = type_infer e2 env in
-				(TOp(Osemi2,[te1;te2]),(tt1,TyTuple([]),deb1) :: c1 @ c2,tt2)
-		)
-	| EOp(Osemi1,[e1]) -> (
-			let te1,c1,tt1,deb1 = type_infer e1 env in
-				(EOp(Osemi1,[te1]),c1,tt1)
-		)
-(* Arr系のやつ、ぜんぶOpにしてしまっていいきがする*)
-	| EOp(OArrCrt,[e1;e2]) -> (
-			let te1,c1,tt1,deb1 = type_infer e1 env in
-			let te2,c2,tt2,_ = type_infer e2 env in
-				(EOp(OArrCrt,[te1;te2]),(tt1,TyInt,deb1) :: c1 @ c2,TyArr(tt2))
-		)
-	| EOp(OArrRead,[e1;e2]) -> (
-			let te1,c1,tt1,deb1 = type_infer e1 env in
-			let te2,c2,tt2,deb2 = type_infer e2 env in
-			let rt = gentype () in
-				(EOp(OArrRead,[te1;te2]),(tt1,TyArr(rt),deb1) :: (tt2,TyInt,deb2) :: c1 @ c2,rt)
-		)
-	| EOp(OArrWrite,[e1;e2;e3]) -> (
-			let te1,c1,tt1,_ = type_infer e1 env in
-			let te2,c2,tt2,deb2 = type_infer e2 env in
-			let te3,c3,tt3,deb3 = type_infer e3 env in
-				(EOp(OArrWrite,[te1;te2;te3]),(tt1,TyArr(tt3),deb3) :: (tt2,TyInt,deb2) :: c1 @ c2 @ c3,TyTuple([]))
-		)
-*)
-
 	| EOp(op,vs) -> (
 			let tects = List.map (fun x -> type_infer x env) vs in
 			let tes = List.map (fun (x,_,_,_) -> x) tects in
@@ -329,4 +292,4 @@ let check ast =
 	) with
 		| TypeError(t1,t2,deb) -> 
 			raise (Failure(Printf.sprintf 	
-				"Type Unify Failed:\n %s \n with type %s and %s" (Debug.data2str deb) (type2str t1) (type2str t2)))
+				"Type Unify Failed:\n %s \n with type %s and %s" (Debug.debug_data2str deb) (type2str t1) (type2str t2)))

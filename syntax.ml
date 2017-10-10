@@ -71,9 +71,6 @@ type decl =
 
 let print_name = print_string 
 
-let err = ref (-1,-1)
-let filename = ref ""
-
 
 let rec expr2str_base astdeb d = 
 	let ast,_ = astdeb in

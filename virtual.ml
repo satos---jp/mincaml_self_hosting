@@ -108,7 +108,7 @@ let rec to_virtual (defs,rd) =
 		let rtd = (rt,rd) in
 			(na,vs1,vs2,((to_asms bo (rv,rtd)) @ [OpRet((rv,rtd))],(rv,rtd) :: (collect_names bo (vs1 @ vs2))))) defs,
 	
-	let gvt = ("@global_ret_val",(TyInt,("",-1,-1))) in
+	let gvt = ("@global_ret_val",(TyInt,default_debug_data)) in
 	((to_asms rd gvt) @ [OpMainRet],gvt :: (collect_names rd [])))
 
 

@@ -26,12 +26,17 @@ if argc <= 1 then (
 			) globasts east 
 		)
 	| _ -> raise (Failure "inputfile is not value")  in
+	print_string "parsed"; print_newline ();
 	(* print_string (expr2str tast); *)
 	let ast2 = Type_checker.check tast in
+	print_string "typed";  print_newline ();
 	let kn = Knorm.knorm ast2 in
+	print_string "k-normalized";  print_newline ();
 	let cls = Closure_conv.conv kn in
-	(* print_string (clos2str cls); *)
+	print_string (clos2str cls);
+	print_string "closure_converted";  print_newline ();
 	let vrt = Virtual.to_virtual cls in
+	print_string "virtualized";  print_newline ();
 	let asm = Emit_zatsu_x86.vir2asm vrt in
 	print_string asm;
 	let oc = open_out "out.s" in
