@@ -90,7 +90,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 	let mova2b nad nbd = 
 			(Printf.sprintf "\tmov eax,%s\n" (nd2ps nbd)) ^
 			(Printf.sprintf "\tmov %s,eax\n" (nd2ps nad)) ^
-			"; " ^ (nd2ds nbd) ^ " ::<= " ^ (nd2ds nad) ^ "\n"
+			"; " ^ (nd2ds nad) ^ " ::<= " ^ (nd2ds nbd) ^ "\n"
 	in
 	let unopr2s nr na s = 
 		(Printf.sprintf "\tmov eax,%s\n" (nd2ps na)) ^
