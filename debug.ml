@@ -19,6 +19,40 @@ let get_debug_data () = (!filename, (Parsing.symbol_start_pos ()), (Parsing.symb
    0x4577b7 <floor+353027>:     mov    DWORD PTR [ebp-0x154],0x1
    0x4577c1 <floor+353037>:     mov    eax,DWORD PTR [ebp+0xc]
    0x4577c4 <floor+353040>:     mov    DWORD PTR [ebp-0x160],eax
+   
+   
+   これは、元のソースの
+    image_center.(0) <- size_x / 2;
+
+@t_44_image_center
+は
+@k_75 に代入されている。
+
+ であるが、これはebp-368. == 0x170. のはず。
+ 
+109097		mov eax,dword [ebp-356]
+109098		mov dword [ebp-368],eax
+
+109112		mov eax,dword [ebp-368]
+109113		mov ebx,dword [ebp-364]
+109114		mov ecx,dword [ebp-360]
+109115		mov dword [eax+4*ebx],ecx
+109116		mov dword [ebp-24],eax
+109117		mov eax,dword [ebp-356]
+109118		mov dword [ebp-344],eax
+109119	; ../raytracer/min-rt.ml@2292:1;2292:13../raytracer/min-rt.ml@2292:1;2292:13
+109120		mov dword [ebp-340],1
+109121	; ../raytracer/min-rt.ml@2292:15;2292:16
+109122		mov eax,dword [ebp+12]
+
+このへん、で、
+
+108554	@t_44_image_center :: [ebp-356]
+
+つってて、あー、外部ほげかな。
+
+
+
 *)
 
 let pos2str p = Printf.sprintf "%d:%d" p.pos_lnum (p.pos_cnum - p.pos_bol)

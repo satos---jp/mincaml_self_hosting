@@ -151,7 +151,7 @@ Error: This expression has type float but an expression was expected of type
 		%prec arrow_assoc
 		{ debug (EOp(OArrWrite,[$1;$4;$7])) }  
 	| error
-		{ failwith (debug_data2str (get_debug_data ())) }
+		{ failwith ("parse failure at " ^ debug_data2str (get_debug_data ())) }
 ;
 
 tuple_exprs:

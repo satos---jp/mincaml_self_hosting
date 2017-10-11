@@ -17,7 +17,8 @@ let rec read_int x =
 			if (n-47)*(58-n)>0 then f (acc*10+(n-48)) else acc
 	in
 		let c = read_char () in
-			if c = 45 then -(f 0) else f (c-48)
+			if c = 45 then -(f 0) else (
+				if (c-47)*(58-c)>0 then f (c-48) else read_int x)
 
 let rec read_float x = 
 	let rec g b acc = 
@@ -29,7 +30,9 @@ let rec read_float x =
 			if (n-47)*(58-n)>0 then f (acc*.10.0+.(float_of_int (n-48))) else g 0.1 acc
 	in
 		let c = read_char () in
-			if c = 45 then (0.0 -.(f 0.0)) else f (float_of_int (c-48))
+			if c = 45 then (0.0 -.(f 0.0)) else (
+				if (c-47)*(58-c)>0 then f (float_of_int (c-48)) else read_float x)
+
 
 
 

@@ -15,5 +15,7 @@ main
 out.s
 *.txt
 .gdb_history
-
+!test/test_order.txt
+test/*.s
+*.ppm
 

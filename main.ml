@@ -5,6 +5,7 @@ open Knorm
 open Closure_conv
 open Virtual
 open Emit_zatsu_x86
+open Debug
 
 (* let _ = Source2ast.s2a "../tes.ml" *)
 
@@ -27,8 +28,12 @@ if argc <= 1 then (
 		)
 	| _ -> raise (Failure "inputfile is not value")  in
 	print_string "parsed"; print_newline ();
-	(* print_string (expr2str tast); *)
-	let ast2 = Type_checker.check tast in
+	print_string (expr2str tast);
+	let ttast = 
+		(ELetRec("@@main",["@@main_var"],tast,
+			(EApp((EVar("@@main"),default_debug_data),[(ETuple([]),default_debug_data)]),default_debug_data)
+		),default_debug_data) in
+	let ast2 = Type_checker.check ttast in
 	print_string "typed";  print_newline ();
 	let kn = Knorm.knorm ast2 in
 	print_string "k-normalized";  print_newline ();

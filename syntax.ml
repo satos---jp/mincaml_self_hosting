@@ -64,13 +64,11 @@ and expr_base =
   | ETuple     of (expr list)
   | ELetTuple  of (name list) * expr * expr
 
- 
 type decl = 
   | DDecl      of (expr -> expr) list
   | DExpr      of expr
 
 let print_name = print_string 
-
 
 let rec expr2str_base astdeb d = 
 	let ast,_ = astdeb in

@@ -18,8 +18,8 @@ let tyvar2str v = Printf.sprintf "'a%d" v
 
 let rec type2str_with_pa t =
         match t with
-        | TyInt | TyBool | TyFloat | TyVar _ -> type2str t
-        | TyFun _ | TyArr _ | TyTuple _ -> "(" ^ (type2str t) ^ ")"
+        | TyInt | TyBool | TyFloat | TyVar _ | TyTuple _ -> type2str t
+        | TyFun _ | TyArr _ -> "(" ^ (type2str t) ^ ")"
 
 and type2str t =
 	match t with
@@ -37,7 +37,7 @@ and type2str t =
 			match ts with
 			| [] -> "()"
 			| x :: xs -> 
-				List.fold_left (fun r -> fun t -> r ^ " * " ^ (type2str_with_pa t)) (type2str_with_pa x) xs
+				"(" ^ (List.fold_left (fun r -> fun t -> r ^ " * " ^ (type2str_with_pa t)) (type2str_with_pa x) xs) ^ ")"
 		)
 
 let print_type t = print_string ((type2str t) ^ "\n")
