@@ -63,20 +63,22 @@ let clos2str (gs,v) =
 	^ (cexp2str v) ^ "\n"
 
 (* ast中のenvにない変数がfvである *)
-let rec get_fvs ast env = 
+let rec get_fvs ast (env : string list) = 
 	let filter vs = List.filter (fun (x,_) -> not (List.mem x env)) vs in
 	(* Printf.printf "Ast ::\n%s\n" (cexp2str ast);
 	Printf.printf "Env :: %s\n" (String.concat "," env); *)
 	match ast with
-	| CConst _ -> []
-	| COp(_,vs) | CTuple vs | CClosure(_,vs) -> filter vs
-	| CIf(_,x,y,e1,e2) -> (filter [x;y]) @ (get_fvs e1 env) @ (get_fvs e2 env)
-	| CLet((x,_),e1,e2) -> (get_fvs e1 env) @ (get_fvs e2 (x :: env))
-	| CApp(f,vs) -> filter (f :: vs)
-	| CLetTuple(vs,tp,e1) -> (filter [tp]) @ (get_fvs e1 ((List.map fst vs) @ env))
-	| CVar x -> (filter [x])
-	| CSelfClosure x -> []
-
+	| KConst _ -> []
+	| KOp(_,vs) | KTuple vs -> filter vs
+	| KIfEq(x,y,e1,e2) | KIfLeq(x,y,e1,e2) -> (filter [x;y]) @ (get_fvs e1 env) @ (get_fvs e2 env)
+	| KLet((x,_),e1,e2) -> (get_fvs e1 env) @ (get_fvs e2 (x :: env))
+	| KLetRec((na,_) as x,vs,e1,e2) -> (
+			(filter [x]) @ (get_fvs e1 (na :: (List.map fst vs) @ env)) @ (get_fvs e2 (na :: env)) 
+			(* 関数名はglobalになるので持っておく *)
+		)
+	| KApp(f,vs) -> filter (f :: vs)
+	| KLetTuple(vs,tp,e1) -> (filter [tp]) @ (get_fvs e1 ((List.map fst vs) @ env))
+	| KVar x -> (filter [x])
 
 let rec unique_name vs =
 	match vs with
@@ -86,41 +88,77 @@ let rec unique_name vs =
 			if List.exists (fun (y,_) -> x = y) txs then txs else (x,dt) :: txs
 
 (*
-envには、現在のglobalになった関数一覧が入っている。
+
+let ...
+  let f p = 
+    let g q = 
+       x 
+
+のとき、fはxをもらう必要がある。
+
+let ...
+	let x = ...
+	let f p = 
+	   x ...
+	let g q = 
+	   f geeg
+
+のとき、gはxをもらう必要がある。
+
+・ fn は e1,e2中に存在するかもなので、fnのクロージャをe1,e2 に作る。
+・ e1,e2中の、globalになるものは、中でクロージャの関数を使っている場合、宣言時にその関数のクロージャを持っておく必要がある。
+・ その関数のクロージャを持つことにより、そのクロージャ作成時に必要な引数を自分で持っておく必要がある(または親がクロージャを渡せばよいか？)
+
+
+let ...
+	let x = ...
+	let f p = 
+	   x ...
+	let g q = 
+	   f ...
+	let h r = 
+		 g ...
+
+のとき、
+gはfのクロージャを引数としてもらう。
+hはgのクロージャを引数としてもらう。
+
+
+
+とりあえず、宣言時にそこにクロージャを発生させて、呼んでいる人には適宜その人のクロージャ引数に追加していくとよさそう？
+
 *)
-let rec remove_closure ast add_cls env = 
+let rec remove_closure ast =
+	let reccall = remove_closure in
 	match ast with
 	| KLetRec((fn,ft),args,e1,e2) -> (
-			let te1 = remove_closure e1 add_cls env in
+			(* 自由変数収集 -> closure変換、が正しそう *)
 			(* te1中に出ている、外側由来のものを集める  *)
-			let fvs = get_fvs te1 (fn :: env @ (List.map fst args) @ global_funcs) in
-			(* fvsのうち、globalsは除いてよい *)
-			let rfvs = unique_name (List.filter (fun (x,_) -> not (List.mem x (List.map (fun ((x,_),_) -> x) !globals))) fvs) in
-			(* 実装面倒なのでとりあえず全部クロージャで。 2つの値を持っておく。 *)
-			(* rfvsにクロージャのための引数一覧が入っていて、これを規約にやっていく *)
+			let fvs = unique_name (get_fvs e1 ((List.map fst args) @ global_funcs)) in
+			(* fvsにクロージャのための引数一覧が入っていて、これを規約にやっていく *)
 			let global_name = gencname () in (* globalでの名前 *)
 			(* これの内側で呼ばれる関数には、とりあえず全てこの処理を施しておく(関数が出現しないものには無駄だが) *)
-			(* クロージャ内に現れる変数は外側も持っておきたい *)
-			let to_add_closure = fun x -> CLet((fn,ft),CClosure((global_name,ft),rfvs),add_cls x) in
+			let to_add_closure = fun x -> CLet((fn,ft),CClosure((global_name,ft),fvs),x) in
+			(* t1を変換する *)
+			let te1 = to_add_closure (remove_closure e1) in
 			(* 再帰呼び出しのため、自身の特殊なクロージャを作る。後々ediで渡す。 *)
-			let tte1 = CLet((fn,ft),CSelfClosure((global_name,ft)),add_cls te1) in
 				(* Printf.printf "name %s :: type %s\n" fn (type2str ft); *)
-				print_string (String.concat " : " (List.map fst rfvs));
-				Printf.printf " %s closfun\n" global_name;
-				globals := ((global_name,ft),(rfvs,args,tte1)) :: !globals;
-				to_add_closure (remove_closure e2 to_add_closure (fn :: env))
+				(* print_string (String.concat " : " (List.map fst rfvs));
+				Printf.printf " :: %s .aka %s\n" global_name fn; *)
+				globals := ((global_name,ft),(fvs,args,te1)) :: !globals;
+				to_add_closure (remove_closure e2)
 		)
 	| KConst(a) -> CConst(a)
 	| KOp(a,b) -> COp(a,b)
-	| KIfEq(a,b,c,d) -> CIf(CmpEq,a,b,remove_closure c add_cls env,remove_closure d add_cls env)
-	| KIfLeq(a,b,c,d) -> CIf(CmpLt,a,b,remove_closure c add_cls env,remove_closure d add_cls env)
-	| KLet((a,t),b,c) -> CLet((a,t),remove_closure b add_cls env,remove_closure c add_cls env) (* ここは、aは入れなくていいはず*)
+	| KIfEq(a,b,c,d) -> CIf(CmpEq,a,b,reccall c,reccall d)
+	| KIfLeq(a,b,c,d) -> CIf(CmpLt,a,b,reccall c,reccall d)
+	| KLet((a,t),b,c) -> CLet((a,t),reccall b,reccall c)
 	| KVar(a) -> CVar(a)
 	| KTuple(a) -> CTuple(a)
-	| KLetTuple(a,b,c) -> CLetTuple(a,b,remove_closure c add_cls env) (* ここも、aは入れなくていいはず*)
+	| KLetTuple(a,b,c) -> CLetTuple(a,b,reccall c)
 	| KApp(a,b) -> CApp(a,b)
 
 let conv ast = 
-	let ta = remove_closure ast (fun x -> x) [] in (!globals,ta)
+	let ta = remove_closure ast in (!globals,ta)
 
 

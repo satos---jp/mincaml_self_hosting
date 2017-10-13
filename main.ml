@@ -27,8 +27,8 @@ if argc <= 1 then (
 			) globasts east 
 		)
 	| _ -> raise (Failure "inputfile is not value")  in
+	(* print_string (expr2str tast); *)
 	print_string "parsed"; print_newline ();
-	print_string (expr2str tast);
 	let ttast = 
 		(ELetRec("@@main",["@@main_var"],tast,
 			(EApp((EVar("@@main"),default_debug_data),[(ETuple([]),default_debug_data)]),default_debug_data)
@@ -38,7 +38,7 @@ if argc <= 1 then (
 	let kn = Knorm.knorm ast2 in
 	print_string "k-normalized";  print_newline ();
 	let cls = Closure_conv.conv kn in
-	print_string (clos2str cls);
+	(* print_string (clos2str cls); *)
 	print_string "closure_converted";  print_newline ();
 	let vrt = Virtual.to_virtual cls in
 	print_string "virtualized";  print_newline ();

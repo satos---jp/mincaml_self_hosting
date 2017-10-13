@@ -27,7 +27,8 @@ let rec read_float x =
 	in
 	let rec f acc = 
 		let n = read_char () in
-			if (n-47)*(58-n)>0 then f (acc*.10.0+.(float_of_int (n-48))) else g 0.1 acc
+			if (n-47)*(58-n)>0 then f (acc*.10.0+.(float_of_int (n-48))) else (
+				if n = 46 then g 0.1 acc else acc)
 	in
 		let c = read_char () in
 			if c = 45 then (0.0 -.(f 0.0)) else (

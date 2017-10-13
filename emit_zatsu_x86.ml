@@ -57,7 +57,6 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 	print_string ("On function " ^ fn ^ "\n");
 	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [ebp%+d]" s p) on_stack)) ^"\n");
 	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [edi%+d]" s p) on_clos)) ^"\n");
-	if fn = "@cls_72" then exit 0 else (); 
 	let na2pt x = (
 		try ("ebp",List.assoc x on_stack)
 		with | Not_found -> 
