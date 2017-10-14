@@ -18,6 +18,6 @@ out.s
 test/*.s
 !test/test_order.txt
 *.ppm
-*.sld
 min-rt.ml
+a
 

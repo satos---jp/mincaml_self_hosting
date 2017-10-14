@@ -275,7 +275,7 @@ let vir2asm (funs,rd) =
 	!constfs ^
 	"section .bss\n" ^
 	"global_heap:\n" ^
-	"\tresb 0x10000000\n" ^
+	"\tresb 0xf0000000\n" ^
 	"section .text\n" ^
 	"global " ^ main_name ^ "\n" ^ 
 	(String.concat "" (List.map func2asm (List.rev funs))) ^	

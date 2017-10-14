@@ -5,6 +5,11 @@ two:
 	dd 2.0
 half:
 	dd 0.5
+	
+half_to_int:
+	dd 0.4999998
+	
+; あまりにも嘘っぽいが
 
 section .text
 	
@@ -39,14 +44,14 @@ int_of_float: ; float -> int
 
 ; int_of_float_pos
 	fld dword [ebp-0x4]
-	fld dword [half]
+	fld dword [half_to_int]
 	fsubp
 	fstp dword [ebp-0x4]
 	jmp int_of_float_exact_zero
 	
 int_of_float_neg:
 	fld dword [ebp-0x4]
-	fld dword [half]
+	fld dword [half_to_int]
 	faddp
 	fstp dword [ebp-0x4]
 
@@ -122,16 +127,16 @@ fneg:
 
 fsqr:
 	fld dword [esp+0x4]
-	fsqrt
+	fld dword [esp+0x4]
+	fmulp
 	fstp dword [esp-0x4]
 	mov eax,[esp-0x4]
 	ret
 
-
 sqrt:
 	fld dword [esp+0x4]
 	fsqrt
-	fistp dword [esp-0x4]
+	fstp dword [esp-0x4]
 	mov eax,[esp-0x4]
 	ret
 
@@ -151,6 +156,7 @@ sin:
 
 atan:
 	fld dword [esp+0x4]
+	fld1
 	fpatan
 	fstp dword [esp-0x4]
 	mov eax,[esp-0x4]
