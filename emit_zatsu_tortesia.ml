@@ -2,8 +2,7 @@ open Virtual
 open Syntax
 open Type_checker
 open Debug
-open Linux_win_diff
-(* とりあえず、雑にx86コードを生成する *)
+(* とりあえず、雑に tortesia コードを生成する *)
 
 let constfs = ref ""
 
@@ -39,8 +38,20 @@ call時にpushしたりする
 
 全体のglobalな値への参照をどないしよう
 全体を let rec g () = ... in g () とすればよさそう？(雑)
+
+
+とりあえず、
+
+r0 :: esp
+r1 :: ebp
+r2 :: esi (ヒープポインタ)
+r3 :: edi (クロージャへのポインタ)
+
+とします。
 *)
 
+
+let main_name = "main"
 
 let func2asm ((fn,_),vs1,vs2,(ops,localvs)) = 
 	(*
@@ -55,17 +66,17 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		(List.map (fun (x,p) -> (x,p+8)) (fst vs2_st)) in
 	let on_clos = fst vs1_st in
 	print_string ("On function " ^ fn ^ "\n");
-	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [ebp%+d]" s p) on_stack)) ^"\n");
-	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [edi%+d]" s p) on_clos)) ^"\n");
+	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [r1%+d]" s p) on_stack)) ^"\n");
+	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [r3%+d]" s p) on_clos)) ^"\n");
 	let na2pt x = (
-		try ("ebp",List.assoc x on_stack)
+		try ("r1",List.assoc x on_stack)
 		with | Not_found -> 
-		try ("edi",List.assoc x on_clos)
+		try ("r3",List.assoc x on_clos)
 		with | Not_found -> ("@" ^ x,-1)
 	) in
 	let pt2s (a,b) = 
 		if String.get a 0 = '@' then String.sub a 1 ((String.length a)-1) else 
-			Printf.sprintf "dword [%s%+d]" a b 
+			Printf.sprintf "[%s%+d]" a b 
 	in
 	let na2s x = pt2s (na2pt x) in
 	let nd2ps (na,_) = na2s na in
@@ -76,38 +87,48 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 			(String.concat "" (List.map (fun (na,nt) ->
 			let (p,l) = na2pt na in
 				nl := !nl + 4;
-				(Printf.sprintf "\tmov eax,%s\n\tmov dword [esi%+d],eax\n" (pt2s (p,l)) (!nl-4))
+				(Printf.sprintf "\tlw r4,%s\n\tsw [r2%+d],r4\n" (pt2s (p,l)) (!nl-4))
 			) vs)) in
-		cs ^ (Printf.sprintf "\tadd esi,%d\n" !nl)
+		cs ^ (Printf.sprintf "\taddi r4,%d\n" !nl)
 	) in
 	let prologue = 
-		(Printf.sprintf "\tpush ebp\n\tmov ebp,esp\n\tsub esp,%d\n" (snd lvs_st)) ^	
-		(if fn = main_name then "\tmov esi,global_heap\n" else "")
+		"\tsubi r0,4\n" ^ 
+		"\tsw [r0],lr\n" ^ 
+		(Printf.sprintf "\tsubi r0,4\n\tsw [r0],r1\n\tmov r1,r0\n\tsubi r0,%d\n" (snd lvs_st)) ^	
+		(if fn = main_name then "\tmov r2,global_heap\n" else "")
 	in
-	let epilogue = (Printf.sprintf "\tadd esp,%d\n\tpop ebp\n\tret\n" (snd lvs_st)) in
-	
+	let epilogue = (
+		(Printf.sprintf "\taddi r0,%d\n\taddi r0,4\n\tlw r1,[r0]\n" (snd lvs_st)) ^
+		"\taddi r0,4\n" ^ 
+		"\tlw r5,[r0]\n" ^
+		"\tjr r5\n"
+	)
+	in
 	let mova2b nad nbd = 
-			(Printf.sprintf "\tmov eax,%s\n" (nd2ps nbd)) ^
-			(Printf.sprintf "\tmov %s,eax\n" (nd2ps nad)) ^
+			(Printf.sprintf "\tlw r4,%s\n" (nd2ps nbd)) ^
+			(Printf.sprintf "\tsw %s,r4\n" (nd2ps nad)) ^
 			"; " ^ (nd2ds nad) ^ " ::<= " ^ (nd2ds nbd) ^ "\n"
 	in
 	let unopr2s nr na s = 
-		(Printf.sprintf "\tmov eax,%s\n" (nd2ps na)) ^
+		(Printf.sprintf "\tlw r4,%s\n" (nd2ps na)) ^
 		s ^ 
-		(Printf.sprintf "\tmov %s,eax\n" (nd2ps nr))
+		(Printf.sprintf "\tsw %s,r4\n" (nd2ps nr))
 	in
 	let biopr2s nr na nb s = 
-		(Printf.sprintf "\tmov ebx,%s\n" (nd2ps nb)) ^
+		(Printf.sprintf "\tlw r5,%s\n" (nd2ps nb)) ^
 		(unopr2s nr na s)
 	in
 	let fbiopr2s nr na nb s = 
+		raise (Failure "fbiopr2s is not impremented yet")
+(*
 		(Printf.sprintf "\tfld %s\n" (nd2ps na)) ^
 		(Printf.sprintf "\tfld %s\n" (nd2ps nb)) ^
 		s ^ 
 		(Printf.sprintf "\tfstp %s\n" (nd2ps nr))
+*)
 	in
 	let triopr2s nr na nb nc s = 
-		(Printf.sprintf "\tmov ecx,%s\n" (nd2ps nc)) ^
+		(Printf.sprintf "\tlw r6,%s\n" (nd2ps nc)) ^
 		(biopr2s nr na nb s)
 	in
 	
@@ -115,86 +136,101 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 	(String.concat "" (List.map (fun op -> 
 		match op with
 		| OpMovi((na,(t,d)),CInt(v)) -> assert (t=TyInt); 
-			(Printf.sprintf "\tmov %s,%d\n" (na2s na) v) ^ "; " ^ (debug_data2simple d) ^ "\n"
+			(Printf.sprintf "\tli r4,%d\n" v) ^ 
+			(Printf.sprintf "\tlw %s,r4\n" (na2s na)) ^ 
+			"; " ^ (debug_data2simple d) ^ "\n"
 		| OpMovi((na,(t,d)),CBool(v)) -> assert (t=TyBool); 
-			(Printf.sprintf "\tmov %s,%d\n" (na2s na) (if v then 1 else 0)) ^ "; " ^ (debug_data2simple d) ^ "\n"
+			(Printf.sprintf "\tli r4,%d\n" (if v then 1 else 0)) ^
+			(Printf.sprintf "\tlw %s,r4\n" (na2s na)) ^
+			"; " ^ (debug_data2simple d) ^ "\n"
+		| OpMovi(_,CFloat(v)) -> raise (Failure "Movi Cfloat is not implemented yet")
+(*
 		| OpMovi((na,(t,d)),CFloat(v)) -> assert (t=TyFloat); (
 				let tag = gen_const () in
 					constfs := (!constfs) ^ (Printf.sprintf "%s:\n\tdd %f\n" tag v);
 					Printf.sprintf "\tmov eax,[%s]\n\tmov %s,eax\n" tag (na2s na)
 			)
+*)
 		| OpMov(((na,(t1,d1)) as nrd),((nb,(t2,d2)) as nad)) -> assert (t1=t2); (mova2b nrd nad) 
 		| OpLabel x -> x ^ ":\n"
 		| OpJcnd(ct,(na,_),(nb,_),la) -> (
-				(Printf.sprintf "\tmov eax,%s\n\tmov ebx,%s\n" (na2s na) (na2s nb)) ^ 
-				(Printf.sprintf "\tcmp eax,ebx\n\t%s %s\n" (match ct with CmpEq -> "jne" | CmpLt -> "jl") la)
+				(Printf.sprintf "\tlw r4,%s\n\tlw r5,%s\n" (na2s na) (na2s nb)) ^ 
+				(Printf.sprintf "\t%s r4,r5,%s\n" (match ct with CmpEq -> "jne" | CmpLt -> "jl") la)
 			)
 		| OpJmp(la) -> Printf.sprintf "\tjmp %s\n" la
 		| OpDestTuple(vs,nad) -> (
 				let nl = ref 0 in
-				(Printf.sprintf "\tmov eax,%s\n" (nd2ps nad)) ^ 
+				(Printf.sprintf "\tsw r4,%s\n" (nd2ps nad)) ^ 
 				(String.concat "" (List.map (fun (na,nt) -> 
 					let (p,l) = na2pt na in
 						nl := !nl + 4;
-						(Printf.sprintf "\tmov ebx,dword [eax%+d]\n\tmov %s,ebx\n" (!nl-4) (pt2s (p,l)))
+						(Printf.sprintf "\tlw r5,[r4%+d]\n\tsw %s,r5\n" (!nl-4) (pt2s (p,l)))
 					) vs)) ^
 				"; " ^ (nd2ds nad) ^ "\n"
 			)
 		| OpMakeTuple(nad,vs) -> (
-				(Printf.sprintf "\tmov %s,esi\n" (nd2ps nad)) ^ 
+				(Printf.sprintf "\tlw %s,r2\n" (nd2ps nad)) ^ 
 				(make_vs_on_heap vs) ^ 
 				"; " ^ (nd2ds nad) ^ "\n"
 			)
 		| OpMakeCls(nad,((fn,_) as fnd),vs) -> (
-				"\tmov edx,esi\n" ^ 
+				"\tmov r5,r2\n" ^ 
 				(make_vs_on_heap vs) ^
-				"\tmov dword [esi+4],edx\n" ^ 
-				(Printf.sprintf "\tmov dword [esi],%s\n" fn) ^ 
-				(Printf.sprintf "\tmov %s,esi\n" (nd2ps nad)) ^ 
-				"\tadd esi,8\n"^
+				"\tsw [r2+4],r5\n" ^ 
+				(Printf.sprintf "\tli r4,%s\n" fn) ^ 
+				"\tsw [r2],r4\n" ^ 
+				(Printf.sprintf "\tlw %s,r2\n" (nd2ps nad)) ^ 
+				"\taddi r2,8\n"^
 				"; " ^ (nd2ds nad) ^ " "^ (nd2ds fnd) ^ "\n"
 			)
 		| OpSelfCls(nad,((fn,_) as fnd)) -> (
-				(Printf.sprintf "\tmov dword [esi],%s\n" fn) ^ 
-				"\tmov dword [esi+4],-1\n" ^ 
-				(Printf.sprintf "\tmov %s,esi\n" (nd2ps nad)) ^ 
-				"\tadd esi,8\n" ^
+				(Printf.sprintf "\tli r4,%s\n" fn) ^ 
+				"\tsw [r2],r4\n" ^
+				"\tli r4,-1\n" ^
+				"\tlw [r2+4],r4\n" ^ 
+				(Printf.sprintf "\tlw %s,r2\n" (nd2ps nad)) ^ 
+				"\taddi r2,8\n" ^
 				"; " ^ (nd2ds nad) ^ " " ^ (nd2ds fnd) ^ "\n"
 			)
 		| OpApp(nad,((fn,_) as fnd),vs) -> (
 				let nl = ref 0 in
 				let s = 
-				"\tpush edi\n" ^
+				"\tsubi r0,4\n" ^
+				"\tsw [r0],r3\n" ^
 				(String.concat "" (List.map (fun nad -> 
 					nl := !nl + 4;
-					(Printf.sprintf "\tpush dword %s\n" (nd2ps nad))
+					"\tsubi r0,4\n" ^
+					(Printf.sprintf "\tsw [r0],%s\n" (nd2ps nad))
 				) (List.rev vs))) ^ (* 逆にpushする *)
 				(let rfn = (na2s fn) in
 					if List.mem fn global_funcs then 
-					(Printf.sprintf "\tcall %s\n" fn)
+					(Printf.sprintf "\tj %s\n" fn)
 				else 
-					((Printf.sprintf "\tmov eax,%s\n" rfn) ^ 
-					"\tmov edi,[eax+4]\n" ^ 
-					"\tcall [eax]\n")) ^
-				(Printf.sprintf "\tmov %s,eax\n" (nd2ps nad))
+					((Printf.sprintf "\tlw r4,%s\n" rfn) ^ 
+					"\tlw r3,[r4+4]\n" ^ 
+					"\tlw r4,[r4]\n" ^ 
+					"\tjr r4\n")) ^
+				(Printf.sprintf "\tlw %s,r4\n" (nd2ps nad))
 				in (* こうしないと、nlがアップデートされない *)
 				s ^ 
-				(Printf.sprintf "\tadd esp,%d\n" !nl) ^
-				"\tpop edi\n" ^
+				(Printf.sprintf "\taddi r0,%d\n" !nl) ^
+				"\tlw r3,[r0]\n" ^
+				"\tsubi r0,4\n" ^
 				"; " ^ (nd2ds nad) ^ " " ^ (nd2ds fnd) ^ "\n"
 			)
 		| OpRet((na,nt)) -> (
 				(let (p,l) = na2pt na in
-					(Printf.sprintf "\tmov eax,%s\n" (pt2s (p,l)))
+					(Printf.sprintf "\tlw r4,%s\n" (pt2s (p,l)))
 					) ^
 				epilogue
 			)
 		| OpMainRet -> (
-				"\tmov eax,0\n" ^
+				"\tli r4,0\n" ^
 				epilogue
 			)
 		| OpOpr(nrd,Osemi2,[_;nbd]) -> mova2b nrd nbd
 		| OpOpr(nrd,Osemi1,[nad]) -> mova2b nrd nad
+(*
 		| OpOpr(nrd,op,[nad]) -> (
 				let os = op2str op in
 				(unopr2s nrd nad (
@@ -205,31 +241,35 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 			 	)) ^
 				"; " ^ (nd2ds nrd) ^ " ::= " ^ os ^ " " ^ (nd2ds nad) ^ "\n"
 			)
+*)
 		| OpOpr(nrd,op,[nad;nbd]) -> (
 				let os = op2str op in
 				(if List.mem op [Ofadd;Ofsub;Ofmul;Ofdiv] then
 					fbiopr2s nrd nad nbd (
 						match op with
+					(*
 						| Ofadd -> "\tfaddp\n"
 						| Ofsub -> "\tfsubp\n"
 						| Ofmul -> "\tfmulp\n"
 						| Ofdiv -> "\tfdivp\n"
+					*)
 						| _ -> raise (Failure (Printf.sprintf "Operation %s is not float binary operation" os))
 					) 
 				else
 					biopr2s nrd nad nbd (
 						match op with
-						| Oadd -> "\tadd eax,ebx\n"
-						| Osub -> "\tsub eax,ebx\n"
+						| Oadd -> "\tadd r4,r5\n"
+						| Osub -> "\tsub r4,r5\n"
+					(*
 						| Omul -> "\tmul ebx\n"
 						| Odiv -> "\txor edx,edx\n\tdiv ebx\n"
 						| Olt  -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetl cl\n\tmov eax,ecx\n"
 						| Oleq -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetle cl\n\tmov eax,ecx\n"
 						| Ogt  -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetg cl\n\tmov eax,ecx\n"
-					 	| Ogeq -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetge cl\n\tmov eax,ecx\n"
-					 	| Oeq  -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsete cl\n\tmov eax,ecx\n"
-					 	| Oneq -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetne cl\n\tmov eax,ecx\n"
-					 	| OArrCrt -> (
+						| Ogeq -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetge cl\n\tmov eax,ecx\n"
+						| Oeq  -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsete cl\n\tmov eax,ecx\n"
+						| Oneq -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetne cl\n\tmov eax,ecx\n"
+						| OArrCrt -> (
 								let la = genlabel () in
 								let lb = genlabel () in
 								"\tmov edx,esi\n" ^
@@ -244,6 +284,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 								"\tmov eax,edx\n"
 					 		)
 					 	| OArrRead -> "\tmov eax,dword [eax+4*ebx]\n"
+					 *)
 					 	| _ -> raise (Failure (Printf.sprintf "Operation %s is not unfloat binary operation" os))
 					)
 				) ^
@@ -253,7 +294,9 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 				let os = op2str op in
 				(triopr2s nrd nad nbd ncd (
 					match op with
+				(*
 					| OArrWrite -> "\tmov dword [eax+4*ebx],ecx\n"
+				*)
 					| _ -> raise (Failure (Printf.sprintf "Operation %s is not trinary operation" os))
 				)) ^
 				"; " ^ (nd2ds nrd) ^ " ::= " ^ os ^ " " ^ (nd2ds nad) ^ " " ^ (nd2ds nbd) ^ " " ^ (nd2ds ncd) ^ "\n"
@@ -268,9 +311,6 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 *)
 
 let vir2asm (funs,rd) = 
-	"BITS 32\n" ^
-	"%include \"" ^ io_lib_name ^ "\"\n" ^
-	"%include \"lib.s\"\n" ^
 	"section .data\n" ^
 	!constfs ^
 	"section .bss\n" ^

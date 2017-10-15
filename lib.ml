@@ -1,3 +1,4 @@
+(*
 let false = 0
 let rec mod_ a b = a-(a/b)*b
 let rec print_int_base x = 
@@ -34,6 +35,6 @@ let rec read_float x =
 			if c = 45 then (0.0 -.(f 0.0)) else (
 				if (c-47)*(58-c)>0 then f (float_of_int (c-48)) else read_float x)
 
-
+*)
 
 
