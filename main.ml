@@ -43,15 +43,15 @@ if argc <= 1 then (
 	print_string "closure_converted";  print_newline ();
 	let vrt = Virtual.to_virtual cls in
 	print_string "virtualized";  print_newline ();
-(*
 	let asm = Emit_zatsu_tortesia.vir2asm vrt in
 	print_string asm;
-*)
+(*
 	let asm = Emit_zatsu_x86.vir2asm vrt in
 	print_string asm;
 	let oc = open_out "out.s" in
 	output_string oc asm;
 	close_out oc;
+*)
 (*
 nasm lib.s -f elf32 -g -o lib.o; nasm out.s -f elf32 -g -o out.o; gcc -m32 out.o lib.o
 *)

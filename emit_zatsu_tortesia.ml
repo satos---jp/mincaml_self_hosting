@@ -137,11 +137,11 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		match op with
 		| OpMovi((na,(t,d)),CInt(v)) -> assert (t=TyInt); 
 			(Printf.sprintf "\tli r4,%d\n" v) ^ 
-			(Printf.sprintf "\tlw %s,r4\n" (na2s na)) ^ 
+			(Printf.sprintf "\tsw %s,r4\n" (na2s na)) ^ 
 			"; " ^ (debug_data2simple d) ^ "\n"
 		| OpMovi((na,(t,d)),CBool(v)) -> assert (t=TyBool); 
 			(Printf.sprintf "\tli r4,%d\n" (if v then 1 else 0)) ^
-			(Printf.sprintf "\tlw %s,r4\n" (na2s na)) ^
+			(Printf.sprintf "\tsw %s,r4\n" (na2s na)) ^
 			"; " ^ (debug_data2simple d) ^ "\n"
 		| OpMovi(_,CFloat(v)) -> raise (Failure "Movi Cfloat is not implemented yet")
 (*
@@ -160,7 +160,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		| OpJmp(la) -> Printf.sprintf "\tjmp %s\n" la
 		| OpDestTuple(vs,nad) -> (
 				let nl = ref 0 in
-				(Printf.sprintf "\tsw r4,%s\n" (nd2ps nad)) ^ 
+				(Printf.sprintf "\tlw r4,%s\n" (nd2ps nad)) ^ 
 				(String.concat "" (List.map (fun (na,nt) -> 
 					let (p,l) = na2pt na in
 						nl := !nl + 4;
@@ -169,7 +169,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 				"; " ^ (nd2ds nad) ^ "\n"
 			)
 		| OpMakeTuple(nad,vs) -> (
-				(Printf.sprintf "\tlw %s,r2\n" (nd2ps nad)) ^ 
+				(Printf.sprintf "\tsw %s,r2\n" (nd2ps nad)) ^ 
 				(make_vs_on_heap vs) ^ 
 				"; " ^ (nd2ds nad) ^ "\n"
 			)
@@ -179,7 +179,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 				"\tsw [r2+4],r5\n" ^ 
 				(Printf.sprintf "\tli r4,%s\n" fn) ^ 
 				"\tsw [r2],r4\n" ^ 
-				(Printf.sprintf "\tlw %s,r2\n" (nd2ps nad)) ^ 
+				(Printf.sprintf "\tsw %s,r2\n" (nd2ps nad)) ^ 
 				"\taddi r2,8\n"^
 				"; " ^ (nd2ds nad) ^ " "^ (nd2ds fnd) ^ "\n"
 			)
@@ -187,8 +187,8 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 				(Printf.sprintf "\tli r4,%s\n" fn) ^ 
 				"\tsw [r2],r4\n" ^
 				"\tli r4,-1\n" ^
-				"\tlw [r2+4],r4\n" ^ 
-				(Printf.sprintf "\tlw %s,r2\n" (nd2ps nad)) ^ 
+				"\tsw [r2+4],r4\n" ^ 
+				(Printf.sprintf "\tsw %s,r2\n" (nd2ps nad)) ^ 
 				"\taddi r2,8\n" ^
 				"; " ^ (nd2ds nad) ^ " " ^ (nd2ds fnd) ^ "\n"
 			)
@@ -210,7 +210,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 					"\tlw r3,[r4+4]\n" ^ 
 					"\tlw r4,[r4]\n" ^ 
 					"\tjr r4\n")) ^
-				(Printf.sprintf "\tlw %s,r4\n" (nd2ps nad))
+				(Printf.sprintf "\tsw %s,r4\n" (nd2ps nad))
 				in (* こうしないと、nlがアップデートされない *)
 				s ^ 
 				(Printf.sprintf "\taddi r0,%d\n" !nl) ^
@@ -258,8 +258,8 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 				else
 					biopr2s nrd nad nbd (
 						match op with
-						| Oadd -> "\tadd r4,r5\n"
-						| Osub -> "\tsub r4,r5\n"
+						| Oadd -> "\tadd r4,r4,r5\n"
+						| Osub -> "\tsub r4,r4,r5\n"
 					(*
 						| Omul -> "\tmul ebx\n"
 						| Odiv -> "\txor edx,edx\n\tdiv ebx\n"
