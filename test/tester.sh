@@ -11,6 +11,9 @@ cp ../libio_linux.s ./
 
 cat test_order.txt | while read file
 do
+	if [ -z $file ]; then 
+		break
+	fi
 	echo "---------------" $file "----------------"
 	cat $file
 	cat test_header.ml > tmp.ml

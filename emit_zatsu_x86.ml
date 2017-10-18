@@ -123,7 +123,11 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 					constfs := (!constfs) ^ (Printf.sprintf "%s:\n\tdd %f\n" tag v);
 					Printf.sprintf "\tmov eax,[%s]\n\tmov %s,eax\n" tag (na2s na)
 			)
-		| OpMov(((na,(t1,d1)) as nrd),((nb,(t2,d2)) as nad)) -> assert (t1=t2); (mova2b nrd nad) 
+		| OpMov(((n1,(t1,d1)) as nrd),((n2,(t2,d2)) as nad)) -> (
+				if t1 <> t2 then raise (Failure (Printf.sprintf 
+					"Type mismatch move to %s (%s) : %s from %s (%s) : %s" n1 (debug_data2simple d1) (type2str t1) n2 (debug_data2simple d2) (type2str t2))) else
+				(mova2b nrd nad) 
+			)
 		| OpLabel x -> x ^ ":\n"
 		| OpJcnd(ct,(na,_),(nb,_),la) -> (
 				(Printf.sprintf "\tmov eax,%s\n\tmov ebx,%s\n" (na2s na) (na2s nb)) ^ 

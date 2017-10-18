@@ -70,7 +70,7 @@ let rec get_fvs ast (env : string list) =
 	match ast with
 	| KConst _ -> []
 	| KOp(_,vs) | KTuple vs -> filter vs
-	| KIfEq(x,y,e1,e2) | KIfLeq(x,y,e1,e2) -> (filter [x;y]) @ (get_fvs e1 env) @ (get_fvs e2 env)
+	| KIf(_,x,y,e1,e2) -> (filter [x;y]) @ (get_fvs e1 env) @ (get_fvs e2 env)
 	| KLet((x,_),e1,e2) -> (get_fvs e1 env) @ (get_fvs e2 (x :: env))
 	| KLetRec((na,_) as x,vs,e1,e2) -> (
 			(filter [x]) @ (get_fvs e1 (na :: (List.map fst vs) @ env)) @ (get_fvs e2 (na :: env)) 
@@ -150,8 +150,7 @@ let rec remove_closure ast =
 		)
 	| KConst(a) -> CConst(a)
 	| KOp(a,b) -> COp(a,b)
-	| KIfEq(a,b,c,d) -> CIf(CmpEq,a,b,reccall c,reccall d)
-	| KIfLeq(a,b,c,d) -> CIf(CmpLt,a,b,reccall c,reccall d)
+	| KIf(cmp,a,b,c,d) -> CIf(cmp,a,b,reccall c,reccall d)
 	| KLet((a,t),b,c) -> CLet((a,t),reccall b,reccall c)
 	| KVar(a) -> CVar(a)
 	| KTuple(a) -> CTuple(a)

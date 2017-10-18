@@ -6,7 +6,7 @@ open Debug
 
 let constfs = ref ""
 
-let gen_const = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@const_%d" !c)
+let gen_const = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@const_$%d" !c)
 
 
 let vs2stacks vs = 
@@ -42,10 +42,10 @@ call時にpushしたりする
 
 とりあえず、
 
-r0 :: esp
-r1 :: ebp
-r2 :: esi (ヒープポインタ)
-r3 :: edi (クロージャへのポインタ)
+r1 :: esp
+r2 :: ebp
+r3 :: esi (ヒープポインタ)
+r4 :: edi (クロージャへのポインタ)
 
 とします。
 *)
@@ -66,17 +66,17 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		(List.map (fun (x,p) -> (x,p+8)) (fst vs2_st)) in
 	let on_clos = fst vs1_st in
 	print_string ("On function " ^ fn ^ "\n");
-	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [r1%+d]" s p) on_stack)) ^"\n");
-	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [r3%+d]" s p) on_clos)) ^"\n");
+	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [r2$%d]" s p) on_stack)) ^"\n");
+	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [r4$%d]" s p) on_clos)) ^"\n");
 	let na2pt x = (
-		try ("r1",List.assoc x on_stack)
+		try ("r2",List.assoc x on_stack)
 		with | Not_found -> 
-		try ("r3",List.assoc x on_clos)
+		try ("r4",List.assoc x on_clos)
 		with | Not_found -> ("@" ^ x,-1)
 	) in
 	let pt2s (a,b) = 
 		if String.get a 0 = '@' then String.sub a 1 ((String.length a)-1) else 
-			Printf.sprintf "[%s%+d]" a b 
+			Printf.sprintf "%s,$%d" a b 
 	in
 	let na2s x = pt2s (na2pt x) in
 	let nd2ps (na,_) = na2s na in
@@ -87,35 +87,33 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 			(String.concat "" (List.map (fun (na,nt) ->
 			let (p,l) = na2pt na in
 				nl := !nl + 4;
-				(Printf.sprintf "\tlw r4,%s\n\tsw [r2%+d],r4\n" (pt2s (p,l)) (!nl-4))
+				(Printf.sprintf "\tlw r5,%s\n\tsw r5,r3,$%d\n" (pt2s (p,l)) (!nl-4))
 			) vs)) in
-		cs ^ (Printf.sprintf "\taddi r4,%d\n" !nl)
+		cs ^ (Printf.sprintf "\taddi r5,r5,$%d\n" !nl)
 	) in
 	let prologue = 
-		"\tsubi r0,4\n" ^ 
-		"\tsw [r0],lr\n" ^ 
-		(Printf.sprintf "\tsubi r0,4\n\tsw [r0],r1\n\tmov r1,r0\n\tsubi r0,%d\n" (snd lvs_st)) ^	
-		(if fn = main_name then "\tmov r2,global_heap\n" else "")
+		"\tmflr r7\n" ^ 
+		"\tpush r7\n" ^ 
+		(Printf.sprintf "\tpush r2\n\tmov r2,r1\n\tsubi r1,r1,$%d\n" (snd lvs_st))
 	in
 	let epilogue = (
-		(Printf.sprintf "\taddi r0,%d\n\taddi r0,4\n\tlw r1,[r0]\n" (snd lvs_st)) ^
-		"\taddi r0,4\n" ^ 
-		"\tlw r5,[r0]\n" ^
-		"\tjr r5\n"
+		(Printf.sprintf "\taddi r1,r1,$%d\n\tpop r2\n" (snd lvs_st)) ^
+		"\tpop r6\n" ^ 
+		"\tjr r6\n"
 	)
 	in
 	let mova2b nad nbd = 
-			(Printf.sprintf "\tlw r4,%s\n" (nd2ps nbd)) ^
-			(Printf.sprintf "\tsw %s,r4\n" (nd2ps nad)) ^
+			(Printf.sprintf "\tlw r5,%s\n" (nd2ps nbd)) ^
+			(Printf.sprintf "\tsw r5,%s\n" (nd2ps nad)) ^
 			"; " ^ (nd2ds nad) ^ " ::<= " ^ (nd2ds nbd) ^ "\n"
 	in
 	let unopr2s nr na s = 
-		(Printf.sprintf "\tlw r4,%s\n" (nd2ps na)) ^
+		(Printf.sprintf "\tlw r5,%s\n" (nd2ps na)) ^
 		s ^ 
-		(Printf.sprintf "\tsw %s,r4\n" (nd2ps nr))
+		(Printf.sprintf "\tsw r5,%s\n" (nd2ps nr))
 	in
 	let biopr2s nr na nb s = 
-		(Printf.sprintf "\tlw r5,%s\n" (nd2ps nb)) ^
+		(Printf.sprintf "\tlw r6,%s\n" (nd2ps nb)) ^
 		(unopr2s nr na s)
 	in
 	let fbiopr2s nr na nb s = 
@@ -128,7 +126,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 *)
 	in
 	let triopr2s nr na nb nc s = 
-		(Printf.sprintf "\tlw r6,%s\n" (nd2ps nc)) ^
+		(Printf.sprintf "\tlw r7,%s\n" (nd2ps nc)) ^
 		(biopr2s nr na nb s)
 	in
 	
@@ -136,12 +134,12 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 	(String.concat "" (List.map (fun op -> 
 		match op with
 		| OpMovi((na,(t,d)),CInt(v)) -> assert (t=TyInt); 
-			(Printf.sprintf "\tli r4,%d\n" v) ^ 
-			(Printf.sprintf "\tsw %s,r4\n" (na2s na)) ^ 
+			(Printf.sprintf "\tli r5,$%d\n" v) ^ 
+			(Printf.sprintf "\tsw r5,%s\n" (na2s na)) ^ 
 			"; " ^ (debug_data2simple d) ^ "\n"
 		| OpMovi((na,(t,d)),CBool(v)) -> assert (t=TyBool); 
-			(Printf.sprintf "\tli r4,%d\n" (if v then 1 else 0)) ^
-			(Printf.sprintf "\tsw %s,r4\n" (na2s na)) ^
+			(Printf.sprintf "\tli r5,$%d\n" (if v then 1 else 0)) ^
+			(Printf.sprintf "\tsw r5,%s\n" (na2s na)) ^
 			"; " ^ (debug_data2simple d) ^ "\n"
 		| OpMovi(_,CFloat(v)) -> raise (Failure "Movi Cfloat is not implemented yet")
 (*
@@ -154,78 +152,76 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		| OpMov(((na,(t1,d1)) as nrd),((nb,(t2,d2)) as nad)) -> assert (t1=t2); (mova2b nrd nad) 
 		| OpLabel x -> x ^ ":\n"
 		| OpJcnd(ct,(na,_),(nb,_),la) -> (
-				(Printf.sprintf "\tlw r4,%s\n\tlw r5,%s\n" (na2s na) (na2s nb)) ^ 
-				(Printf.sprintf "\t%s r4,r5,%s\n" (match ct with CmpEq -> "jne" | CmpLt -> "jl") la)
+				(Printf.sprintf "\tlw r5,%s\n\tlw r6,%s\n" (na2s na) (na2s nb)) ^ 
+				(Printf.sprintf "\t%s r5,r6,%s\n" (match ct with CmpEq -> "jne" | CmpLt -> "jl") la)
 			)
 		| OpJmp(la) -> Printf.sprintf "\tjmp %s\n" la
 		| OpDestTuple(vs,nad) -> (
 				let nl = ref 0 in
-				(Printf.sprintf "\tlw r4,%s\n" (nd2ps nad)) ^ 
+				(Printf.sprintf "\tlw r5,%s\n" (nd2ps nad)) ^ 
 				(String.concat "" (List.map (fun (na,nt) -> 
 					let (p,l) = na2pt na in
 						nl := !nl + 4;
-						(Printf.sprintf "\tlw r5,[r4%+d]\n\tsw %s,r5\n" (!nl-4) (pt2s (p,l)))
+						(Printf.sprintf "\tlw r6,r5,$%d\n\tsw r6,%s\n" (!nl-4) (pt2s (p,l)))
 					) vs)) ^
 				"; " ^ (nd2ds nad) ^ "\n"
 			)
 		| OpMakeTuple(nad,vs) -> (
-				(Printf.sprintf "\tsw %s,r2\n" (nd2ps nad)) ^ 
+				(Printf.sprintf "\tsw r3,%s\n" (nd2ps nad)) ^ 
 				(make_vs_on_heap vs) ^ 
 				"; " ^ (nd2ds nad) ^ "\n"
 			)
 		| OpMakeCls(nad,((fn,_) as fnd),vs) -> (
-				"\tmov r5,r2\n" ^ 
+				"\tmov r6,r3\n" ^ 
 				(make_vs_on_heap vs) ^
-				"\tsw [r2+4],r5\n" ^ 
-				(Printf.sprintf "\tli r4,%s\n" fn) ^ 
-				"\tsw [r2],r4\n" ^ 
-				(Printf.sprintf "\tsw %s,r2\n" (nd2ps nad)) ^ 
-				"\taddi r2,8\n"^
+				"\tsw r6,r3,$4\n" ^ 
+				(Printf.sprintf "\tli r5,%s\n" fn) ^ 
+				"\tsw r5,r3,$0\n" ^ 
+				(Printf.sprintf "\tsw r3,%s\n" (nd2ps nad)) ^ 
+				"\taddi r3,r3,$8\n"^
 				"; " ^ (nd2ds nad) ^ " "^ (nd2ds fnd) ^ "\n"
 			)
 		| OpSelfCls(nad,((fn,_) as fnd)) -> (
-				(Printf.sprintf "\tli r4,%s\n" fn) ^ 
-				"\tsw [r2],r4\n" ^
-				"\tli r4,-1\n" ^
-				"\tsw [r2+4],r4\n" ^ 
-				(Printf.sprintf "\tsw %s,r2\n" (nd2ps nad)) ^ 
-				"\taddi r2,8\n" ^
+				(Printf.sprintf "\tli r5,%s\n" fn) ^ 
+				"\tsw r5,r3,$0\n" ^
+				"\tli r5,$-1\n" ^
+				"\tsw r5,r3,$4\n" ^ 
+				(Printf.sprintf "\tsw r3,%s\n" (nd2ps nad)) ^ 
+				"\taddi r3,r3,$8\n" ^
 				"; " ^ (nd2ds nad) ^ " " ^ (nd2ds fnd) ^ "\n"
 			)
 		| OpApp(nad,((fn,_) as fnd),vs) -> (
 				let nl = ref 0 in
 				let s = 
-				"\tsubi r0,4\n" ^
-				"\tsw [r0],r3\n" ^
+				"\tpush r4\n" ^
 				(String.concat "" (List.map (fun nad -> 
 					nl := !nl + 4;
-					"\tsubi r0,4\n" ^
-					(Printf.sprintf "\tsw [r0],%s\n" (nd2ps nad))
+					(Printf.sprintf "\tlw r5,%s\n" (nd2ps nad)) ^
+					"\tpush r5\n"
 				) (List.rev vs))) ^ (* 逆にpushする *)
 				(let rfn = (na2s fn) in
 					if List.mem fn global_funcs then 
-					(Printf.sprintf "\tj %s\n" fn)
+					(Printf.sprintf "\tjal %s\n" fn)
 				else 
-					((Printf.sprintf "\tlw r4,%s\n" rfn) ^ 
-					"\tlw r3,[r4+4]\n" ^ 
-					"\tlw r4,[r4]\n" ^ 
-					"\tjr r4\n")) ^
-				(Printf.sprintf "\tsw %s,r4\n" (nd2ps nad))
+					((Printf.sprintf "\tlw r5,%s\n" rfn) ^ 
+					"\tlw r4,r5,$4\n" ^ 
+					"\tlw r5,r5,$0\n" ^ 
+					"\tjalr r5\n")) ^ 
+				(Printf.sprintf "\tlw r5,%s\n" (nd2ps nad))
 				in (* こうしないと、nlがアップデートされない *)
 				s ^ 
-				(Printf.sprintf "\taddi r0,%d\n" !nl) ^
-				"\tlw r3,[r0]\n" ^
-				"\tsubi r0,4\n" ^
+				(Printf.sprintf "\taddi r1,r1,$%d\n" !nl) ^
+				"\tpop r4\n" ^
 				"; " ^ (nd2ds nad) ^ " " ^ (nd2ds fnd) ^ "\n"
 			)
 		| OpRet((na,nt)) -> (
 				(let (p,l) = na2pt na in
-					(Printf.sprintf "\tlw r4,%s\n" (pt2s (p,l)))
+					(Printf.sprintf "\tlw r5,%s\n" (pt2s (p,l)))
 					) ^
 				epilogue
 			)
 		| OpMainRet -> (
-				"\tli r4,0\n" ^
+				"\tli r5,$0\n" ^
 				epilogue
 			)
 		| OpOpr(nrd,Osemi2,[_;nbd]) -> mova2b nrd nbd
@@ -258,8 +254,8 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 				else
 					biopr2s nrd nad nbd (
 						match op with
-						| Oadd -> "\tadd r4,r4,r5\n"
-						| Osub -> "\tsub r4,r4,r5\n"
+						| Oadd -> "\tadd r5,r5,r6\n"
+						| Osub -> "\tsub r5,r5,r6\n"
 					(*
 						| Omul -> "\tmul ebx\n"
 						| Odiv -> "\txor edx,edx\n\tdiv ebx\n"
@@ -301,7 +297,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 				)) ^
 				"; " ^ (nd2ds nrd) ^ " ::= " ^ os ^ " " ^ (nd2ds nad) ^ " " ^ (nd2ds nbd) ^ " " ^ (nd2ds ncd) ^ "\n"
 			)
-		| OpOpr(_,x,vs) -> raise (Failure (Printf.sprintf "Operation %s with %d argument in not defined yet" (op2str x) (List.length vs)))
+		| OpOpr(_,x,vs) -> raise (Failure (Printf.sprintf "Operation %s with $%d argument in not defined yet" (op2str x) (List.length vs)))
 	) ops))
 
 (*
