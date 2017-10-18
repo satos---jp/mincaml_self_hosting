@@ -6,10 +6,9 @@ two:
 half:
 	dd 0.5
 	
+; あまりにも嘘っぽいが
 half_to_int:
 	dd 0.4999998
-	
-; あまりにも嘘っぽいが
 
 section .text
 	
@@ -171,9 +170,52 @@ fabs:
 
 floor:
 	push dword [esp+0x4]
+	call fisneg
+	add esp,4
+	test eax,eax
+	jne floor_neg
+	push dword [esp+0x4]
 	call int_of_float
 	add esp,4
 	push eax
 	call float_of_int
 	add esp,4
 	ret
+floor_neg:
+	push dword [esp+0x4]
+	call fneg
+	mov [esp],eax
+	call floor
+	add esp,4
+	
+	mov [esp-0x4],eax
+	fld dword [esp+0x4]
+	fld dword [esp-0x4]
+	faddp
+	fstp dword [esp-0x4]
+	sub esp,4
+	call fiszero
+	add esp,4
+	test eax,eax
+	jne floor_not_addone
+floor_addone:
+	fld dword [esp+0x4]
+	fld1
+	fsubp
+	fstp dword [esp+0x4]
+	
+floor_not_addone:
+	push dword [esp+0x4]
+	call fneg
+	mov [esp],eax
+	call floor
+	mov [esp],eax
+	call fneg
+	add esp,4
+	ret
+	
+	
+	
+	
+	
+
