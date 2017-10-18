@@ -9,31 +9,28 @@ open Debug
 open Emit_zatsu_tortesia
 open Inline
 open Common_sube_elim
+open Linux_win_diff
 
 (* let _ = Source2ast.s2a "../tes.ml" *)
 
 let files = ref []
 let nolib = ref false
 let verbose = ref false
+let tortesia = ref false
 let vprint s = 
 	if !verbose then (print_string s; print_newline ()) else () 
 
+
 let reduce_step ast = 
-	Common_sube_elim.elimer (Inline.inliner (Beta.beter (Common_sube_elim.elimer ast)))
+	Inline.inliner (Beta.beter (Common_sube_elim.elimer ast))
+(*
+let reduce_step ast = 
+	Beta.beter (Common_sube_elim.elimer ast)
+*)
+
 
 let reduce ast = 
-	reduce_step (reduce_step (reduce_step ast))
-(*
-	let ta = (Inline.inliner (Beta.beter ast)) in
-		vprint (knorm2str ta);
-	(Inline.inliner (Beta.beter 
-	(Inline.inliner (Beta.beter ta))
-	))
-*)
-
-(*
-	Inline.inliner (Beta.beter ast)
-*)
+	reduce_step (reduce_step (reduce_step (reduce_step (reduce_step ast))))
 
 let _ = 
 let argc = Array.length Sys.argv in
@@ -42,7 +39,9 @@ if argc <= 1 then (
 ) else (
 	Arg.parse [
 		("-nolib",Arg.Set nolib,"stop including lib.ml");
-		("-v",Arg.Set verbose,"verbose debug info")
+		("-v",Arg.Set verbose,"verbose debug info");
+		("-t",Arg.Set tortesia,"compile for tortesia");
+		("-w",Arg.Set windows,"compile for windows x86");
 	] (fun fn -> files := (!files) @ [fn]) (Printf.sprintf "Usage: %s filename\n" Sys.argv.(0));
 	let ast = Source2ast.s2a (List.hd !files) in
 	files := if !nolib then (List.tl !files) else ("lib.ml" :: (List.tl !files));
@@ -56,7 +55,7 @@ if argc <= 1 then (
 			) globasts east 
 		)
 	| _ -> raise (Failure "inputfile is not value")  in
-	(* print_string (expr2str tast); *)
+	(* (expr2str tast); *)
 	print_string "parsed"; print_newline ();
 	let ast2 = Type_checker.check tast in
 	print_string "typed";  print_newline ();
@@ -72,16 +71,17 @@ if argc <= 1 then (
 	let vrt = Virtual.to_virtual cls in
 	print_string "virtualized";  print_newline ();
 
-(*
-	let asm = Emit_zatsu_tortesia.vir2asm vrt in
-	print_string asm;
-*)
-	let asm = Emit_zatsu_x86.vir2asm vrt in
-	vprint asm;
-	let oc = open_out "out.s" in
-	output_string oc asm;
-	close_out oc;
-
+	if !tortesia then (
+		let asm = Emit_zatsu_tortesia.vir2asm vrt in
+		print_string asm
+	)
+	else (
+		let asm = Emit_zatsu_x86.vir2asm vrt in
+		vprint asm;
+		let oc = open_out "out.s" in
+		output_string oc asm;
+		close_out oc
+	);
 (*
 nasm lib.s -f elf32 -g -o lib.o; nasm out.s -f elf32 -g -o out.o; gcc -m32 out.o lib.o
 *)
