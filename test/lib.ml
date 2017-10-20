@@ -35,4 +35,17 @@ let rec read_float x =
 				if (c-47)*(58-c)>0 then f (float_of_int (c-48)) else read_float x)
 
 
+let rec print_hex_err_chr c = 
+	if c < 10 then print_char_err (c+48) else print_char_err (c+87)
+
+let rec print_hex_err_base x = 
+	if x < 16 then (if 0 < x then print_hex_err_chr x else ()) else
+		print_hex_err_base (x/16);
+		print_hex_err_chr (mod_ x 16)
+
+let rec print_hex_err x = 
+	if x = 0 then print_char_err 48
+	else (if x < 0 then print_char_err 45; print_hex_err_base (0-x) else print_hex_err_base x)
+
+
 

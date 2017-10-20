@@ -5,7 +5,7 @@ two:
 	dd 2.0
 half:
 	dd 0.5
-	
+
 ; あまりにも嘘っぽいが
 half_to_int:
 	dd 0.4999998
@@ -203,7 +203,7 @@ floor_addone:
 	fld1
 	fsubp
 	fstp dword [esp+0x4]
-	
+
 floor_not_addone:
 	push dword [esp+0x4]
 	call fneg
@@ -213,9 +213,49 @@ floor_not_addone:
 	call fneg
 	add esp,4
 	ret
+
+
+
+print_hex_err:
+	push ebp
+	mov ebp,esp
+	sub esp,4
+	mov dword [ebp-0x4],7
+loop:
+	mov eax,[ebp-0x4]
+	mov ebx,[ebp+0x8]
+	mov dl,4
+	mul dl
+	mov ecx,eax
+	mov eax,0xf
+	shl eax,cl
+	and ebx,eax
+	shr ebx,cl
+	xor eax,eax
+	cmp ebx,10
+	setae al
+	mov ecx,39
+	mul ecx
+	add eax,48
+	add eax,ebx
+	push eax
+	call print_char_err
+	add esp,4
+	mov eax,[ebp-0x4]
+	dec eax
+	mov [ebp-0x4],eax
+	inc eax
+	test eax,eax
+	jne loop
 	
-	
-	
-	
+	add esp,4
+	pop ebp
+	ret
+
+
+
+
+
+
 	
 

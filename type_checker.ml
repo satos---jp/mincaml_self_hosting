@@ -42,9 +42,6 @@ and type2str t =
 
 let print_type t = print_string ((type2str t) ^ "\n")
 
-
-let genvar = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@t_%d" !c)
-
 let gentype = let c = ref 0 in (fun () -> c := (!c)+1; TyVar(!c))
 
 let name2str (na,ty) = na ^ " : " ^ (type2str ty)
@@ -70,6 +67,7 @@ let genv = [
 	("int_of_float",TyFun([TyFloat],TyInt));
 	("float_of_int",TyFun([TyInt],TyFloat));
 	("print_char",TyFun([TyInt],TyTuple([])));
+	("print_char_err",TyFun([TyInt],TyTuple([])));
 	("read_char",TyFun([TyTuple([])],TyInt));
 	("fiszero",TyFun([TyFloat],TyInt));
 	("fispos",TyFun([TyFloat],TyInt));
@@ -103,6 +101,7 @@ let zip3 vs ws = List.map2 (fun (a,b) -> fun c -> (a,b,c)) (zip2 vs ws)
 (* 環境は、 (旧変数名,(新変数名,型)) *)
 (* 返り値は、 (新ast,制約,型,debug情報) *)
 (* 制約は、型1,型2,デバッグ情報 *)
+(* ここでは、まだα変換はしないことにしました *)
 let rec type_infer astdeb env = 
 	let ast,deb = astdeb in
 	let rast,rc,rt = (
@@ -112,8 +111,8 @@ let rec type_infer astdeb env =
 	| EConst(CInt x) -> (TConst(CInt x),[],TyInt)
 	| EVar(x) -> (
 			try (
-				let tv,tt = List.assoc x env in
-				(TVar((tv,(tt,deb))),[],tt)
+				let tt = List.assoc x env in
+				(TVar((x,(tt,deb))),[],tt)
 			)
 			with
 				| Not_found -> raise (Failure("undefined variable " ^ x ^ " at " ^ (debug_data2str deb)))
@@ -159,26 +158,23 @@ let rec type_infer astdeb env =
 				(TIf(te1,te2,te3),(tt1,TyInt,deb1) :: (tt2,tt3,deb3) :: c1 @ c2 @ c3,tt2)
 		)
 	| ELet(n1,e2,e3) -> (
-			let tn1 = (genvar ()) ^ "_" ^ n1 in
 			let te2,c2,tt2,deb2 = type_infer e2 env in
-			let te3,c3,tt3,_ = type_infer e3 ((n1,(tn1,tt2)) :: env) in
-			(TLet((tn1,(tt2,deb2)),te2,te3),c2 @ c3,tt3)
+			let te3,c3,tt3,_ = type_infer e3 ((n1,tt2) :: env) in
+			(TLet((n1,(tt2,deb2)),te2,te3),c2 @ c3,tt3)
 		)
 	| ELetRec(f1,ns,e2,e3) -> (
-			(* fのα変換 *)
-			let fn1 = (genvar ()) ^ "_" ^ f1 in
 			(* fの返り値型 *)
 			let fn1rt = gentype () in
 			(* nsのα変換と、 型変数を作ったもの *)
-			let tns = List.map (fun x -> (x,(genvar (),gentype ()))) ns in
+			let tns = List.map (fun x -> (x,gentype ())) ns in
 			(* fの型 *)
-			let f1t = TyFun(List.map (fun (_,(_,x)) -> x) tns,fn1rt) in
+			let f1t = TyFun(List.map (fun (_,x) -> x) tns,fn1rt) in
 			(* e2についての推論 *) 
-			let te2,c2,tt2,deb2 = type_infer e2 (tns @ [(f1,(fn1,f1t))] @ env) in
+			let te2,c2,tt2,deb2 = type_infer e2 (tns @ [(f1,f1t)] @ env) in
 			(* これは、関数名より変数名の方が先に調べられるみたい *) 
 			(* e3についての推論 *)
-			let te3,c3,tt3,_ = type_infer e3 ((f1,(fn1,f1t)) :: env) in
-			(TLetRec((fn1,(f1t,deb2)),List.map (fun (_,(x,t)) -> (x,(t,deb2))) tns,te2,te3),(tt2,fn1rt,deb2) :: c2 @ c3,tt3)
+			let te3,c3,tt3,_ = type_infer e3 ((f1,f1t) :: env) in
+			(TLetRec((f1,(f1t,deb2)),List.map (fun (x,t) -> (x,(t,deb2))) tns,te2,te3),(tt2,fn1rt,deb2) :: c2 @ c3,tt3)
 		)
 	| EApp(e1,e2) -> (
 		(* カリー化できないのでがんばる *)
@@ -199,10 +195,10 @@ let rec type_infer astdeb env =
 		)
 	| ELetTuple(ns,e1,e2) -> (
 			let te1,c1,tt1,deb1 = type_infer e1 env in
-			let tns = List.map (fun x -> (x,(genvar (),gentype ()))) ns in
+			let tns = List.map (fun x -> (x,gentype ())) ns in
 			let te2,c2,tt2,_ = type_infer e2 (tns @ env) in
-				(TLetTuple(List.map (fun (_,(x,t)) -> (x,(t,deb1))) tns,te1,te2),
-				(tt1,TyTuple(List.map (fun (_,(_,x)) -> x) tns),deb1) :: c1 @ c2,tt2)
+				(TLetTuple(List.map (fun (x,t) -> (x,(t,deb1))) tns,te1,te2),
+				(tt1,TyTuple(List.map (fun (_,x) -> x) tns),deb1) :: c1 @ c2,tt2)
 		)
 	) in
 	((rast,(rt,deb)),rc,rt,deb)
@@ -284,7 +280,7 @@ let ast_subst_rec subs ast = List.fold_left (fun r -> fun nsub -> ast_subst nsub
 
 let check ast = 
 	try (
-		let tast,tc,rt,_ = type_infer ast (List.map (fun (a,b) -> (a,(a,b))) genv) in
+		let tast,tc,rt,_ = type_infer ast genv in
 		(* print_type rt;
 		print_constrs tc; *)
 		let subs = unify tc in

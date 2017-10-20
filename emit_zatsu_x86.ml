@@ -82,9 +82,25 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 	) in
 	let prologue = 
 		(Printf.sprintf "\tpush ebp\n\tmov ebp,esp\n\tsub esp,%d\n" (snd lvs_st)) ^	
-		(if fn = main_name () then "\tmov esi,global_heap\n" else "")
+		(if fn = main_name () then (
+			"\tmov esi,global_heap\n" ^ 
+			"\tpush esp\n" ^
+			"\tcall print_hex_err\n" ^
+			"\tadd esp,4\n" ^
+			"\tpush 10\n" ^
+			"\tcall print_char_err\n" ^
+			"\tadd esp,4\n" ^
+			"\tpush global_heap\n" ^
+			"\tcall print_hex_err\n" ^
+			"\tadd esp,4\n" ^
+			"\tpush 10\n" ^
+			"\tcall print_char_err\n" ^
+			"\tadd esp,4\n" 
+		) else "")
 	in
-	let epilogue = (Printf.sprintf "\tadd esp,%d\n\tpop ebp\n\tret\n" (snd lvs_st)) in
+	let epilogue = 
+		(Printf.sprintf "\tadd esp,%d\n\tpop ebp\n\tret\n" (snd lvs_st))
+	in
 	
 	let mova2b nad nbd = 
 			(Printf.sprintf "\tmov eax,%s\n" (nd2ps nbd)) ^

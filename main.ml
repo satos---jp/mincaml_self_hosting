@@ -59,8 +59,8 @@ if argc <= 1 then (
 	print_string "parsed"; print_newline ();
 	let ast2 = Type_checker.check tast in
 	print_string "typed";  print_newline ();
-	let kn = Knorm.knorm ast2 in
-	print_string "k-normalized";  print_newline ();
+	let kn = Alpha.alpha_conv (Knorm.knorm ast2) [] in
+	print_string "k-normalized and alphad";  print_newline ();
 	vprint (knorm2str kn);
 	let tkn = reduce kn in
 	print_string "reduced";  print_newline ();
