@@ -38,7 +38,10 @@ let rec elim_sube ast env =
 					let tenv = if effect te1 then env else ((hasher te1),KVar(na)) :: env in
 						KLet(na,te1,elim_sube e2 tenv)
 				)
-			| KLetRec(na,vs,e1,e2) -> KLetRec(na,vs,elim_sube e1 env,elim_sube e2 env)
+			(* letrec‚ð’´‚¦‚Äelim‚·‚é‚ÆAŒãX closure•ÏŠ·‚Å‚Â‚ç‚­‚È‚é!!  *)
+			| KLetRec(na,vs,e1,e2) -> (
+				KLetRec(na,vs,elim_sube e1 [],elim_sube e2 env)
+			)
 		)
 
 

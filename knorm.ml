@@ -39,7 +39,6 @@ let knorm2str ast =
 		(String.concat "\n" (List.map (fun (d,s) -> (String.make (d*2) ' ') ^ s) ss)) ^ "\n"
 
 
-
 let genvar = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@k_%d" !c)
 
 let rec knorm (ast,nt) = 

@@ -81,16 +81,10 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		cs ^ (Printf.sprintf "\tadd esi,%d\n" !nl)
 	) in
 	let prologue = 
-		(Printf.sprintf "\tpush ebp\n\tmov ebp,esp\n\tsub esp,%d\n" (snd lvs_st)) ^	
+		(Printf.sprintf "\tpush ebp\n\tmov ebp,esp\n\tsub esp,%d\n" (snd lvs_st)) ^
 		(if fn = main_name () then (
 			"\tmov esi,global_heap\n" ^ 
-			"\tpush esp\n" ^
-			"\tcall print_hex_err\n" ^
-			"\tadd esp,4\n" ^
-			"\tpush 10\n" ^
-			"\tcall print_char_err\n" ^
-			"\tadd esp,4\n" ^
-			"\tpush global_heap\n" ^
+			"\tpush esi\n" ^
 			"\tcall print_hex_err\n" ^
 			"\tadd esp,4\n" ^
 			"\tpush 10\n" ^
@@ -99,6 +93,14 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		) else "")
 	in
 	let epilogue = 
+		(if fn = main_name () then (
+			"\tpush esi\n" ^
+			"\tcall print_hex_err\n" ^
+			"\tadd esp,4\n" ^
+			"\tpush 10\n" ^
+			"\tcall print_char_err\n" ^
+			"\tadd esp,4\n" 
+		) else "") ^
 		(Printf.sprintf "\tadd esp,%d\n\tpop ebp\n\tret\n" (snd lvs_st))
 	in
 	
@@ -165,6 +167,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 				(make_vs_on_heap vs) ^ 
 				"; " ^ (nd2ds nad) ^ "\n"
 			)
+		(* *)
 		| OpMakeCls(nad,((fn,_) as fnd),vs) -> (
 				"\tmov edx,esi\n" ^ 
 				(make_vs_on_heap vs) ^
@@ -173,13 +176,6 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 				(Printf.sprintf "\tmov %s,esi\n" (nd2ps nad)) ^ 
 				"\tadd esi,8\n"^
 				"; " ^ (nd2ds nad) ^ " "^ (nd2ds fnd) ^ "\n"
-			)
-		| OpSelfCls(nad,((fn,_) as fnd)) -> (
-				(Printf.sprintf "\tmov dword [esi],%s\n" fn) ^ 
-				"\tmov dword [esi+4],-1\n" ^ 
-				(Printf.sprintf "\tmov %s,esi\n" (nd2ps nad)) ^ 
-				"\tadd esi,8\n" ^
-				"; " ^ (nd2ds nad) ^ " " ^ (nd2ds fnd) ^ "\n"
 			)
 		| OpApp(nad,((fn,_) as fnd),vs) -> (
 				let nl = ref 0 in
@@ -196,6 +192,22 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 					((Printf.sprintf "\tmov eax,%s\n" rfn) ^ 
 					"\tmov edi,[eax+4]\n" ^ 
 					"\tcall [eax]\n")) ^
+				(Printf.sprintf "\tmov %s,eax\n" (nd2ps nad))
+				in (* こうしないと、nlがアップデートされない *)
+				s ^ 
+				(Printf.sprintf "\tadd esp,%d\n" !nl) ^
+				"\tpop edi\n" ^
+				"; " ^ (nd2ds nad) ^ " " ^ (nd2ds fnd) ^ "\n"
+			)
+		| OpDirApp(nad,((fn,_) as fnd),vs) -> (
+				let nl = ref 0 in
+				let s = 
+				"\tpush edi\n" ^
+				(String.concat "" (List.map (fun nad -> 
+					nl := !nl + 4;
+					(Printf.sprintf "\tpush dword %s\n" (nd2ps nad))
+				) (List.rev vs))) ^ (* 逆にpushする *)
+				(Printf.sprintf "\tcall %s\n" fn) ^
 				(Printf.sprintf "\tmov %s,eax\n" (nd2ps nad))
 				in (* こうしないと、nlがアップデートされない *)
 				s ^ 
@@ -295,7 +307,7 @@ let vir2asm (funs,rd) =
 	!constfs ^
 	"section .bss\n" ^
 	"global_heap:\n" ^
-	"\tresb 0x80000000\n" ^
+	"\tresb 0x40000000\n" ^
 	"section .text\n" ^
 	"global " ^ (main_name ()) ^ "\n" ^ 
 	(String.concat "" (List.map func2asm (List.rev funs))) ^	

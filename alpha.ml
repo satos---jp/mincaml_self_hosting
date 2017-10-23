@@ -21,7 +21,7 @@ let rec alpha_conv ast env  =
 		)
 	| KVar(x) -> KVar(conv_var x)
 	| KLetRec((na,td),vs,e1,e2) -> (
-			let tna = genname () in 
+			let tna = (genname ()) ^ na in 
 			let tvs = List.map (fun _ -> genname ()) vs in
 			KLetRec((tna,td),
 				List.map2 (fun a -> fun (_,b) -> (a,b)) tvs vs,

@@ -16,10 +16,10 @@ type op =
 	| OpLabel of label 
 	| OpJmp   of label 
 	| OpApp   of name * name * (name list)
+	| OpDirApp   of name * name * (name list)
 	| OpMakeTuple of name * (name list)
 	| OpDestTuple of (name list) * name
 	| OpMakeCls   of name * name * (name list)
-	| OpSelfCls   of name * name
 	| OpRet       of name
 	| OpMainRet
 
@@ -64,10 +64,10 @@ let rec to_asms ast tov =
 			[OpMov(tov,x)]
 		)
 	| CApp(a,b) -> [OpApp(tov,a,b)]
+	| CDirApp(a,b) -> [OpDirApp(tov,a,b)]
 	| CTuple(vs) -> [OpMakeTuple(tov,vs)]
 	| CLetTuple(vs,ta,e1) -> OpDestTuple(vs,ta) :: (to_asms e1 tov)
 	| CClosure(na,vs) -> [OpMakeCls(tov,na,vs)]
-	| CSelfClosure(na) -> [OpSelfCls(tov,na)]
 
 let rec collect_names_rec ast = 
 	match ast with
@@ -77,10 +77,10 @@ let rec collect_names_rec ast =
 	| CIf(cmpty,a,b,e1,e2) -> a :: b :: (collect_names_rec e1) @ (collect_names_rec e2)
 	| CVar(x) -> [x]
 	| CApp(a,b) -> a :: b
+	| CDirApp(a,b) -> b (* aはglobalにあるやつなので、変数ではない(ハズ) *)
 	| CTuple(vs) -> vs
 	| CLetTuple(vs,ta,e1) -> ta :: vs @ (collect_names_rec e1) 
 	| CClosure(_,vs) -> vs (* closureの名前はglobalにあるやつなので、変数ではない(ハズ) *)
-	| CSelfClosure(_) -> []
 
 let rec unique_name vs = 
 	match vs with

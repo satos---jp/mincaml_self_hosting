@@ -10,6 +10,7 @@ open Emit_zatsu_tortesia
 open Inline
 open Common_sube_elim
 open Linux_win_diff
+open Elim_unused
 
 (* let _ = Source2ast.s2a "../tes.ml" *)
 
@@ -17,12 +18,12 @@ let files = ref []
 let nolib = ref false
 let verbose = ref false
 let tortesia = ref false
-let vprint s = 
-	if !verbose then (print_string s; print_newline ()) else () 
+let vprint f s = 
+	if !verbose then (print_string (f s); print_newline ()) else () 
 
 
-let reduce_step ast = 
-	Inline.inliner (Beta.beter (Common_sube_elim.elimer ast))
+let reduce_step ast =  
+	Elim_unused.elim_unused (Inline.inliner (Beta.beter (Common_sube_elim.elimer ast)))
 (*
 let reduce_step ast = 
 	Beta.beter (Common_sube_elim.elimer ast)
@@ -61,13 +62,13 @@ if argc <= 1 then (
 	print_string "typed";  print_newline ();
 	let kn = Alpha.alpha_conv (Knorm.knorm ast2) [] in
 	print_string "k-normalized and alphad";  print_newline ();
-	vprint (knorm2str kn);
+	vprint knorm2str kn;
 	let tkn = reduce kn in
 	print_string "reduced";  print_newline ();
-	vprint (knorm2str tkn);
+	vprint knorm2str tkn;
 	let cls = Closure_conv.conv tkn in
 	print_string "closure_converted";  print_newline ();
-	vprint (clos2str cls);
+	vprint clos2str cls;
 	let vrt = Virtual.to_virtual cls in
 	print_string "virtualized";  print_newline ();
 
@@ -77,7 +78,7 @@ if argc <= 1 then (
 	)
 	else (
 		let asm = Emit_zatsu_x86.vir2asm vrt in
-		vprint asm;
+		vprint (fun x -> x) asm;
 		let oc = open_out "out.s" in
 		output_string oc asm;
 		close_out oc

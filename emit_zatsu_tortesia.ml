@@ -181,15 +181,6 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 				"\taddi r3,r3,$8\n"^
 				"; " ^ (nd2ds nad) ^ " "^ (nd2ds fnd) ^ "\n"
 			)
-		| OpSelfCls(nad,((fn,_) as fnd)) -> (
-				(Printf.sprintf "\tli r5,%s\n" fn) ^ 
-				"\tsw r5,r3,$0\n" ^
-				"\tli r5,$-1\n" ^
-				"\tsw r5,r3,$4\n" ^ 
-				(Printf.sprintf "\tsw r3,%s\n" (nd2ps nad)) ^ 
-				"\taddi r3,r3,$8\n" ^
-				"; " ^ (nd2ds nad) ^ " " ^ (nd2ds fnd) ^ "\n"
-			)
 		| OpApp(nad,((fn,_) as fnd),vs) -> (
 				let nl = ref 0 in
 				let s = 
