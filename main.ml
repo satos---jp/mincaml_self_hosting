@@ -12,15 +12,16 @@ open Common_sube_elim
 open Linux_win_diff
 open Elim_unused
 open Main_option
-
-let vprint f s = 
-	if !verbose then (print_string (f s); print_newline ()) else () 
+open Lambda_lift
 
 
-let reduce_step ast = 
-	Elim_unused.elim_unused (Beta.beter (Common_sube_elim.elimer (Inline.inliner ast)))
-(*
+
+let reduce_step ast = 	
 	Elim_unused.elim_unused (Beta.beter (Common_sube_elim.elimer ast))
+(*
+	Elim_unused.elim_unused (Beta.beter (Common_sube_elim.elimer (Inline.inliner ast)))
+	Elim_unused.elim_unused (Beta.beter (Common_sube_elim.elimer ast))
+	Elim_unused.elim_unused (Beta.beter (Common_sube_elim.elimer (Inline.inliner ast)))
 5回やって、
 くらい。
 	Elim_unused.elim_unused (Inline.inliner (Beta.beter (Common_sube_elim.elimer ast)))
@@ -67,7 +68,11 @@ if argc <= 1 then (
 	let tkn = reduce kn in
 	print_string "reduced";  print_newline ();
 	vprint knorm2str tkn;
-	let cls = Closure_conv.conv tkn in
+	let ttkn = Lambda_lift.lift tkn in
+	print_string "lifted";  print_newline ();
+	vprint knorm2str ttkn;
+	let ttkn = ttkn in
+	let cls = Closure_conv.conv ttkn in
 	print_string "closure_converted";  print_newline ();
 	vprint clos2str cls;
 	let vrt = Virtual.to_virtual cls in

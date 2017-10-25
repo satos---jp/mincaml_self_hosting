@@ -2,13 +2,7 @@ open Knorm
 open Alpha
 
 
-let rec kexp_size ast = 
-	match ast with
-	| KIf(_,_,_,e1,e2) | KLet(_,e1,e2) | KLetRec(_,_,e1,e2) -> (
-			1 + (kexp_size e1) + (kexp_size e2)
-		)
-	| KLetTuple(_,_,e1) -> 1 + (kexp_size e1)
-	| _ -> 1
+
 
 
 let rec inline ast fns = 

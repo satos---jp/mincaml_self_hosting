@@ -38,6 +38,13 @@ let knorm2str ast =
 	let ss = kexp2str_base ast 0 in
 		(String.concat "\n" (List.map (fun (d,s) -> (String.make (d*2) ' ') ^ s) ss)) ^ "\n"
 
+let rec kexp_size ast = 
+	match ast with
+	| KIf(_,_,_,e1,e2) | KLet(_,e1,e2) | KLetRec(_,_,e1,e2) -> (
+			1 + (kexp_size e1) + (kexp_size e2)
+		)
+	| KLetTuple(_,_,e1) -> 1 + (kexp_size e1)
+	| _ -> 1
 
 let genvar = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@k_%d" !c)
 

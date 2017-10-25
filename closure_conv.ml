@@ -4,13 +4,6 @@ open Debug
 
 let gencname = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@cls_%d" !c)
 
-
-(*
-•Ê‚ÉŒ^‚ğ’è‹`‚·‚é‚Ì‚ª‰­…‚É‚È‚Á‚Ä‚«‚½‚Ì‚Å
-‚Æ‚è‚ ‚¦‚¸KNorm‚Å‚â‚Á‚Ä‚¢‚­B
-*)
-
-
 open Type_checker
 type name = string * (ty * debug_data)
 

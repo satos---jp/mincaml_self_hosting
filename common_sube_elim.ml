@@ -35,7 +35,13 @@ let rec elim_sube ast env =
 			| KLetTuple(vs,na,e1) -> KLetTuple(vs,na,elim_sube e1 env)
 			| KLet(na,e1,e2) -> (
 					let te1 = elim_sube e1 env in
-					let tenv = if effect te1 then env else ((hasher te1),KVar(na)) :: env in
+					(* KConst‚Íí‚ç‚È‚¢B *)
+					let tenv = if effect te1 then env else (
+						match te1 with
+						| KConst _ -> env
+						| _ -> ((hasher te1),KVar(na)) :: env
+					) 
+					in
 						KLet(na,te1,elim_sube e2 tenv)
 				)
 			(* letrec‚ğ’´‚¦‚Äelim‚·‚é‚ÆAŒãX closure•ÏŠ·‚Å‚Â‚ç‚­‚È‚é!!  *)

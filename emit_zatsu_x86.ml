@@ -56,9 +56,9 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		(List.map (fun (x,p) -> (x,p-(snd lvs_st))) (fst lvs_st)) @
 		(List.map (fun (x,p) -> (x,p+8)) (fst vs2_st)) in
 	let on_clos = fst vs1_st in
-	print_string ("On function " ^ fn ^ "\n");
-	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [ebp%+d]" s p) on_stack)) ^"\n");
-	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [edi%+d]" s p) on_clos)) ^"\n");
+	ivprint ("On function " ^ fn ^ "\n");
+	ivprint ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [ebp%+d]" s p) on_stack)) ^"\n");
+	ivprint ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [edi%+d]" s p) on_clos)) ^"\n");
 	let na2pt x = (
 		try ("ebp",List.assoc x on_stack)
 		with | Not_found -> 
