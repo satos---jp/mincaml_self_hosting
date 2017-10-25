@@ -9,8 +9,10 @@ print_int ((g 456) 789));
    a.(0) (n - 1)) in
 f 9);
 
-((* 自由変数のある再帰関数 *)
-let x = 10 in
+
+(* 自由変数のある再帰関数 *)
+
+(let x = 10 in
 let rec f y =
   if y = 0 then 0 else
   x + f (y - 1) in
@@ -23,3 +25,4 @@ print_int (f 123));
     if z > 0 then r else g (-z) in
   g 1 in 
 print_int (h (1,2,3,4,5,6,7,8,9,10)))
+

@@ -3,6 +3,8 @@ open Syntax
 open Type_checker
 open Debug
 open Linux_win_diff
+open Debug
+open Main_option
 (* とりあえず、雑にx86コードを生成する *)
 
 let constfs = ref ""
@@ -80,28 +82,39 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 			) vs)) in
 		cs ^ (Printf.sprintf "\tadd esi,%d\n" !nl)
 	) in
+	let eprintc x = (
+		(Printf.sprintf "\tpush %d\n" x) ^
+		"\tcall print_char_err\n" ^
+		"\tadd esp,4\n"
+	) in
 	let prologue = 
 		(Printf.sprintf "\tpush ebp\n\tmov ebp,esp\n\tsub esp,%d\n" (snd lvs_st)) ^
-		(if fn = main_name () then (
-			"\tmov esi,global_heap\n" ^ 
+		(if fn = main_name () then "\tmov esi,global_heap\n" else "") ^
+		(if fn = main_name () && !debugmode then (
+			(eprintc 104) ^
+			(eprintc 98) ^
+			(eprintc 32) ^
 			"\tpush esi\n" ^
 			"\tcall print_hex_err\n" ^
 			"\tadd esp,4\n" ^
-			"\tpush 10\n" ^
-			"\tcall print_char_err\n" ^
-			"\tadd esp,4\n" 
+			(eprintc 10)
 		) else "")
 	in
 	let epilogue = 
-		(if fn = main_name () then (
+		(if fn = main_name () && !debugmode then (
+			(eprintc 104) ^
+			(eprintc 97) ^
+			(eprintc 32) ^
 			"\tpush esi\n" ^
 			"\tcall print_hex_err\n" ^
 			"\tadd esp,4\n" ^
-			"\tpush 10\n" ^
-			"\tcall print_char_err\n" ^
-			"\tadd esp,4\n" 
+			(eprintc 10)
 		) else "") ^
-		(Printf.sprintf "\tadd esp,%d\n\tpop ebp\n\tret\n" (snd lvs_st))
+		(Printf.sprintf "\tadd esp,%d\n\tpop ebp\n" (snd lvs_st)) ^
+		(if fn = main_name () then 
+			(main_epilogue ())
+		else
+			"\tret\n")
 	in
 	
 	let mova2b nad nbd = 
@@ -264,7 +277,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 					 	| OArrCrt -> (
 								let la = genlabel () in
 								let lb = genlabel () in
-								"\tmov edx,esi\n" ^
+								"\tmov ecx,esi\n" ^
 								"\ttest eax,eax\n" ^
 								(Printf.sprintf "\tje %s\n" lb) ^
 								(Printf.sprintf "%s:\n" la) ^ 
@@ -273,7 +286,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 								"\tsub eax,1\n" ^
 								(Printf.sprintf "\tjne %s\n" la) ^
 								(Printf.sprintf "%s:\n" lb) ^ 
-								"\tmov eax,edx\n"
+								"\tmov eax,ecx\n"
 					 		)
 					 	| OArrRead -> "\tmov eax,dword [eax+4*ebx]\n"
 					 	| _ -> raise (Failure (Printf.sprintf "Operation %s is not unfloat binary operation" os))
@@ -299,20 +312,28 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 
 *)
 
+
+
 let vir2asm (funs,rd) = 
 	"BITS 32\n" ^
 	"%include \"" ^ (io_lib_name ()) ^ "\"\n" ^
 	"%include \"lib.s\"\n" ^
 	"section .data\n" ^
 	!constfs ^
+	"inst_counter:\n" ^ 
+	"\tdd 0x0\n" ^
+	"inst_counter_up:\n" ^ 
+	"\tdd 0x0\n" ^
 	"section .bss\n" ^
 	"global_heap:\n" ^
-	"\tresb 0x40000000\n" ^
+	"\tresb 0x80000000\n" ^
 	"section .text\n" ^
 	"global " ^ (main_name ()) ^ "\n" ^ 
-	(String.concat "" (List.map func2asm (List.rev funs))) ^	
-	(func2asm ((main_name (),TyVar(-1)),[],[],rd))
-
-
+	(
+		let s = 
+			(String.concat "" (List.map func2asm (List.rev funs))) ^	
+			(func2asm ((main_name (),TyVar(-1)),[],[],rd))
+		in if !debugmode then add_inscount s else s
+	) 
 
 

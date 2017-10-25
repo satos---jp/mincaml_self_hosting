@@ -1,6 +1,6 @@
 rm a.out
 nasm out.s -f elf32 -g -o out.o
-gcc -m32 -g out.o -o a.out
+gcc -m32 -nostdlib out.o -o a.out
 echo "compiled" >&2
 ./a.out
 

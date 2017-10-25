@@ -11,20 +11,20 @@ open Inline
 open Common_sube_elim
 open Linux_win_diff
 open Elim_unused
+open Main_option
 
-(* let _ = Source2ast.s2a "../tes.ml" *)
-
-let files = ref []
-let nolib = ref false
-let verbose = ref false
-let tortesia = ref false
 let vprint f s = 
 	if !verbose then (print_string (f s); print_newline ()) else () 
 
 
-let reduce_step ast =  
-	Elim_unused.elim_unused (Inline.inliner (Beta.beter (Common_sube_elim.elimer ast)))
+let reduce_step ast = 
+	Elim_unused.elim_unused (Beta.beter (Common_sube_elim.elimer (Inline.inliner ast)))
 (*
+	Elim_unused.elim_unused (Beta.beter (Common_sube_elim.elimer ast))
+5回やって、
+くらい。
+	Elim_unused.elim_unused (Inline.inliner (Beta.beter (Common_sube_elim.elimer ast)))
+	Elim_unused.elim_unused (Beta.beter (Common_sube_elim.elimer ast))
 let reduce_step ast = 
 	Beta.beter (Common_sube_elim.elimer ast)
 *)
@@ -43,6 +43,7 @@ if argc <= 1 then (
 		("-v",Arg.Set verbose,"verbose debug info");
 		("-t",Arg.Set tortesia,"compile for tortesia");
 		("-w",Arg.Set windows,"compile for windows x86");
+		("-d",Arg.Set debugmode,"debug inscount on");
 	] (fun fn -> files := (!files) @ [fn]) (Printf.sprintf "Usage: %s filename\n" Sys.argv.(0));
 	let ast = Source2ast.s2a (List.hd !files) in
 	files := if !nolib then (List.tl !files) else ("lib.ml" :: (List.tl !files));

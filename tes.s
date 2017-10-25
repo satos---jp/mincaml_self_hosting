@@ -30,6 +30,9 @@ main:
 	fld dword [hoge]
 	fstp dword [ebp+0x8]
 	
+	inc eax
+	add byte [hoge],dl
+	
 	fstp st0
 	push dword [ebp+0x8]
 	call [ebp+0x8]

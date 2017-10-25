@@ -153,9 +153,9 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		| OpLabel x -> x ^ ":\n"
 		| OpJcnd(ct,(na,_),(nb,_),la) -> (
 				(Printf.sprintf "\tlw r5,%s\n\tlw r6,%s\n" (na2s na) (na2s nb)) ^ 
-				(Printf.sprintf "\t%s r5,r6,%s\n" (match ct with CmpEq -> "jne" | CmpLt -> "jl") la)
+				(Printf.sprintf "\t%s r5,r6,%s\n" (match ct with CmpEq -> "bne") la)
 			)
-		| OpJmp(la) -> Printf.sprintf "\tjmp %s\n" la
+		| OpJmp(la) -> Printf.sprintf "\tj %s\n" la
 		| OpDestTuple(vs,nad) -> (
 				let nl = ref 0 in
 				(Printf.sprintf "\tlw r5,%s\n" (nd2ps nad)) ^ 
@@ -198,7 +198,24 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 					"\tlw r4,r5,$4\n" ^ 
 					"\tlw r5,r5,$0\n" ^ 
 					"\tjalr r5\n")) ^ 
-				(Printf.sprintf "\tlw r5,%s\n" (nd2ps nad))
+				(Printf.sprintf "\tsw r5,%s\n" (nd2ps nad))
+				in (* こうしないと、nlがアップデートされない *)
+				s ^ 
+				(Printf.sprintf "\taddi r1,r1,$%d\n" !nl) ^
+				"\tpop r4\n" ^
+				"; " ^ (nd2ds nad) ^ " " ^ (nd2ds fnd) ^ "\n"
+			)
+		| OpDirApp(nad,((fn,_) as fnd),vs) -> (
+				let nl = ref 0 in
+				let s = 
+				"\tpush r4\n" ^
+				(String.concat "" (List.map (fun nad -> 
+					nl := !nl + 4;
+					(Printf.sprintf "\tlw r5,%s\n" (nd2ps nad)) ^
+					"\tpush r5\n"
+				) (List.rev vs))) ^ (* 逆にpushする *)
+				(Printf.sprintf "\tjal %s\n" fn) ^
+				(Printf.sprintf "\tsw r5,%s\n" (nd2ps nad))
 				in (* こうしないと、nlがアップデートされない *)
 				s ^ 
 				(Printf.sprintf "\taddi r1,r1,$%d\n" !nl) ^
