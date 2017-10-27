@@ -5,6 +5,8 @@ open Type_checker
 open Elim_unused
 open Alpha
 
+type name = string * (ty * debug_data)
+
 let gencname = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@lift_%d" !c)
 
 (* ast中のenvにない変数がfvである *)
@@ -36,31 +38,34 @@ let rec unique_name vs =
 		let txs = unique_name xs in
 			if List.exists (fun (y,_) -> x = y) txs then txs else (x,dt) :: txs
 
-
 let rec lift_func globs ast =
 	(* 出せそうなら、出す。 *) 
 	let reccall = lift_func globs in
 	match ast with
-	| KLetRec((fn,ft),args,e1,e2) -> (
-			(* 自由変数収集 -> closure変換、が正しそう *)
-			(* te1中に出ている、外側由来のものを集める  *)
+	| KLetRec((fn,(ft,fd)),args,e1,e2) -> (
+			(* e1中に出ている、外側由来のものを集める *)
 			let fvs = unique_name (get_fvs e1 ((List.map fst args) @ global_funcs)) in
 			(* 自分自身が再帰的に、部分適用的に呼ばれている場合のみ、外に持ち上げられない *)
 			if not (List.mem fn (List.map fst fvs)) then (
 				Printf.printf "lift %s\n" fn;
 				let liftn = (gencname ())^ fn in (* 持ち上げ後の名前 *)
-				let tgs = (fn,(fvs,liftn)) :: globs in
+				let tft = ( (* 持ち上げ後の型 *)
+					match ft with
+					| TyFun(fts,tt) -> TyFun((List.map (fun (_,(t,_)) -> t) fvs) @ fts,tt)
+					| _ -> raise (Failure (Printf.sprintf "LetRec %s invalid type %s : %s" fn (type2str ft) (debug_data2str fd)))
+				) in
+				let tgs = (fn,(liftn,tft,fd,fvs)) :: globs in
 				let te1 = lift_func tgs e1 in
-					globals := ((liftn,ft),(fvs @ args,te1)) :: !globals;
-					KLetRec((fn,ft),args,te1,lift_func tgs e2)	
+					globals := ((liftn,(tft,fd)),(fvs @ args,te1)) :: !globals;
+					KLetRec((fn,(ft,fd)),args,te1,lift_func tgs e2)	
 			)
-			else KLetRec((fn,ft),args,reccall e1,reccall e2)	
+			else KLetRec((fn,(ft,fd)),args,reccall e1,reccall e2)	
 		)
 	| KApp((a,d),nvs) -> (
 			try 
-				let vs,tn = List.assoc a globs in
+				let tn,tt,td,vs = List.assoc a globs in
 					Printf.printf "App %s\n" a;
-					KApp((tn,d),vs @ nvs)
+					KApp((tn,(tt,td)),vs @ nvs)
 			with
 				| Not_found -> ast
 		)

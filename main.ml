@@ -16,7 +16,7 @@ open Lambda_lift
 
 
 
-let reduce_step ast = 	
+let reduce_step ast = 
 	Elim_unused.elim_unused (Beta.beter (Common_sube_elim.elimer ast))
 (*
 	Elim_unused.elim_unused (Beta.beter (Common_sube_elim.elimer (Inline.inliner ast)))
