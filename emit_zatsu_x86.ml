@@ -326,7 +326,7 @@ let vir2asm (funs,rd) =
 	"\tdd 0x0\n" ^
 	"section .bss\n" ^
 	"global_heap:\n" ^
-	"\tresb 0x80000000\n" ^
+	(Printf.sprintf "\tresb %s\n" (main_heap_size ())) ^
 	"section .text\n" ^
 	"global " ^ (main_name ()) ^ "\n" ^ 
 	(

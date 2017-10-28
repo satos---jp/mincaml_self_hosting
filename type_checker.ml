@@ -216,6 +216,14 @@ let print_constrs cs =
         print_constrs_sub cs;
         print_string "]\n"
 
+let print_subs subs =
+	print_string "[\n";
+	List.iter (fun (a,b) -> 
+		Printf.printf "%s => %s\n" (tyvar2str a) (type2str b);
+	) subs;
+	print_string "]\n"
+
+
 let rec ty_var_appear t v =
         match t with
         | TyInt | TyBool | TyFloat -> false
@@ -224,19 +232,27 @@ let rec ty_var_appear t v =
         | TyArr t -> (ty_var_appear t v)
         | TyTuple ts -> List.fold_left (fun r -> fun t -> r || (ty_var_appear t v)) false ts
 
-let rec ty_subst (na,tt) t = 
+let rec ty_subst subs t = 
 	match t with
 	| TyInt | TyFloat | TyBool -> t
-	| TyVar(nb) -> if na == nb then tt else t
-	| TyArr x -> TyArr(ty_subst (na,tt) x )
-	| TyFun(ps,q) -> TyFun(List.map (fun p -> ty_subst (na,tt) p) ps,ty_subst (na,tt) q)
-	| TyTuple ps -> TyTuple(List.map (fun x -> ty_subst (na,tt) x) ps) 
+	| TyVar(nb) -> (
+		try 
+			let tt = (List.assoc nb subs) in 
+				if List.length subs = 1 then tt else 
+					ty_subst subs tt
+		with
+			| Not_found -> t
+		)
+	| TyArr x -> TyArr(ty_subst subs x )
+	| TyFun(ps,q) -> TyFun(List.map (fun p -> ty_subst subs p) ps,ty_subst subs q)
+	| TyTuple ps -> TyTuple(List.map (fun x -> ty_subst subs x) ps) 
 
 let rec constrs_subst s cs =
         match cs with
         | [] -> []
-        | (x,y,d) :: xs -> (ty_subst s x,ty_subst s y,d) :: (constrs_subst s xs)
+        | (x,y,d) :: xs -> (ty_subst [s] x,ty_subst [s] y,d) :: (constrs_subst s xs)
 
+(* constrs_subst のとこでO(n^2) かかっていそう。 *)
 let rec unify cs = 
 	(* print_constrs cs; *)
 	match cs with
@@ -247,7 +263,10 @@ let rec unify cs =
 			| TyVar x,y | y,TyVar x -> (
 					if ty_var_appear y x then 
 						raise (TypeError(t1,t2,deb)) else 
-						(x,y) :: (unify (constrs_subst (x,y) xs))
+						(* print_type (TyVar x);
+						print_type y;
+						print_newline (); *)
+						(x,y) :: (unify (constrs_subst (x,y) xs)) 
 				)
 			| TyArr a,TyArr b -> unify ((a,b,deb) :: xs)
 			| TyFun(vs,b),TyFun(cs,d) -> unify ((b,d,deb) :: (List.map2 (fun a -> fun c -> (a,c,deb)) vs cs) @ xs)
@@ -258,10 +277,10 @@ let rec unify cs =
 	)
 
 
-let rec ast_subst sub (ast,(nt,deb)) = 
-	let f = ast_subst sub in
+let rec ast_subst subs (ast,(nt,deb)) = 
+	let f = ast_subst subs in
 	let mf = List.map f in
-	let nf (x,(t,d)) = (x,(ty_subst sub t,d)) in
+	let nf (x,(t,d)) = (x,(ty_subst subs t,d)) in
 	let mnf = List.map nf in
 	let tast = match ast with
 	| TConst _ -> ast
@@ -274,17 +293,18 @@ let rec ast_subst sub (ast,(nt,deb)) =
   | TTuple(es) -> TTuple(mf es)
   | TLetTuple(vs,e1,e2) -> TLetTuple(mnf vs,f e1,f e2)
   in
-  	(tast,(ty_subst sub nt,deb))
- 
-let ast_subst_rec subs ast = List.fold_left (fun r -> fun nsub -> ast_subst nsub r) ast subs 
+  	(tast,(ty_subst subs nt,deb))
 
 let check ast = 
 	try (
 		let tast,tc,rt,_ = type_infer ast genv in
 		(* print_type rt;
 		print_constrs tc; *)
+		Printf.printf "constr collect"; print_newline ();
 		let subs = unify tc in
-			ast_subst_rec subs tast
+			(* print_subs subs; *)
+			Printf.printf "unified"; print_newline ();
+			ast_subst subs tast
 	) with
 		| TypeError(t1,t2,deb) -> 
 			raise (Failure(Printf.sprintf 	

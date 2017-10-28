@@ -39,7 +39,7 @@ let rec cexp2str_base ast d =
 	| CLet(na,e1,e2) -> (d,"Let " ^ (name2str na) ^ " =") :: (cexp2str_base e1 (d+1)) @ [(d,"In")] @ (cexp2str_base e2 (d+1))
 	| CIf(ty,a,b,e1,e2) -> (d,"If " ^ (name2str a) ^ " " ^ (comptype2str ty) ^ " " ^ (name2str b) ^ " Then") :: (cexp2str_base e1 (d+1)) @ [(d,"Else")] @ (cexp2str_base e2 (d+1))
 	| CVar(x) -> [(d,"Var " ^ (name2str x))]
-	| CApp(fn,vs) -> [(d,"App " ^ (name2str fn) ^ (vs2str vs))]
+	| CApp(fn,vs) -> [(d,"ClsApp " ^ (name2str fn) ^ (vs2str vs))]
 	| CDirApp(fn,vs) -> [(d,"DirApp " ^ (name2str fn) ^ (vs2str vs))]
 	| CTuple(vs) -> [(d,(vs2str vs))]
 	| CLetTuple(vs,tn,e1) -> (d,"Let " ^ (vs2str vs) ^ " = " ^ (name2str tn)) :: [(d,"In")] @ (cexp2str_base e1 (d+1))
