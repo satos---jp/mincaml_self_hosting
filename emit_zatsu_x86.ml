@@ -111,10 +111,28 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 			(eprintc 10)
 		) else "") ^
 		(Printf.sprintf "\tadd esp,%d\n\tpop ebp\n" (snd lvs_st)) ^
-		(if fn = main_name () then 
+		(if fn = main_name () then (
+			(let eprintc x = (
+				(Printf.sprintf "\tpush %d\n" x) ^
+				"\tcall print_char_err\n" ^
+				"\tadd esp,4\n"
+			) in
+			if !debugmode then (
+				(eprintc 105) ^
+				(eprintc 99) ^
+				(eprintc 32) ^
+				"\tmov eax,[inst_counter_up]\n" ^ 
+				"\tpush eax\n" ^ 
+				"\tcall print_hex_err\n" ^
+				"\tadd esp,4\n" ^
+				"\tmov eax,[inst_counter]\n" ^ 
+				"\tpush eax\n" ^ 
+				"\tcall print_hex_err\n" ^
+				"\tadd esp,4\n" ^
+				(eprintc 10)
+			) else "") ^
 			(main_epilogue ())
-		else
-			"\tret\n")
+		) else "\tret\n")
 	in
 	
 	let mova2b nad nbd = 
@@ -330,10 +348,9 @@ let vir2asm (funs,rd) =
 	"section .text\n" ^
 	"global " ^ (main_name ()) ^ "\n" ^ 
 	(
-		let s = 
-			(String.concat "" (List.map func2asm (List.rev funs))) ^	
-			(func2asm ((main_name (),TyVar(-1)),[],[],rd))
-		in if !debugmode then add_inscount s else s
+		let f s = if !debugmode then add_inscount s else s in
+			(String.concat "" (List.map (fun x -> f (func2asm x)) (List.rev funs))) ^	
+			(f (func2asm ((main_name (),TyVar(-1)),[],[],rd)))
 	) 
 
 

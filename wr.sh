@@ -1,2 +1,2 @@
-./main -w ../raytracer/min-rt.ml ../raytracer/globals.ml 
+./main -w -d ../raytracer/min-rt.ml ../raytracer/globals.ml 
 

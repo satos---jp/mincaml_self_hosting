@@ -14,13 +14,14 @@ do
 	if [ -z $file ]; then 
 		break
 	fi
+	sleep 0.1
 	echo "---------------" $file "----------------"
 	cat $file
 	cat test_header.ml > tmp.ml
 	cat $file >> tmp.ml
 	ocaml tmp.ml > oo.txt
 	rm out.s out.o a a.exe
-	./main -w $file > /dev/null
+	./main -w -d $file > /dev/null
 	nasm -f win32 -o out.o -g out.s
 	gcc -m32 out.o -o a.exe
 	./a.exe > oa.txt
