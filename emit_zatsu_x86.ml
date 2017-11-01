@@ -217,7 +217,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 					(Printf.sprintf "\tpush dword %s\n" (nd2ps nad))
 				) (List.rev vs))) ^ (* 逆にpushする *)
 				(let rfn = (na2s fn) in
-					if List.mem fn global_funcs then 
+					if List.mem fn (global_funcs ()) then 
 					(Printf.sprintf "\tcall %s\n" fn)
 				else 
 					((Printf.sprintf "\tmov eax,%s\n" rfn) ^ 
@@ -264,6 +264,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 					match op with
 					| Ominus -> "\tneg eax\n"
 					| Onot   -> "\ttest eax,eax\n\tsete al\n\tand eax,1\n"
+					| OGetTuple(i) -> (Printf.sprintf "\tadd eax,%d\n\tmov eax,[eax]\n" (i*4))
 					| _ -> raise (Failure (Printf.sprintf "Operation %s is not unary operation" os))
 			 	)) ^
 				"; " ^ (nd2ds nrd) ^ " ::= " ^ os ^ " " ^ (nd2ds nad) ^ "\n"

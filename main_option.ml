@@ -4,6 +4,7 @@ let nolib = ref false
 let verbose = ref false
 let tortesia = ref false
 let debugmode = ref false
+let noinline = ref false
 
 let vprint f s = 
 	if !verbose then (print_string (f s); print_newline ()) else () 

@@ -11,6 +11,7 @@ let rec alpha_conv ast env  =
 	in
 	let conv_list vs = List.map conv_var vs
 	in
+	try (
 	match ast with
 	| KConst _ -> ast
 	| KOp(op,vs) -> KOp(op,conv_list vs)
@@ -38,4 +39,9 @@ let rec alpha_conv ast env  =
 				alpha_conv e1 ((List.map2 (fun (a,_) -> fun b -> (a,b)) vs tvs) @ env)
 			)
 		)
+	)
+	with
+		| Invalid_argument("List.map2") -> 
+			raise (Failure (Printf.sprintf "invalid ast at alpha\n %s" (knorm2str ast)))
+
 

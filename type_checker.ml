@@ -1,5 +1,6 @@
 open Syntax
 open Debug
+open Main_option
 
 type tyvar = int
 
@@ -61,7 +62,14 @@ and texp_base =
   | TLetTuple  of (name list) * texp * texp
 
 
-let genv = [
+let genv () = 
+if !tortesia then [
+	(* ハードウェア実装してもらう *)
+	("print_int",TyFun([TyInt],TyTuple([])));
+	("float_of_int",TyFun([TyInt],TyFloat));
+	("fless",TyFun([TyFloat;TyFloat],TyInt));
+	("print_char",TyFun([TyInt],TyTuple([])));
+] else [ (*x86 *)
 (* アセンブラで実装した*)
 	("fless",TyFun([TyFloat;TyFloat],TyInt));
 	("int_of_float",TyFun([TyFloat],TyInt));
@@ -90,7 +98,7 @@ let genv = [
 *)
 ]
 
-let global_funcs = List.map fst genv
+let global_funcs () = List.map fst (genv ())
 
 let zip2 = List.map2 (fun a -> fun b -> (a,b))
 let zip3 vs ws = List.map2 (fun (a,b) -> fun c -> (a,b,c)) (zip2 vs ws)
@@ -147,6 +155,8 @@ let rec type_infer astdeb env =
 			| OArrCrt -> (fun () -> let x = gentype () in ([TyInt;x],TyArr(x)))
 			| OArrRead -> (fun () -> let x = gentype () in ([TyArr(x);TyInt],x))
 			| OArrWrite -> (fun () -> let x = gentype () in ([TyArr(x);TyInt;x],TyTuple([])))
+			
+			| OSubTuple _ | OGetTuple _ -> raise (Failure (Printf.sprintf "%s shouldn't appear in parsed syntax" (op2str op)))
 			) in
 			let nts,rt = tyf () in
 				(TOp(op,tes),(zip3 nts tts tds) @ tcs,rt)
@@ -297,7 +307,7 @@ let rec ast_subst subs (ast,(nt,deb)) =
 
 let check ast = 
 	try (
-		let tast,tc,rt,_ = type_infer ast genv in
+		let tast,tc,rt,_ = type_infer ast (genv ()) in
 		(* print_type rt;
 		print_constrs tc; *)
 		Printf.printf "constr collect"; print_newline ();

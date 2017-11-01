@@ -13,11 +13,24 @@ open Linux_win_diff
 open Elim_unused
 open Main_option
 open Lambda_lift
+open Remove_tuple
+open Assoc
+open Lettuple2dest
+open Const_fold
+
+let reduce_funcs = [
+	Inline.inliner;
+	Assoc.assoc;
+	Remove_tuple.remove;
+	Const_fold.folder;
+	Common_sube_elim.elimer;
+	Beta.beter;
+	Elim_unused.elim_unused;
+]
+
+let reduce_step ast = List.fold_left (fun r -> fun f -> f r) ast reduce_funcs
 
 
-
-let reduce_step ast = 
-	Elim_unused.elim_unused (Beta.beter (Common_sube_elim.elimer (Inline.inliner ast)))
 (*
 	Elim_unused.elim_unused (Beta.beter (Common_sube_elim.elimer ast))
 	Elim_unused.elim_unused (Beta.beter (Common_sube_elim.elimer ast))
@@ -32,7 +45,14 @@ let reduce_step ast =
 
 
 let reduce ast = 
-	reduce_step (reduce_step (reduce_step (reduce_step (reduce_step ast))))
+	let rec f i nast = 
+		if i < 5 then (
+			let tast = reduce_step nast in
+			Printf.printf "reduce step %d" i;  print_newline ();
+			f (i+1) tast
+		) else nast
+	in
+		f 0 ast
 
 let _ = 
 let argc = Array.length Sys.argv in
@@ -45,9 +65,10 @@ if argc <= 1 then (
 		("-t",Arg.Set tortesia,"compile for tortesia");
 		("-w",Arg.Set windows,"compile for windows x86");
 		("-d",Arg.Set debugmode,"debug inscount on");
+		("-noinline",Arg.Set noinline,"stop inlining");
 	] (fun fn -> files := (!files) @ [fn]) (Printf.sprintf "Usage: %s filename\n" Sys.argv.(0));
 	let ast = Source2ast.s2a (List.hd !files) in
-	files := if !nolib then (List.tl !files) else ("lib.ml" :: (List.tl !files));
+	files := if !nolib then (List.tl !files) else ((if !tortesia then "lib_tortesia.ml" else "lib.ml") :: (List.tl !files));
 	let globasts = List.map Source2ast.s2a (!files) in
 	let tast = match ast with
 	| DExpr east -> (
@@ -65,7 +86,10 @@ if argc <= 1 then (
 	let kn = Alpha.alpha_conv (Knorm.knorm ast2) [] in
 	print_string "k-normalized and alphad";  print_newline ();
 	vprint knorm2str kn;
-	let tkn = reduce kn in
+	let dkn = Lettuple2dest.lettupledest kn in
+	print_string "tuple destructed";  print_newline ();
+	vprint knorm2str dkn;
+	let tkn = reduce dkn in
 	print_string "reduced";  print_newline ();
 	vprint knorm2str tkn;
 	let ttkn = Lambda_lift.lift tkn in
@@ -78,17 +102,15 @@ if argc <= 1 then (
 	let vrt = Virtual.to_virtual cls in
 	print_string "virtualized";  print_newline ();
 
-	if !tortesia then (
-		let asm = Emit_zatsu_tortesia.vir2asm vrt in
-		print_string asm
-	)
-	else (
-		let asm = Emit_zatsu_x86.vir2asm vrt in
-		vprint (fun x -> x) asm;
-		let oc = open_out "out.s" in
-		output_string oc asm;
-		close_out oc
-	);
+	let asm = (if !tortesia then 
+		Emit_zatsu_tortesia.vir2asm vrt 
+	else
+		Emit_zatsu_x86.vir2asm vrt)
+	in
+	vprint (fun x -> x) asm;
+	let oc = open_out "out.s" in
+	output_string oc asm;
+	close_out oc;
 (*
 nasm lib.s -f elf32 -g -o lib.o; nasm out.s -f elf32 -g -o out.o; gcc -m32 out.o lib.o
 *)

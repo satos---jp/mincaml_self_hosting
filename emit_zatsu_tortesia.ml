@@ -117,13 +117,10 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		(unopr2s nr na s)
 	in
 	let fbiopr2s nr na nb s = 
-		raise (Failure "fbiopr2s is not impremented yet")
-(*
-		(Printf.sprintf "\tfld %s\n" (nd2ps na)) ^
-		(Printf.sprintf "\tfld %s\n" (nd2ps nb)) ^
+		(Printf.sprintf "\tfld r5,%s\n" (nd2ps na)) ^
+		(Printf.sprintf "\tfld r6,%s\n" (nd2ps nb)) ^
 		s ^ 
-		(Printf.sprintf "\tfstp %s\n" (nd2ps nr))
-*)
+		(Printf.sprintf "\tfst r5,%s\n" (nd2ps nr))
 	in
 	let triopr2s nr na nb nc s = 
 		(Printf.sprintf "\tlw r7,%s\n" (nd2ps nc)) ^
@@ -141,14 +138,9 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 			(Printf.sprintf "\tli r5,$%d\n" (if v then 1 else 0)) ^
 			(Printf.sprintf "\tsw r5,%s\n" (na2s na)) ^
 			"; " ^ (debug_data2simple d) ^ "\n"
-		| OpMovi(_,CFloat(v)) -> raise (Failure "Movi Cfloat is not implemented yet")
-(*
 		| OpMovi((na,(t,d)),CFloat(v)) -> assert (t=TyFloat); (
-				let tag = gen_const () in
-					constfs := (!constfs) ^ (Printf.sprintf "%s:\n\tdd %f\n" tag v);
-					Printf.sprintf "\tmov eax,[%s]\n\tmov %s,eax\n" tag (na2s na)
+				Printf.sprintf "\tfmovi f5,%f\n\tfst f5,%s\n" v (na2s na)
 			)
-*)
 		| OpMov(((na,(t1,d1)) as nrd),((nb,(t2,d2)) as nad)) -> assert (t1=t2); (mova2b nrd nad) 
 		| OpLabel x -> x ^ ":\n"
 		| OpJcnd(ct,(na,_),(nb,_),la) -> (
@@ -191,7 +183,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 					"\tpush r5\n"
 				) (List.rev vs))) ^ (* 逆にpushする *)
 				(let rfn = (na2s fn) in
-					if List.mem fn global_funcs then 
+					if List.mem fn (global_funcs ()) then 
 					(Printf.sprintf "\tjal %s\n" fn)
 				else 
 					((Printf.sprintf "\tlw r5,%s\n" rfn) ^ 
@@ -251,12 +243,10 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 				(if List.mem op [Ofadd;Ofsub;Ofmul;Ofdiv] then
 					fbiopr2s nrd nad nbd (
 						match op with
-					(*
-						| Ofadd -> "\tfaddp\n"
-						| Ofsub -> "\tfsubp\n"
-						| Ofmul -> "\tfmulp\n"
-						| Ofdiv -> "\tfdivp\n"
-					*)
+						| Ofadd -> "\tfadd r5,r5,r6\n"
+						| Ofsub -> "\tfsub r5,r5,r6\n"
+						| Ofmul -> "\tfmul r5,r5,r6\n"
+						| Ofdiv -> "\tfdiv r5,r5,r6\n"
 						| _ -> raise (Failure (Printf.sprintf "Operation %s is not float binary operation" os))
 					) 
 				else
@@ -264,13 +254,14 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 						match op with
 						| Oadd -> "\tadd r5,r5,r6\n"
 						| Osub -> "\tsub r5,r5,r6\n"
+						
+						| Ogeq -> "\tslt r5,r6,r5\n\tli r6,1\n\txor r5,r5,r6\n"
+						| Olt  -> "\tslt r5,r6,r5\n"
+						| Odiv -> "\txor edx,edx\n\tdiv ebx\n" (* unimplemented *)
 					(*
 						| Omul -> "\tmul ebx\n"
-						| Odiv -> "\txor edx,edx\n\tdiv ebx\n"
-						| Olt  -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetl cl\n\tmov eax,ecx\n"
 						| Oleq -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetle cl\n\tmov eax,ecx\n"
 						| Ogt  -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetg cl\n\tmov eax,ecx\n"
-						| Ogeq -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetge cl\n\tmov eax,ecx\n"
 						| Oeq  -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsete cl\n\tmov eax,ecx\n"
 						| Oneq -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetne cl\n\tmov eax,ecx\n"
 						| OArrCrt -> (
@@ -314,14 +305,20 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 
 *)
 
+
+let read_all_data filename = 
+	let res = ref "" in
+	let ic = open_in filename in
+	try
+		let rec f () = 
+			res := !res ^ "\n" ^ (input_line ic);
+			f ()
+		in f ()
+	with
+		| End_of_file -> close_in ic; (!res ^ "\n")
+
 let vir2asm (funs,rd) = 
-	"section .data\n" ^
-	!constfs ^
-	"section .bss\n" ^
-	"global_heap:\n" ^
-	"\tresb 0x80000000\n" ^
-	"section .text\n" ^
-	"global " ^ main_name ^ "\n" ^ 
+	(read_all_data "lib_tortesia.s") ^
 	(String.concat "" (List.map func2asm (List.rev funs))) ^	
 	(func2asm ((main_name,TyVar(-1)),[],[],rd))
 

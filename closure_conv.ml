@@ -146,7 +146,7 @@ let rec remove_closure known ast =
 	| KLetRec((fn,ft),args,e1,e2) -> (
 			(* 自由変数収集 -> closure変換、が正しそう *)
 			(* te1中に出ている、外側由来のものを集める  *)
-			let fvs = unique_name (get_fvs e1 (fn :: (List.map fst known) @ (List.map fst args) @ global_funcs)) in
+			let fvs = unique_name (get_fvs e1 (fn :: (List.map fst known) @ (List.map fst args) @ (global_funcs ()))) in
 			if List.length fvs = 0 then (
 				Printf.printf "%s is closure free\n" fn;
 				(* クロージャは(普通)不要。 変数に代入される際に大変になる *)

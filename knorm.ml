@@ -18,6 +18,54 @@ type kexp =
 	| KTuple     of (name list)
 	| KLetTuple  of (name list) * name * kexp
 
+type hash = Vs of int * (string list) | C of const | N of hash list 
+
+
+let rec hasher ast = 
+	match ast with
+	| KConst c -> C c
+	| KOp(op,vs) -> Vs(1,(op2str op) :: (List.map fst vs))
+	| KIf(op,a,b,e1,e2) -> N([Vs(2,(comptype2str op) :: (List.map fst [a;b]));hasher e1;hasher e2])
+	| KLet((na,_),e1,e2) -> N([Vs(3,[na]);hasher e1; hasher e2])
+	| KVar((na,_)) -> Vs(4,[na])
+	| KLetRec((fn,_),vs,e1,e2) -> N([Vs(5,fn :: (List.map fst vs));hasher e1;hasher e2])
+	| KApp((na,_),vs) -> Vs(6,na :: (List.map fst vs))
+	| KTuple(vs) -> Vs(7,List.map fst vs)
+	| KLetTuple(vs,(na,_),e1) -> N([Vs(8,na :: (List.map fst vs));hasher e1])
+
+
+(* よくある再帰的なモナド的な *)
+let rec kexp_recconv reccall ast = 
+	match ast with
+	| KIf(c,a,b,e1,e2) -> KIf(c,a,b,reccall e1,reccall e2)
+	| KLetRec(fn,vs,e1,e2) -> KLetRec(fn,vs,reccall e1,reccall e2)
+	| KLetTuple(a,b,e1) -> KLetTuple(a,b,reccall e1)
+	| KLet(na,e1,e2) -> KLet(na,reccall e1,reccall e2)
+	| _ -> ast
+
+
+let rec kexp_recconv_withrename reccall env ast = 
+	let conv_var (x,td) = 
+		try 
+			(List.assoc x env,td)
+		with
+			| Not_found -> (x,td)
+	in
+	let conv_list vs = List.map conv_var vs
+	in
+	match ast with
+	| KConst _ -> ast
+	| KOp(op,vs) -> KOp(op,conv_list vs)
+	| KIf(op,a,b,e1,e2) -> KIf(op,conv_var a,conv_var b,reccall e1,reccall e2)
+	| KLet(na,e1,e2) -> KLet(na,reccall e1,reccall e2)
+	| KVar(x) -> KVar(conv_var x)
+	| KLetRec(na,vs,e1,e2) -> KLetRec(na,vs,reccall e1,reccall e2)
+	| KApp(fn,vs) -> KApp(conv_var fn,conv_list vs)
+	| KTuple(vs) -> KTuple(conv_list vs)
+	| KLetTuple(vs,na,e1) -> KLetTuple(vs,conv_var na,reccall e1)
+
+
+
 let name2str (na,(ty,_)) = na ^ " : " ^ (type2str ty)
 
 let vs2str vs = "(" ^ (String.concat " , " (List.map name2str vs)) ^ ")"

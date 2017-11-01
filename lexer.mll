@@ -32,7 +32,7 @@ let true = 1 とかがあるのでエラーになる。
 | "create_array" { Parser.ALLCREATE } 
 | "("          { Parser.LPAR }
 | ")"          { Parser.RPAR }
-| "fun"        { Parser.FUN}
+| "fun"        { Parser.FUN }
 | "not"
 	{ Parser.NOT }
 | "<-"         { Parser.ARROW }

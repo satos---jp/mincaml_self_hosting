@@ -27,6 +27,8 @@ type optype =
 	| Ofadd | Ofsub | Ofmul | Ofdiv
 	| Oeq | Oneq | Olt | Oleq | Ogt | Ogeq | Osemi1 | Osemi2 | Onot 
 	| OArrCrt | OArrRead | OArrWrite
+	| OSubTuple of int * int
+	| OGetTuple of int
 
 let op2str o = 
 	match o with
@@ -51,6 +53,8 @@ let op2str o =
 	| OArrCrt -> "OArrCrt"
 	| OArrRead -> "OArrRead"
 	| OArrWrite -> "OArrWrite"
+	| OSubTuple(a,b) -> Printf.sprintf "OSubTuple[%d,%d]" a b
+	| OGetTuple(a) -> Printf.sprintf "OGetTuple[%d]" a
 
 type expr = expr_base * Debug.debug_data
 and expr_base =

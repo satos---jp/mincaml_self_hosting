@@ -56,7 +56,7 @@ let rec lift_func globs ast =
 	| KLetRec((fn,(ft,fd)),args,e1,e2) -> (
 			let te1 = reccall e1 in
 			(* e1中に出ている、外側由来のものを集める *)
-			let fvs = unique_name (get_fvs te1 ((List.map fst args) @ global_funcs)) in
+			let fvs = unique_name (get_fvs te1 ((List.map fst args) @ (global_funcs ()))) in
 			(* 自分自身が再帰的に、部分適用的に呼ばれている場合のみ、外に持ち上げられない *)
 			(* いまのところは、保守的に、再帰があればやめておく。(ちゃんとするにはte1を二度とる必要があるはず) *)
 			if not (List.mem fn (List.map fst fvs)) then (

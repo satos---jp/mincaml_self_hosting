@@ -15,13 +15,13 @@ type op =
 	| OpJcnd  of comptype * name * name * label
 	| OpLabel of label 
 	| OpJmp   of label 
-	| OpApp   of name * name * (name list)
-	| OpDirApp   of name * name * (name list)
-	| OpMakeTuple of name * (name list)
-	| OpDestTuple of (name list) * name
+	| OpApp   of (name list) * name * (name list)
+	| OpDirApp   of (name list) * name * (name list)
 	| OpMakeCls   of name * name * (name list)
-	| OpRet       of name
+	| OpRet       of (name list)
 	| OpMainRet
+
+(* pairを消して、n項がretで返るようにしてみた *)
 
 (*
 型情報について
@@ -58,7 +58,7 @@ let rec to_asms ast tov =
 					[OpJmp(lgl);OpLabel(lst)] @ (to_asms e2 tov) @ [OpLabel(lgl)]
 		)
 	| CVar(x) -> (
-		if List.mem (fst x) (global_funcs ()) then 
+		if List.mem (fst x) global_funcs then 
 			to_asms (CClosure(x,[])) tov
 		else
 			[OpMov(tov,x)]
@@ -92,10 +92,11 @@ let rec unique_name vs =
 
 let remove_vals vs ws = List.filter (fun (x,_) -> not (List.mem x ws)) vs 
 
-let collect_names ast vs = remove_vals (unique_name (collect_names_rec ast)) ((List.map fst vs) @ (global_funcs ()))
+let collect_names ast vs = remove_vals (unique_name (collect_names_rec ast)) ((List.map fst vs) @ global_funcs)
 
 let names2str vs = "[\n" ^ (String.concat ";\n" (List.map name2str vs)) ^ ";\n]\n"
 
+(* 命令列・関数内で出現している名前のリスト(これはスタック上に作るときに使う)でやる *)
 let rec to_virtual (defs,rd) = 
 	(List.map (fun (na,(vs1,vs2,bo)) -> 
 		let rd = snd (snd na) in
