@@ -2,11 +2,12 @@ open Virtual
 open Syntax
 open Type_checker
 open Debug
+open Genint
 (* とりあえず、雑に tortesia コードを生成する *)
 
 let constfs = ref ""
 
-let gen_const = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@const_$%d" !c)
+let gen_const () = Printf.sprintf "@const_%d" (genint ())
 
 
 let vs2stacks vs = 

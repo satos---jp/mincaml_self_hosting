@@ -1,6 +1,6 @@
 open Syntax
 open Debug
-
+open Genint
 
 open Type_checker
 type name = string * (ty * debug_data)
@@ -94,7 +94,7 @@ let rec kexp_size ast =
 	| KLetTuple(_,_,e1) -> 1 + (kexp_size e1)
 	| _ -> 1
 
-let genvar = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@k_%d" !c)
+let genvar () = Printf.sprintf "@k_%d" (genint ())
 
 let rec knorm (ast,nt) = 
 	match ast with

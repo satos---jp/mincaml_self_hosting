@@ -5,11 +5,12 @@ open Debug
 open Linux_win_diff
 open Debug
 open Main_option
+open Genint
 (* とりあえず、雑にx86コードを生成する *)
 
 let constfs = ref ""
 
-let gen_const = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@const_%d" !c)
+let gen_const () = Printf.sprintf "@const_%d" (genint ())
 
 
 let vs2stacks vs = 

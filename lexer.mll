@@ -33,9 +33,9 @@ let true = 1 とかがあるのでエラーになる。
 | "("          { Parser.LPAR }
 | ")"          { Parser.RPAR }
 | "fun"        { Parser.FUN }
-| "not"
-	{ Parser.NOT }
-| "<-"         { Parser.ARROW }
+| "not"        { Parser.NOT }
+| "<-"         { Parser.LARROW }
+| "->"         { Parser.RARROW }
 | "."          { Parser.DOT  }
 | ","          { Parser.COMMA  }
 | ";"          { Parser.SEMI }
@@ -48,9 +48,8 @@ let true = 1 とかがあるのでエラーになる。
 | "*"          { Parser.TIMES }
 | "/"          { Parser.DIV }
 | "="          { Parser.EQ }
-| "<>"          { Parser.NEQ }
-| "<="
-	{ Parser.LEQ }
+| "<>"         { Parser.NEQ }
+| "<="         { Parser.LEQ }
 | "<"          { Parser.LT }
 | ">="
 	{ Parser.GEQ }

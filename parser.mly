@@ -1,8 +1,10 @@
 %{
 	open Syntax
 	open Debug
+	open Genint
 	
 	let debug expr = (expr , (get_debug_data ()))
+	let gen_fun_name () = Printf.sprintf "@lam_%d" (genint ())
 %}
 
 %token <int>    INT
@@ -15,7 +17,7 @@
 %token EQ LT LEQ GT GEQ NEQ
 %token IF THEN ELSE NOT
 %token LPAR RPAR 
-%token FUN ARROW
+%token FUN LARROW RARROW
 %token REC
 %token ALLCREATE
 %token DOT COMMA SEMI EOF
@@ -23,6 +25,7 @@
 %left IN
 %right SEMI
 %nonassoc LET
+%nonassoc lambda_assoc
 %right if_assoc
 %right arrow_assoc
 %nonassoc tuple_assoc
@@ -147,9 +150,14 @@ Error: This expression has type float but an expression was expected of type
 		{ debug (ELetTuple($3,$5,$7)) }
 	| ALLCREATE simple_expr simple_expr             
 		{ debug (EOp(OArrCrt,[$2;$3])) }
-	| simple_expr DOT LPAR expr RPAR ARROW expr 
+	| simple_expr DOT LPAR expr RPAR LARROW expr 
 		%prec arrow_assoc
 		{ debug (EOp(OArrWrite,[$1;$4;$7])) }  
+		
+	| FUN rec_vars RARROW expr
+		%prec lambda_assoc
+		{ let fn = gen_fun_name () in
+			debug (ELetRec(fn,$2,$4,debug (EVar(fn)))) }
 	| error
 		{ failwith ("parse failure at " ^ debug_data2str (get_debug_data ())) }
 ;

@@ -1,6 +1,7 @@
 open Knorm
+open Genint
 
-let genname = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@a_%d" !c)
+let genname () = Printf.sprintf "@a_%d" (genint ())
 
 let rec alpha_conv ast env  = 
 	let conv_var (x,td) = 

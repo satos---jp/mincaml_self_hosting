@@ -1,11 +1,12 @@
 open Closure_conv
 open Syntax
-
 open Type_checker
 open Debug
+open Genint
+
 type name = string * (ty * debug_data)
 
-let genlabel = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@label_%d" !c)
+let genlabel () = Printf.sprintf "@label_%d" (genint ())
 
 type label = string
 type op = 

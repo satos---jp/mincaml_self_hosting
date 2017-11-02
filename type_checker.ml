@@ -1,6 +1,7 @@
 open Syntax
 open Debug
 open Main_option
+open Genint
 
 type tyvar = int
 
@@ -43,7 +44,7 @@ and type2str t =
 
 let print_type t = print_string ((type2str t) ^ "\n")
 
-let gentype = let c = ref 0 in (fun () -> c := (!c)+1; TyVar(!c))
+let gentype () = TyVar(genint ())
 
 let name2str (na,ty) = na ^ " : " ^ (type2str ty)
 

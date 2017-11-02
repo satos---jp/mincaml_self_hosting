@@ -4,10 +4,11 @@ open Debug
 open Type_checker
 open Elim_unused
 open Alpha
+open Genint
 
 type name = string * (ty * debug_data)
 
-let gencname = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@lift_%d" !c)
+let gencname () = Printf.sprintf "@lift_%d" (genint ())
 
 (* ast中のenvにない変数がfvである *)
 let rec get_fvs ast (env : string list) = 

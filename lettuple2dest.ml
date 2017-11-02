@@ -1,6 +1,7 @@
 open Syntax
 open Knorm
 open Type_checker
+open Genint
 
 (* 
 ・関数の引数のTupleを分解する 
@@ -9,7 +10,7 @@ open Type_checker
 この変換は、たぶん、最初の数回だけでよさそう
 *)
 
-let genname = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@let_dest_%d" !c)
+let genname () = Printf.sprintf "@let_dest_%d" (genint ())
 
 let type_flatten t = 
 	match t with
@@ -60,13 +61,8 @@ let rec remove_tuple ast =
 let lettupledest ast = 
 	let nast = ref ast in
 	let rec f i = 
-		nast := remove_tuple (!nast);
-		(* 
-		Printf.printf "step dest %d\n" (kexp_size !nast);  
-		Printf.printf "%s" (knorm2str !nast); 
-		print_newline ();
-		無限ループするのでもうだめです *)
-		if (hasher !nast) = (hasher ast) || i > 100 then !nast else f (i+1)
+		let tast = remove_tuple (!nast) in
+		if !nast = tast then !nast else (nast := tast; f (i+1))
 	in f 0
 
 

@@ -1,8 +1,9 @@
 open Knorm
 open Syntax
 open Debug
+open Genint
 
-let gencname = let c = ref 0 in (fun () -> c := (!c)+1; Printf.sprintf "@cls_%d" !c)
+let gencname () = Printf.sprintf "@cls_%d" (genint ())
 
 open Type_checker
 type name = string * (ty * debug_data)
@@ -21,8 +22,11 @@ type cexp =
 
 type globdef = (name list) * (name list) * cexp
 
-(* name list *)
+(* globalになった関数のリスト *)
 let globals = ref ([] : (name * globdef) list)
+
+(* globalな変数のリスト(これはtheなのでクロージャに渡さなくてよくなる) *)
+let globvars = ref ([] : string list)
 
 (*
 program .. cexp,globdef list 
@@ -55,9 +59,12 @@ let clos2str (gs,v) =
 	(String.concat "" (List.map (fun ((x,_),bo) -> x ^ " : " ^ (def2str bo)) (List.rev gs))) 
 	^ (cexp2str v) ^ "\n"
 
-(* ast中のenvにない変数がfvである *)
+
+(* ast中のenvにない変数がfvである
+	 globversも除くようにする
+ *)
 let rec get_fvs ast (env : string list) = 
-	let filter vs = List.filter (fun (x,_) -> not (List.mem x env)) vs in
+	let filter vs = List.filter (fun (x,_) -> not (List.mem x (env @ !globvars))) vs in
 	(* Printf.printf "Ast ::\n%s\n" (cexp2str ast);
 	Printf.printf "Env :: %s\n" (String.concat "," env); *)
 	match ast with
@@ -122,15 +129,21 @@ hはgのクロージャを引数としてもらう。
 
 *)
 
-let rec remove_closure known ast =
-	let reccall = remove_closure known in
+
+(* 
+	knownにはクロージャが不要な関数の一覧が入っている
+*)
+let rec remove_closure known istoplevel ast =
+	let reccall = remove_closure known istoplevel in
+	(* クロージャが不要な奴を値として参照しているなら、空クロージャを作る必要がある *)
 	let conv (a,d) cf = 
-		try 
+		try
 			let (tn,f) = List.assoc a known in
 			f (cf (tn,d))
 		with
 			| Not_found -> (cf (a,d))
 	in
+	(* convの対リスト版 *)
 	let convv vs cf = 
 		let tvs,tf = (List.fold_right (fun (a,d) -> fun (rvs,rf) -> 
 			try 
@@ -152,9 +165,9 @@ let rec remove_closure known ast =
 				(* クロージャは(普通)不要。 変数に代入される際に大変になる *)
 				let cn = gencname () in (* 各クロージャで、一時的に作るやつ *)
 				let tknown = (fn,(cn,fun x -> CLet((cn,ft),CClosure((fn,ft),[]),x))) :: known in
-				let te1 = remove_closure tknown e1 in
+				let te1 = remove_closure tknown false e1 in
 					globals := ((fn,ft),(fvs,args,te1)) :: !globals;
-					remove_closure tknown e2
+					remove_closure tknown istoplevel e2
 			) else (
 				(* fvsにクロージャのための引数一覧が入っていて、これを規約にやっていく *)
 				let global_name = gencname () in (* globalでの名前 *)
@@ -173,8 +186,11 @@ let rec remove_closure known ast =
 	| KConst(a) -> CConst(a)
 	| KOp(a,b) -> convv b (fun y -> COp(a,y))
 	| KIf(cmp,a,b,c,d) -> conv a (fun x -> conv b (fun y -> CIf(cmp,x,y,reccall c,reccall d)))
-	(*多分、α変換されてて大丈夫だよね...? *)	
-	| KLet(a,b,c) -> CLet(a,reccall b,reccall c)
+	(* toplevelなら加えておく *)
+	| KLet((a,_) as na,b,c) -> (
+			(if istoplevel then globvars := a :: !globvars else ());
+			CLet(na,reccall b,reccall c)
+		)
 	| KVar(a) -> conv a (fun x -> CVar(x))
 	| KTuple(a) -> convv a (fun x -> CTuple(x))
 	| KLetTuple(a,b,c) -> conv b (fun y -> CLetTuple(a,y,reccall c))
@@ -187,6 +203,6 @@ let rec remove_closure known ast =
 		)
 
 let conv ast = 
-	let ta = remove_closure [] ast in (!globals,ta)
+	let ta = remove_closure [] true ast in (!globals,ta)
 
 
