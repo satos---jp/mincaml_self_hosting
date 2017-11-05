@@ -93,11 +93,11 @@ let rec unique_name vs =
 
 let remove_vals vs ws = List.filter (fun (x,_) -> not (List.mem x ws)) vs 
 
-let collect_names ast vs = remove_vals (unique_name (collect_names_rec ast)) ((List.map fst vs) @ (global_funcs ()))
+let collect_names ast vs globvars = remove_vals (unique_name (collect_names_rec ast)) (globvars @ (List.map fst vs) @ (global_funcs ()))
 
 let names2str vs = "[\n" ^ (String.concat ";\n" (List.map name2str vs)) ^ ";\n]\n"
 
-let rec to_virtual (defs,rd) = 
+let rec to_virtual (fundefs,globvars,rd) = 
 	(List.map (fun (na,(vs1,vs2,bo)) -> 
 		let rd = snd (snd na) in
 		let rv = "@ret_val_" ^ (fst na) in
@@ -107,10 +107,12 @@ let rec to_virtual (defs,rd) =
 			| x -> raise (Failure ("Type " ^ (type2str x) ^ " is not function type"))
 		in
 		let rtd = (rt,rd) in
-			(na,vs1,vs2,((to_asms bo (rv,rtd)) @ [OpRet((rv,rtd))],(rv,rtd) :: (collect_names bo (vs1 @ vs2))))) defs,
+			(na,vs1,vs2,((to_asms bo (rv,rtd)) @ [OpRet((rv,rtd))],(rv,rtd) :: (collect_names bo (vs1 @ vs2) globvars)))) fundefs),
 	
-	let gvt = ("@global_ret_val",(TyInt,default_debug_data)) in
-	((to_asms rd gvt) @ [OpMainRet],gvt :: (collect_names rd [])))
+	(let gvt = ("@global_ret_val",(TyInt,default_debug_data)) in
+	((to_asms rd gvt) @ [OpMainRet],gvt :: (collect_names rd [] globvars))),
+	
+	globvars
 
 
 

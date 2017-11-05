@@ -92,16 +92,17 @@ if argc <= 1 then (
 	let tkn = reduce dkn in
 	print_string "reduced";  print_newline ();
 	vprint knorm2str tkn;
+	(*
 	let ttkn = Lambda_lift.lift tkn in
 	print_string "lifted";  print_newline ();
 	vprint knorm2str ttkn;
-	let ttkn = ttkn in
+	*)
+	let ttkn = tkn in
 	let cls = Closure_conv.conv ttkn in
 	print_string "closure_converted";  print_newline ();
 	vprint clos2str cls;
 	let vrt = Virtual.to_virtual cls in
 	print_string "virtualized";  print_newline ();
-
 	let asm = (if !tortesia then 
 		Emit_zatsu_tortesia.vir2asm vrt 
 	else

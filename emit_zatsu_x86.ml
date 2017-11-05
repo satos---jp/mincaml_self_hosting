@@ -44,6 +44,15 @@ call時にpushしたりする
 全体を let rec g () = ... in g () とすればよさそう？(雑)
 *)
 
+let on_glob_vars = ref []
+let heap_diff = ref 0
+let init_globvars gvs = 
+	on_glob_vars := List.fold_left (fun r -> fun x -> 
+		heap_diff := !heap_diff+4;
+		(x,!heap_diff-4) :: r
+	) [] gvs
+
+
 
 let func2asm ((fn,_),vs1,vs2,(ops,localvs)) = 
 	(*
@@ -64,7 +73,10 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		try ("ebp",List.assoc x on_stack)
 		with | Not_found -> 
 		try ("edi",List.assoc x on_clos)
-		with | Not_found -> ("@" ^ x,-1)
+		with | Not_found -> 
+		try ("global_heap",List.assoc x !on_glob_vars)
+		with | Not_found -> 
+		("@" ^ x,-1)
 	) in
 	let pt2s (a,b) = 
 		if String.get a 0 = '@' then String.sub a 1 ((String.length a)-1) else 
@@ -90,7 +102,9 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 	) in
 	let prologue = 
 		(Printf.sprintf "\tpush ebp\n\tmov ebp,esp\n\tsub esp,%d\n" (snd lvs_st)) ^
-		(if fn = main_name () then "\tmov esi,global_heap\n" else "") ^
+		(if fn = main_name () then 
+			Printf.sprintf "\tmov esi,global_heap\n\tadd esi,%d\n" !heap_diff
+		else "") ^
 		(if fn = main_name () && !debugmode then (
 			(eprintc 104) ^
 			(eprintc 98) ^
@@ -334,7 +348,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 
 
 
-let vir2asm (funs,rd) = 
+let vir2asm (funs,rd,globvars) = 
 	"BITS 32\n" ^
 	"%include \"" ^ (io_lib_name ()) ^ "\"\n" ^
 	"%include \"lib.s\"\n" ^
@@ -350,9 +364,10 @@ let vir2asm (funs,rd) =
 	"section .text\n" ^
 	"global " ^ (main_name ()) ^ "\n" ^ 
 	(
+		init_globvars globvars;
 		let f s = if !debugmode then add_inscount s else s in
-			(String.concat "" (List.map (fun x -> f (func2asm x)) (List.rev funs))) ^	
-			(f (func2asm ((main_name (),TyVar(-1)),[],[],rd)))
-	) 
+		(String.concat "" (List.map (fun x -> f (func2asm x)) (List.rev funs))) ^
+		(f (func2asm ((main_name (),TyVar(-1)),[],[],rd)))
+	)
 
 

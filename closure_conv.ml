@@ -55,9 +55,11 @@ let cexp2str ast =
 		
 let def2str (vs1,vs2,e) = "Func " ^ (vs2str vs1) ^ (vs2str vs2) ^ "[\n" ^ (cexp2str e) ^ "]\n"
 
-let clos2str (gs,v) = 
+let clos2str (gs,globvars,v) = 
+	"globvars:\n" ^ 
+	(String.concat "\n" globvars) ^ "\n" ^
 	(String.concat "" (List.map (fun ((x,_),bo) -> x ^ " : " ^ (def2str bo)) (List.rev gs))) 
-	^ (cexp2str v) ^ "\n"
+	^ (cexp2str v) ^ "\n" 
 
 
 (* ast’†‚Ìenv‚É‚È‚¢•Ï”‚ªfv‚Å‚ ‚é
@@ -203,6 +205,6 @@ let rec remove_closure known istoplevel ast =
 		)
 
 let conv ast = 
-	let ta = remove_closure [] true ast in (!globals,ta)
+	let ta = remove_closure [] true ast in (!globals,!globvars,ta)
 
 

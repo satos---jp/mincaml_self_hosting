@@ -51,6 +51,13 @@ r4 :: edi (クロージャへのポインタ)
 とします。
 *)
 
+let on_glob_vars = ref []
+let heap_diff = ref 0
+let init_globvars gvs = 
+	on_glob_vars := List.fold_left (fun r -> fun x -> 
+		heap_diff := !heap_diff+4;
+		(x,!heap_diff-4) :: r
+	) [] gvs
 
 let main_name = "main"
 
@@ -73,7 +80,10 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		try ("r2",List.assoc x on_stack)
 		with | Not_found -> 
 		try ("r4",List.assoc x on_clos)
-		with | Not_found -> ("@" ^ x,-1)
+		with | Not_found -> 
+		try ("r31",List.assoc x !on_glob_vars) (* 正直ガバなのでどうにかしたい *)
+		with | Not_found -> 
+		("@" ^ x,-1)
 	) in
 	let pt2s (a,b) = 
 		if String.get a 0 = '@' then String.sub a 1 ((String.length a)-1) else 
@@ -95,6 +105,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 	let prologue = 
 		"\tmflr r7\n" ^ 
 		"\tpush r7\n" ^ 
+		(if fn = main_name then Printf.sprintf "\tmov r31,r4\n\t\naddi r4,$%d\n" !heap_diff else "") ^
 		(Printf.sprintf "\tpush r2\n\tmov r2,r1\n\tsubi r1,r1,$%d\n" (snd lvs_st))
 	in
 	let epilogue = (
@@ -318,7 +329,8 @@ let read_all_data filename =
 	with
 		| End_of_file -> close_in ic; (!res ^ "\n")
 
-let vir2asm (funs,rd) = 
+let vir2asm (funs,rd,globvars) = 
+	init_globvars globvars;
 	(read_all_data "lib_tortesia.s") ^
 	(String.concat "" (List.map func2asm (List.rev funs))) ^	
 	(func2asm ((main_name,TyVar(-1)),[],[],rd))
