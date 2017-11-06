@@ -105,7 +105,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 	let prologue = 
 		"\tmflr r7\n" ^ 
 		"\tpush r7\n" ^ 
-		(if fn = main_name then Printf.sprintf "\tmov r31,r4\n\t\naddi r4,$%d\n" !heap_diff else "") ^
+		(if fn = main_name then Printf.sprintf "\tmov r31,r3\n\taddi r3,r3,$%d\n" !heap_diff else "") ^
 		(Printf.sprintf "\tpush r2\n\tmov r2,r1\n\tsubi r1,r1,$%d\n" (snd lvs_st))
 	in
 	let epilogue = (
@@ -129,10 +129,10 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 		(unopr2s nr na s)
 	in
 	let fbiopr2s nr na nb s = 
-		(Printf.sprintf "\tfld r5,%s\n" (nd2ps na)) ^
-		(Printf.sprintf "\tfld r6,%s\n" (nd2ps nb)) ^
+		(Printf.sprintf "\tfld f0,%s\n" (nd2ps na)) ^
+		(Printf.sprintf "\tfld f1,%s\n" (nd2ps nb)) ^
 		s ^ 
-		(Printf.sprintf "\tfst r5,%s\n" (nd2ps nr))
+		(Printf.sprintf "\tfst f1,%s\n" (nd2ps nr))
 	in
 	let triopr2s nr na nb nc s = 
 		(Printf.sprintf "\tlw r7,%s\n" (nd2ps nc)) ^
@@ -151,7 +151,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 			(Printf.sprintf "\tsw r5,%s\n" (na2s na)) ^
 			"; " ^ (debug_data2simple d) ^ "\n"
 		| OpMovi((na,(t,d)),CFloat(v)) -> assert (t=TyFloat); (
-				Printf.sprintf "\tfmovi f5,%f\n\tfst f5,%s\n" v (na2s na)
+				Printf.sprintf "\tfmovi f0,$%f\n\tfst f0,%s\n" v (na2s na)
 			)
 		| OpMov(((na,(t1,d1)) as nrd),((nb,(t2,d2)) as nad)) -> assert (t1=t2); (mova2b nrd nad) 
 		| OpLabel x -> x ^ ":\n"
@@ -255,10 +255,10 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 				(if List.mem op [Ofadd;Ofsub;Ofmul;Ofdiv] then
 					fbiopr2s nrd nad nbd (
 						match op with
-						| Ofadd -> "\tfadd r5,r5,r6\n"
-						| Ofsub -> "\tfsub r5,r5,r6\n"
-						| Ofmul -> "\tfmul r5,r5,r6\n"
-						| Ofdiv -> "\tfdiv r5,r5,r6\n"
+						| Ofadd -> "\tfadd f0,f0,f1\n"
+						| Ofsub -> "\tfsub f0,f0,f1\n"
+						| Ofmul -> "\tfmul f0,f0,f1\n"
+						| Ofdiv -> "\tfdiv f0,f0,f1\n"
 						| _ -> raise (Failure (Printf.sprintf "Operation %s is not float binary operation" os))
 					) 
 				else

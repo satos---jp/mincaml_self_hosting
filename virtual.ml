@@ -5,6 +5,7 @@ open Debug
 open Genint
 
 type name = string * (ty * debug_data)
+let name2str (na,(ty,_)) = na ^ " : " ^ (type2str ty)
 
 let genlabel () = Printf.sprintf "@label_%d" (genint ())
 

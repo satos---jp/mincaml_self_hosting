@@ -1,11 +1,9 @@
 open Syntax
 open Debug
 open Genint
-
 open Type_checker
-type name = string * (ty * debug_data)
 
-(* デバッグ情報はいったん落とす(実装がつらい...) *) 
+type name = string * (ty * debug_data)
 
 type kexp = 
 	| KConst of Syntax.const
@@ -17,6 +15,9 @@ type kexp =
 	| KApp       of name * (name list)
 	| KTuple     of (name list)
 	| KLetTuple  of (name list) * name * kexp
+
+
+(* デバッグ情報はいったん落とす(実装がつらい...) *) 
 
 type hash = Vs of int * (string list) | C of const | N of hash list 
 
