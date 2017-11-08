@@ -66,6 +66,12 @@ and texp_base =
 let genv () = 
 if !tortesia then [
 	(* ハードウェア実装してもらう *)
+(*
+ハードウェアでやってもらうのは、
+入力 は print_int　と print_float
+出力 は print_char のみ、で、
+print_int はコンパイラで実装する。
+*)
 	("print_int",TyFun([TyInt],TyTuple([])));
 	("float_of_int",TyFun([TyInt],TyFloat));
 	("fless",TyFun([TyFloat;TyFloat],TyInt));
@@ -97,6 +103,11 @@ if !tortesia then [
 	("read_int",TyFun([TyTuple([])],TyInt));
 	("read_float",TyFun([TyTuple([])],TyFloat));
 *)
+
+(* それぞれ、専用の入力命令があるため、アセンブラにした *)
+	("read_int",TyFun([TyTuple([])],TyInt));
+	("read_float",TyFun([TyTuple([])],TyFloat));
+
 ]
 
 let global_funcs () = List.map fst (genv ())

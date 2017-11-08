@@ -7,7 +7,7 @@ open Genint
 type name = string * (ty * debug_data)
 let name2str (na,(ty,_)) = na ^ " : " ^ (type2str ty)
 
-let genlabel () = Printf.sprintf "@label_%d" (genint ())
+let genlabel () = Printf.sprintf "@virtual_label_%d" (genint ())
 
 type label = string
 type op = 
@@ -98,20 +98,26 @@ let collect_names ast vs globvars = remove_vals (unique_name (collect_names_rec 
 
 let names2str vs = "[\n" ^ (String.concat ";\n" (List.map name2str vs)) ^ ";\n]\n"
 
+type funbody = VirtFunBody of op list * name list
+type virtglobdef = VirtFunDef of name * (name list) * (name list) * funbody
+
 let rec to_virtual (fundefs,globvars,rd) = 
-	(List.map (fun (na,(vs1,vs2,bo)) -> 
-		let rd = snd (snd na) in
-		let rv = "@ret_val_" ^ (fst na) in
-		let rt = 
-			match fst (snd na) with
-			| TyFun(_,x) -> x
-			| x -> raise (Failure ("Type " ^ (type2str x) ^ " is not function type"))
-		in
-		let rtd = (rt,rd) in
-			(na,vs1,vs2,((to_asms bo (rv,rtd)) @ [OpRet((rv,rtd))],(rv,rtd) :: (collect_names bo (vs1 @ vs2) globvars)))) fundefs),
+	(List.map (fun (na,def) -> 
+		match def with
+		| ClosFunDef(vs1,vs2,bo) -> (
+			let rd = snd (snd na) in
+			let rv = "@ret_val_" ^ (fst na) in
+			let rt = 
+				match fst (snd na) with
+				| TyFun(_,x) -> x
+				| x -> raise (Failure ("Type " ^ (type2str x) ^ " is not function type"))
+			in
+			let rtd = (rt,rd) in
+				VirtFunDef(na,vs1,vs2,VirtFunBody((to_asms bo (rv,rtd)) @ [OpRet((rv,rtd))],(rv,rtd) :: (collect_names bo (vs1 @ vs2) globvars))))
+		) fundefs),
 	
 	(let gvt = ("@global_ret_val",(TyInt,default_debug_data)) in
-	((to_asms rd gvt) @ [OpMainRet],gvt :: (collect_names rd [] globvars))),
+	VirtFunBody((to_asms rd gvt) @ [OpMainRet],gvt :: (collect_names rd [] globvars))),
 	
 	globvars
 

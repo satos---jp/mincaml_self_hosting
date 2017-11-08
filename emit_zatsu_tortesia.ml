@@ -61,7 +61,9 @@ let init_globvars gvs =
 
 let main_name = "main"
 
-let func2asm ((fn,_),vs1,vs2,(ops,localvs)) = 
+let func2asm def = 
+	match def with
+	| VirtFunDef((fn,_),vs1,vs2,VirtFunBody(ops,localvs)) -> (
 	(*
 	Printf.printf "%s%s%s" (names2str vs1) (names2str vs2) (names2str localvs);
 	*)
@@ -310,7 +312,7 @@ let func2asm ((fn,_),vs1,vs2,(ops,localvs)) =
 			)
 		| OpOpr(_,x,vs) -> raise (Failure (Printf.sprintf "Operation %s with $%d argument in not defined yet" (op2str x) (List.length vs)))
 	) ops))
-
+)
 (*
  nasm out.s -f elf32 -g -o out.o; gcc -m32 out.o
  nasm out.s -f win32 -g -o out.o; gcc -m32 out.o
@@ -333,7 +335,7 @@ let vir2asm (funs,rd,globvars) =
 	init_globvars globvars;
 	(read_all_data "lib_tortesia.s") ^
 	(String.concat "" (List.map func2asm (List.rev funs))) ^	
-	(func2asm ((main_name,TyVar(-1)),[],[],rd))
+	(func2asm (VirtFunDef((main_name,(TyVar(-1),default_debug_data)),[],[],rd)))
 
 
 

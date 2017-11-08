@@ -20,7 +20,7 @@ type cexp =
 	| CLetTuple  of (name list) * name * cexp
 	| CClosure   of name * (name list)
 
-type globdef = (name list) * (name list) * cexp
+type globdef = ClosFunDef of (name list) * (name list) * cexp
 
 (* globalになった関数のリスト *)
 let globals = ref ([] : (name * globdef) list)
@@ -52,8 +52,10 @@ let rec cexp2str_base ast d =
 let cexp2str ast = 
 	let ss = cexp2str_base ast 0 in
 		(String.concat "\n" (List.map (fun (d,s) -> (String.make (d*2) ' ') ^ s) ss)) ^ "\n"
-		
-let def2str (vs1,vs2,e) = "Func " ^ (vs2str vs1) ^ (vs2str vs2) ^ "[\n" ^ (cexp2str e) ^ "]\n"
+
+let def2str def = 
+	match def with
+	| ClosFunDef(vs1,vs2,e) -> "Func " ^ (vs2str vs1) ^ (vs2str vs2) ^ "[\n" ^ (cexp2str e) ^ "]\n"
 
 let clos2str (gs,globvars,v) = 
 	"globvars:\n" ^ 
@@ -168,7 +170,7 @@ let rec remove_closure known istoplevel ast =
 				let cn = gencname () in (* 各クロージャで、一時的に作るやつ *)
 				let tknown = (fn,(cn,fun x -> CLet((cn,ft),CClosure((fn,ft),[]),x))) :: known in
 				let te1 = remove_closure tknown false e1 in
-					globals := ((fn,ft),(fvs,args,te1)) :: !globals;
+					globals := ((fn,ft),ClosFunDef(fvs,args,te1)) :: !globals;
 					remove_closure tknown istoplevel e2
 			) else (
 				(* fvsにクロージャのための引数一覧が入っていて、これを規約にやっていく *)
@@ -181,7 +183,7 @@ let rec remove_closure known istoplevel ast =
 					(* Printf.printf "name %s :: type %s\n" fn (type2str ft); *)
 					print_string (String.concat " : " (List.map fst fvs));
 					Printf.printf " :: %s .aka %s\n" global_name fn;
-					globals := ((global_name,ft),(fvs,args,te1)) :: !globals;
+					globals := ((global_name,ft),ClosFunDef(fvs,args,te1)) :: !globals;
 					to_add_closure (reccall e2)
 			)
 		)

@@ -10,7 +10,7 @@ let rec print_int x =
 	else (if x < 0 then print_char 45; print_int_base (0-x) else print_int_base x)
 
 
-
+(*
 let rec read_int x = 
 	let rec f acc = 
 		let n = read_char () in
@@ -33,6 +33,7 @@ let rec read_float x =
 		let c = read_char () in
 			if c = 45 then (0.0 -.(f 0.0)) else (
 				if (c-47)*(58-c)>0 then f (float_of_int (c-48)) else read_float x)
+*)
 
 
 let rec print_hex_err_chr c = 
