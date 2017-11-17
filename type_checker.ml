@@ -8,11 +8,13 @@ type tyvar = int
 type ty =
 	| TyInt
 	| TyFloat
+	| TyNum 
 	| TyBool
 	| TyVar of tyvar
 	| TyArr of ty
 	| TyFun of (ty list) * ty
 	| TyTuple of ty list
+	
 
 exception TypeError of ty * ty * Debug.debug_data
 
@@ -20,7 +22,7 @@ let tyvar2str v = Printf.sprintf "'a%d" v
 
 let rec type2str_with_pa t =
         match t with
-        | TyInt | TyBool | TyFloat | TyVar _ | TyTuple _ -> type2str t
+        | TyInt | TyBool | TyFloat | TyVar _ | TyTuple _ | TyNum -> type2str t
         | TyFun _ | TyArr _ -> "(" ^ (type2str t) ^ ")"
 
 and type2str t =
@@ -28,6 +30,7 @@ and type2str t =
 	| TyInt -> "int"
 	| TyBool -> "bool"
 	| TyFloat -> "float"
+	| TyNum -> "number"
 	| TyVar v -> tyvar2str v
 	| TyFun (t1, t2) -> (
 		Printf.sprintf "%s -> %s" 
@@ -45,6 +48,8 @@ and type2str t =
 let print_type t = print_string ((type2str t) ^ "\n")
 
 let gentype () = TyVar(genint ())
+
+let genvar () = Printf.sprintf "@tc_%d" (genint ())
 
 let name2str (na,ty) = na ^ " : " ^ (type2str ty)
 
@@ -248,7 +253,7 @@ let print_subs subs =
 
 let rec ty_var_appear t v =
         match t with
-        | TyInt | TyBool | TyFloat -> false
+        | TyInt | TyBool | TyFloat | TyNum -> false
         | TyFun (t1s, t2) -> List.exists (fun x -> ty_var_appear x v) (t2 :: t1s)
         | TyVar x -> x = v
         | TyArr t -> (ty_var_appear t v)
@@ -256,7 +261,7 @@ let rec ty_var_appear t v =
 
 let rec ty_subst subs t = 
 	match t with
-	| TyInt | TyFloat | TyBool -> t
+	| TyInt | TyFloat | TyBool | TyNum -> t
 	| TyVar(nb) -> (
 		try 
 			let tt = (List.assoc nb subs) in 
@@ -291,8 +296,19 @@ let rec unify cs =
 						(x,y) :: (unify (constrs_subst (x,y) xs)) 
 				)
 			| TyArr a,TyArr b -> unify ((a,b,deb) :: xs)
-			| TyFun(vs,b),TyFun(cs,d) -> unify ((b,d,deb) :: (List.map2 (fun a -> fun c -> (a,c,deb)) vs cs) @ xs)
+			| TyFun(vs,b),TyFun(ws,d) -> ( (* 部分適用に対応する。 *)
+					(* unify ((b,d,deb) :: (List.map2 (fun a -> fun c -> (a,c,deb)) vs ws) @ xs) *)
+					let rec f nvs nws = (
+						match nvs,nws with
+						| [],[] -> [(b,d,deb)]
+						| [],rws -> [(b,TyFun(rws,d),deb)]
+						| rvs,[] -> [(TyFun(rvs,b),d,deb)]
+						| v :: rvs,w :: rws -> (v,w,deb) :: f rvs rws
+					) in
+				unify ((f vs ws) @ xs)
+				)
 			| TyTuple ps,TyTuple qs -> unify ((List.map2 (fun a b -> (a,b,deb)) ps qs) @ xs)
+			(* 多相性のために追加する *)
 			| _ -> raise (TypeError(t1,t2,deb))
 		with 
 			| Invalid_argument("List.map2") -> raise (TypeError(t1,t2,deb))
@@ -317,6 +333,61 @@ let rec ast_subst subs (ast,(nt,deb)) =
   in
   	(tast,(ty_subst subs nt,deb))
 
+type ('a, 'b) either = Left of 'a | Right of 'b
+
+let rec fix_partial_apply (ast,(t,deb)) =  
+	let f = fix_partial_apply in
+	let mf = List.map f in
+	let tast = match ast with
+	| TConst _ | TVar _ -> ast
+	| TOp(op,es) -> TOp(op,mf es)
+  | TIf(e1,e2,e3) -> TIf(f e1,f e2,f e3)
+  | TLet(na,e1,e2) -> TLet(na,f e1,f e2)
+  | TLetRec(na,vs,e1,e2) -> TLetRec(na,vs,f e1,f e2)
+  | TApp(e1,e2) -> (
+  		let ((_,(t,d) as td) as ftd) = f e1 in
+  		let es = mf e2 in
+  		let raise_invalid () = 
+  			raise (Failure(Printf.sprintf "Invalid apply for %s with (%s)" 
+  					(type2str t) (String.concat ", " (List.map (fun (_,(t,_)) -> (type2str t)) es))
+  			))
+  		in
+  		let rtes,rd = (
+				match t with
+				| TyFun(vs,rd) -> (
+						(let rec f ntvs nes acc = (
+							match ntvs,nes with
+							| _,[] -> Left ntvs
+							| [],_ -> Right(nes,acc)
+							| v :: vs,e :: res -> f vs res (acc @ [e])
+						) in f vs es []),rd
+					)
+				| _ -> raise_invalid ()
+			) in
+			(match rtes with
+			| Left [] | Right([],_) -> TApp(ftd,es)
+			| Right(res,acc) -> (
+					let te1 = (TApp(e1,acc),(rd,deb)) in
+					let tast,_ = fix_partial_apply (TApp(te1,res),(t,deb)) in
+						tast
+				)
+			| Left rts -> (
+					(* rtsが空でないなら、 App ftd es を、 let rec tmpf rts_1 rts_2 .. rts_n = ftd (es @ rts_1 rts_2 .. rts_n) in tmpf に変更する *)
+					let tmpftd = (TyFun(rts,rd),deb) in
+					let tmpf = (genvar (),tmpftd) in
+					let tmpvs = List.map (fun t -> (genvar (),(t,deb))) rts in
+					let te1 = TApp(ftd,es @ (List.map (fun ((_,td) as natd) -> ((TVar natd),td)) tmpvs)) in
+					TLetRec(tmpf,tmpvs,(te1,tmpftd),(TVar(tmpf),tmpftd))
+				)
+			)
+  	)
+  | TTuple(es) -> TTuple(mf es)
+  | TLetTuple(vs,e1,e2) -> TLetTuple(vs,f e1,f e2)
+  in
+  	(tast,(t,deb))
+
+
+
 let check ast = 
 	try (
 		let tast,tc,rt,_ = type_infer ast (genv ()) in
@@ -324,9 +395,10 @@ let check ast =
 		print_constrs tc; *)
 		Printf.printf "constr collect"; print_newline ();
 		let subs = unify tc in
-			(* print_subs subs; *)
-			Printf.printf "unified"; print_newline ();
-			ast_subst subs tast
+		(* print_subs subs; *)
+		Printf.printf "unified"; print_newline ();
+		let rast = ast_subst subs tast in
+		fix_partial_apply rast
 	) with
 		| TypeError(t1,t2,deb) -> 
 			raise (Failure(Printf.sprintf 	

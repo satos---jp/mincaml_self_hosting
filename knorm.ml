@@ -76,7 +76,7 @@ let rec kexp2str_base ast d =
 	| KConst x -> [(d,const2str x)]
 	| KOp(op,vs) -> [(d,(op2str op) ^ (vs2str vs))]
 	| KLet(na,e1,e2) -> (d,"Let " ^ (name2str na) ^ " =") :: (kexp2str_base e1 (d+1)) @ [(d,"In")] @ (kexp2str_base e2 (d+1))
-	| KLetRec(fn,vs,e1,e2) -> (d,"Let Rec " ^ (name2str fn) ^ " " ^(vs2str vs) ^ " =") :: (kexp2str_base e1 (d+1)) @ [(d,"In")] @ (kexp2str_base e2 (d+1))
+	| KLetRec(fn,vs,e1,e2) -> (d,"Let Rec " ^ (name2str fn) ^ " " ^(vs2str vs) ^ " =") :: (kexp2str_base e1 (d+1)) @ [(d,"In")] @ (kexp2str_base e2 d)
 	| KIf(ty,a,b,e1,e2) -> (d,"If " ^ (name2str a) ^ " " ^ (comptype2str ty) ^ " " ^ (name2str b) ^ " Then") :: (kexp2str_base e1 (d+1)) @ [(d,"Else")] @ (kexp2str_base e2 (d+1))
 	| KVar(x) -> [(d,"Var " ^ (name2str x))]
 	| KApp(fn,vs) -> [(d,"App " ^ (name2str fn) ^ (vs2str vs))]

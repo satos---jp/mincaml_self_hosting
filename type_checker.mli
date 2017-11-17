@@ -6,6 +6,7 @@ type tyvar = int
 type ty =
 	| TyInt
 	| TyFloat
+	| TyNum
 	| TyBool
 	| TyVar of tyvar
 	| TyArr of ty

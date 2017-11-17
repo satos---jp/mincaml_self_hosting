@@ -130,7 +130,8 @@ let func2asm def =
 			"\tadd esp,4\n" ^
 			(eprintc 10)
 		) else "") ^
-		(Printf.sprintf "\tadd esp,%d\n\tpop ebp\n" (snd lvs_st)) ^
+		(* 割とtrickyにしてしまっている *)
+		(Printf.sprintf "\tadd esp,%d\n\tpop ebp\n\tpop ebx\n\tadd esp,%d\n\tpush ebx\n" (snd lvs_st) (snd vs2_st)) ^
 		(if fn = main_name () then (
 			(let eprintc x = (
 				(Printf.sprintf "\tpush %d\n" x) ^
@@ -228,43 +229,42 @@ let func2asm def =
 				"\tadd esi,8\n"^
 				"; " ^ (nd2ds nad) ^ " "^ (nd2ds fnd) ^ "\n"
 			)
-		| OpApp(nad,((fn,_) as fnd),vs) -> (
-				let nl = ref 0 in
-				let s = 
-				"\tpush edi\n" ^
+		| OpApp(istail,isdir,nad,((fn,_) as fnd),vs) -> (
+				let isglobal = List.mem fn (global_funcs ()) in
+				let istail = (not isglobal) && (match istail with Tail -> true | NonTail -> false) in
+				(* lib関数のtail化はやめておく *)
+				let isdir = match isdir with DirApp -> true | InDirApp -> false in
+				let calljmp = if istail then "jmp" else "call" in
+				let ln = ref 0 in
+				(* 割とtrickyで、tailのとき、一つ前のedi([ebp+(snd vs2_st)+8]) を積む。 *)
+				let s = (if istail then
+				(Printf.sprintf "\tpush dword [ebp+%d]\n" ((snd vs2_st)+8))
+				else "\tpush edi\n") ^
 				(String.concat "" (List.map (fun nad -> 
-					nl := !nl + 4;
+					ln := !ln + 4;
 					(Printf.sprintf "\tpush dword %s\n" (nd2ps nad))
 				) (List.rev vs))) ^ (* 逆にpushする *)
+				(if istail then (
+			 		"\tpush dword [ebp+0x4]\n" ^ (* return addr *)
+					(if isdir then "\tmov ebp,[ebp]\n" else "")
+				) else "") ^
 				(let rfn = (na2s fn) in
-					if List.mem fn (global_funcs ()) then 
-					(Printf.sprintf "\tcall %s\n" fn)
+					if isglobal || isdir then 
+					(Printf.sprintf "\t%s %s\n" calljmp fn)
 				else 
 					((Printf.sprintf "\tmov eax,%s\n" rfn) ^ 
+					(if istail then "\tmov ebp,[ebp]\n" else "") ^
 					"\tmov edi,[eax+4]\n" ^ 
-					"\tcall [eax]\n")) ^
-				(Printf.sprintf "\tmov %s,eax\n" (nd2ps nad))
-				in (* こうしないと、nlがアップデートされない *)
-				s ^ 
-				(Printf.sprintf "\tadd esp,%d\n" !nl) ^
-				"\tpop edi\n" ^
-				"; " ^ (nd2ds nad) ^ " " ^ (nd2ds fnd) ^ "\n"
-			)
-		| OpDirApp(nad,((fn,_) as fnd),vs) -> (
-				let nl = ref 0 in
-				let s = 
-				"\tpush edi\n" ^
-				(String.concat "" (List.map (fun nad -> 
-					nl := !nl + 4;
-					(Printf.sprintf "\tpush dword %s\n" (nd2ps nad))
-				) (List.rev vs))) ^ (* 逆にpushする *)
-				(Printf.sprintf "\tcall %s\n" fn) ^
-				(Printf.sprintf "\tmov %s,eax\n" (nd2ps nad))
-				in (* こうしないと、nlがアップデートされない *)
-				s ^ 
-				(Printf.sprintf "\tadd esp,%d\n" !nl) ^
-				"\tpop edi\n" ^
-				"; " ^ (nd2ds nad) ^ " " ^ (nd2ds fnd) ^ "\n"
+					(Printf.sprintf "\t%s [eax]\n" calljmp))) 
+				in 
+				s ^
+				(if istail then "" else (
+					(Printf.sprintf "\tmov %s,eax\n" (nd2ps nad)) ^
+					(if isglobal then Printf.sprintf "\tadd esp,%d\n" !ln else "") ^
+					"\tpop edi\n"
+				)) ^
+				"; " ^ (nd2ds nad) ^ " " ^ (nd2ds fnd) ^ "\n" ^ 
+				"; " ^ (Printf.sprintf "%s : %s" (if isdir then "dir" else "indir") (if istail then "tail" else "nontail")) ^ "\n"
 			)
 		| OpRet((na,nt)) -> (
 				(let (p,l) = na2pt na in

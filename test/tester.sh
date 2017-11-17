@@ -19,7 +19,7 @@ do
 	cat $file >> tmp.ml
 	ocaml tmp.ml > oo.txt
 	rm out.s out.o a.out
-	./main -d $file > /dev/null
+	./main -d $file -noinline > /dev/null
 	nasm out.s -f elf32 -g -o out.o
 	gcc -m32 -nostdlib out.o -o a.out
 	./a.out > oa.txt

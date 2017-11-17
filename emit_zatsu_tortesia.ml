@@ -159,7 +159,9 @@ let func2asm def =
 		| OpLabel x -> x ^ ":\n"
 		| OpJcnd(ct,(na,_),(nb,_),la) -> (
 				(Printf.sprintf "\tlw r5,%s\n\tlw r6,%s\n" (na2s na) (na2s nb)) ^ 
-				(Printf.sprintf "\t%s r5,r6,%s\n" (match ct with CmpEq -> "bne") la)
+				(Printf.sprintf "\t%s r5,r6,%s\n" (match ct with 
+					| CmpEq -> "bne"
+					| CmpLt -> raise (Failure "unimplemented emit CmpLt at virtual.ml")) la)
 			)
 		| OpJmp(la) -> Printf.sprintf "\tj %s\n" la
 		| OpDestTuple(vs,nad) -> (
@@ -187,7 +189,7 @@ let func2asm def =
 				"\taddi r3,r3,$8\n"^
 				"; " ^ (nd2ds nad) ^ " "^ (nd2ds fnd) ^ "\n"
 			)
-		| OpApp(nad,((fn,_) as fnd),vs) -> (
+		| OpApp(istail,isdir,nad,((fn,_) as fnd),vs) -> (
 				let nl = ref 0 in
 				let s = 
 				"\tpush r4\n" ^
@@ -197,30 +199,13 @@ let func2asm def =
 					"\tpush r5\n"
 				) (List.rev vs))) ^ (* 逆にpushする *)
 				(let rfn = (na2s fn) in
-					if List.mem fn (global_funcs ()) then 
+				if List.mem fn (global_funcs ()) || isdir = DirApp then 
 					(Printf.sprintf "\tjal %s\n" fn)
 				else 
 					((Printf.sprintf "\tlw r5,%s\n" rfn) ^ 
 					"\tlw r4,r5,$4\n" ^ 
 					"\tlw r5,r5,$0\n" ^ 
 					"\tjalr r5\n")) ^ 
-				(Printf.sprintf "\tsw r5,%s\n" (nd2ps nad))
-				in (* こうしないと、nlがアップデートされない *)
-				s ^ 
-				(Printf.sprintf "\taddi r1,r1,$%d\n" !nl) ^
-				"\tpop r4\n" ^
-				"; " ^ (nd2ds nad) ^ " " ^ (nd2ds fnd) ^ "\n"
-			)
-		| OpDirApp(nad,((fn,_) as fnd),vs) -> (
-				let nl = ref 0 in
-				let s = 
-				"\tpush r4\n" ^
-				(String.concat "" (List.map (fun nad -> 
-					nl := !nl + 4;
-					(Printf.sprintf "\tlw r5,%s\n" (nd2ps nad)) ^
-					"\tpush r5\n"
-				) (List.rev vs))) ^ (* 逆にpushする *)
-				(Printf.sprintf "\tjal %s\n" fn) ^
 				(Printf.sprintf "\tsw r5,%s\n" (nd2ps nad))
 				in (* こうしないと、nlがアップデートされない *)
 				s ^ 

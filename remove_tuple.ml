@@ -8,7 +8,7 @@ let rec remove_tuple env ast =
 		try 
 			let nvs = List.assoc na env in
 				List.fold_left2 (fun r -> fun a -> fun b -> 
-					KLet(a,KVar(b),r)) e1 vs nvs
+					KLet(a,KVar(b),r)) te1 vs nvs
 		with
 			| Not_found -> ast
 		)

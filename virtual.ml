@@ -10,6 +10,8 @@ let name2str (na,(ty,_)) = na ^ " : " ^ (type2str ty)
 let genlabel () = Printf.sprintf "@virtual_label_%d" (genint ())
 
 type label = string
+type istailcall = Tail | NonTail
+type isdirapp   = DirApp | InDirApp
 type op = 
 	| OpMovi  of name * const
 	| OpMov   of name * name
@@ -17,8 +19,7 @@ type op =
 	| OpJcnd  of comptype * name * name * label
 	| OpLabel of label 
 	| OpJmp   of label 
-	| OpApp   of name * name * (name list)
-	| OpDirApp   of name * name * (name list)
+	| OpApp   of istailcall * isdirapp * name * name * (name list)
 	| OpMakeTuple of name * (name list)
 	| OpDestTuple of (name list) * name
 	| OpMakeCls   of name * name * (name list)
@@ -40,11 +41,11 @@ OpRet .. 必要
 *)
 
 
-let rec to_asms ast tov = 
+let rec to_asms ast tov istail retop = 
 	match ast with
 	| CConst(x) -> [OpMovi(tov,x)]
 	| COp(x,vs) -> [OpOpr(tov,x,vs)]
-	| CLet(na,e1,e2) -> (to_asms e1 na) @ (to_asms e2 tov)
+	| CLet(na,e1,e2) -> (to_asms e1 na false retop) @ (to_asms e2 tov istail retop)
 	| CIf(cmpty,a,b,e1,e2) -> (
 	(*
 		if ty a b in jmp lst
@@ -56,19 +57,19 @@ let rec to_asms ast tov =
 	*)
 			let lst = genlabel () in
 			let lgl = genlabel () in			
-				OpJcnd(cmpty,a,b,lst) :: (to_asms e1 tov) @ 
-					[OpJmp(lgl);OpLabel(lst)] @ (to_asms e2 tov) @ [OpLabel(lgl)]
+				OpJcnd(cmpty,a,b,lst) :: (to_asms e1 tov istail retop) @ 
+					(if istail then retop else [OpJmp(lgl)]) @ [OpLabel(lst)] @ (to_asms e2 tov istail retop) @ [OpLabel(lgl)]
 		)
 	| CVar(x) -> (
 		if List.mem (fst x) (global_funcs ()) then 
-			to_asms (CClosure(x,[])) tov
+			to_asms (CClosure(x,[])) tov istail retop
 		else
 			[OpMov(tov,x)]
 		)
-	| CApp(a,b) -> [OpApp(tov,a,b)]
-	| CDirApp(a,b) -> [OpDirApp(tov,a,b)]
+	| CApp(a,b) -> [OpApp((if istail then Tail else NonTail),InDirApp,tov,a,b)]
+	| CDirApp(a,b) -> [OpApp((if istail then Tail else NonTail),DirApp,tov,a,b)]
 	| CTuple(vs) -> [OpMakeTuple(tov,vs)]
-	| CLetTuple(vs,ta,e1) -> OpDestTuple(vs,ta) :: (to_asms e1 tov)
+	| CLetTuple(vs,ta,e1) -> OpDestTuple(vs,ta) :: (to_asms e1 tov istail retop)
 	| CClosure(na,vs) -> [OpMakeCls(tov,na,vs)]
 
 let rec collect_names_rec ast = 
@@ -113,12 +114,14 @@ let rec to_virtual (fundefs,globvars,rd) =
 				| x -> raise (Failure ("Type " ^ (type2str x) ^ " is not function type"))
 			in
 			let rtd = (rt,rd) in
-				VirtFunDef(na,vs1,vs2,VirtFunBody((to_asms bo (rv,rtd)) @ [OpRet((rv,rtd))],(rv,rtd) :: (collect_names bo (vs1 @ vs2) globvars))))
+			let retop = [OpRet((rv,rtd))] in
+				VirtFunDef(na,vs1,vs2,VirtFunBody((to_asms bo (rv,rtd) true retop) @ retop,(rv,rtd) :: (collect_names bo (vs1 @ vs2) globvars))))
 		) fundefs),
 	
 	(let gvt = ("@global_ret_val",(TyInt,default_debug_data)) in
-	VirtFunBody((to_asms rd gvt) @ [OpMainRet],gvt :: (collect_names rd [] globvars))),
-	
+	let retop = [OpMainRet] in
+	VirtFunBody((to_asms rd gvt false retop) @ retop,gvt :: (collect_names rd [] globvars))),
+	(* mainで末尾再帰はしなくてよいはず。 *)
 	globvars
 
 
