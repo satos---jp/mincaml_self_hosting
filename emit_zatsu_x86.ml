@@ -176,6 +176,12 @@ let func2asm def =
 		s ^ 
 		(Printf.sprintf "\tfstp %s\n" (nd2ps nr))
 	in
+	let fcmpopr2s nr na nb s = 
+		(Printf.sprintf "\tfld %s\n" (nd2ps na)) ^
+		(Printf.sprintf "\tfld %s\n" (nd2ps nb)) ^
+		s ^ 
+		(Printf.sprintf "\tmov %s,eax\n" (nd2ps nr))
+	in
 	let triopr2s nr na nb nc s = 
 		(Printf.sprintf "\tmov ecx,%s\n" (nd2ps nc)) ^
 		(biopr2s nr na nb s)
@@ -231,7 +237,7 @@ let func2asm def =
 			)
 		| OpApp(istail,isdir,nad,((fn,_) as fnd),vs) -> (
 				let isglobal = List.mem fn (global_funcs ()) in
-				let istail = (not isglobal) && (match istail with Tail -> true | NonTail -> false) in
+				let istail = false && (not isglobal) && (match istail with Tail -> true | NonTail -> false) in
 				(* lib関数のtail化はやめておく *)
 				let isdir = match isdir with DirApp -> true | InDirApp -> false in
 				let calljmp = if istail then "jmp" else "call" in
@@ -291,7 +297,7 @@ let func2asm def =
 			)
 		| OpOpr(nrd,op,[nad;nbd]) -> (
 				let os = op2str op in
-				(if List.mem op [Ofadd;Ofsub;Ofmul;Ofdiv] then
+				(if List.mem op [Ofadd;Ofsub;Ofmul;Ofdiv] then (
 					fbiopr2s nrd nad nbd (
 						match op with
 						| Ofadd -> "\tfaddp\n"
@@ -300,37 +306,62 @@ let func2asm def =
 						| Ofdiv -> "\tfdivp\n"
 						| _ -> raise (Failure (Printf.sprintf "Operation %s is not float binary operation" os))
 					) 
-				else
-					biopr2s nrd nad nbd (
-						match op with
-						| Oadd -> "\tadd eax,ebx\n"
-						| Osub -> "\tsub eax,ebx\n"
-						| Omul -> "\tmul ebx\n"
-						| Odiv -> "\txor edx,edx\n\tdiv ebx\n"
-						| Olt  -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetl cl\n\tmov eax,ecx\n"
-						| Oleq -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetle cl\n\tmov eax,ecx\n"
-						| Ogt  -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetg cl\n\tmov eax,ecx\n"
-					 	| Ogeq -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetge cl\n\tmov eax,ecx\n"
-					 	| Oeq  -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsete cl\n\tmov eax,ecx\n"
-					 	| Oneq -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetne cl\n\tmov eax,ecx\n"
-					 	| OArrCrt -> (
-								let la = genlabel () in
-								let lb = genlabel () in
-								"\tmov ecx,esi\n" ^
-								"\ttest eax,eax\n" ^
-								(Printf.sprintf "\tje %s\n" lb) ^
-								(Printf.sprintf "%s:\n" la) ^ 
-								"\tmov dword [esi],ebx\n" ^
-								"\tadd esi,4\n" ^
-								"\tsub eax,1\n" ^
-								(Printf.sprintf "\tjne %s\n" la) ^
-								(Printf.sprintf "%s:\n" lb) ^ 
-								"\tmov eax,ecx\n"
-					 		)
-					 	| OArrRead -> "\tmov eax,dword [eax+4*ebx]\n"
-					 	| _ -> raise (Failure (Printf.sprintf "Operation %s is not unfloat binary operation" os))
-					)
-				) ^
+				) else (
+					(* 多相性のため。もっと型チェックを入れてもいいかもしれん *)
+					match op with 
+					| Oeq | Oneq | Olt | Oleq | Ogt | Ogeq -> (
+						let isf = ((fst (snd nad)) = TyFloat) in
+						(if isf then fcmpopr2s else biopr2s) nrd nad nbd (
+							"\txor ecx,ecx\n" ^
+							(if isf then "\tfcomip\n" else "\tcmp eax,ebx\n") ^ 
+							(if isf then (
+								match op with
+								| Oeq  -> "\tsete cl\n"
+								| Oneq -> "\tsetne cl\n"
+								| Olt  -> "\tseta cl\n"
+								| Oleq -> "\tsetae cl\n"
+								| Ogt  -> "\tsetb cl\n"
+								| Ogeq -> "\tsetbe cl\n"
+								| _ -> raise (Failure (Printf.sprintf "ocmp swith shouldn't reach here"))
+							) else (
+								match op with
+								| Oeq  -> "\tsete cl\n"
+								| Oneq -> "\tsetne cl\n"
+								| Olt  -> "\tsetl cl\n"
+								| Oleq -> "\tsetle cl\n"
+								| Ogt  -> "\tsetg cl\n"
+								| Ogeq -> "\tsetge cl\n"
+								| _ -> raise (Failure (Printf.sprintf "ocmp swith shouldn't reach here"))
+							 )) ^
+							 "\tmov eax,ecx\n"
+						)
+					) 
+					| _ -> (
+						biopr2s nrd nad nbd ( 
+							match op with
+							| Oadd -> "\tadd eax,ebx\n"
+							| Osub -> "\tsub eax,ebx\n"
+							| Omul -> "\tmul ebx\n"
+							| Odiv -> "\txor edx,edx\n\tdiv ebx\n"
+						 	| OArrCrt -> (
+									let la = genlabel () in
+									let lb = genlabel () in
+									"\tmov ecx,esi\n" ^
+									"\ttest eax,eax\n" ^
+									(Printf.sprintf "\tje %s\n" lb) ^
+									(Printf.sprintf "%s:\n" la) ^ 
+									"\tmov dword [esi],ebx\n" ^
+									"\tadd esi,4\n" ^
+									"\tsub eax,1\n" ^
+									(Printf.sprintf "\tjne %s\n" la) ^
+									(Printf.sprintf "%s:\n" lb) ^ 
+									"\tmov eax,ecx\n"
+						 		)
+						 	| OArrRead -> "\tmov eax,dword [eax+4*ebx]\n"
+						 	| _ -> raise (Failure (Printf.sprintf "Operation %s is not unfloat binary operation" os))
+						) 
+					) 
+				)) ^
 				"; " ^ (nd2ds nrd) ^ " ::= " ^ os ^ " " ^ (nd2ds nad) ^ " " ^ (nd2ds nbd) ^ "\n"
 			)
 		| OpOpr(nrd,op,[nad;nbd;ncd]) -> (

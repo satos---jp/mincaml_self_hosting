@@ -149,6 +149,8 @@ let rec type_infer astdeb env =
 			let tts = List.map (fun (_,_,x,_) -> x) tects in 
 			let tds = List.map (fun (_,_,_,x) -> x) tects in 
 			
+			let addcs = ref [] in
+			
 			let tyf = (match op with
 			| Onot -> (fun () -> ([TyInt],TyInt))
 			| Ominus -> (fun () -> ([TyInt],TyInt))
@@ -160,12 +162,13 @@ let rec type_infer astdeb env =
 			| Ofsub -> (fun () -> ([TyFloat;TyFloat],TyFloat))
 			| Ofmul -> (fun () -> ([TyFloat;TyFloat],TyFloat))
 			| Ofdiv -> (fun () -> ([TyFloat;TyFloat],TyFloat))
-			| Oeq -> (fun () -> ([TyInt;TyInt],TyInt))
-			| Oneq -> (fun () -> ([TyInt;TyInt],TyInt))
-			| Olt -> (fun () -> ([TyInt;TyInt],TyInt))
-			| Oleq -> (fun () -> ([TyInt;TyInt],TyInt))
-			| Ogt -> (fun () -> ([TyInt;TyInt],TyInt))
-			| Ogeq -> (fun () -> ([TyInt;TyInt],TyInt))
+			
+			(* 全て、float同士、でもいけるようにする(多相性) *)
+			| Oeq | Oneq | Olt | Oleq | Ogt | Ogeq -> (
+				(fun () -> let x = gentype () in  
+					addcs := [(x,TyNum,deb)] @ !addcs;
+					([x;x],TyInt))
+			)
 			
 			| Osemi2 -> (fun () -> let x = gentype () in ([TyTuple([]);x],x))
 			| Osemi1 -> (fun () -> let x = gentype () in ([x],x))
@@ -176,7 +179,7 @@ let rec type_infer astdeb env =
 			| OSubTuple _ | OGetTuple _ -> raise (Failure (Printf.sprintf "%s shouldn't appear in parsed syntax" (op2str op)))
 			) in
 			let nts,rt = tyf () in
-				(TOp(op,tes),(zip3 nts tts tds) @ tcs,rt)
+				(TOp(op,tes),(zip3 nts tts tds) @ (!addcs) @ tcs,rt)
 		)
 	| EIf(e1,e2,e3) -> (
 			let te1,c1,tt1,deb1 = type_infer e1 env in
@@ -309,6 +312,7 @@ let rec unify cs =
 				)
 			| TyTuple ps,TyTuple qs -> unify ((List.map2 (fun a b -> (a,b,deb)) ps qs) @ xs)
 			(* 多相性のために追加する *)
+			| TyNum,TyInt | TyInt,TyNum | TyNum,TyFloat | TyFloat,TyNum -> unify xs
 			| _ -> raise (TypeError(t1,t2,deb))
 		with 
 			| Invalid_argument("List.map2") -> raise (TypeError(t1,t2,deb))
@@ -322,16 +326,16 @@ let rec ast_subst subs (ast,(nt,deb)) =
 	let mnf = List.map nf in
 	let tast = match ast with
 	| TConst _ -> ast
-  | TVar(na) -> TVar(nf na)
-  | TOp(op,es) -> TOp(op,mf es)
-  | TIf(e1,e2,e3) -> TIf(f e1,f e2,f e3)
-  | TLet(na,e1,e2) -> TLet(nf na,f e1,f e2)
-  | TLetRec(na,vs,e1,e2) -> TLetRec(nf na,mnf vs,f e1,f e2)
-  | TApp(e1,es) -> TApp(f e1,mf es)
-  | TTuple(es) -> TTuple(mf es)
-  | TLetTuple(vs,e1,e2) -> TLetTuple(mnf vs,f e1,f e2)
-  in
-  	(tast,(ty_subst subs nt,deb))
+	| TVar(na) -> TVar(nf na)
+	| TOp(op,es) -> TOp(op,mf es)
+	| TIf(e1,e2,e3) -> TIf(f e1,f e2,f e3)
+	| TLet(na,e1,e2) -> TLet(nf na,f e1,f e2)
+	| TLetRec(na,vs,e1,e2) -> TLetRec(nf na,mnf vs,f e1,f e2)
+	| TApp(e1,es) -> TApp(f e1,mf es)
+	| TTuple(es) -> TTuple(mf es)
+	| TLetTuple(vs,e1,e2) -> TLetTuple(mnf vs,f e1,f e2)
+	in
+		(tast,(ty_subst subs nt,deb))
 
 type ('a, 'b) either = Left of 'a | Right of 'b
 
@@ -341,18 +345,18 @@ let rec fix_partial_apply (ast,(t,deb)) =
 	let tast = match ast with
 	| TConst _ | TVar _ -> ast
 	| TOp(op,es) -> TOp(op,mf es)
-  | TIf(e1,e2,e3) -> TIf(f e1,f e2,f e3)
-  | TLet(na,e1,e2) -> TLet(na,f e1,f e2)
-  | TLetRec(na,vs,e1,e2) -> TLetRec(na,vs,f e1,f e2)
-  | TApp(e1,e2) -> (
-  		let ((_,(t,d) as td) as ftd) = f e1 in
-  		let es = mf e2 in
-  		let raise_invalid () = 
-  			raise (Failure(Printf.sprintf "Invalid apply for %s with (%s)" 
-  					(type2str t) (String.concat ", " (List.map (fun (_,(t,_)) -> (type2str t)) es))
-  			))
-  		in
-  		let rtes,rd = (
+	| TIf(e1,e2,e3) -> TIf(f e1,f e2,f e3)
+	| TLet(na,e1,e2) -> TLet(na,f e1,f e2)
+	| TLetRec(na,vs,e1,e2) -> TLetRec(na,vs,f e1,f e2)
+	| TApp(e1,e2) -> (
+		let ((_,(t,d) as td) as ftd) = f e1 in
+		let es = mf e2 in
+		let raise_invalid () = 
+			raise (Failure(Printf.sprintf "Invalid apply for %s with (%s)" 
+					(type2str t) (String.concat ", " (List.map (fun (_,(t,_)) -> (type2str t)) es))
+			))
+		in
+		let rtes,rd = (
 				match t with
 				| TyFun(vs,rd) -> (
 						(let rec f ntvs nes acc = (
@@ -380,11 +384,11 @@ let rec fix_partial_apply (ast,(t,deb)) =
 					TLetRec(tmpf,tmpvs,(te1,tmpftd),(TVar(tmpf),tmpftd))
 				)
 			)
-  	)
-  | TTuple(es) -> TTuple(mf es)
-  | TLetTuple(vs,e1,e2) -> TLetTuple(vs,f e1,f e2)
-  in
-  	(tast,(t,deb))
+		)
+	| TTuple(es) -> TTuple(mf es)
+	| TLetTuple(vs,e1,e2) -> TLetTuple(vs,f e1,f e2)
+	in
+		(tast,(t,deb))
 
 
 

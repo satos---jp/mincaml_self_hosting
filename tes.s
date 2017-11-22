@@ -21,6 +21,8 @@ main:
 	mov ebp,esp
 	sub esp,0x10
 	
+	fcomip
+	
 	mov edx,12
 	mov ecx,huga
 	mov ebx,1
