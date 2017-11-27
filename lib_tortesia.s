@@ -8,9 +8,9 @@ fless:
 	hlt
 	
 float_of_int:
-	lw r5,r2,$0
+	lw r5,r1,$0
 	itof f0,r5
-	fst f0,r2,$-4
-	lw r5,r2,$-4
+	fst f0,r1,$-4
+	lw r1,r1,$-4
 	ret
 

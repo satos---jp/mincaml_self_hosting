@@ -134,7 +134,7 @@ let func2asm def =
 		(Printf.sprintf "\tfld f0,%s\n" (nd2ps na)) ^
 		(Printf.sprintf "\tfld f1,%s\n" (nd2ps nb)) ^
 		s ^ 
-		(Printf.sprintf "\tfst f1,%s\n" (nd2ps nr))
+		(Printf.sprintf "\tfst f0,%s\n" (nd2ps nr))
 	in
 	let triopr2s nr na nb nc s = 
 		(Printf.sprintf "\tlw r7,%s\n" (nd2ps nc)) ^

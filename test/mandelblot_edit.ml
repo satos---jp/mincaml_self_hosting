@@ -16,7 +16,7 @@
                   let zi = ti in
                   let zr2 = zr *. zr in
                   let zi2 = zi *. zi in
-                  if fless (zr2 +. zi2) (2.0 *. 2.0) then print_int 0 else
+                  if fless (2.0 *. 2.0) (zr2 +. zi2) then print_int 0 else
                   iloop (i - 1) zr zi zr2 zi2 cr ci in
                 iloop 1000 0.0 0.0 0.0 0.0 cr ci;
 (*
