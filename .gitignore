@@ -14,12 +14,15 @@ main
 *.o
 out.s
 *.txt
+!test/*.txt
+*peda-session*.txt
 .gdb_history
 test/*.s
-!test/test_order.txt
 *.ppm
 min-rt.ml
 a
 o.png
 tes.py
 tes.c
+t.s
+

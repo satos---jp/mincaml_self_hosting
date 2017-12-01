@@ -1,18 +1,21 @@
 open Knorm
 open Syntax
 
+
+type ('a,'b) either = Left of 'a | Right of 'b
+
 let rec const_fold tupleenv cenv ast = 
 	let reccall = const_fold tupleenv cenv in
 	let op_fold op vs = 
 		try
-			let tvs = List.map (fun (na,_) -> List.assoc na cenv) vs in (
+			let tvs = List.map (fun ((na,_) as nad) -> try Left(List.assoc na cenv) with Not_found -> Right(nad) ) vs in (
 				match tvs with
-				| [CInt x] -> KConst(CInt(
+				| [Left(CInt x)] -> KConst(CInt(
 					(match op with
 					| Ominus -> (fun x -> -x)
 					| Onot -> (fun x -> if x = 0 then 1 else 0)
 					| _ -> raise Not_found) x))
-				| [CInt x;CInt y] -> KConst(CInt(
+				| [Left(CInt x);Left(CInt y)] -> KConst(CInt(
 					(match op with
 					| Oadd -> (+)
 					| Osub -> (-)
@@ -25,7 +28,18 @@ let rec const_fold tupleenv cenv ast =
 					| Oleq -> (fun x y -> if x <= y then 1 else 0)
 					| Ogeq -> (fun x y -> if x >= y then 1 else 0)
 					| _ -> raise Not_found) x y))
-				| [CFloat x;CFloat y] -> KConst(CFloat(
+				| [Left(CInt x);Right(nad)] -> (
+						match op with
+						| Omul -> KOp(Oimul(x),[nad])
+						| _ -> raise Not_found
+					)
+				| [Right(nad);Left(CInt x)] -> (
+						match op with
+						| Omul -> KOp(Oimul(x),[nad])
+						| Odiv -> KOp(Oibydiv(x),[nad])
+						| _ -> raise Not_found
+					)
+				| [Left(CFloat x);Left(CFloat y)] -> KConst(CFloat(
 					(match op with
 					| Ofadd -> (+.)
 					| Ofsub -> (-.)
@@ -34,8 +48,7 @@ let rec const_fold tupleenv cenv ast =
 					| _ -> raise Not_found) x y))
 				| _ -> raise Not_found
 			)
-		with
-			| Not_found -> KOp(op,vs)
+		with | Not_found -> KOp(op,vs)
 	in
 	match ast with
 	| KOp(OGetTuple(i),[(na,_)]) -> (

@@ -5,7 +5,14 @@ open Debug
 open Genint
 
 type name = string * (ty * debug_data)
+(*
 let name2str (na,(ty,_)) = na ^ " : " ^ (type2str ty)
+量がやばい
+*)
+let name2str (na,(ty,_)) = na 
+
+
+let vs2str vs = "(" ^ (String.concat " , " (List.map name2str vs)) ^ ")"
 
 let genlabel () = Printf.sprintf "@virtual_label_%d" (genint ())
 
@@ -25,6 +32,23 @@ type op =
 	| OpMakeCls   of name * name * (name list)
 	| OpRet       of name
 	| OpMainRet
+
+let rec virtop2str op = 
+	match op with
+	| OpMovi(na,c) -> "\t" ^ (name2str na) ^ " := " ^ (const2str c)
+	| OpMov(na,c) -> "\t" ^ (name2str na) ^ " := " ^ (name2str na)
+	| OpOpr(na,opr,vs) -> "\t" ^ (name2str na) ^ " := " ^ (op2str opr) ^ (vs2str vs)
+	| OpJcnd(cmp,na,nb,la) -> "\tIf " ^ (name2str na) ^ " " ^ (comptype2str cmp) ^ " " ^ (name2str nb) ^ " Then Jmp " ^ la
+	| OpJmp(la) -> "\tJmp " ^ la
+	| OpLabel(la) -> la ^ ":"
+	| OpApp(b1,b2,na,nb,vs) -> "\t" ^ (name2str na) ^ " := " ^ (name2str nb) ^ (vs2str vs)
+	| OpMakeTuple(na,vs) -> "\t" ^ (name2str na) ^ " := " ^ (vs2str vs)
+	| OpDestTuple(vs,na) -> "\t" ^ (vs2str vs) ^ " := " ^ (name2str na) 
+	| OpMakeCls(na,nb,vs) -> "\t" ^ (name2str na) ^ " := <Closure: " ^ (name2str nb) ^ (vs2str vs) ^ " >"
+	| OpRet(na) -> "\tReturn " ^ (name2str na)
+	| OpMainRet -> "\tMainReturn " 
+
+
 
 (*
 型情報について
@@ -125,6 +149,24 @@ let rec to_virtual (fundefs,globvars,rd) =
 	globvars
 
 
+let funbody2str fb =
+	match fb with
+	| VirtFunBody(ops,vs) -> (
+			"localval:: " ^ (String.concat " " (List.map name2str vs)) ^ "\n" ^ 
+			(String.concat "\n" (List.map virtop2str ops)) 
+		)
+
+let virtglobdef2str gdf = 
+	match gdf with
+	| VirtFunDef(fn,vs,cvs,bo) -> (
+			(name2str fn) ^ (vs2str vs) ^ (vs2str cvs) ^ ":\n" ^
+			(funbody2str bo)
+		)
+
+let virt2str (vgs,mfb,gvs) = 
+	(String.concat "" (List.map virtglobdef2str vgs)) ^
+	"globalval:: " ^ (String.concat " " gvs) ^ "\n" ^ 
+	(virtglobdef2str (VirtFunDef(("main",(TyInt,default_debug_data)),[],[],mfb)))
 
 
 

@@ -29,6 +29,8 @@ type optype =
 	| OArrCrt | OArrRead | OArrWrite
 	| OSubTuple of int * int
 	| OGetTuple of int
+	| Oimul of int
+	| Oibydiv of int
 
 let op2str o = 
 	match o with
@@ -37,6 +39,8 @@ let op2str o =
 	| Osub -> "Osub"
 	| Omul -> "Omul"
 	| Odiv -> "Odiv"
+	| Oimul(a) -> Printf.sprintf "Oimul[%d]"  a
+	| Oibydiv(a) -> Printf.sprintf "Oibydiv[%d]"  a
 	| Ofadd -> "Ofadd"
 	| Ofsub -> "Ofsub"
 	| Ofmul -> "Ofmul"

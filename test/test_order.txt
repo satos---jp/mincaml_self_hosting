@@ -1,11 +1,17 @@
+operator.ml operator_i.txt
+
 print_char.ml
 int_math_operation.ml
 var_func.ml
 print_int.ml
+plot_trigon.ml plot_trigon_i.txt 
+array_rw.ml array_rw_i.txt
 fib.ml
-closure_buggy.ml
-mandelblot_edit.ml
 global_array_rw.ml
 make_dest_tuple.ml
+closure_buggy.ml
+ftoi_itof.ml
+mandelblot_edit.ml
 external_library.ml
+io.ml io_i.txt
 

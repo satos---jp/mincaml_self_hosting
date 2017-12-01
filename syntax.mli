@@ -20,7 +20,9 @@ type optype =
 	| OArrCrt | OArrRead | OArrWrite
 	| OSubTuple of int * int
 	| OGetTuple of int
-	
+	| Oimul of int
+	| Oibydiv of int
+
 val op2str : optype -> string
 
 type expr = expr_base * Debug.debug_data

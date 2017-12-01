@@ -71,16 +71,38 @@ and texp_base =
 let genv () = 
 if !tortesia then [
 	(* ハードウェア実装してもらう *)
+	("print_char",TyFun([TyInt],TyTuple([])));
+	("print_int",TyFun([TyInt],TyTuple([])));
+	
+	("read_char",TyFun([TyTuple([])],TyInt));
+	("read_int",TyFun([TyTuple([])],TyInt));
+	("read_float",TyFun([TyTuple([])],TyFloat));
+
 (*
 ハードウェアでやってもらうのは、
 入力 は print_int　と print_float
 出力 は print_char のみ、で、
 print_int はコンパイラで実装する。
 *)
-	("print_int",TyFun([TyInt],TyTuple([])));
+(* アセンブラで実装した *)
 	("float_of_int",TyFun([TyInt],TyFloat));
+	("int_of_float",TyFun([TyFloat],TyInt));
+	
+	("fiszero",TyFun([TyFloat],TyInt));
+	("fisneg",TyFun([TyFloat],TyInt));
+
+(* とりあえず、x86のものを流用する *)
+	("fispos",TyFun([TyFloat],TyInt));
 	("fless",TyFun([TyFloat;TyFloat],TyInt));
-	("print_char",TyFun([TyInt],TyTuple([])));
+	("fabs",TyFun([TyFloat],TyFloat));
+	("floor",TyFun([TyFloat],TyFloat));
+	("fsqr",TyFun([TyFloat],TyFloat)); (* x -> x^2 のほう *)
+	("fneg",TyFun([TyFloat],TyFloat));
+	("fhalf",TyFun([TyFloat],TyFloat));
+	("sqrt",TyFun([TyFloat],TyFloat));   (* x -> root x のほう *)
+	("sin",TyFun([TyFloat],TyFloat));
+	("cos",TyFun([TyFloat],TyFloat));
+	("atan",TyFun([TyFloat],TyFloat));
 ] else [ (*x86 *)
 (* アセンブラで実装した*)
 	("fless",TyFun([TyFloat;TyFloat],TyInt));
@@ -158,6 +180,8 @@ let rec type_infer astdeb env =
 			| Osub -> (fun () -> ([TyInt;TyInt],TyInt))
 			| Omul -> (fun () -> ([TyInt;TyInt],TyInt))
 			| Odiv -> (fun () -> ([TyInt;TyInt],TyInt))
+			| Oimul _ -> (fun () -> ([TyInt],TyInt))
+			| Oibydiv _ -> (fun () -> ([TyInt],TyInt))
 			| Ofadd -> (fun () -> ([TyFloat;TyFloat],TyFloat))
 			| Ofsub -> (fun () -> ([TyFloat;TyFloat],TyFloat))
 			| Ofmul -> (fun () -> ([TyFloat;TyFloat],TyFloat))

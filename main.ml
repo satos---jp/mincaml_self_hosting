@@ -45,14 +45,16 @@ let reduce_step ast =
 
 
 let reduce ast = 
-	let rec f i nast = 
-		if i < 5 then (
-			let tast = reduce_step nast in
-			Printf.printf "reduce step %d" i;  print_newline ();
-			f (i+1) tast
-		) else nast
-	in
-		f 0 ast
+	if !nooptimization then ast else (
+		let rec f i nast = 
+			if i < 6 then (
+				let tast = reduce_step nast in
+				Printf.printf "reduce step %d" i;  print_newline ();
+				f (i+1) tast
+			) else nast
+		in
+			f 0 ast
+	)
 
 let _ = 
 let argc = Array.length Sys.argv in
@@ -65,7 +67,9 @@ if argc <= 1 then (
 		("-t",Arg.Set tortesia,"compile for tortesia");
 		("-w",Arg.Set windows,"compile for windows x86");
 		("-d",Arg.Set debugmode,"debug inscount on");
+		("-noopt",Arg.Set nooptimization,"stop optimization");
 		("-noinline",Arg.Set noinline,"stop inlining");
+		("-o",Arg.Set_string output_filename,"output filename");
 	] (fun fn -> files := (!files) @ [fn]) (Printf.sprintf "Usage: %s filename\n" Sys.argv.(0));
 	let ast = Source2ast.s2a (List.hd !files) in
 	files := if !nolib then (List.tl !files) else ((if !tortesia then "lib_tortesia.ml" else "lib.ml") :: (List.tl !files));
@@ -103,13 +107,14 @@ if argc <= 1 then (
 	vprint clos2str cls;
 	let vrt = Virtual.to_virtual cls in
 	print_string "virtualized";  print_newline ();
+	vprint virt2str vrt;
 	let asm = (if !tortesia then 
 		Emit_zatsu_tortesia.vir2asm vrt 
 	else
 		Emit_zatsu_x86.vir2asm vrt)
 	in
 	vprint (fun x -> x) asm;
-	let oc = open_out "out.s" in
+	let oc = open_out !output_filename in
 	output_string oc asm;
 	close_out oc;
 (*

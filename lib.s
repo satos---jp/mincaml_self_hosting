@@ -24,7 +24,7 @@ half_to_int:
 	dd 0.000000
 
 section .text
-	
+
 float_of_int: ; int -> float
 	fild dword [esp+0x4]
 	fstp dword [esp-0x4]
@@ -181,7 +181,18 @@ fabs:
 	mov eax,[esp-0x4]
 	ret
 
+;
+;
 floor:
+;とりあえず、壊れたままで
+	push dword [esp+0x4]
+	call int_of_float
+	add esp,4
+	push eax
+	call float_of_int
+	add esp,4
+	ret
+
 	push dword [esp+0x4]
 	call fisneg
 	add esp,4
@@ -197,7 +208,8 @@ floor:
 floor_neg:
 	push dword [esp+0x4]
 	call fneg
-	mov [esp],eax
+	add esp,4
+	push eax
 	call floor
 	add esp,4
 	

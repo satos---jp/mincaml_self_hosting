@@ -107,9 +107,7 @@ let func2asm def =
 	) in
 	let prologue = 
 		(Printf.sprintf "\tpush ebp\n\tmov ebp,esp\n\tsub esp,%d\n" (snd lvs_st)) ^
-		(if fn = main_name () then 
-			Printf.sprintf "\tmov esi,global_heap\n\tadd esi,%d\n" !heap_diff
-		else "") ^
+		(if fn = main_name () then Printf.sprintf "\tmov esi,global_heap\n"	else "") ^
 		(if fn = main_name () && !debugmode then (
 			(eprintc 104) ^
 			(eprintc 98) ^
@@ -118,7 +116,8 @@ let func2asm def =
 			"\tcall print_hex_err\n" ^
 			"\tadd esp,4\n" ^
 			(eprintc 10)
-		) else "")
+		) else "") ^
+		(if fn = main_name () then Printf.sprintf "\tadd esi,%d\n" !heap_diff else "")
 	in
 	let epilogue = 
 		(if fn = main_name () && !debugmode then (
@@ -291,6 +290,8 @@ let func2asm def =
 					| Ominus -> "\tneg eax\n"
 					| Onot   -> "\ttest eax,eax\n\tsete al\n\tand eax,1\n"
 					| OGetTuple(i) -> (Printf.sprintf "\tadd eax,%d\n\tmov eax,[eax]\n" (i*4))
+					| Oimul(x) -> (Printf.sprintf "\tmov edx,%d\n\tmul edx\n" x)
+					| Oibydiv(x) -> (Printf.sprintf "\txor edx,edx\n\tmov ebx,%d\n\tdiv ebx\n" x)
 					| _ -> raise (Failure (Printf.sprintf "Operation %s is not unary operation" os))
 			 	)) ^
 				"; " ^ (nd2ds nrd) ^ " ::= " ^ os ^ " " ^ (nd2ds nad) ^ "\n"

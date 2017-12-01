@@ -8,3 +8,4 @@ set 1 7;
 print_int (get 1);
 print_int (get 0);
 print_char 10
+
