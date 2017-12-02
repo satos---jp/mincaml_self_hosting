@@ -118,8 +118,8 @@ let func2asm def =
 		(Printf.sprintf "\tpush r2\n\tmov r2,r1\n\tsubi r1,r1,$%d\n" (snd lvs_st))
 	in
 	let epilogue = (
-		(if fn = main_name then "\thlt\n" else "") ^
-		(Printf.sprintf "\taddi r1,r1,$%d\n\tpop r2\n" (snd lvs_st)) ^
+		(if fn = main_name then "\thlt\n" else 
+		((Printf.sprintf "\taddi r1,r1,$%d\n\tpop r2\n" (snd lvs_st)) ^
 		(* canary 
 		(Printf.sprintf "\tli r30,$%d\n" canary) ^ 
 		"\tpop r29\n" ^
@@ -128,7 +128,7 @@ let func2asm def =
 		*)
 		
  		"\tpop r6\n" ^ 
-		"\tjr r6\n"
+		"\tjr r6\n"))
 	)
 	in
 	let mova2b nad nbd = 

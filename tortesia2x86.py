@@ -1,8 +1,15 @@
 #coding: utf-8
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("-w", "--windows", help="for windows",action="store_true")
+args = parser.parse_args()
+
+main_name = "_main" if args.windows else "_start"
+
 head = [
 	"BITS 32",
-	"%include \"libio_linux.s\"",
+	("%include \"libio_" + ("win" if args.windows else "linux") + ".s\""),
 	"%include \"lib.s\"",
 	"%include \"lib_tortesia_to_x86.s\"",
 	"section .bss",
@@ -14,10 +21,10 @@ head = [
 	"\tdd 0x0",
 	"inst_counter:",
 	"\tdd 0x0",
+	"_lr:",
+	"\tdd 0",
 	"_cr:",
 	"\tdd 0",
-	"_lr:",
-	"\tdd 0"
 ]
 
 for i in xrange(32):
@@ -47,12 +54,70 @@ text = [
 	"global_heap:",
 	"\tresb 0x40000000",
 	"section .text",
-	"global _start",
+	("global " + main_name),
 	"get_eip:", #trick from https://stackoverflow.com/questions/4062403/how-to-check-the-eip-value-with-assembly-language
 	"\tmov eax,[esp]",
 	"\tret",
 ]
 
+"""
+;print_char:
+;	hlt
+
+;print_int:
+;	hlt
+	
+;fless:
+;	hlt
+
+float_of_int:
+	lw r5,r1,$0
+	itof f1,r5
+	fst f1,r1,$-4
+	lw r5,r1,$-4
+	ret
+
+int_of_float:
+	fld f1,r1,$0
+	ftoi r5,f1
+	ret
+
+fiszero:
+	fld f1,r1,$0
+	fcmp f1,f0
+	fbeq fiszero_iszero
+	li r5,$0
+	ret
+fiszero_iszero:
+	li r5,$1
+	ret
+
+
+fisneg:
+	fld f1,r1,$0
+	fcmp f0,f1
+	fblt fiseg_isneg
+	li r5,$0
+	ret
+fiseg_isneg:
+	li r5,$1
+	ret
+
+"""
+"""
+	('int_of_float',1),
+	('float_of_int',1),
+"""
+
+"""
+hb 005ef120
+ha 0067cb7c
+ic 00000003a6d3ec70
+
+157億命令
+580メガバイト
+	('fiszero',1),
+"""
 
 libfuncs = [
 	('print_char',1),
@@ -60,9 +125,12 @@ libfuncs = [
 	('read_char',1),
 	('read_int',1),
 	('read_float',1),
-
-	('fispos',2),
+	
+	('fisneg',1),
+	('fiszero',1),
+	
 	('fless',2),
+	('fispos',1),
 	('fabs',1),
 	('floor',1),
 	('fsqr',1),
@@ -88,8 +156,9 @@ for fn,i in libfuncs:
 		"\tmov [_r5],eax",
 	]
 	
-	text += ["\tadd esp,%d" % (i*4)]
-		
+	if fn not in ['print_int']:
+		text += ["\tadd esp,%d" % (i*4)]
+	
 	text += ["\tjmp [_lr]"]
 
 
@@ -117,11 +186,15 @@ def hlt(v):
 			"add esp,4"
 		] +
 		eprintc("\n") + 
+		([
+			"ret",
+		]
+		if args.windows else 
 		[
 			"mov ebx,0",
 			"mov eax,1",
 			"int 0x80"
-		]
+		])
 	)
 
 def mov(v):
@@ -308,14 +381,16 @@ def itof(v):
 	return [
 		"push dword [%s]" % v[1],
 		"call float_of_int",
-		"mov [%s],eax" % v[0] 
+		"mov [%s],eax" % v[0],
+		"add esp,4"
 	]
 
 def ftoi(v):
 	return [
 		"push dword [%s]" % v[1],
 		"call int_of_float",
-		"mov [%s],eax" % v[0] 
+		"mov [%s],eax" % v[0],
+		"add esp,4"
 	]
 
 def fld(v):
@@ -421,7 +496,7 @@ for i,s in enumerate(sys.stdin.readlines()):
 		elif s[0]=='main:':
 			ns = (
 			[
-				"_start:",
+				(main_name + ":"),
 				"\tmov dword [_r1],global_stack",
 				"\tmov dword [_r3],global_heap"
 			] + eprints("hb ") + 
@@ -433,13 +508,15 @@ for i,s in enumerate(sys.stdin.readlines()):
 			) 
 		else:
 			ns = ['_'+s[0]]
+			if s[0]=='fiszero:':
+				ns += ["int 0x3"]
 	else:
 		#print s
 		oc = s[0]
 		s = map(name_conv, ''.join(s[1:]).split(','))
 		ns = map(lambda c: '\t' + c,eval(oc)(s))
 		
-		
+		ns += ["mov dword [_r0],0"]
 		#if i in range(40,181):
 		#if i==39:
 		#ns = ["mov esi,%d" % i,"int 0x3"] + ns

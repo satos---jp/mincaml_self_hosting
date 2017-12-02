@@ -3,33 +3,71 @@ if ! (cd ..; make > /dev/null); then
 	exit 1
 fi
 cp ../main ./
-cp ../main.exe ./
 cp ../lib.ml ./
 cp ../lib.s ./
 cp ../libio_win.s ./
 cp ../libio_linux.s ./
+cp ../lib_tortesia.ml ./
+cp ../lib_tortesia.s ./
+cp ../lib_tortesia_to_x86.s ./
 
-cat test_order.txt | while read file
+
+exec_ocaml(){
+	#OcamlÇ≈é¿çs
+	cat test_header.ml > tmp.ml
+	cat $1 >> tmp.ml
+	if [ -z $3 ]; then 
+		ocaml tmp.ml > $2
+	else
+		ocaml tmp.ml < $3 > $2
+	fi
+	rm out.s out.o a.out tmp.ml
+}
+
+exec_x86(){
+	#x86Ç≈é¿çs
+	./main -d $1 ../globals.ml -w -noinline > /dev/null
+	nasm out.s -f win32 -g -o out.o
+	gcc -m32 out.o -o a.out
+	if [ -z $3 ]; then 
+		./a.out > $2
+	else
+		./a.out < $3 > $2
+	fi	
+}
+
+exec_tortesia(){
+	#tortesia -> x86 Ç≈é¿çs
+	./main -d $1 ../globals.ml -noinline -t -o o.s > /dev/null
+	python ../tortesia2x86.py -w < o.s > out.s
+	nasm out.s -f win32 -g -o out.o
+	gcc -m32 out.o -o a2.out
+	if [ -z $3 ]; then 
+		./a2.out > $2
+	else
+		./a2.out < $3 > $2
+	fi
+}
+
+
+cat test_order.txt | while read file input
 do
 	if [ -z $file ]; then 
 		break
 	fi
-	sleep 0.1
 	echo "---------------" $file "----------------"
 	cat $file
-	cat test_header.ml > tmp.ml
-	cat $file >> tmp.ml
-	ocaml tmp.ml > oo.txt
-	rm out.s out.o a a.exe
-	./main -w -d $file > /dev/null
-	nasm -f win32 -o out.o -g out.s
-	gcc -m32 out.o -o a.exe
-	./a.exe > oa.txt
+	
+	exec_x86 $file oo.txt $input 
+	exec_tortesia $file oa.txt $input
+	
+	#î‰är
 	if diff oo.txt oa.txt; then
+		#cat oo.txt
 		echo "ok"
 	else
 		echo "test failed"
 		break
 	fi
-	rm tmp.ml oo.txt oa.txt
+	rm oo.txt oa.txt
 done

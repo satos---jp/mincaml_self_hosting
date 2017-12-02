@@ -183,7 +183,6 @@ fabs:
 
 ;
 ;
-floor:
 ;とりあえず、壊れたままで
 	push dword [esp+0x4]
 	call int_of_float
@@ -193,6 +192,7 @@ floor:
 	add esp,4
 	ret
 
+floor:
 	push dword [esp+0x4]
 	call fisneg
 	add esp,4

@@ -14,7 +14,7 @@ main
 *.o
 out.s
 *.txt
-!test/*.txt
+!test/*_i.txt
 *peda-session*.txt
 .gdb_history
 test/*.s
