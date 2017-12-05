@@ -19,6 +19,8 @@ out.s
 .gdb_history
 test/*.s
 *.ppm
+!*interesting_toron/*.ppm
+*.png
 min-rt.ml
 a
 o.png

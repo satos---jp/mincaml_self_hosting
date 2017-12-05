@@ -81,9 +81,9 @@ print_char 10;
 print_int (if (fless 1.0 1.5) then 1 else 0);
 print_int (if (fless 1.5 1.5) then 1 else 0);
 print_int (if (fless 1.5 1.0) then 1 else 0);
-print_int (if (fless 1.0 (-1.5)) then 1 else 0);
-print_int (if (fless (-1.5) (-1.5)) then 1 else 0);
-print_int (if (fless (-1.5) 1.0) then 1 else 0);
+print_int (if (fless 1.0 (-0.5)) then 1 else 0);
+print_int (if (fless (-0.5) (-0.5)) then 1 else 0);
+print_int (if (fless (-0.5) 1.0) then 1 else 0);
 print_char 10;
 
 print_int (int_of_float ((float_of_int 5) *. (float_of_int 5)));

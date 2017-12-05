@@ -13,7 +13,7 @@ gdb.events.stop.connect(finish)
 
 
 src = ""
-with open('t.s') as fp:
+with open('o_tortesia.s') as fp:
 	src = fp.readlines() 
 
 class State:
@@ -42,7 +42,7 @@ class State:
 		sl.stack = gdb.execute('x/20xw _r1',to_string=True)
 		sl.heap = gdb.execute('x/20xw _r3',to_string=True)
 
-gdb.execute('r')
+gdb.execute('r < fcomp_i.txt')
 
 sts = []
 
@@ -72,7 +72,7 @@ while 1:
 	sts.append(State())
 	x = gdb.execute('i r eax',to_string=True).split()[1][2:]
 	s = gdb.execute('c',to_string=True)
-	#print('x:: ',x,t,)
+	print('x:: ',x,t,)
 	#print(s)
 	t += 1
 	

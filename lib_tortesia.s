@@ -11,4 +11,7 @@ int_of_float:
 	ftoi r5,f1
 	ret
 
+; itof,ftoiは
+; 負、正とともに小数点切り捨てだが、
+; floor は、負のほうは切り捨てする。
 

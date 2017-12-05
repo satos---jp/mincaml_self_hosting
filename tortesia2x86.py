@@ -103,10 +103,12 @@ fiseg_isneg:
 	li r5,$1
 	ret
 
+
 """
 """
 	('int_of_float',1),
 	('float_of_int',1),
+	('floor',1),
 """
 
 """
@@ -116,7 +118,6 @@ ic 00000003a6d3ec70
 
 157億命令
 580メガバイト
-	('fiszero',1),
 """
 
 libfuncs = [
@@ -126,16 +127,6 @@ libfuncs = [
 	('read_int',1),
 	('read_float',1),
 	
-	('fisneg',1),
-	('fiszero',1),
-	
-	('fless',2),
-	('fispos',1),
-	('fabs',1),
-	('floor',1),
-	('fsqr',1),
-	('fneg',1),
-	('fhalf',1),
 	('sqrt',1),
 	('sin',1),
 	('cos',1),
@@ -447,22 +438,25 @@ def fcmp(v):
 	return [
 		"fld dword [%s]" % v[0],
 		"fld dword [%s]" % v[1],
-		"fcomip",
-		"pushf",
-		"pop dword [_cr]"
+		"fucomip",
+		"pushfd",
+		"pop dword [_cr]",
+		"push eax",
+		"fstp dword [esp]",
+		"pop eax"
 	]
 
 def fblt(v):
 	return [
 		"push dword [_cr]",
-		"popf",
-		"jb _%s" % v[0]
+		"popfd",
+		"ja _%s" % v[0]
 	]
 
 def fbeq(v):
 	return [
 		"push dword [_cr]",
-		"popf",
+		"popfd",
 		"je _%s" % v[0]
 	]
 
@@ -497,6 +491,7 @@ for i,s in enumerate(sys.stdin.readlines()):
 			ns = (
 			[
 				(main_name + ":"),
+				"\tfinit\n",
 				"\tmov dword [_r1],global_stack",
 				"\tmov dword [_r3],global_heap"
 			] + eprints("hb ") + 
@@ -508,8 +503,10 @@ for i,s in enumerate(sys.stdin.readlines()):
 			) 
 		else:
 			ns = ['_'+s[0]]
+			"""
 			if s[0]=='fiszero:':
 				ns += ["int 0x3"]
+			"""
 	else:
 		#print s
 		oc = s[0]
@@ -519,7 +516,7 @@ for i,s in enumerate(sys.stdin.readlines()):
 		ns += ["mov dword [_r0],0"]
 		#if i in range(40,181):
 		#if i==39:
-		#ns = ["mov esi,%d" % i,"int 0x3"] + ns
+		#ns = ["\tmov esi,%d" % i,"\tint 0x3"] + ns
 		
 		ns = [
 			"\tmov edx,[inst_counter]", 

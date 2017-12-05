@@ -83,22 +83,23 @@ if !tortesia then [
 入力 は print_int　と print_float
 出力 は print_char のみ、で、
 print_int はコンパイラで実装する。
+
+	("fless",TyFun([TyFloat;TyFloat],TyInt));
+	("fiszero",TyFun([TyFloat],TyInt));
+	("fisneg",TyFun([TyFloat],TyInt));
+	("floor",TyFun([TyFloat],TyFloat));
+	("fispos",TyFun([TyFloat],TyInt));
+	("fabs",TyFun([TyFloat],TyFloat));
+	("fsqr",TyFun([TyFloat],TyFloat)); (* x -> x^2 のほう *)
+	("fneg",TyFun([TyFloat],TyFloat));
+	("fhalf",TyFun([TyFloat],TyFloat));
 *)
 (* アセンブラで実装した *)
 	("float_of_int",TyFun([TyInt],TyFloat));
 	("int_of_float",TyFun([TyFloat],TyInt));
 	
-	("fiszero",TyFun([TyFloat],TyInt));
-	("fisneg",TyFun([TyFloat],TyInt));
 
 (* とりあえず、x86のものを流用する *)
-	("fispos",TyFun([TyFloat],TyInt));
-	("fless",TyFun([TyFloat;TyFloat],TyInt));
-	("fabs",TyFun([TyFloat],TyFloat));
-	("floor",TyFun([TyFloat],TyFloat));
-	("fsqr",TyFun([TyFloat],TyFloat)); (* x -> x^2 のほう *)
-	("fneg",TyFun([TyFloat],TyFloat));
-	("fhalf",TyFun([TyFloat],TyFloat));
 	("sqrt",TyFun([TyFloat],TyFloat));   (* x -> root x のほう *)
 	("sin",TyFun([TyFloat],TyFloat));
 	("cos",TyFun([TyFloat],TyFloat));
@@ -149,6 +150,10 @@ let zip3 vs ws = List.map2 (fun (a,b) -> fun c -> (a,b,c)) (zip2 vs ws)
 (* 返り値は、 (新ast,制約,型,debug情報) *)
 (* 制約は、型1,型2,デバッグ情報 *)
 (* ここでは、まだα変換はしないことにしました *)
+
+(* TyInt関連は最後にチェックする *)
+let addglobalcs = ref []
+
 let rec type_infer astdeb env = 
 	let ast,deb = astdeb in
 	let rast,rc,rt = (
@@ -171,8 +176,6 @@ let rec type_infer astdeb env =
 			let tts = List.map (fun (_,_,x,_) -> x) tects in 
 			let tds = List.map (fun (_,_,_,x) -> x) tects in 
 			
-			let addcs = ref [] in
-			
 			let tyf = (match op with
 			| Onot -> (fun () -> ([TyInt],TyInt))
 			| Ominus -> (fun () -> ([TyInt],TyInt))
@@ -190,7 +193,7 @@ let rec type_infer astdeb env =
 			(* 全て、float同士、でもいけるようにする(多相性) *)
 			| Oeq | Oneq | Olt | Oleq | Ogt | Ogeq -> (
 				(fun () -> let x = gentype () in  
-					addcs := [(x,TyNum,deb)] @ !addcs;
+					addglobalcs := [(x,TyNum,deb)] @ !addglobalcs;
 					([x;x],TyInt))
 			)
 			
@@ -203,7 +206,7 @@ let rec type_infer astdeb env =
 			| OSubTuple _ | OGetTuple _ -> raise (Failure (Printf.sprintf "%s shouldn't appear in parsed syntax" (op2str op)))
 			) in
 			let nts,rt = tyf () in
-				(TOp(op,tes),(zip3 nts tts tds) @ (!addcs) @ tcs,rt)
+				(TOp(op,tes),(zip3 nts tts tds) @ tcs,rt)
 		)
 	| EIf(e1,e2,e3) -> (
 			let te1,c1,tt1,deb1 = type_infer e1 env in
@@ -422,7 +425,7 @@ let check ast =
 		(* print_type rt;
 		print_constrs tc; *)
 		Printf.printf "constr collect"; print_newline ();
-		let subs = unify tc in
+		let subs = unify (tc @ !addglobalcs) in
 		(* print_subs subs; *)
 		Printf.printf "unified"; print_newline ();
 		let rast = ast_subst subs tast in

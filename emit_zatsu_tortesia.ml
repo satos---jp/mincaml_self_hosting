@@ -151,6 +151,12 @@ let func2asm def =
 		s ^ 
 		(Printf.sprintf "\tfst f1,%s\n" (nd2ps nr))
 	in
+	let fcmpopr2s nr na nb s = 
+		(Printf.sprintf "\tfld f1,%s\n" (nd2ps na)) ^
+		(Printf.sprintf "\tfld f2,%s\n" (nd2ps nb)) ^
+		s ^ 
+		(Printf.sprintf "\tsw r5,%s\n" (nd2ps nr))
+	in
 	let triopr2s nr na nb nc s = 
 		(Printf.sprintf "\tlw r7,%s\n" (nd2ps nc)) ^
 		(biopr2s nr na nb s)
@@ -277,16 +283,43 @@ let func2asm def =
 			)
 		| OpOpr(nrd,op,[nad;nbd]) -> (
 				let os = op2str op in
-				(if List.mem op [Ofadd;Ofsub;Ofmul;Ofdiv] then
-					fbiopr2s nrd nad nbd (
-						match op with
-						| Ofadd -> "\tfadd f1,f1,f2\n"
-						| Ofsub -> "\tfsub f1,f1,f2\n"
-						| Ofmul -> "\tfmul f1,f1,f2\n"
-						| Ofdiv -> "\tfdiv f1,f1,f2\n"
-						| _ -> raise (Failure (Printf.sprintf "Operation %s is not float binary operation" os))
-					) 
-				else
+				(*
+				(print_string ((type2str (fst (snd nad)))^"\n"));
+				(print_string (os ^ "\n"));
+				*)
+				(if (fst (snd nad)) = TyFloat then (
+					(if List.mem op [Ofadd; Ofsub; Ofmul; Ofdiv] then (
+						fbiopr2s nrd nad nbd (
+							match op with
+							| Ofadd -> "\tfadd f1,f1,f2\n"
+							| Ofsub -> "\tfsub f1,f1,f2\n"
+							| Ofmul -> "\tfmul f1,f1,f2\n"
+							| Ofdiv -> "\tfdiv f1,f1,f2\n"
+							| _ -> raise (Failure (Printf.sprintf "Operation %s is not float binary operation" os))
+						)
+					) else (
+						let fcmpla (f1,f2) cs (t1,t2) = 
+							let la = genlabel () in
+							let lb = genlabel () in
+							(Printf.sprintf "\tfcmp f%d,f%d\n" f1 f2) ^ 
+							(Printf.sprintf "\t%s %s\n" cs la) ^
+							(Printf.sprintf "\tli r5,$%d\n\tj %s\n" t2 lb) ^
+							(Printf.sprintf "%s:\n" la) ^
+							(Printf.sprintf "\tli r5,$%d\n" t1) ^
+							(Printf.sprintf "%s:\n" lb)
+						in
+						fcmpopr2s nrd nad nbd (
+							match op with
+							| Oeq  -> fcmpla (1,2) "fbeq" (1,0)
+							| Oneq -> fcmpla (1,2) "fbeq" (0,1)
+							| Olt  -> fcmpla (1,2) "fblt" (1,0)
+							| Ogt  -> fcmpla (2,1) "fblt" (1,0)
+							| Oleq -> fcmpla (2,1) "fblt" (0,1)
+							| Ogeq -> fcmpla (1,2) "fblt" (0,1)
+							| _ -> raise (Failure (Printf.sprintf "Operation %s is not float compare operation" os))
+						)
+					))
+				) else (
 					biopr2s nrd nad nbd (
 						match op with
 						| Oadd -> "\tadd r5,r5,r6\n"
@@ -312,16 +345,9 @@ let func2asm def =
 								"\tmov r5,r7\n"
 					 		)
 					 	| OArrRead -> "\tsll r6,r6,$2\n\tadd r5,r5,r6\n\tlw r5,r5,$0\n"
-					(*
-						| Omul -> "\tmul ebx\n"
-						| Oleq -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetle cl\n\tmov eax,ecx\n"
-						| Ogt  -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetg cl\n\tmov eax,ecx\n"
-						| Oeq  -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsete cl\n\tmov eax,ecx\n"
-						| Oneq -> "\txor ecx,ecx\n\tcmp eax,ebx\n\tsetne cl\n\tmov eax,ecx\n"
-					 *)
-					 	| _ -> raise (Failure (Printf.sprintf "Operation %s from %s is not unfloat binary operation" os (debug_data2str (snd (snd nrd)))))
+					 	| _ -> raise (Failure (Printf.sprintf "Operation %s from %s is not int binary operation" os (debug_data2str (snd (snd nrd)))))
 					)
-				) ^
+				)) ^
 				"; " ^ (nd2ds nrd) ^ " ::= " ^ os ^ " " ^ (nd2ds nad) ^ " " ^ (nd2ds nbd) ^ "\n"
 			)
 		| OpOpr(nrd,op,[nad;nbd;ncd]) -> (

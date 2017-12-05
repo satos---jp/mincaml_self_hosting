@@ -334,6 +334,7 @@ let func2asm def =
 								| Ogeq -> "\tsetge cl\n"
 								| _ -> raise (Failure (Printf.sprintf "ocmp swith shouldn't reach here"))
 							 )) ^
+							 (if isf then "\tpush eax\n\tfstp dword [esp]\n\tpop eax\n\tfcomip\n" else "") ^
 							 "\tmov eax,ecx\n"
 						)
 					) 
