@@ -5,13 +5,11 @@ type name = string
 type const = 
 	| CInt of int
 	| CFloat of float
-	| CBool of bool
 
 let const2str c = 
 	match c with
 	| CInt x -> Printf.sprintf "CInt %d" x
 	| CFloat x -> Printf.sprintf "CFloat %f" x
-	| CBool x -> "CBool " ^ (if x then "true" else "false") 
 
 type comptype = 
 	| CmpEq

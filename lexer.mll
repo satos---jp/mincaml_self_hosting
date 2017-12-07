@@ -25,7 +25,7 @@ rule main = parse
 (*
 min-rt の先頭に、 
 let true = 1 とかがあるのでエラーになる。
-
+-> Boolは消しました。
 | "true"       { Parser.BOOL (true) }
 | "false"      { Parser.BOOL (false) }
 *) 

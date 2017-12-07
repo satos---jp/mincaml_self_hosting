@@ -191,8 +191,6 @@ let func2asm def =
 		match op with
 		| OpMovi((na,(t,d)),CInt(v)) -> assert (t=TyInt); 
 			(Printf.sprintf "\tmov %s,%d\n" (na2s na) v) ^ "; " ^ (debug_data2simple d) ^ "\n"
-		| OpMovi((na,(t,d)),CBool(v)) -> assert (t=TyBool); 
-			(Printf.sprintf "\tmov %s,%d\n" (na2s na) (if v then 1 else 0)) ^ "; " ^ (debug_data2simple d) ^ "\n"
 		| OpMovi((na,(t,d)),CFloat(v)) -> assert (t=TyFloat); (
 				let tag = gen_const () in
 					constfs := (!constfs) ^ (Printf.sprintf "%s:\n\tdd %f\n" tag v);

@@ -3,7 +3,6 @@ type name = string
 type const = 
 	| CInt of int
 	| CFloat of float
-	| CBool of bool
 
 val const2str : const -> string
 

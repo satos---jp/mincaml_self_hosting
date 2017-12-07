@@ -120,7 +120,7 @@ let rec knorm (ast,nt) =
 	| TIf(e1,e2,e3) -> (
 			let (_,(_,d)) = e1 in
 			let tast = TIf(
-				(TOp(Oeq,[e1;(TConst(CBool true),(TyBool,d))]),(TyBool,d))
+				(TOp(Oeq,[e1;(TConst(CInt 1),(TyInt,d))]),(TyInt,d))
 				,e2,e3) in
 			knorm (tast,nt)
 		)

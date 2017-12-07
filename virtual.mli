@@ -3,7 +3,10 @@ open Type_checker
 open Debug
 open Closure_conv
 
-type name = string * (ty * debug_data)
+(*
+type namestr = Var of string | Reg of string
+*)
+type name = string  * (ty * debug_data)
 
 type label = string
 type istailcall = Tail | NonTail

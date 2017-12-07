@@ -169,10 +169,6 @@ let func2asm def =
 			(Printf.sprintf "\tli r5,$%d\n" v) ^ 
 			(Printf.sprintf "\tsw r5,%s\n" (na2s na)) ^ 
 			"; " ^ (debug_data2simple d) ^ "\n"
-		| OpMovi((na,(t,d)),CBool(v)) -> assert (t=TyBool); 
-			(Printf.sprintf "\tli r5,$%d\n" (if v then 1 else 0)) ^
-			(Printf.sprintf "\tsw r5,%s\n" (na2s na)) ^
-			"; " ^ (debug_data2simple d) ^ "\n"
 		| OpMovi((na,(t,d)),CFloat(v)) -> assert (t=TyFloat); (
 				Printf.sprintf "\tfmovi f1,$%f\n\tfst f1,%s\n" v (na2s na)
 			)

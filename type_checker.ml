@@ -9,7 +9,6 @@ type ty =
 	| TyInt
 	| TyFloat
 	| TyNum 
-	| TyBool
 	| TyVar of tyvar
 	| TyArr of ty
 	| TyFun of (ty list) * ty
@@ -22,13 +21,12 @@ let tyvar2str v = Printf.sprintf "'a%d" v
 
 let rec type2str_with_pa t =
         match t with
-        | TyInt | TyBool | TyFloat | TyVar _ | TyTuple _ | TyNum -> type2str t
+        | TyInt | TyFloat | TyVar _ | TyTuple _ | TyNum -> type2str t
         | TyFun _ | TyArr _ -> "(" ^ (type2str t) ^ ")"
 
 and type2str t =
 	match t with
 	| TyInt -> "int"
-	| TyBool -> "bool"
 	| TyFloat -> "float"
 	| TyNum -> "number"
 	| TyVar v -> tyvar2str v
@@ -158,7 +156,6 @@ let rec type_infer astdeb env =
 	let ast,deb = astdeb in
 	let rast,rc,rt = (
 	match ast with
-	| EConst(CBool x) -> (TConst(CBool x),[],TyBool)
 	| EConst(CFloat x) -> (TConst(CFloat x),[],TyFloat)
 	| EConst(CInt x) -> (TConst(CInt x),[],TyInt)
 	| EVar(x) -> (
@@ -283,7 +280,7 @@ let print_subs subs =
 
 let rec ty_var_appear t v =
         match t with
-        | TyInt | TyBool | TyFloat | TyNum -> false
+        | TyInt | TyFloat | TyNum -> false
         | TyFun (t1s, t2) -> List.exists (fun x -> ty_var_appear x v) (t2 :: t1s)
         | TyVar x -> x = v
         | TyArr t -> (ty_var_appear t v)
@@ -291,7 +288,7 @@ let rec ty_var_appear t v =
 
 let rec ty_subst subs t = 
 	match t with
-	| TyInt | TyFloat | TyBool | TyNum -> t
+	| TyInt | TyFloat | TyNum -> t
 	| TyVar(nb) -> (
 		try 
 			let tt = (List.assoc nb subs) in 

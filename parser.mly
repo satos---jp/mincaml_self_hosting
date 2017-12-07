@@ -65,8 +65,6 @@ simple_expr:
 		{ $2 }
 	| LPAR RPAR
 		{ debug (ETuple([])) }
-	| BOOL
-		{ debug (EConst(CBool $1)) }
 	| INT 
 		{ debug (EConst(CInt $1)) }
 	| FLOAT

@@ -7,7 +7,6 @@ type ty =
 	| TyInt
 	| TyFloat
 	| TyNum
-	| TyBool
 	| TyVar of tyvar
 	| TyArr of ty
 	| TyFun of (ty list) * ty
