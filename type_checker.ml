@@ -70,7 +70,6 @@ let genv () =
 if !tortesia then [
 	(* ハードウェア実装してもらう *)
 	("print_char",TyFun([TyInt],TyTuple([])));
-	("print_int",TyFun([TyInt],TyTuple([])));
 	
 	("read_char",TyFun([TyTuple([])],TyInt));
 	("read_int",TyFun([TyTuple([])],TyInt));
@@ -81,6 +80,7 @@ if !tortesia then [
 入力 は print_int　と print_float
 出力 は print_char のみ、で、
 print_int はコンパイラで実装する。
+	("print_int",TyFun([TyInt],TyTuple([])));
 
 	("fless",TyFun([TyFloat;TyFloat],TyInt));
 	("fiszero",TyFun([TyFloat],TyInt));
@@ -91,17 +91,16 @@ print_int はコンパイラで実装する。
 	("fsqr",TyFun([TyFloat],TyFloat)); (* x -> x^2 のほう *)
 	("fneg",TyFun([TyFloat],TyFloat));
 	("fhalf",TyFun([TyFloat],TyFloat));
+
+	("sin",TyFun([TyFloat],TyFloat));
+	("cos",TyFun([TyFloat],TyFloat));
+	("atan",TyFun([TyFloat],TyFloat));
 *)
 (* アセンブラで実装した *)
 	("float_of_int",TyFun([TyInt],TyFloat));
 	("int_of_float",TyFun([TyFloat],TyInt));
-	
-
-(* とりあえず、x86のものを流用する *)
 	("sqrt",TyFun([TyFloat],TyFloat));   (* x -> root x のほう *)
-	("sin",TyFun([TyFloat],TyFloat));
-	("cos",TyFun([TyFloat],TyFloat));
-	("atan",TyFun([TyFloat],TyFloat));
+(* とりあえず、x86のものを流用する *)
 ] else [ (*x86 *)
 (* アセンブラで実装した*)
 	("fless",TyFun([TyFloat;TyFloat],TyInt));

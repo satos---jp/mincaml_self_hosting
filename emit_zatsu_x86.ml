@@ -6,6 +6,7 @@ open Linux_win_diff
 open Debug
 open Main_option
 open Genint
+open Op
 (* とりあえず、雑にx86コードを生成する *)
 
 let constfs = ref ""

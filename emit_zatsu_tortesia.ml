@@ -3,6 +3,7 @@ open Syntax
 open Type_checker
 open Debug
 open Genint
+open Op
 (* とりあえず、雑に tortesia コードを生成する *)
 
 let constfs = ref ""
@@ -255,22 +256,30 @@ let func2asm def =
 			)
 *)
 		| OpOpr(nrd,op,[nad]) -> (
+				let rec tomul a = 
+					(if a <= 0 then "" else (tomul (a/2))) ^
+						"\tsll r6,r6,$1\n" ^
+						(if (a mod 2 <> 0) then "\tadd r6,r6,r5\n" else "")
+				in
 				unopr2s nrd nad (
 					match op with
 					| Ominus -> "\tsub r5,r0,r5\n"
 					| Onot -> "\tslti r6,r5,$0\n\tslti r7,r5,$1\n\tsub r5,r7,r6\n"
 					| OGetTuple(i) -> (Printf.sprintf "\tlw r5,r5,$%d\n" (i*4))
 					| Oimul(x) -> (
-							let rec f a = 
-								(if a <= 0 then "" else (f (a/2))) ^
-								"\tsll r6,r6,$1\n" ^
-								(if (a mod 2 <> 0) then "\tadd r6,r6,r5\n" else "")
-							in
-								"\tli r6,$0\n" ^ (f x) ^ "\tmov r5,r6\n"
+							"\tli r6,$0\n" ^ (tomul x) ^ "\tmov r5,r6\n"
 						)
 					| Oibydiv(x) -> (
 						match x with
 						| 2 -> "\tslti r6,r5,$0\n\tadd r5,r5,r6\n\tsra r5,r5,$1\n"
+						(* from https://stackoverflow.com/questions/5558492/divide-by-10-using-bit-shifts *)
+						| 10 -> (
+								"\tli r6,$0\n" ^ (tomul 205) ^ "\tsra r5,r6,$11\n"
+							)
+							(*
+								"\tli r6,$0\n" ^ (tomul 205) ^ "\tsra r5,r6,$11\n"
+								"\tli r6,$0\n" ^ (tomul 0x1999999) ^ "\tmov r5,r6\n" 
+							*)
 						| _ -> raise (Failure (Printf.sprintf "divide by %d is not supported" x))
 						)
 					| _ -> raise (Failure (Printf.sprintf "Operation %s is not unary operation" (op2str op)))
@@ -297,8 +306,8 @@ let func2asm def =
 						let fcmpla (f1,f2) cs (t1,t2) = 
 							let la = genlabel () in
 							let lb = genlabel () in
-							(Printf.sprintf "\tfcmp f%d,f%d\n" f1 f2) ^ 
-							(Printf.sprintf "\t%s %s\n" cs la) ^
+							(Printf.sprintf "\t%s f%d,f%d\n" cs f1 f2) ^ 
+							(Printf.sprintf "\tbft %s\n" la) ^
 							(Printf.sprintf "\tli r5,$%d\n\tj %s\n" t2 lb) ^
 							(Printf.sprintf "%s:\n" la) ^
 							(Printf.sprintf "\tli r5,$%d\n" t1) ^
@@ -306,12 +315,12 @@ let func2asm def =
 						in
 						fcmpopr2s nrd nad nbd (
 							match op with
-							| Oeq  -> fcmpla (1,2) "fbeq" (1,0)
-							| Oneq -> fcmpla (1,2) "fbeq" (0,1)
-							| Olt  -> fcmpla (1,2) "fblt" (1,0)
-							| Ogt  -> fcmpla (2,1) "fblt" (1,0)
-							| Oleq -> fcmpla (2,1) "fblt" (0,1)
-							| Ogeq -> fcmpla (1,2) "fblt" (0,1)
+							| Oeq  -> fcmpla (1,2) "feq" (1,0)
+							| Oneq -> fcmpla (1,2) "feq" (0,1)
+							| Olt  -> fcmpla (1,2) "flt" (1,0)
+							| Ogt  -> fcmpla (2,1) "flt" (1,0)
+							| Oleq -> fcmpla (2,1) "flt" (0,1)
+							| Ogeq -> fcmpla (1,2) "flt" (0,1)
 							| _ -> raise (Failure (Printf.sprintf "Operation %s is not float compare operation" os))
 						)
 					))

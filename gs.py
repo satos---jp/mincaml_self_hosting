@@ -72,11 +72,11 @@ while 1:
 	sts.append(State())
 	x = gdb.execute('i r eax',to_string=True).split()[1][2:]
 	s = gdb.execute('c',to_string=True)
-	print('x:: ',x,t,)
+	#print('x:: ',x,t,)
 	#print(s)
 	t += 1
 	
-	if not ("SIGTRAP" in s):
+	if t > 100 or not ("SIGTRAP" in s):
 		shell()
 		
 		

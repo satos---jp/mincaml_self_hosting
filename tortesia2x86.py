@@ -126,11 +126,6 @@ libfuncs = [
 	('read_char',1),
 	('read_int',1),
 	('read_float',1),
-	
-	('sqrt',1),
-	('sin',1),
-	('cos',1),
-	('atan',1)
 ]
 
 #呼び出し規約のトランポリン
@@ -434,30 +429,52 @@ def fdiv(v):
 		"fstp dword [%s]" % v[0] 
 	]
 
-def fcmp(v):
+
+def feq(v):
 	return [
 		"fld dword [%s]" % v[0],
 		"fld dword [%s]" % v[1],
+		"xor ecx,ecx",
 		"fucomip",
-		"pushfd",
-		"pop dword [_cr]",
+		"sete cl",
+		"mov dword [_cr],ecx",
 		"push eax",
 		"fstp dword [esp]",
-		"pop eax"
+		"pop eax",
 	]
 
-def fblt(v):
+def flt(v):
 	return [
-		"push dword [_cr]",
-		"popfd",
-		"ja _%s" % v[0]
+		"fld dword [%s]" % v[0],
+		"fld dword [%s]" % v[1],
+		"xor ecx,ecx",
+		"fucomip",
+		"seta cl",
+		"mov dword [_cr],ecx",
+		"push eax",
+		"fstp dword [esp]",
+		"pop eax",
 	]
 
-def fbeq(v):
+def bft(v): #非0のとき
 	return [
-		"push dword [_cr]",
-		"popfd",
+		"mov eax,dword [_cr]",
+		"test eax,eax",
+		"jne _%s" % v[0]
+	]
+
+def bff(v): #0のとき
+	return [
+		"mov eax,dword [_cr]",
+		"test eax,eax",
 		"je _%s" % v[0]
+	]
+
+def fsqrt(v):
+	return [
+		"fld dword [%s]" % v[1],
+		"fsqrt",
+		"fstp dword [%s]" % v[0] 
 	]
 
 def check(v):

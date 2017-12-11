@@ -11,6 +11,13 @@ int_of_float:
 	ftoi r5,f1
 	ret
 
+sqrt:
+	fld f1,r1,$0
+	fsqrt f2,f1
+	fst f2,r1,$-4
+	lw r5,r1,$-4
+	ret
+
 ; itof,ftoiは
 ; 負、正とともに小数点切り捨てだが、
 ; floor は、負のほうは切り捨てする。

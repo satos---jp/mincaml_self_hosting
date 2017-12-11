@@ -13,15 +13,28 @@ huga:
 piyo:
 	dd 0.00
 
+one:
+	dd 1.0
+
+two:
+	dd 2.0
+
 section .text
 	
-global main
-main:
-	push ebp
-	mov ebp,esp
-	sub esp,0x10
-	
-	fcomip
+global _start
+_start:
+	fld dword [one]
+	fld dword [two]
+	xor ecx,ecx
+	fucomip
+	seta cl
+
+	fld dword [two]
+	fld dword [one]
+	xor ecx,ecx
+	fucomip
+	seta cl
+	hlt
 	
 	mov edx,12
 	mov ecx,huga
