@@ -76,12 +76,35 @@ let collect_names ast vs globvars = remove_vals (unique_name (collect_names_rec 
 
 let names2str vs = "[\n" ^ (String.concat ";\n" (List.map name2str vs)) ^ ";\n]\n"
 
-type funbody = VirtFunBody of op list * name list
-type virtglobdef = VirtFunDef of name * (name list) * (name list) * funbody
+
+
+type funbody = {
+	ops: op list;
+	vs: name list;
+}
+
+type virtglobdef = {
+	fn: name;
+	vs: name list;
+	cvs: name list;
+	body: funbody;
+}
+
+let funbody2str {ops = ops; vs=vs} =
+	"localval:: " ^ (String.concat " " (List.map name2str vs)) ^ "\n" ^ 
+	(String.concat "\n" (List.map virtop2str ops)) 
+
+
+let virtglobdef2str {fn=fn; vs=vs; cvs=cvs; body=bo} = 
+	(name2str fn) ^ (vs2str vs) ^ (vs2str cvs) ^ ":\n" ^
+	(funbody2str bo)
+
+let virt2str (vgs,mfb,gvs) = 
+	(String.concat "" (List.map virtglobdef2str vgs)) ^
+	"globalval:: " ^ (String.concat " " gvs) ^ "\n" ^ 
+	(virtglobdef2str {fn=("main",(TyInt,default_debug_data)); vs=[]; cvs=[]; body=mfb})
 
 let rec to_virtual (fundefs,globvars,rd) = 
-	let taf = if !tortesia then cfg_toasms else to_asms 
-	in
 	(List.map (fun (na,def) -> 
 		match def with
 		| ClosFunDef(vs1,vs2,bo) -> (
@@ -94,34 +117,21 @@ let rec to_virtual (fundefs,globvars,rd) =
 			in
 			let rtd = (rt,rd) in
 			let retop = [OpRet((rv,rtd))] in
-				VirtFunDef(na,vs1,vs2,VirtFunBody((taf bo (rv,rtd) true retop) @ retop,(rv,rtd) :: (collect_names bo (vs1 @ vs2) globvars))))
+			let args = vs1 @ vs2 in
+				{fn = na; vs = vs1; cvs = vs2; body = {
+					ops = if !tortesia then (cfg_toasms bo (rv,rtd) true retop args na) @ retop else (to_asms bo (rv,rtd) true retop) @ retop ; 
+					vs = (rv,rtd) :: (collect_names bo args globvars)
+				};})
 		) fundefs),
-	
 	(let gvt = ("@global_ret_val",(TyInt,default_debug_data)) in
+	let gfn = ("@global_main_func",(TyInt,default_debug_data)) in
 	let retop = [OpMainRet] in
-	VirtFunBody((taf rd gvt false retop) @ retop,gvt :: (collect_names rd [] globvars))),
+	{
+		ops = if !tortesia then (cfg_toasms rd gvt false retop [] gfn) @ retop else (to_asms rd gvt false retop) @ retop; 
+		vs = gvt :: (collect_names rd [] globvars);
+	}),
 	(* mainで末尾再帰はしなくてよいはず。 *)
 	globvars
-
-
-let funbody2str fb =
-	match fb with
-	| VirtFunBody(ops,vs) -> (
-			"localval:: " ^ (String.concat " " (List.map name2str vs)) ^ "\n" ^ 
-			(String.concat "\n" (List.map virtop2str ops)) 
-		)
-
-let virtglobdef2str gdf = 
-	match gdf with
-	| VirtFunDef(fn,vs,cvs,bo) -> (
-			(name2str fn) ^ (vs2str vs) ^ (vs2str cvs) ^ ":\n" ^
-			(funbody2str bo)
-		)
-
-let virt2str (vgs,mfb,gvs) = 
-	(String.concat "" (List.map virtglobdef2str vgs)) ^
-	"globalval:: " ^ (String.concat " " gvs) ^ "\n" ^ 
-	(virtglobdef2str (VirtFunDef(("main",(TyInt,default_debug_data)),[],[],mfb)))
 
 
 

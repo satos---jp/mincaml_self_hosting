@@ -64,9 +64,7 @@ let init_globvars gvs =
 let main_name = "main"
 
 
-let func2asm def = 
-	match def with
-	| VirtFunDef((fn,_),vs1,vs2,VirtFunBody(ops,localvs)) -> (
+let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} = 
 	(*
 	Printf.printf "%s%s%s" (names2str vs1) (names2str vs2) (names2str localvs);
 	*)
@@ -278,7 +276,7 @@ let func2asm def =
 							)
 							(*
 								"\tli r6,$0\n" ^ (tomul 205) ^ "\tsra r5,r6,$11\n"
-								"\tli r6,$0\n" ^ (tomul 0x1999999) ^ "\tmov r5,r6\n" 
+								"\tli r6,$0\n" ^ (tomul 0x1999999) ^ "\tmov r5,r6\n"
 							*)
 						| _ -> raise (Failure (Printf.sprintf "divide by %d is not supported" x))
 						)
@@ -366,7 +364,6 @@ let func2asm def =
 			)
 		| OpOpr(_,x,vs) -> raise (Failure (Printf.sprintf "Operation %s with %d argument in not defined yet" (op2str x) (List.length vs)))
 	) ops))
-)
 (*
  nasm out.s -f elf32 -g -o out.o; gcc -m32 out.o
  nasm out.s -f win32 -g -o out.o; gcc -m32 out.o
@@ -389,7 +386,7 @@ let vir2asm (funs,rd,globvars) =
 	init_globvars globvars;
 	(read_all_data "lib_tortesia.s") ^
 	(String.concat "" (List.map func2asm (List.rev funs))) ^	
-	(func2asm (VirtFunDef((main_name,(TyVar(-1),default_debug_data)),[],[],rd)))
+	(func2asm {fn=(main_name,(TyVar(-1),default_debug_data)); vs=[]; cvs=[]; body=rd})
 
 
 

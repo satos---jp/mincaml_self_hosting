@@ -33,13 +33,19 @@ type node = {
 
 let newnode () = { ops = []; src = new set; dst = new set; gone=false; reach = new set;}
 
+let defaultname = "@defaultname"
 
 class cfg_type = 
 	object (sl)
 		val mutable vs = []
+		method addv x = vs <- x :: vs
+
 		val mutable root = newnode ()
 		method setroot x = root <- x
-		method addv x = vs <- x :: vs
+		
+		val mutable fn = defaultname
+		method setfn x = fn <- x 
+		
 		method ungone () = (
 			List.iter (fun x -> 
 				x.gone <- false;
@@ -114,7 +120,7 @@ let rec connect_cfg csrc cdst =
 	cdst.ops <- OpLabel(la) :: cdst.ops
 
 (* cfgの入り口,[出口になりうるもののリスト]、を組でかえす *)
-let rec to_cfgs ast tov istail cfg = 
+let rec to_cfgs ast tov istail cfg fn = 
 	let rec singleton op = 
 		let nd = newnode () in
 		nd.ops <- [op];
@@ -125,13 +131,13 @@ let rec to_cfgs ast tov istail cfg =
 		let v = singleton op in v,[v]
 	in
 	let rec reccall x = 
-		to_cfgs x tov istail cfg
+		to_cfgs x tov istail cfg fn
 	in
 	match ast with
 	| CConst(x) -> sres (OpMovi(tov,x))
 	| COp(x,vs) -> sres (OpOpr(tov,x,vs))
 	| CLet(na,e1,e2) -> (
-			let ch1,cts1 = (to_cfgs e1 na false cfg) in
+			let ch1,cts1 = (to_cfgs e1 na false cfg fn) in
 			let ch2,cts2 = (reccall e2) in
 			List.iter (fun x -> 
 				connect_cfg x ch2
@@ -158,7 +164,12 @@ let rec to_cfgs ast tov istail cfg =
 			else 
 				sres (OpMov(tov,x))
 		)
-	| CApp(a,b) -> sres (OpApp((if istail then Tail else NonTail),InDirApp,tov,a,b))
+	| CApp(a,b) -> (
+			(* if istail && (fst fn) = (fst a) && false then ( 
+				
+			) else 
+			*) sres (OpApp((if istail then Tail else NonTail),InDirApp,tov,a,b))
+		)
 	| CDirApp(a,b) -> sres (OpApp((if istail then Tail else NonTail),DirApp,tov,a,b))
 	| CTuple(vs) -> sres (OpMakeTuple(tov,vs))
 	| CLetTuple(vs,ta,e1) -> (
@@ -170,9 +181,10 @@ let rec to_cfgs ast tov istail cfg =
 
 
 
-let cfg_toasms ast tov istail retop = 
+let cfg_toasms ast tov istail retop args fn = 
 	let ncfg = new cfg_type in
-	let rt,gls = to_cfgs ast tov istail ncfg in
+	ncfg#setfn (fst fn); 
+	let rt,gls = to_cfgs ast tov istail ncfg (fst fn) in
 	ncfg#contract ();
 	ncfg#setroot rt;
 	List.iter (fun v -> 

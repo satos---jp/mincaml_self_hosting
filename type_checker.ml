@@ -67,41 +67,31 @@ and texp_base =
 
 
 let genv () = 
-if !tortesia then [
+if !tortesia then ((if !asmsin_asmint then [
+	("print_int",TyFun([TyInt],TyTuple([])));
+
+	("sin",TyFun([TyFloat],TyFloat));
+	("cos",TyFun([TyFloat],TyFloat));
+	("atan",TyFun([TyFloat],TyFloat));
+] else []) @ [
 	(* ハードウェア実装してもらう *)
 	("print_char",TyFun([TyInt],TyTuple([])));
 	
 	("read_char",TyFun([TyTuple([])],TyInt));
 	("read_int",TyFun([TyTuple([])],TyInt));
 	("read_float",TyFun([TyTuple([])],TyFloat));
-
 (*
 ハードウェアでやってもらうのは、
 入力 は print_int　と print_float
 出力 は print_char のみ、で、
 print_int はコンパイラで実装する。
-	("print_int",TyFun([TyInt],TyTuple([])));
-
-	("fless",TyFun([TyFloat;TyFloat],TyInt));
-	("fiszero",TyFun([TyFloat],TyInt));
-	("fisneg",TyFun([TyFloat],TyInt));
-	("floor",TyFun([TyFloat],TyFloat));
-	("fispos",TyFun([TyFloat],TyInt));
-	("fabs",TyFun([TyFloat],TyFloat));
-	("fsqr",TyFun([TyFloat],TyFloat)); (* x -> x^2 のほう *)
-	("fneg",TyFun([TyFloat],TyFloat));
-	("fhalf",TyFun([TyFloat],TyFloat));
-
-	("sin",TyFun([TyFloat],TyFloat));
-	("cos",TyFun([TyFloat],TyFloat));
-	("atan",TyFun([TyFloat],TyFloat));
 *)
 (* アセンブラで実装した *)
 	("float_of_int",TyFun([TyInt],TyFloat));
 	("int_of_float",TyFun([TyFloat],TyInt));
 	("sqrt",TyFun([TyFloat],TyFloat));   (* x -> root x のほう *)
 (* とりあえず、x86のものを流用する *)
-] else [ (*x86 *)
+]) else [ (*x86 *)
 (* アセンブラで実装した*)
 	("fless",TyFun([TyFloat;TyFloat],TyInt));
 	("int_of_float",TyFun([TyFloat],TyInt));
@@ -121,14 +111,6 @@ print_int はコンパイラで実装する。
 	("sin",TyFun([TyFloat],TyFloat));
 	("cos",TyFun([TyFloat],TyFloat));
 	("atan",TyFun([TyFloat],TyFloat));
-(*
-	mlで実装した
-	("false",TyInt);
-	("print_int",TyFun([TyInt],TyTuple([])));
-	("read_int",TyFun([TyTuple([])],TyInt));
-	("read_float",TyFun([TyTuple([])],TyFloat));
-*)
-
 (* それぞれ、専用の入力命令があるため、アセンブラにした *)
 	("read_int",TyFun([TyTuple([])],TyInt));
 	("read_float",TyFun([TyTuple([])],TyFloat));
@@ -173,18 +155,9 @@ let rec type_infer astdeb env =
 			let tds = List.map (fun (_,_,_,x) -> x) tects in 
 			
 			let tyf = (match op with
-			| Onot -> (fun () -> ([TyInt],TyInt))
-			| Ominus -> (fun () -> ([TyInt],TyInt))
-			| Oadd -> (fun () -> ([TyInt;TyInt],TyInt))
-			| Osub -> (fun () -> ([TyInt;TyInt],TyInt))
-			| Omul -> (fun () -> ([TyInt;TyInt],TyInt))
-			| Odiv -> (fun () -> ([TyInt;TyInt],TyInt))
-			| Oimul _ -> (fun () -> ([TyInt],TyInt))
-			| Oibydiv _ -> (fun () -> ([TyInt],TyInt))
-			| Ofadd -> (fun () -> ([TyFloat;TyFloat],TyFloat))
-			| Ofsub -> (fun () -> ([TyFloat;TyFloat],TyFloat))
-			| Ofmul -> (fun () -> ([TyFloat;TyFloat],TyFloat))
-			| Ofdiv -> (fun () -> ([TyFloat;TyFloat],TyFloat))
+			| Onot | Ominus | Oimul _ | Oibydiv _ -> (fun () -> ([TyInt],TyInt))
+			| Oadd | Osub | Omul | Odiv -> (fun () -> ([TyInt;TyInt],TyInt))
+			| Ofadd | Ofsub | Ofmul | Ofdiv -> (fun () -> ([TyFloat;TyFloat],TyFloat))
 			
 			(* 全て、float同士、でもいけるようにする(多相性) *)
 			| Oeq | Oneq | Olt | Oleq | Ogt | Ogeq -> (
@@ -316,14 +289,10 @@ let rec unify cs =
 			| TyVar x,y | y,TyVar x -> (
 					if ty_var_appear y x then 
 						raise (TypeError(t1,t2,deb)) else 
-						(* print_type (TyVar x);
-						print_type y;
-						print_newline (); *)
 						(x,y) :: (unify (constrs_subst (x,y) xs)) 
 				)
 			| TyArr a,TyArr b -> unify ((a,b,deb) :: xs)
 			| TyFun(vs,b),TyFun(ws,d) -> ( (* 部分適用に対応する。 *)
-					(* unify ((b,d,deb) :: (List.map2 (fun a -> fun c -> (a,c,deb)) vs ws) @ xs) *)
 					let rec f nvs nws = (
 						match nvs,nws with
 						| [],[] -> [(b,d,deb)]

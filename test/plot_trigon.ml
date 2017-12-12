@@ -1,5 +1,5 @@
 let rec print_fi x = 
-	print_int (int_of_float (x *. 10000.0))
+	print_int (int_of_float (x *. 1000000.0))
 in 
 let rec f x = 
 	if fless 100.0 x then () else

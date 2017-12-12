@@ -10,6 +10,7 @@ cp ../libio_linux.s ./
 cp ../lib_tortesia.ml ./
 cp ../lib_tortesia.s ./
 cp ../lib_tortesia_to_x86.s ./
+cp ../lib_sinint.ml ./
 
 
 exec_ocaml(){
@@ -27,17 +28,17 @@ exec_x86(){
 	#x86で実行
 	./main -d $1 -noinline -o o_x86.s > /dev/null
 	nasm o_x86.s -f elf32 -g -o out.o
-	gcc -m32 -nostdlib out.o -o a.out
+	gcc -m32 -nostdlib out.o -o x86.out
 	if [ -z $3 ]; then 
-		./a.out > $2
+		./x86.out > $2
 	else
-		./a.out < $3 > $2
+		./x86.out < $3 > $2
 	fi	
 }
 
 exec_tortesia(){
 	#tortesia -> x86 で実行
-	./main -d $1 -noinline -t -o o_tortesia.s > /dev/null
+	./main -d $1 -noinline -t -asi -o o_tortesia.s > /dev/null
 	python ../tortesia2x86.py < o_tortesia.s > o_tortesia2x86.s
 	nasm o_tortesia2x86.s -f elf32 -g -o out.o
 	gcc -m32 -nostdlib out.o -o a.out
@@ -47,7 +48,6 @@ exec_tortesia(){
 		./a.out < $3 > $2
 	fi
 }
-
 
 cat test_order.txt | while read file input
 do

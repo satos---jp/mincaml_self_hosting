@@ -61,6 +61,7 @@ let argc = Array.length Sys.argv in
 if argc <= 1 then (
 	Printf.printf "Usage: %s filename\n" Sys.argv.(0)
 ) else (
+	let files = (ref [] : string list ref) in
 	Arg.parse [
 		("-nolib",Arg.Set nolib,"stop including lib.ml");
 		("-v",Arg.Set verbose,"verbose debug info");
@@ -70,9 +71,17 @@ if argc <= 1 then (
 		("-noopt",Arg.Set nooptimization,"stop optimization");
 		("-noinline",Arg.Set noinline,"stop inlining");
 		("-o",Arg.Set_string output_filename,"output filename");
+		("-asi",Arg.Set asmsin_asmint,"use x86 tirgonal and x86 print_int");
 	] (fun fn -> files := (!files) @ [fn]) (Printf.sprintf "Usage: %s filename\n" Sys.argv.(0));
 	let ast = Source2ast.s2a (List.hd !files) in
-	files := if !nolib then (List.tl !files) else ((if !tortesia then "lib_tortesia.ml" else "lib.ml") :: (List.tl !files));
+	files := (
+		if !nolib then []
+		else if !tortesia then (
+			if !asmsin_asmint then ["lib_tortesia.ml"] 
+			else ["lib_tortesia.ml"; "lib_sinint.ml"]
+		) 
+		else ["lib.ml"]
+	) @ (List.tl !files);
 	let globasts = List.map Source2ast.s2a (!files) in
 	let tast = match ast with
 	| DExpr east -> (

@@ -61,57 +61,6 @@ text = [
 ]
 
 """
-;print_char:
-;	hlt
-
-;print_int:
-;	hlt
-	
-;fless:
-;	hlt
-
-float_of_int:
-	lw r5,r1,$0
-	itof f1,r5
-	fst f1,r1,$-4
-	lw r5,r1,$-4
-	ret
-
-int_of_float:
-	fld f1,r1,$0
-	ftoi r5,f1
-	ret
-
-fiszero:
-	fld f1,r1,$0
-	fcmp f1,f0
-	fbeq fiszero_iszero
-	li r5,$0
-	ret
-fiszero_iszero:
-	li r5,$1
-	ret
-
-
-fisneg:
-	fld f1,r1,$0
-	fcmp f0,f1
-	fblt fiseg_isneg
-	li r5,$0
-	ret
-fiseg_isneg:
-	li r5,$1
-	ret
-
-
-"""
-"""
-	('int_of_float',1),
-	('float_of_int',1),
-	('floor',1),
-"""
-
-"""
 hb 005ef120
 ha 0067cb7c
 ic 00000003a6d3ec70
@@ -122,10 +71,14 @@ ic 00000003a6d3ec70
 
 libfuncs = [
 	('print_char',1),
-	('print_int',1),
 	('read_char',1),
 	('read_int',1),
 	('read_float',1),
+	
+	('print_int',1),
+	('sin',1),
+	('cos',1),
+	('atan',1),
 ]
 
 #呼び出し規約のトランポリン
