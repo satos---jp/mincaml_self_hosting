@@ -79,14 +79,17 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	print_string ("On function " ^ fn ^ "\n");
 	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [r2$%d]" s p) on_stack)) ^"\n");
 	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [r4$%d]" s p) on_clos)) ^"\n");
-	let na2pt x = (
+	let na2pt na = (
+		match !na with
+		| Var x -> (
 		try ("r2",List.assoc x on_stack)
 		with | Not_found -> 
 		try ("r4",List.assoc x on_clos)
 		with | Not_found -> 
 		try ("r31",List.assoc x !on_glob_vars) (* 正直ガバなのでどうにかしたい *)
 		with | Not_found -> 
-		("@" ^ x,-1)
+		("@" ^ x,-1))
+		| Reg x -> raise (Failure "Register allocation for tortesia is not implemented yet")		
 	) in
 	let pt2s (a,b) = 
 		if String.get a 0 = '@' then String.sub a 1 ((String.length a)-1) else 
@@ -169,7 +172,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 			(Printf.sprintf "\tsw r5,%s\n" (na2s na)) ^ 
 			"; " ^ (debug_data2simple d) ^ "\n"
 		| OpMovi((na,(t,d)),CFloat(v)) -> assert (t=TyFloat); (
-				Printf.sprintf "\tfmovi f1,$%f\n\tfst f1,%s\n" v (na2s na)
+				Printf.sprintf "\tfmovi f1,$%.30f\n\tfst f1,%s\n" v (na2s na)
 			)
 		| OpMov(((na,(t1,d1)) as nrd),((nb,(t2,d2)) as nad)) -> assert (t1=t2); (mova2b nrd nad) 
 		| OpLabel x -> x ^ ":\n"
@@ -215,8 +218,8 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 					"\tpush r5\n"
 				) (List.rev vs))) ^ (* 逆にpushする *)
 				(let rfn = (na2s fn) in
-				if List.mem fn (global_funcs ()) || isdir = DirApp then 
-					(Printf.sprintf "\tjal %s\n" fn)
+				if List.mem rfn (global_funcs ()) || isdir = DirApp then 
+					(Printf.sprintf "\tjal %s\n" rfn)
 				else 
 					((Printf.sprintf "\tlw r5,%s\n" rfn) ^ 
 					"\tlw r4,r5,$4\n" ^ 

@@ -343,7 +343,7 @@ def fmovi(v):
 	tag = "float_const_%d" % len(head)
 	head += [
 		"%s:" % tag,
-		"\tdd %f" % float(v[1][1:])
+		"\tdd %.30f" % float(v[1][1:])
 	]
 	return [
 		"mov eax,[%s]" % tag,

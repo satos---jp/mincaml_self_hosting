@@ -1,5 +1,5 @@
-open Op
 open Closure_conv
+open Op
 
 type funbody = {
 	ops: op list;
@@ -13,6 +13,6 @@ type virtglobdef = {
 	body: funbody;
 }
 
-val to_virtual : (name * globdef) list * (string list) * cexp -> virtglobdef list * funbody * string list
+val to_virtual : (Closure_conv.name * globdef) list * (string list) * cexp -> virtglobdef list * funbody * string list
 
 val virt2str : virtglobdef list * funbody * string list -> string

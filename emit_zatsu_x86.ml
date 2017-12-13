@@ -73,14 +73,17 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	ivprint ("On function " ^ fn ^ "\n");
 	ivprint ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [ebp%+d]" s p) on_stack)) ^"\n");
 	ivprint ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [edi%+d]" s p) on_clos)) ^"\n");
-	let na2pt x = (
+	let na2pt na = (
+		match !na with
+		| Var x -> (
 		try ("ebp",List.assoc x on_stack)
 		with | Not_found -> 
 		try ("edi",List.assoc x on_clos)
 		with | Not_found -> 
 		try ("global_heap",List.assoc x !on_glob_vars)
 		with | Not_found -> 
-		("@" ^ x,-1)
+		("@" ^ x,-1))
+		| Reg x -> raise (Failure "Register allocation for x86 is not implemented yet")
 	) in
 	let pt2s (a,b) = 
 		if String.get a 0 = '@' then String.sub a 1 ((String.length a)-1) else 
@@ -128,8 +131,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 			"\tadd esp,4\n" ^
 			(eprintc 10)
 		) else "") ^
-		(* 割とtrickyにしてしまっている *)
-		(Printf.sprintf "\tadd esp,%d\n\tpop ebp\n\tpop ebx\n\tadd esp,%d\n\tpush ebx\n" (snd lvs_st) (snd vs2_st)) ^
+		(Printf.sprintf "\tadd esp,%d\n\tpop ebp\n" (snd lvs_st)) ^
 		(if fn = main_name () then (
 			(let eprintc x = (
 				(Printf.sprintf "\tpush %d\n" x) ^
@@ -197,7 +199,9 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 			)
 		| OpMov(((n1,(t1,d1)) as nrd),((n2,(t2,d2)) as nad)) -> (
 				if t1 <> t2 then raise (Failure (Printf.sprintf 
-					"Type mismatch move to %s (%s) : %s from %s (%s) : %s" n1 (debug_data2simple d1) (type2str t1) n2 (debug_data2simple d2) (type2str t2))) else
+					"Type mismatch move to %s (%s) : %s from %s (%s) : %s" 
+					(namereg2str nrd) (debug_data2simple d1) (type2str t1) 
+					(namereg2str nad) (debug_data2simple d2) (type2str t2))) else
 				(mova2b nrd nad) 
 			)
 		| OpLabel x -> x ^ ":\n"
@@ -221,7 +225,6 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 				(make_vs_on_heap vs) ^ 
 				"; " ^ (nd2ds nad) ^ "\n"
 			)
-		(* *)
 		| OpMakeCls(nad,((fn,_) as fnd),vs) -> (
 				"\tmov edx,esi\n" ^ 
 				(make_vs_on_heap vs) ^
@@ -232,39 +235,29 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 				"; " ^ (nd2ds nad) ^ " "^ (nd2ds fnd) ^ "\n"
 			)
 		| OpApp(istail,isdir,nad,((fn,_) as fnd),vs) -> (
-				let isglobal = List.mem fn (global_funcs ()) in
-				let istail = false && (not isglobal) && (match istail with Tail -> true | NonTail -> false) in
-				(* lib関数のtail化はやめておく *)
+				let rfn = (na2s fn) in
+				let isglobal = List.mem rfn (global_funcs ()) in
+				(* x86のtail化はやめておく *)
+				let istail = false in
 				let isdir = match isdir with DirApp -> true | InDirApp -> false in
-				let calljmp = if istail then "jmp" else "call" in
 				let ln = ref 0 in
-				(* 割とtrickyで、tailのとき、一つ前のedi([ebp+(snd vs2_st)+8]) を積む。 *)
-				let s = (if istail then
-				(Printf.sprintf "\tpush dword [ebp+%d]\n" ((snd vs2_st)+8))
-				else "\tpush edi\n") ^
+				let s = 
+				"\tpush edi\n" ^
 				(String.concat "" (List.map (fun nad -> 
 					ln := !ln + 4;
 					(Printf.sprintf "\tpush dword %s\n" (nd2ps nad))
 				) (List.rev vs))) ^ (* 逆にpushする *)
-				(if istail then (
-			 		"\tpush dword [ebp+0x4]\n" ^ (* return addr *)
-					(if isdir then "\tmov ebp,[ebp]\n" else "")
-				) else "") ^
-				(let rfn = (na2s fn) in
-					if isglobal || isdir then 
-					(Printf.sprintf "\t%s %s\n" calljmp fn)
+				(if isglobal || isdir then 
+					(Printf.sprintf "\tcall %s\n" rfn)
 				else 
-					((Printf.sprintf "\tmov eax,%s\n" rfn) ^ 
-					(if istail then "\tmov ebp,[ebp]\n" else "") ^
+					(Printf.sprintf "\tmov eax,%s\n" rfn) ^ 
 					"\tmov edi,[eax+4]\n" ^ 
-					(Printf.sprintf "\t%s [eax]\n" calljmp))) 
-				in 
-				s ^
-				(if istail then "" else (
-					(Printf.sprintf "\tmov %s,eax\n" (nd2ps nad)) ^
-					(if isglobal then Printf.sprintf "\tadd esp,%d\n" !ln else "") ^
-					"\tpop edi\n"
-				)) ^
+					(Printf.sprintf "\tcall [eax]\n")) ^
+				(Printf.sprintf "\tmov %s,eax\n" (nd2ps nad))
+				in s ^ 
+				(Printf.sprintf "\tadd esp,%d\n" !ln) ^
+				"\tpop edi\n"
+				^
 				"; " ^ (nd2ds nad) ^ " " ^ (nd2ds fnd) ^ "\n" ^ 
 				"; " ^ (Printf.sprintf "%s : %s" (if isdir then "dir" else "indir") (if istail then "tail" else "nontail")) ^ "\n"
 			)
