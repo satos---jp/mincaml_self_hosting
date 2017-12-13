@@ -1,0 +1,1546 @@
+"alpha.ml" 4 24 28 "alpha.ml" 4 24 35
+type(
+  unit -> string
+)
+ident(
+  def genname "alpha.ml" 6 77 77 "alpha.ml" 1 0 -1
+)
+"alpha.ml" 4 24 36 "alpha.ml" 4 24 38
+type(
+  unit
+)
+"alpha.ml" 4 24 41 "alpha.ml" 4 24 55
+type(
+  (int -> string, unit, string) format -> int -> string
+)
+ident(
+  ext_ref Printf.sprintf
+)
+"alpha.ml" 4 24 56 "alpha.ml" 4 24 63
+type(
+  (int -> string, unit, string) format
+)
+"alpha.ml" 4 24 65 "alpha.ml" 4 24 71
+type(
+  unit -> int
+)
+ident(
+  ext_ref Genint.genint
+)
+"alpha.ml" 4 24 72 "alpha.ml" 4 24 74
+type(
+  unit
+)
+"alpha.ml" 4 24 64 "alpha.ml" 4 24 75
+call(
+  stack
+)
+type(
+  int
+)
+"alpha.ml" 4 24 41 "alpha.ml" 4 24 75
+call(
+  tail
+)
+type(
+  string
+)
+"alpha.ml" 6 77 85 "alpha.ml" 6 77 95
+type(
+  Knorm.kexp -> (string * string) list -> Knorm.kexp
+)
+ident(
+  def alpha_conv "alpha.ml" 6 77 77 "alpha.ml" 1 0 -1
+)
+"alpha.ml" 6 77 96 "alpha.ml" 6 77 99
+type(
+  Knorm.kexp
+)
+ident(
+  def ast "alpha.ml" 6 77 100 "alpha.ml" 46 1275 1354
+)
+"alpha.ml" 6 77 100 "alpha.ml" 6 77 103
+type(
+  (string * string) list
+)
+ident(
+  def env "alpha.ml" 7 108 109 "alpha.ml" 46 1275 1354
+)
+"alpha.ml" 7 108 113 "alpha.ml" 7 108 121
+type(
+  string * 'a -> string * 'a
+)
+ident(
+  def conv_var "alpha.ml" 13 200 201 "alpha.ml" 46 1275 1354
+)
+"alpha.ml" 7 108 123 "alpha.ml" 7 108 124
+type(
+  string
+)
+ident(
+  def x "alpha.ml" 8 132 134 "alpha.ml" 11 171 195
+)
+"alpha.ml" 7 108 125 "alpha.ml" 7 108 127
+type(
+  'a
+)
+ident(
+  def td "alpha.ml" 8 132 134 "alpha.ml" 11 171 195
+)
+"alpha.ml" 7 108 122 "alpha.ml" 7 108 128
+type(
+  string * 'a
+)
+"alpha.ml" 9 139 143 "alpha.ml" 9 139 153
+type(
+  string -> (string * string) list -> string
+)
+ident(
+  ext_ref List.assoc
+)
+"alpha.ml" 9 139 154 "alpha.ml" 9 139 155
+type(
+  string
+)
+ident(
+  int_ref x "alpha.ml" 7 108 123 "alpha.ml" 7 108 124
+)
+"alpha.ml" 9 139 156 "alpha.ml" 9 139 159
+type(
+  (string * string) list
+)
+ident(
+  int_ref env "alpha.ml" 6 77 100 "alpha.ml" 6 77 103
+)
+"alpha.ml" 9 139 143 "alpha.ml" 9 139 159
+call(
+  stack
+)
+type(
+  string
+)
+"alpha.ml" 9 139 160 "alpha.ml" 9 139 162
+type(
+  'a
+)
+ident(
+  int_ref td "alpha.ml" 7 108 125 "alpha.ml" 7 108 127
+)
+"alpha.ml" 9 139 142 "alpha.ml" 9 139 163
+type(
+  string * 'a
+)
+"alpha.ml" 11 171 176 "alpha.ml" 11 171 185
+type(
+  exn
+)
+"alpha.ml" 11 171 190 "alpha.ml" 11 171 191
+type(
+  string
+)
+ident(
+  int_ref x "alpha.ml" 7 108 123 "alpha.ml" 7 108 124
+)
+"alpha.ml" 11 171 192 "alpha.ml" 11 171 194
+type(
+  'a
+)
+ident(
+  int_ref td "alpha.ml" 7 108 125 "alpha.ml" 7 108 127
+)
+"alpha.ml" 11 171 189 "alpha.ml" 11 171 195
+type(
+  string * 'a
+)
+"alpha.ml" 8 132 134 "alpha.ml" 11 171 195
+type(
+  string * 'a
+)
+"alpha.ml" 13 200 205 "alpha.ml" 13 200 214
+type(
+  (string * 'b) list -> (string * 'b) list
+)
+ident(
+  def conv_list "alpha.ml" 15 245 246 "alpha.ml" 46 1275 1354
+)
+"alpha.ml" 13 200 215 "alpha.ml" 13 200 217
+type(
+  (string * 'b) list
+)
+ident(
+  def vs "alpha.ml" 13 200 220 "alpha.ml" 13 200 240
+)
+"alpha.ml" 13 200 220 "alpha.ml" 13 200 228
+type(
+  (string * 'b -> string * 'b) -> (string * 'b) list -> (string * 'b) list
+)
+ident(
+  ext_ref List.map
+)
+"alpha.ml" 13 200 229 "alpha.ml" 13 200 237
+type(
+  string * 'b -> string * 'b
+)
+ident(
+  int_ref conv_var "alpha.ml" 7 108 113 "alpha.ml" 7 108 121
+)
+"alpha.ml" 13 200 238 "alpha.ml" 13 200 240
+type(
+  (string * 'b) list
+)
+ident(
+  int_ref vs "alpha.ml" 13 200 215 "alpha.ml" 13 200 217
+)
+"alpha.ml" 13 200 220 "alpha.ml" 13 200 240
+call(
+  tail
+)
+type(
+  (string * 'b) list
+)
+"alpha.ml" 16 252 259 "alpha.ml" 16 252 262
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "alpha.ml" 6 77 96 "alpha.ml" 6 77 99
+)
+"alpha.ml" 17 268 278 "alpha.ml" 17 268 279
+type(
+  Syntax.const
+)
+"alpha.ml" 17 268 271 "alpha.ml" 17 268 279
+type(
+  Knorm.kexp
+)
+"alpha.ml" 17 268 283 "alpha.ml" 17 268 286
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "alpha.ml" 6 77 96 "alpha.ml" 6 77 99
+)
+"alpha.ml" 18 287 294 "alpha.ml" 18 287 296
+type(
+  Syntax.optype
+)
+ident(
+  def op "alpha.ml" 18 287 304 "alpha.ml" 18 287 324
+)
+"alpha.ml" 18 287 297 "alpha.ml" 18 287 299
+type(
+  Knorm.name list
+)
+ident(
+  def vs "alpha.ml" 18 287 304 "alpha.ml" 18 287 324
+)
+"alpha.ml" 18 287 290 "alpha.ml" 18 287 300
+type(
+  Knorm.kexp
+)
+"alpha.ml" 18 287 308 "alpha.ml" 18 287 310
+type(
+  Syntax.optype
+)
+ident(
+  int_ref op "alpha.ml" 18 287 294 "alpha.ml" 18 287 296
+)
+"alpha.ml" 18 287 311 "alpha.ml" 18 287 320
+type(
+  Knorm.name list -> Knorm.name list
+)
+ident(
+  int_ref conv_list "alpha.ml" 13 200 205 "alpha.ml" 13 200 214
+)
+"alpha.ml" 18 287 321 "alpha.ml" 18 287 323
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "alpha.ml" 18 287 297 "alpha.ml" 18 287 299
+)
+"alpha.ml" 18 287 311 "alpha.ml" 18 287 323
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"alpha.ml" 18 287 304 "alpha.ml" 18 287 324
+type(
+  Knorm.kexp
+)
+"alpha.ml" 19 325 332 "alpha.ml" 19 325 334
+type(
+  Syntax.comptype
+)
+ident(
+  def op "alpha.ml" 19 325 349 "alpha.ml" 19 325 414
+)
+"alpha.ml" 19 325 335 "alpha.ml" 19 325 336
+type(
+  Knorm.name
+)
+ident(
+  def a "alpha.ml" 19 325 349 "alpha.ml" 19 325 414
+)
+"alpha.ml" 19 325 337 "alpha.ml" 19 325 338
+type(
+  Knorm.name
+)
+ident(
+  def b "alpha.ml" 19 325 349 "alpha.ml" 19 325 414
+)
+"alpha.ml" 19 325 339 "alpha.ml" 19 325 341
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "alpha.ml" 19 325 349 "alpha.ml" 19 325 414
+)
+"alpha.ml" 19 325 342 "alpha.ml" 19 325 344
+type(
+  Knorm.kexp
+)
+ident(
+  def e2 "alpha.ml" 19 325 349 "alpha.ml" 19 325 414
+)
+"alpha.ml" 19 325 328 "alpha.ml" 19 325 345
+type(
+  Knorm.kexp
+)
+"alpha.ml" 19 325 353 "alpha.ml" 19 325 355
+type(
+  Syntax.comptype
+)
+ident(
+  int_ref op "alpha.ml" 19 325 332 "alpha.ml" 19 325 334
+)
+"alpha.ml" 19 325 356 "alpha.ml" 19 325 364
+type(
+  Knorm.name -> Knorm.name
+)
+ident(
+  int_ref conv_var "alpha.ml" 7 108 113 "alpha.ml" 7 108 121
+)
+"alpha.ml" 19 325 365 "alpha.ml" 19 325 366
+type(
+  Knorm.name
+)
+ident(
+  int_ref a "alpha.ml" 19 325 335 "alpha.ml" 19 325 336
+)
+"alpha.ml" 19 325 356 "alpha.ml" 19 325 366
+call(
+  stack
+)
+type(
+  Knorm.name
+)
+"alpha.ml" 19 325 367 "alpha.ml" 19 325 375
+type(
+  Knorm.name -> Knorm.name
+)
+ident(
+  int_ref conv_var "alpha.ml" 7 108 113 "alpha.ml" 7 108 121
+)
+"alpha.ml" 19 325 376 "alpha.ml" 19 325 377
+type(
+  Knorm.name
+)
+ident(
+  int_ref b "alpha.ml" 19 325 337 "alpha.ml" 19 325 338
+)
+"alpha.ml" 19 325 367 "alpha.ml" 19 325 377
+call(
+  stack
+)
+type(
+  Knorm.name
+)
+"alpha.ml" 19 325 378 "alpha.ml" 19 325 388
+type(
+  Knorm.kexp -> (string * string) list -> Knorm.kexp
+)
+ident(
+  int_ref alpha_conv "alpha.ml" 6 77 85 "alpha.ml" 6 77 95
+)
+"alpha.ml" 19 325 389 "alpha.ml" 19 325 391
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "alpha.ml" 19 325 339 "alpha.ml" 19 325 341
+)
+"alpha.ml" 19 325 392 "alpha.ml" 19 325 395
+type(
+  (string * string) list
+)
+ident(
+  int_ref env "alpha.ml" 6 77 100 "alpha.ml" 6 77 103
+)
+"alpha.ml" 19 325 378 "alpha.ml" 19 325 395
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"alpha.ml" 19 325 396 "alpha.ml" 19 325 406
+type(
+  Knorm.kexp -> (string * string) list -> Knorm.kexp
+)
+ident(
+  int_ref alpha_conv "alpha.ml" 6 77 85 "alpha.ml" 6 77 95
+)
+"alpha.ml" 19 325 407 "alpha.ml" 19 325 409
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "alpha.ml" 19 325 342 "alpha.ml" 19 325 344
+)
+"alpha.ml" 19 325 410 "alpha.ml" 19 325 413
+type(
+  (string * string) list
+)
+ident(
+  int_ref env "alpha.ml" 6 77 100 "alpha.ml" 6 77 103
+)
+"alpha.ml" 19 325 396 "alpha.ml" 19 325 413
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"alpha.ml" 19 325 349 "alpha.ml" 19 325 414
+type(
+  Knorm.kexp
+)
+"alpha.ml" 20 415 424 "alpha.ml" 20 415 426
+type(
+  string
+)
+ident(
+  def na "alpha.ml" 20 415 441 "alpha.ml" 23 539 542
+)
+"alpha.ml" 20 415 427 "alpha.ml" 20 415 429
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  def td "alpha.ml" 20 415 441 "alpha.ml" 23 539 542
+)
+"alpha.ml" 20 415 423 "alpha.ml" 20 415 430
+type(
+  Knorm.name
+)
+"alpha.ml" 20 415 431 "alpha.ml" 20 415 433
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "alpha.ml" 20 415 441 "alpha.ml" 23 539 542
+)
+"alpha.ml" 20 415 434 "alpha.ml" 20 415 436
+type(
+  Knorm.kexp
+)
+ident(
+  def e2 "alpha.ml" 20 415 441 "alpha.ml" 23 539 542
+)
+"alpha.ml" 20 415 418 "alpha.ml" 20 415 437
+type(
+  Knorm.kexp
+)
+"alpha.ml" 21 443 450 "alpha.ml" 21 443 453
+type(
+  string
+)
+ident(
+  def tna "alpha.ml" 22 471 474 "alpha.ml" 22 471 538
+)
+"alpha.ml" 21 443 456 "alpha.ml" 21 443 463
+type(
+  unit -> string
+)
+ident(
+  int_ref genname "alpha.ml" 4 24 28 "alpha.ml" 4 24 35
+)
+"alpha.ml" 21 443 464 "alpha.ml" 21 443 466
+type(
+  unit
+)
+"alpha.ml" 21 443 456 "alpha.ml" 21 443 466
+call(
+  stack
+)
+type(
+  string
+)
+"alpha.ml" 22 471 480 "alpha.ml" 22 471 483
+type(
+  string
+)
+ident(
+  int_ref tna "alpha.ml" 21 443 450 "alpha.ml" 21 443 453
+)
+"alpha.ml" 22 471 484 "alpha.ml" 22 471 486
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  int_ref td "alpha.ml" 20 415 427 "alpha.ml" 20 415 429
+)
+"alpha.ml" 22 471 479 "alpha.ml" 22 471 487
+type(
+  Knorm.name
+)
+"alpha.ml" 22 471 488 "alpha.ml" 22 471 498
+type(
+  Knorm.kexp -> (string * string) list -> Knorm.kexp
+)
+ident(
+  int_ref alpha_conv "alpha.ml" 6 77 85 "alpha.ml" 6 77 95
+)
+"alpha.ml" 22 471 499 "alpha.ml" 22 471 501
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "alpha.ml" 20 415 431 "alpha.ml" 20 415 433
+)
+"alpha.ml" 22 471 502 "alpha.ml" 22 471 505
+type(
+  (string * string) list
+)
+ident(
+  int_ref env "alpha.ml" 6 77 100 "alpha.ml" 6 77 103
+)
+"alpha.ml" 22 471 488 "alpha.ml" 22 471 505
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"alpha.ml" 22 471 506 "alpha.ml" 22 471 516
+type(
+  Knorm.kexp -> (string * string) list -> Knorm.kexp
+)
+ident(
+  int_ref alpha_conv "alpha.ml" 6 77 85 "alpha.ml" 6 77 95
+)
+"alpha.ml" 22 471 517 "alpha.ml" 22 471 519
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "alpha.ml" 20 415 434 "alpha.ml" 20 415 436
+)
+"alpha.ml" 22 471 522 "alpha.ml" 22 471 524
+type(
+  string
+)
+ident(
+  int_ref na "alpha.ml" 20 415 424 "alpha.ml" 20 415 426
+)
+"alpha.ml" 22 471 525 "alpha.ml" 22 471 528
+type(
+  string
+)
+ident(
+  int_ref tna "alpha.ml" 21 443 450 "alpha.ml" 21 443 453
+)
+"alpha.ml" 22 471 521 "alpha.ml" 22 471 529
+type(
+  string * string
+)
+"alpha.ml" 22 471 533 "alpha.ml" 22 471 536
+type(
+  (string * string) list
+)
+ident(
+  int_ref env "alpha.ml" 6 77 100 "alpha.ml" 6 77 103
+)
+"alpha.ml" 22 471 520 "alpha.ml" 22 471 537
+type(
+  (string * string) list
+)
+"alpha.ml" 22 471 506 "alpha.ml" 22 471 537
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"alpha.ml" 22 471 474 "alpha.ml" 22 471 538
+type(
+  Knorm.kexp
+)
+"alpha.ml" 20 415 441 "alpha.ml" 23 539 542
+type(
+  Knorm.kexp
+)
+"alpha.ml" 24 543 551 "alpha.ml" 24 543 552
+ident(
+  def x "alpha.ml" 24 543 557 "alpha.ml" 24 543 573
+)
+"alpha.ml" 24 543 550 "alpha.ml" 24 543 553
+type(
+  Knorm.name
+)
+"alpha.ml" 24 543 546 "alpha.ml" 24 543 553
+type(
+  Knorm.kexp
+)
+"alpha.ml" 24 543 562 "alpha.ml" 24 543 570
+type(
+  Knorm.name -> Knorm.name
+)
+ident(
+  int_ref conv_var "alpha.ml" 7 108 113 "alpha.ml" 7 108 121
+)
+"alpha.ml" 24 543 571 "alpha.ml" 24 543 572
+type(
+  Knorm.name
+)
+ident(
+  int_ref x "alpha.ml" 24 543 550 "alpha.ml" 24 543 553
+)
+"alpha.ml" 24 543 561 "alpha.ml" 24 543 573
+call(
+  stack
+)
+type(
+  Knorm.name
+)
+"alpha.ml" 24 543 557 "alpha.ml" 24 543 573
+type(
+  Knorm.kexp
+)
+"alpha.ml" 25 574 586 "alpha.ml" 25 574 588
+type(
+  string
+)
+ident(
+  def na "alpha.ml" 25 574 606 "alpha.ml" 33 895 898
+)
+"alpha.ml" 25 574 589 "alpha.ml" 25 574 591
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  def td "alpha.ml" 25 574 606 "alpha.ml" 33 895 898
+)
+"alpha.ml" 25 574 585 "alpha.ml" 25 574 592
+type(
+  Knorm.name
+)
+"alpha.ml" 25 574 593 "alpha.ml" 25 574 595
+type(
+  Knorm.name list
+)
+ident(
+  def vs "alpha.ml" 25 574 606 "alpha.ml" 33 895 898
+)
+"alpha.ml" 25 574 596 "alpha.ml" 25 574 598
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "alpha.ml" 25 574 606 "alpha.ml" 33 895 898
+)
+"alpha.ml" 25 574 599 "alpha.ml" 25 574 601
+type(
+  Knorm.kexp
+)
+ident(
+  def e2 "alpha.ml" 25 574 606 "alpha.ml" 33 895 898
+)
+"alpha.ml" 25 574 577 "alpha.ml" 25 574 602
+type(
+  Knorm.kexp
+)
+"alpha.ml" 26 608 615 "alpha.ml" 26 608 618
+type(
+  string
+)
+ident(
+  def tna "alpha.ml" 27 643 646 "alpha.ml" 32 890 894
+)
+"alpha.ml" 26 608 622 "alpha.ml" 26 608 629
+type(
+  unit -> string
+)
+ident(
+  int_ref genname "alpha.ml" 4 24 28 "alpha.ml" 4 24 35
+)
+"alpha.ml" 26 608 630 "alpha.ml" 26 608 632
+type(
+  unit
+)
+"alpha.ml" 26 608 621 "alpha.ml" 26 608 633
+call(
+  stack
+)
+type(
+  string
+)
+"alpha.ml" 26 608 634 "alpha.ml" 26 608 635
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"alpha.ml" 26 608 636 "alpha.ml" 26 608 638
+type(
+  string
+)
+ident(
+  int_ref na "alpha.ml" 25 574 586 "alpha.ml" 25 574 588
+)
+"alpha.ml" 26 608 621 "alpha.ml" 26 608 638
+call(
+  stack
+)
+type(
+  string
+)
+"alpha.ml" 27 643 650 "alpha.ml" 27 643 653
+type(
+  string list
+)
+ident(
+  def tvs "alpha.ml" 28 693 696 "alpha.ml" 32 890 894
+)
+"alpha.ml" 27 643 656 "alpha.ml" 27 643 664
+type(
+  (Knorm.name -> string) -> Knorm.name list -> string list
+)
+ident(
+  ext_ref List.map
+)
+"alpha.ml" 27 643 670 "alpha.ml" 27 643 671
+type(
+  Knorm.name
+)
+"alpha.ml" 27 643 675 "alpha.ml" 27 643 682
+type(
+  unit -> string
+)
+ident(
+  int_ref genname "alpha.ml" 4 24 28 "alpha.ml" 4 24 35
+)
+"alpha.ml" 27 643 683 "alpha.ml" 27 643 685
+type(
+  unit
+)
+"alpha.ml" 27 643 675 "alpha.ml" 27 643 685
+call(
+  tail
+)
+type(
+  string
+)
+"alpha.ml" 27 643 665 "alpha.ml" 27 643 686
+type(
+  Knorm.name -> string
+)
+"alpha.ml" 27 643 687 "alpha.ml" 27 643 689
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "alpha.ml" 25 574 593 "alpha.ml" 25 574 595
+)
+"alpha.ml" 27 643 656 "alpha.ml" 27 643 689
+call(
+  stack
+)
+type(
+  string list
+)
+"alpha.ml" 28 693 705 "alpha.ml" 28 693 708
+type(
+  string
+)
+ident(
+  int_ref tna "alpha.ml" 26 608 615 "alpha.ml" 26 608 618
+)
+"alpha.ml" 28 693 709 "alpha.ml" 28 693 711
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  int_ref td "alpha.ml" 25 574 589 "alpha.ml" 25 574 591
+)
+"alpha.ml" 28 693 704 "alpha.ml" 28 693 712
+type(
+  Knorm.name
+)
+"alpha.ml" 29 714 718 "alpha.ml" 29 714 727
+type(
+  (string -> Knorm.name -> Knorm.name) ->
+  string list -> Knorm.name list -> Knorm.name list
+)
+ident(
+  ext_ref List.map2
+)
+"alpha.ml" 29 714 733 "alpha.ml" 29 714 734
+type(
+  string
+)
+ident(
+  def a "alpha.ml" 29 714 738 "alpha.ml" 29 714 756
+)
+"alpha.ml" 29 714 743 "alpha.ml" 29 714 744
+type(
+  string
+)
+"alpha.ml" 29 714 745 "alpha.ml" 29 714 746
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  def b "alpha.ml" 29 714 751 "alpha.ml" 29 714 756
+)
+"alpha.ml" 29 714 742 "alpha.ml" 29 714 747
+type(
+  Knorm.name
+)
+"alpha.ml" 29 714 752 "alpha.ml" 29 714 753
+type(
+  string
+)
+ident(
+  int_ref a "alpha.ml" 29 714 733 "alpha.ml" 29 714 734
+)
+"alpha.ml" 29 714 754 "alpha.ml" 29 714 755
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  int_ref b "alpha.ml" 29 714 745 "alpha.ml" 29 714 746
+)
+"alpha.ml" 29 714 751 "alpha.ml" 29 714 756
+type(
+  string * (Type_checker.ty * Debug.debug_data)
+)
+"alpha.ml" 29 714 738 "alpha.ml" 29 714 756
+type(
+  Knorm.name -> Knorm.name
+)
+"alpha.ml" 29 714 728 "alpha.ml" 29 714 757
+type(
+  string -> Knorm.name -> Knorm.name
+)
+"alpha.ml" 29 714 758 "alpha.ml" 29 714 761
+type(
+  string list
+)
+ident(
+  int_ref tvs "alpha.ml" 27 643 650 "alpha.ml" 27 643 653
+)
+"alpha.ml" 29 714 762 "alpha.ml" 29 714 764
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "alpha.ml" 25 574 593 "alpha.ml" 25 574 595
+)
+"alpha.ml" 29 714 718 "alpha.ml" 29 714 764
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"alpha.ml" 30 766 770 "alpha.ml" 30 766 780
+type(
+  Knorm.kexp -> (string * string) list -> Knorm.kexp
+)
+ident(
+  int_ref alpha_conv "alpha.ml" 6 77 85 "alpha.ml" 6 77 95
+)
+"alpha.ml" 30 766 781 "alpha.ml" 30 766 783
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "alpha.ml" 25 574 596 "alpha.ml" 25 574 598
+)
+"alpha.ml" 30 766 786 "alpha.ml" 30 766 788
+type(
+  string
+)
+ident(
+  int_ref na "alpha.ml" 25 574 586 "alpha.ml" 25 574 588
+)
+"alpha.ml" 30 766 789 "alpha.ml" 30 766 792
+type(
+  string
+)
+ident(
+  int_ref tna "alpha.ml" 26 608 615 "alpha.ml" 26 608 618
+)
+"alpha.ml" 30 766 785 "alpha.ml" 30 766 793
+type(
+  string * string
+)
+"alpha.ml" 30 766 798 "alpha.ml" 30 766 807
+type(
+  (Knorm.name -> string -> string * string) ->
+  Knorm.name list -> string list -> (string * string) list
+)
+ident(
+  ext_ref List.map2
+)
+"alpha.ml" 30 766 814 "alpha.ml" 30 766 815
+type(
+  string
+)
+ident(
+  def a "alpha.ml" 30 766 822 "alpha.ml" 30 766 836
+)
+"alpha.ml" 30 766 816 "alpha.ml" 30 766 817
+type(
+  Type_checker.ty * Debug.debug_data
+)
+"alpha.ml" 30 766 813 "alpha.ml" 30 766 818
+type(
+  Knorm.name
+)
+"alpha.ml" 30 766 826 "alpha.ml" 30 766 827
+type(
+  string
+)
+ident(
+  def b "alpha.ml" 30 766 831 "alpha.ml" 30 766 836
+)
+"alpha.ml" 30 766 832 "alpha.ml" 30 766 833
+type(
+  string
+)
+ident(
+  int_ref a "alpha.ml" 30 766 814 "alpha.ml" 30 766 815
+)
+"alpha.ml" 30 766 834 "alpha.ml" 30 766 835
+type(
+  string
+)
+ident(
+  int_ref b "alpha.ml" 30 766 826 "alpha.ml" 30 766 827
+)
+"alpha.ml" 30 766 831 "alpha.ml" 30 766 836
+type(
+  string * string
+)
+"alpha.ml" 30 766 822 "alpha.ml" 30 766 836
+type(
+  string -> string * string
+)
+"alpha.ml" 30 766 808 "alpha.ml" 30 766 837
+type(
+  Knorm.name -> string -> string * string
+)
+"alpha.ml" 30 766 838 "alpha.ml" 30 766 840
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "alpha.ml" 25 574 593 "alpha.ml" 25 574 595
+)
+"alpha.ml" 30 766 841 "alpha.ml" 30 766 844
+type(
+  string list
+)
+ident(
+  int_ref tvs "alpha.ml" 27 643 650 "alpha.ml" 27 643 653
+)
+"alpha.ml" 30 766 797 "alpha.ml" 30 766 845
+call(
+  stack
+)
+type(
+  (string * string) list
+)
+"alpha.ml" 30 766 785 "alpha.ml" 30 766 845
+type(
+  (string * string) list
+)
+"alpha.ml" 30 766 846 "alpha.ml" 30 766 847
+type(
+  (string * string) list -> (string * string) list -> (string * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"alpha.ml" 30 766 848 "alpha.ml" 30 766 851
+type(
+  (string * string) list
+)
+ident(
+  int_ref env "alpha.ml" 6 77 100 "alpha.ml" 6 77 103
+)
+"alpha.ml" 30 766 784 "alpha.ml" 30 766 852
+call(
+  stack
+)
+type(
+  (string * string) list
+)
+"alpha.ml" 30 766 770 "alpha.ml" 30 766 852
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"alpha.ml" 31 854 858 "alpha.ml" 31 854 868
+type(
+  Knorm.kexp -> (string * string) list -> Knorm.kexp
+)
+ident(
+  int_ref alpha_conv "alpha.ml" 6 77 85 "alpha.ml" 6 77 95
+)
+"alpha.ml" 31 854 869 "alpha.ml" 31 854 871
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "alpha.ml" 25 574 599 "alpha.ml" 25 574 601
+)
+"alpha.ml" 31 854 874 "alpha.ml" 31 854 876
+type(
+  string
+)
+ident(
+  int_ref na "alpha.ml" 25 574 586 "alpha.ml" 25 574 588
+)
+"alpha.ml" 31 854 877 "alpha.ml" 31 854 880
+type(
+  string
+)
+ident(
+  int_ref tna "alpha.ml" 26 608 615 "alpha.ml" 26 608 618
+)
+"alpha.ml" 31 854 873 "alpha.ml" 31 854 881
+type(
+  string * string
+)
+"alpha.ml" 31 854 885 "alpha.ml" 31 854 888
+type(
+  (string * string) list
+)
+ident(
+  int_ref env "alpha.ml" 6 77 100 "alpha.ml" 6 77 103
+)
+"alpha.ml" 31 854 872 "alpha.ml" 31 854 889
+type(
+  (string * string) list
+)
+"alpha.ml" 31 854 858 "alpha.ml" 31 854 889
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"alpha.ml" 28 693 696 "alpha.ml" 32 890 894
+type(
+  Knorm.kexp
+)
+"alpha.ml" 27 643 646 "alpha.ml" 32 890 894
+type(
+  Knorm.kexp
+)
+"alpha.ml" 25 574 606 "alpha.ml" 33 895 898
+type(
+  Knorm.kexp
+)
+"alpha.ml" 34 899 907 "alpha.ml" 34 899 909
+type(
+  Knorm.name
+)
+ident(
+  def fn "alpha.ml" 34 899 917 "alpha.ml" 34 899 947
+)
+"alpha.ml" 34 899 910 "alpha.ml" 34 899 912
+type(
+  Knorm.name list
+)
+ident(
+  def vs "alpha.ml" 34 899 917 "alpha.ml" 34 899 947
+)
+"alpha.ml" 34 899 902 "alpha.ml" 34 899 913
+type(
+  Knorm.kexp
+)
+"alpha.ml" 34 899 922 "alpha.ml" 34 899 930
+type(
+  Knorm.name -> Knorm.name
+)
+ident(
+  int_ref conv_var "alpha.ml" 7 108 113 "alpha.ml" 7 108 121
+)
+"alpha.ml" 34 899 931 "alpha.ml" 34 899 933
+type(
+  Knorm.name
+)
+ident(
+  int_ref fn "alpha.ml" 34 899 907 "alpha.ml" 34 899 909
+)
+"alpha.ml" 34 899 922 "alpha.ml" 34 899 933
+call(
+  stack
+)
+type(
+  Knorm.name
+)
+"alpha.ml" 34 899 934 "alpha.ml" 34 899 943
+type(
+  Knorm.name list -> Knorm.name list
+)
+ident(
+  int_ref conv_list "alpha.ml" 13 200 205 "alpha.ml" 13 200 214
+)
+"alpha.ml" 34 899 944 "alpha.ml" 34 899 946
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "alpha.ml" 34 899 910 "alpha.ml" 34 899 912
+)
+"alpha.ml" 34 899 934 "alpha.ml" 34 899 946
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"alpha.ml" 34 899 917 "alpha.ml" 34 899 947
+type(
+  Knorm.kexp
+)
+"alpha.ml" 35 948 958 "alpha.ml" 35 948 960
+ident(
+  def vs "alpha.ml" 35 948 965 "alpha.ml" 35 948 985
+)
+"alpha.ml" 35 948 957 "alpha.ml" 35 948 961
+type(
+  Knorm.name list
+)
+"alpha.ml" 35 948 951 "alpha.ml" 35 948 961
+type(
+  Knorm.kexp
+)
+"alpha.ml" 35 948 972 "alpha.ml" 35 948 981
+type(
+  Knorm.name list -> Knorm.name list
+)
+ident(
+  int_ref conv_list "alpha.ml" 13 200 205 "alpha.ml" 13 200 214
+)
+"alpha.ml" 35 948 982 "alpha.ml" 35 948 984
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "alpha.ml" 35 948 957 "alpha.ml" 35 948 961
+)
+"alpha.ml" 35 948 971 "alpha.ml" 35 948 985
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"alpha.ml" 35 948 965 "alpha.ml" 35 948 985
+type(
+  Knorm.kexp
+)
+"alpha.ml" 36 986 999 "alpha.ml" 36 986 1001
+type(
+  Knorm.name list
+)
+ident(
+  def vs "alpha.ml" 36 986 1012 "alpha.ml" 42 1224 1227
+)
+"alpha.ml" 36 986 1002 "alpha.ml" 36 986 1004
+type(
+  Knorm.name
+)
+ident(
+  def na "alpha.ml" 36 986 1012 "alpha.ml" 42 1224 1227
+)
+"alpha.ml" 36 986 1005 "alpha.ml" 36 986 1007
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "alpha.ml" 36 986 1012 "alpha.ml" 42 1224 1227
+)
+"alpha.ml" 36 986 989 "alpha.ml" 36 986 1008
+type(
+  Knorm.kexp
+)
+"alpha.ml" 37 1014 1021 "alpha.ml" 37 1014 1024
+type(
+  string list
+)
+ident(
+  def tvs "alpha.ml" 38 1064 1067 "alpha.ml" 41 1219 1223
+)
+"alpha.ml" 37 1014 1027 "alpha.ml" 37 1014 1035
+type(
+  (Knorm.name -> string) -> Knorm.name list -> string list
+)
+ident(
+  ext_ref List.map
+)
+"alpha.ml" 37 1014 1041 "alpha.ml" 37 1014 1042
+type(
+  Knorm.name
+)
+"alpha.ml" 37 1014 1046 "alpha.ml" 37 1014 1053
+type(
+  unit -> string
+)
+ident(
+  int_ref genname "alpha.ml" 4 24 28 "alpha.ml" 4 24 35
+)
+"alpha.ml" 37 1014 1054 "alpha.ml" 37 1014 1056
+type(
+  unit
+)
+"alpha.ml" 37 1014 1046 "alpha.ml" 37 1014 1056
+call(
+  tail
+)
+type(
+  string
+)
+"alpha.ml" 37 1014 1036 "alpha.ml" 37 1014 1057
+type(
+  Knorm.name -> string
+)
+"alpha.ml" 37 1014 1058 "alpha.ml" 37 1014 1060
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "alpha.ml" 36 986 999 "alpha.ml" 36 986 1001
+)
+"alpha.ml" 37 1014 1027 "alpha.ml" 37 1014 1060
+call(
+  stack
+)
+type(
+  string list
+)
+"alpha.ml" 38 1064 1077 "alpha.ml" 38 1064 1086
+type(
+  (Knorm.name -> string -> Knorm.name) ->
+  Knorm.name list -> string list -> Knorm.name list
+)
+ident(
+  ext_ref List.map2
+)
+"alpha.ml" 38 1064 1093 "alpha.ml" 38 1064 1094
+type(
+  string
+)
+"alpha.ml" 38 1064 1095 "alpha.ml" 38 1064 1097
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  def ad "alpha.ml" 38 1064 1102 "alpha.ml" 38 1064 1117
+)
+"alpha.ml" 38 1064 1092 "alpha.ml" 38 1064 1098
+type(
+  Knorm.name
+)
+"alpha.ml" 38 1064 1106 "alpha.ml" 38 1064 1107
+type(
+  string
+)
+ident(
+  def b "alpha.ml" 38 1064 1111 "alpha.ml" 38 1064 1117
+)
+"alpha.ml" 38 1064 1112 "alpha.ml" 38 1064 1113
+type(
+  string
+)
+ident(
+  int_ref b "alpha.ml" 38 1064 1106 "alpha.ml" 38 1064 1107
+)
+"alpha.ml" 38 1064 1114 "alpha.ml" 38 1064 1116
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  int_ref ad "alpha.ml" 38 1064 1095 "alpha.ml" 38 1064 1097
+)
+"alpha.ml" 38 1064 1111 "alpha.ml" 38 1064 1117
+type(
+  string * (Type_checker.ty * Debug.debug_data)
+)
+"alpha.ml" 38 1064 1102 "alpha.ml" 38 1064 1117
+type(
+  string -> Knorm.name
+)
+"alpha.ml" 38 1064 1087 "alpha.ml" 38 1064 1118
+type(
+  Knorm.name -> string -> Knorm.name
+)
+"alpha.ml" 38 1064 1119 "alpha.ml" 38 1064 1121
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "alpha.ml" 36 986 999 "alpha.ml" 36 986 1001
+)
+"alpha.ml" 38 1064 1122 "alpha.ml" 38 1064 1125
+type(
+  string list
+)
+ident(
+  int_ref tvs "alpha.ml" 37 1014 1021 "alpha.ml" 37 1014 1024
+)
+"alpha.ml" 38 1064 1077 "alpha.ml" 38 1064 1125
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"alpha.ml" 39 1127 1131 "alpha.ml" 39 1127 1139
+type(
+  Knorm.name -> Knorm.name
+)
+ident(
+  int_ref conv_var "alpha.ml" 7 108 113 "alpha.ml" 7 108 121
+)
+"alpha.ml" 39 1127 1140 "alpha.ml" 39 1127 1142
+type(
+  Knorm.name
+)
+ident(
+  int_ref na "alpha.ml" 36 986 1002 "alpha.ml" 36 986 1004
+)
+"alpha.ml" 39 1127 1131 "alpha.ml" 39 1127 1142
+call(
+  stack
+)
+type(
+  Knorm.name
+)
+"alpha.ml" 40 1144 1148 "alpha.ml" 40 1144 1158
+type(
+  Knorm.kexp -> (string * string) list -> Knorm.kexp
+)
+ident(
+  int_ref alpha_conv "alpha.ml" 6 77 85 "alpha.ml" 6 77 95
+)
+"alpha.ml" 40 1144 1159 "alpha.ml" 40 1144 1161
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "alpha.ml" 36 986 1005 "alpha.ml" 36 986 1007
+)
+"alpha.ml" 40 1144 1164 "alpha.ml" 40 1144 1173
+type(
+  (Knorm.name -> string -> string * string) ->
+  Knorm.name list -> string list -> (string * string) list
+)
+ident(
+  ext_ref List.map2
+)
+"alpha.ml" 40 1144 1180 "alpha.ml" 40 1144 1181
+type(
+  string
+)
+ident(
+  def a "alpha.ml" 40 1144 1188 "alpha.ml" 40 1144 1202
+)
+"alpha.ml" 40 1144 1182 "alpha.ml" 40 1144 1183
+type(
+  Type_checker.ty * Debug.debug_data
+)
+"alpha.ml" 40 1144 1179 "alpha.ml" 40 1144 1184
+type(
+  Knorm.name
+)
+"alpha.ml" 40 1144 1192 "alpha.ml" 40 1144 1193
+type(
+  string
+)
+ident(
+  def b "alpha.ml" 40 1144 1197 "alpha.ml" 40 1144 1202
+)
+"alpha.ml" 40 1144 1198 "alpha.ml" 40 1144 1199
+type(
+  string
+)
+ident(
+  int_ref a "alpha.ml" 40 1144 1180 "alpha.ml" 40 1144 1181
+)
+"alpha.ml" 40 1144 1200 "alpha.ml" 40 1144 1201
+type(
+  string
+)
+ident(
+  int_ref b "alpha.ml" 40 1144 1192 "alpha.ml" 40 1144 1193
+)
+"alpha.ml" 40 1144 1197 "alpha.ml" 40 1144 1202
+type(
+  string * string
+)
+"alpha.ml" 40 1144 1188 "alpha.ml" 40 1144 1202
+type(
+  string -> string * string
+)
+"alpha.ml" 40 1144 1174 "alpha.ml" 40 1144 1203
+type(
+  Knorm.name -> string -> string * string
+)
+"alpha.ml" 40 1144 1204 "alpha.ml" 40 1144 1206
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "alpha.ml" 36 986 999 "alpha.ml" 36 986 1001
+)
+"alpha.ml" 40 1144 1207 "alpha.ml" 40 1144 1210
+type(
+  string list
+)
+ident(
+  int_ref tvs "alpha.ml" 37 1014 1021 "alpha.ml" 37 1014 1024
+)
+"alpha.ml" 40 1144 1163 "alpha.ml" 40 1144 1211
+call(
+  stack
+)
+type(
+  (string * string) list
+)
+"alpha.ml" 40 1144 1212 "alpha.ml" 40 1144 1213
+type(
+  (string * string) list -> (string * string) list -> (string * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"alpha.ml" 40 1144 1214 "alpha.ml" 40 1144 1217
+type(
+  (string * string) list
+)
+ident(
+  int_ref env "alpha.ml" 6 77 100 "alpha.ml" 6 77 103
+)
+"alpha.ml" 40 1144 1162 "alpha.ml" 40 1144 1218
+call(
+  stack
+)
+type(
+  (string * string) list
+)
+"alpha.ml" 40 1144 1148 "alpha.ml" 40 1144 1218
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"alpha.ml" 38 1064 1067 "alpha.ml" 41 1219 1223
+type(
+  Knorm.kexp
+)
+"alpha.ml" 36 986 1012 "alpha.ml" 42 1224 1227
+type(
+  Knorm.kexp
+)
+"alpha.ml" 15 245 250 "alpha.ml" 43 1228 1230
+type(
+  Knorm.kexp
+)
+"alpha.ml" 45 1237 1257 "alpha.ml" 45 1237 1270
+type(
+  string
+)
+"alpha.ml" 45 1237 1241 "alpha.ml" 45 1237 1270
+type(
+  exn
+)
+"alpha.ml" 46 1275 1278 "alpha.ml" 46 1275 1283
+type(
+  exn -> Knorm.kexp
+)
+ident(
+  ext_ref Pervasives.raise
+)
+"alpha.ml" 46 1275 1294 "alpha.ml" 46 1275 1308
+type(
+  (string -> string, unit, string) format -> string -> string
+)
+ident(
+  ext_ref Printf.sprintf
+)
+"alpha.ml" 46 1275 1309 "alpha.ml" 46 1275 1336
+type(
+  (string -> string, unit, string) format
+)
+"alpha.ml" 46 1275 1338 "alpha.ml" 46 1275 1347
+type(
+  Knorm.kexp -> string
+)
+ident(
+  ext_ref Knorm.knorm2str
+)
+"alpha.ml" 46 1275 1348 "alpha.ml" 46 1275 1351
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "alpha.ml" 6 77 96 "alpha.ml" 6 77 99
+)
+"alpha.ml" 46 1275 1337 "alpha.ml" 46 1275 1352
+call(
+  stack
+)
+type(
+  string
+)
+"alpha.ml" 46 1275 1293 "alpha.ml" 46 1275 1353
+call(
+  stack
+)
+type(
+  string
+)
+"alpha.ml" 46 1275 1284 "alpha.ml" 46 1275 1354
+type(
+  exn
+)
+"alpha.ml" 46 1275 1278 "alpha.ml" 46 1275 1354
+type(
+  Knorm.kexp
+)
+"alpha.ml" 15 245 246 "alpha.ml" 46 1275 1354
+type(
+  Knorm.kexp
+)
+"alpha.ml" 13 200 201 "alpha.ml" 46 1275 1354
+type(
+  Knorm.kexp
+)
+"alpha.ml" 7 108 109 "alpha.ml" 46 1275 1354
+type(
+  Knorm.kexp
+)

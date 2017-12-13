@@ -1,0 +1,385 @@
+"main_option.ml" 1 0 4 "main_option.ml" 1 0 11
+type(
+  bool ref
+)
+ident(
+  def windows "main_option.ml" 2 24 24 "main_option.ml" 1 0 -1
+)
+"main_option.ml" 1 0 14 "main_option.ml" 1 0 17
+type(
+  bool -> bool ref
+)
+ident(
+  ext_ref Pervasives.ref
+)
+"main_option.ml" 1 0 18 "main_option.ml" 1 0 23
+type(
+  bool
+)
+"main_option.ml" 1 0 14 "main_option.ml" 1 0 23
+type(
+  bool ref
+)
+"main_option.ml" 2 24 28 "main_option.ml" 2 24 33
+type(
+  bool ref
+)
+ident(
+  def nolib "main_option.ml" 3 46 46 "main_option.ml" 1 0 -1
+)
+"main_option.ml" 2 24 36 "main_option.ml" 2 24 39
+type(
+  bool -> bool ref
+)
+ident(
+  ext_ref Pervasives.ref
+)
+"main_option.ml" 2 24 40 "main_option.ml" 2 24 45
+type(
+  bool
+)
+"main_option.ml" 2 24 36 "main_option.ml" 2 24 45
+type(
+  bool ref
+)
+"main_option.ml" 3 46 50 "main_option.ml" 3 46 57
+type(
+  bool ref
+)
+ident(
+  def verbose "main_option.ml" 4 70 70 "main_option.ml" 1 0 -1
+)
+"main_option.ml" 3 46 60 "main_option.ml" 3 46 63
+type(
+  bool -> bool ref
+)
+ident(
+  ext_ref Pervasives.ref
+)
+"main_option.ml" 3 46 64 "main_option.ml" 3 46 69
+type(
+  bool
+)
+"main_option.ml" 3 46 60 "main_option.ml" 3 46 69
+type(
+  bool ref
+)
+"main_option.ml" 4 70 74 "main_option.ml" 4 70 82
+type(
+  bool ref
+)
+ident(
+  def tortesia "main_option.ml" 5 95 95 "main_option.ml" 1 0 -1
+)
+"main_option.ml" 4 70 85 "main_option.ml" 4 70 88
+type(
+  bool -> bool ref
+)
+ident(
+  ext_ref Pervasives.ref
+)
+"main_option.ml" 4 70 89 "main_option.ml" 4 70 94
+type(
+  bool
+)
+"main_option.ml" 4 70 85 "main_option.ml" 4 70 94
+type(
+  bool ref
+)
+"main_option.ml" 5 95 99 "main_option.ml" 5 95 108
+type(
+  bool ref
+)
+ident(
+  def debugmode "main_option.ml" 6 121 121 "main_option.ml" 1 0 -1
+)
+"main_option.ml" 5 95 111 "main_option.ml" 5 95 114
+type(
+  bool -> bool ref
+)
+ident(
+  ext_ref Pervasives.ref
+)
+"main_option.ml" 5 95 115 "main_option.ml" 5 95 120
+type(
+  bool
+)
+"main_option.ml" 5 95 111 "main_option.ml" 5 95 120
+type(
+  bool ref
+)
+"main_option.ml" 6 121 125 "main_option.ml" 6 121 133
+type(
+  bool ref
+)
+ident(
+  def noinline "main_option.ml" 7 146 146 "main_option.ml" 1 0 -1
+)
+"main_option.ml" 6 121 136 "main_option.ml" 6 121 139
+type(
+  bool -> bool ref
+)
+ident(
+  ext_ref Pervasives.ref
+)
+"main_option.ml" 6 121 140 "main_option.ml" 6 121 145
+type(
+  bool
+)
+"main_option.ml" 6 121 136 "main_option.ml" 6 121 145
+type(
+  bool ref
+)
+"main_option.ml" 7 146 150 "main_option.ml" 7 146 165
+type(
+  string ref
+)
+ident(
+  def output_filename "main_option.ml" 8 180 180 "main_option.ml" 1 0 -1
+)
+"main_option.ml" 7 146 168 "main_option.ml" 7 146 171
+type(
+  string -> string ref
+)
+ident(
+  ext_ref Pervasives.ref
+)
+"main_option.ml" 7 146 172 "main_option.ml" 7 146 179
+type(
+  string
+)
+"main_option.ml" 7 146 168 "main_option.ml" 7 146 179
+type(
+  string ref
+)
+"main_option.ml" 8 180 184 "main_option.ml" 8 180 198
+type(
+  bool ref
+)
+ident(
+  def nooptimization "main_option.ml" 9 211 211 "main_option.ml" 1 0 -1
+)
+"main_option.ml" 8 180 201 "main_option.ml" 8 180 204
+type(
+  bool -> bool ref
+)
+ident(
+  ext_ref Pervasives.ref
+)
+"main_option.ml" 8 180 205 "main_option.ml" 8 180 210
+type(
+  bool
+)
+"main_option.ml" 8 180 201 "main_option.ml" 8 180 210
+type(
+  bool ref
+)
+"main_option.ml" 9 211 215 "main_option.ml" 9 211 228
+type(
+  bool ref
+)
+ident(
+  def asmsin_asmint "main_option.ml" 11 242 242 "main_option.ml" 1 0 -1
+)
+"main_option.ml" 9 211 231 "main_option.ml" 9 211 234
+type(
+  bool -> bool ref
+)
+ident(
+  ext_ref Pervasives.ref
+)
+"main_option.ml" 9 211 235 "main_option.ml" 9 211 240
+type(
+  bool
+)
+"main_option.ml" 9 211 231 "main_option.ml" 9 211 240
+type(
+  bool ref
+)
+"main_option.ml" 11 242 246 "main_option.ml" 11 242 252
+type(
+  ('a -> string) -> 'a -> unit
+)
+ident(
+  def vprint "main_option.ml" 14 327 327 "main_option.ml" 1 0 -1
+)
+"main_option.ml" 11 242 253 "main_option.ml" 11 242 254
+type(
+  'a -> string
+)
+ident(
+  def f "main_option.ml" 11 242 255 "main_option.ml" 12 260 324
+)
+"main_option.ml" 11 242 255 "main_option.ml" 11 242 256
+type(
+  'a
+)
+ident(
+  def s "main_option.ml" 12 260 261 "main_option.ml" 12 260 324
+)
+"main_option.ml" 12 260 264 "main_option.ml" 12 260 265
+type(
+  bool ref -> bool
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"main_option.ml" 12 260 265 "main_option.ml" 12 260 272
+type(
+  bool ref
+)
+ident(
+  int_ref verbose "main_option.ml" 3 46 50 "main_option.ml" 3 46 57
+)
+"main_option.ml" 12 260 264 "main_option.ml" 12 260 272
+type(
+  bool
+)
+"main_option.ml" 12 260 279 "main_option.ml" 12 260 291
+type(
+  string -> unit
+)
+ident(
+  ext_ref Pervasives.print_string
+)
+"main_option.ml" 12 260 293 "main_option.ml" 12 260 294
+type(
+  'a -> string
+)
+ident(
+  int_ref f "main_option.ml" 11 242 253 "main_option.ml" 11 242 254
+)
+"main_option.ml" 12 260 295 "main_option.ml" 12 260 296
+type(
+  'a
+)
+ident(
+  int_ref s "main_option.ml" 11 242 255 "main_option.ml" 11 242 256
+)
+"main_option.ml" 12 260 292 "main_option.ml" 12 260 297
+call(
+  stack
+)
+type(
+  string
+)
+"main_option.ml" 12 260 279 "main_option.ml" 12 260 297
+call(
+  stack
+)
+type(
+  unit
+)
+"main_option.ml" 12 260 299 "main_option.ml" 12 260 312
+type(
+  unit -> unit
+)
+ident(
+  ext_ref Pervasives.print_newline
+)
+"main_option.ml" 12 260 313 "main_option.ml" 12 260 315
+type(
+  unit
+)
+"main_option.ml" 12 260 299 "main_option.ml" 12 260 315
+call(
+  tail
+)
+type(
+  unit
+)
+"main_option.ml" 12 260 278 "main_option.ml" 12 260 316
+type(
+  unit
+)
+"main_option.ml" 12 260 322 "main_option.ml" 12 260 324
+type(
+  unit
+)
+"main_option.ml" 12 260 261 "main_option.ml" 12 260 324
+type(
+  unit
+)
+"main_option.ml" 14 327 331 "main_option.ml" 14 327 338
+type(
+  string -> unit
+)
+ident(
+  def ivprint "main_option.ml" 15 344 404 "main_option.ml" 1 0 -1
+)
+"main_option.ml" 14 327 339 "main_option.ml" 14 327 340
+type(
+  string
+)
+ident(
+  def s "main_option.ml" 15 344 345 "main_option.ml" 15 344 404
+)
+"main_option.ml" 15 344 348 "main_option.ml" 15 344 349
+type(
+  bool ref -> bool
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"main_option.ml" 15 344 349 "main_option.ml" 15 344 356
+type(
+  bool ref
+)
+ident(
+  int_ref verbose "main_option.ml" 3 46 50 "main_option.ml" 3 46 57
+)
+"main_option.ml" 15 344 348 "main_option.ml" 15 344 356
+type(
+  bool
+)
+"main_option.ml" 15 344 363 "main_option.ml" 15 344 375
+type(
+  string -> unit
+)
+ident(
+  ext_ref Pervasives.print_string
+)
+"main_option.ml" 15 344 376 "main_option.ml" 15 344 377
+type(
+  string
+)
+ident(
+  int_ref s "main_option.ml" 14 327 339 "main_option.ml" 14 327 340
+)
+"main_option.ml" 15 344 363 "main_option.ml" 15 344 377
+call(
+  stack
+)
+type(
+  unit
+)
+"main_option.ml" 15 344 379 "main_option.ml" 15 344 392
+type(
+  unit -> unit
+)
+ident(
+  ext_ref Pervasives.print_newline
+)
+"main_option.ml" 15 344 393 "main_option.ml" 15 344 395
+type(
+  unit
+)
+"main_option.ml" 15 344 379 "main_option.ml" 15 344 395
+call(
+  tail
+)
+type(
+  unit
+)
+"main_option.ml" 15 344 362 "main_option.ml" 15 344 396
+type(
+  unit
+)
+"main_option.ml" 15 344 402 "main_option.ml" 15 344 404
+type(
+  unit
+)
+"main_option.ml" 15 344 345 "main_option.ml" 15 344 404
+type(
+  unit
+)

@@ -1,0 +1,200 @@
+"linux_win_diff.ml" 3 18 22 "linux_win_diff.ml" 3 18 31
+type(
+  unit -> string
+)
+ident(
+  def main_name "linux_win_diff.ml" 4 76 76 "linux_win_diff.ml" 1 0 -1
+)
+"linux_win_diff.ml" 3 18 32 "linux_win_diff.ml" 3 18 34
+type(
+  unit
+)
+"linux_win_diff.ml" 3 18 40 "linux_win_diff.ml" 3 18 41
+type(
+  bool ref -> bool
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"linux_win_diff.ml" 3 18 41 "linux_win_diff.ml" 3 18 48
+type(
+  bool ref
+)
+ident(
+  ext_ref Main_option.windows
+)
+"linux_win_diff.ml" 3 18 40 "linux_win_diff.ml" 3 18 48
+type(
+  bool
+)
+"linux_win_diff.ml" 3 18 54 "linux_win_diff.ml" 3 18 61
+type(
+  string
+)
+"linux_win_diff.ml" 3 18 67 "linux_win_diff.ml" 3 18 75
+type(
+  string
+)
+"linux_win_diff.ml" 3 18 37 "linux_win_diff.ml" 3 18 75
+type(
+  string
+)
+"linux_win_diff.ml" 4 76 80 "linux_win_diff.ml" 4 76 91
+type(
+  unit -> string
+)
+ident(
+  def io_lib_name "linux_win_diff.ml" 5 149 149 "linux_win_diff.ml" 1 0 -1
+)
+"linux_win_diff.ml" 4 76 92 "linux_win_diff.ml" 4 76 94
+type(
+  unit
+)
+"linux_win_diff.ml" 4 76 100 "linux_win_diff.ml" 4 76 101
+type(
+  bool ref -> bool
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"linux_win_diff.ml" 4 76 101 "linux_win_diff.ml" 4 76 108
+type(
+  bool ref
+)
+ident(
+  ext_ref Main_option.windows
+)
+"linux_win_diff.ml" 4 76 100 "linux_win_diff.ml" 4 76 108
+type(
+  bool
+)
+"linux_win_diff.ml" 4 76 114 "linux_win_diff.ml" 4 76 127
+type(
+  string
+)
+"linux_win_diff.ml" 4 76 133 "linux_win_diff.ml" 4 76 148
+type(
+  string
+)
+"linux_win_diff.ml" 4 76 97 "linux_win_diff.ml" 4 76 148
+type(
+  string
+)
+"linux_win_diff.ml" 5 149 153 "linux_win_diff.ml" 5 149 167
+type(
+  unit -> string
+)
+ident(
+  def main_heap_size "linux_win_diff.ml" 7 222 222 "linux_win_diff.ml" 1 0 -1
+)
+"linux_win_diff.ml" 5 149 168 "linux_win_diff.ml" 5 149 170
+type(
+  unit
+)
+"linux_win_diff.ml" 5 149 176 "linux_win_diff.ml" 5 149 177
+type(
+  bool ref -> bool
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"linux_win_diff.ml" 5 149 177 "linux_win_diff.ml" 5 149 184
+type(
+  bool ref
+)
+ident(
+  ext_ref Main_option.windows
+)
+"linux_win_diff.ml" 5 149 176 "linux_win_diff.ml" 5 149 184
+type(
+  bool
+)
+"linux_win_diff.ml" 5 149 190 "linux_win_diff.ml" 5 149 202
+type(
+  string
+)
+"linux_win_diff.ml" 5 149 208 "linux_win_diff.ml" 5 149 220
+type(
+  string
+)
+"linux_win_diff.ml" 5 149 173 "linux_win_diff.ml" 5 149 220
+type(
+  string
+)
+"linux_win_diff.ml" 7 222 226 "linux_win_diff.ml" 7 222 239
+type(
+  unit -> string
+)
+ident(
+  def main_epilogue "linux_win_diff.ml" 11 333 334 "linux_win_diff.ml" 1 0 -1
+)
+"linux_win_diff.ml" 7 222 240 "linux_win_diff.ml" 7 222 242
+type(
+  unit
+)
+"linux_win_diff.ml" 7 222 248 "linux_win_diff.ml" 7 222 249
+type(
+  bool ref -> bool
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"linux_win_diff.ml" 7 222 249 "linux_win_diff.ml" 7 222 256
+type(
+  bool ref
+)
+ident(
+  ext_ref Main_option.windows
+)
+"linux_win_diff.ml" 7 222 248 "linux_win_diff.ml" 7 222 256
+type(
+  bool
+)
+"linux_win_diff.ml" 7 222 262 "linux_win_diff.ml" 7 222 271
+type(
+  string
+)
+"linux_win_diff.ml" 8 279 280 "linux_win_diff.ml" 8 279 295
+type(
+  string
+)
+"linux_win_diff.ml" 8 279 296 "linux_win_diff.ml" 8 279 297
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"linux_win_diff.ml" 9 298 299 "linux_win_diff.ml" 9 298 314
+type(
+  string
+)
+"linux_win_diff.ml" 9 298 315 "linux_win_diff.ml" 9 298 316
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"linux_win_diff.ml" 10 317 318 "linux_win_diff.ml" 10 317 332
+type(
+  string
+)
+"linux_win_diff.ml" 9 298 299 "linux_win_diff.ml" 10 317 332
+call(
+  stack
+)
+type(
+  string
+)
+"linux_win_diff.ml" 7 222 277 "linux_win_diff.ml" 11 333 334
+call(
+  tail
+)
+type(
+  string
+)
+"linux_win_diff.ml" 7 222 245 "linux_win_diff.ml" 11 333 334
+type(
+  string
+)

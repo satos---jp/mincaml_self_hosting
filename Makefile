@@ -9,7 +9,8 @@ SOURCES = debug.ml main_option.ml linux_win_diff.ml genint.ml \
 	main.ml 
 RESULT = main
 
-YFLAGS = -v 
+YFLAGS = -v
+OCAMLFLAGS = 
 
 all: byte-code byte-code-library
 

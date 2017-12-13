@@ -1,0 +1,2592 @@
+"op.ml" 9 176 180 "op.ml" 9 176 188
+type(
+  'a * ('b * 'c) -> 'a
+)
+ident(
+  def name2str "op.ml" 11 208 208 "op.ml" 1 0 -1
+)
+"op.ml" 9 176 190 "op.ml" 9 176 192
+type(
+  'a
+)
+ident(
+  def na "op.ml" 9 176 203 "op.ml" 9 176 205
+)
+"op.ml" 9 176 194 "op.ml" 9 176 196
+type(
+  'b
+)
+ident(
+  def ty "op.ml" 9 176 203 "op.ml" 9 176 205
+)
+"op.ml" 9 176 197 "op.ml" 9 176 198
+type(
+  'c
+)
+"op.ml" 9 176 193 "op.ml" 9 176 199
+type(
+  'b * 'c
+)
+"op.ml" 9 176 189 "op.ml" 9 176 200
+type(
+  'a * ('b * 'c)
+)
+"op.ml" 9 176 203 "op.ml" 9 176 205
+type(
+  'a
+)
+ident(
+  int_ref na "op.ml" 9 176 190 "op.ml" 9 176 192
+)
+"op.ml" 11 208 212 "op.ml" 11 208 223
+type(
+  namestr ref * ('a * 'b) -> string
+)
+ident(
+  def namereg2str "op.ml" 16 304 304 "op.ml" 1 0 -1
+)
+"op.ml" 11 208 225 "op.ml" 11 208 227
+type(
+  namestr ref
+)
+ident(
+  def na "op.ml" 12 239 240 "op.ml" 14 279 301
+)
+"op.ml" 11 208 229 "op.ml" 11 208 231
+type(
+  'a
+)
+ident(
+  def ty "op.ml" 12 239 240 "op.ml" 14 279 301
+)
+"op.ml" 11 208 232 "op.ml" 11 208 233
+type(
+  'b
+)
+"op.ml" 11 208 228 "op.ml" 11 208 234
+type(
+  'a * 'b
+)
+"op.ml" 11 208 224 "op.ml" 11 208 235
+type(
+  namestr ref * ('a * 'b)
+)
+"op.ml" 12 239 246 "op.ml" 12 239 247
+type(
+  namestr ref -> namestr
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"op.ml" 12 239 247 "op.ml" 12 239 249
+type(
+  namestr ref
+)
+ident(
+  int_ref na "op.ml" 11 208 225 "op.ml" 11 208 227
+)
+"op.ml" 12 239 246 "op.ml" 12 239 249
+type(
+  namestr
+)
+"op.ml" 13 255 262 "op.ml" 13 255 263
+type(
+  string
+)
+ident(
+  def x "op.ml" 13 255 267 "op.ml" 13 255 277
+)
+"op.ml" 13 255 258 "op.ml" 13 255 263
+type(
+  namestr
+)
+"op.ml" 13 255 267 "op.ml" 13 255 273
+type(
+  string
+)
+"op.ml" 13 255 274 "op.ml" 13 255 275
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 13 255 276 "op.ml" 13 255 277
+type(
+  string
+)
+ident(
+  int_ref x "op.ml" 13 255 262 "op.ml" 13 255 263
+)
+"op.ml" 13 255 267 "op.ml" 13 255 277
+call(
+  tail
+)
+type(
+  string
+)
+"op.ml" 14 279 286 "op.ml" 14 279 287
+type(
+  string
+)
+ident(
+  def x "op.ml" 14 279 291 "op.ml" 14 279 301
+)
+"op.ml" 14 279 282 "op.ml" 14 279 287
+type(
+  namestr
+)
+"op.ml" 14 279 291 "op.ml" 14 279 297
+type(
+  string
+)
+"op.ml" 14 279 298 "op.ml" 14 279 299
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 14 279 300 "op.ml" 14 279 301
+type(
+  string
+)
+ident(
+  int_ref x "op.ml" 14 279 286 "op.ml" 14 279 287
+)
+"op.ml" 14 279 291 "op.ml" 14 279 301
+call(
+  tail
+)
+type(
+  string
+)
+"op.ml" 12 239 240 "op.ml" 14 279 301
+type(
+  string
+)
+"op.ml" 16 304 308 "op.ml" 16 304 314
+type(
+  (namestr ref * ('a * 'b)) list -> string
+)
+ident(
+  def vs2str "op.ml" 18 381 381 "op.ml" 1 0 -1
+)
+"op.ml" 16 304 315 "op.ml" 16 304 317
+type(
+  (namestr ref * ('a * 'b)) list
+)
+ident(
+  def vs "op.ml" 16 304 320 "op.ml" 16 304 379
+)
+"op.ml" 16 304 320 "op.ml" 16 304 323
+type(
+  string
+)
+"op.ml" 16 304 324 "op.ml" 16 304 325
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 16 304 327 "op.ml" 16 304 340
+type(
+  string -> string list -> string
+)
+ident(
+  ext_ref String.concat
+)
+"op.ml" 16 304 341 "op.ml" 16 304 346
+type(
+  string
+)
+"op.ml" 16 304 348 "op.ml" 16 304 356
+type(
+  (namestr ref * ('a * 'b) -> string) ->
+  (namestr ref * ('a * 'b)) list -> string list
+)
+ident(
+  ext_ref List.map
+)
+"op.ml" 16 304 357 "op.ml" 16 304 368
+type(
+  namestr ref * ('a * 'b) -> string
+)
+ident(
+  int_ref namereg2str "op.ml" 11 208 212 "op.ml" 11 208 223
+)
+"op.ml" 16 304 369 "op.ml" 16 304 371
+type(
+  (namestr ref * ('a * 'b)) list
+)
+ident(
+  int_ref vs "op.ml" 16 304 315 "op.ml" 16 304 317
+)
+"op.ml" 16 304 347 "op.ml" 16 304 372
+call(
+  stack
+)
+type(
+  string list
+)
+"op.ml" 16 304 326 "op.ml" 16 304 373
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 16 304 374 "op.ml" 16 304 375
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 16 304 376 "op.ml" 16 304 379
+type(
+  string
+)
+"op.ml" 16 304 326 "op.ml" 16 304 379
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 16 304 320 "op.ml" 16 304 379
+call(
+  tail
+)
+type(
+  string
+)
+"op.ml" 18 381 385 "op.ml" 18 381 391
+type(
+  string * 'a -> namestr ref * 'a
+)
+ident(
+  def cna2na "op.ml" 19 421 421 "op.ml" 1 0 -1
+)
+"op.ml" 18 381 393 "op.ml" 18 381 395
+type(
+  string
+)
+ident(
+  def na "op.ml" 18 381 402 "op.ml" 18 381 419
+)
+"op.ml" 18 381 396 "op.ml" 18 381 398
+type(
+  'a
+)
+ident(
+  def td "op.ml" 18 381 402 "op.ml" 18 381 419
+)
+"op.ml" 18 381 392 "op.ml" 18 381 399
+type(
+  string * 'a
+)
+"op.ml" 18 381 403 "op.ml" 18 381 406
+type(
+  namestr -> namestr ref
+)
+ident(
+  ext_ref Pervasives.ref
+)
+"op.ml" 18 381 412 "op.ml" 18 381 414
+type(
+  string
+)
+ident(
+  int_ref na "op.ml" 18 381 393 "op.ml" 18 381 395
+)
+"op.ml" 18 381 407 "op.ml" 18 381 415
+type(
+  namestr
+)
+"op.ml" 18 381 403 "op.ml" 18 381 415
+type(
+  namestr ref
+)
+"op.ml" 18 381 416 "op.ml" 18 381 418
+type(
+  'a
+)
+ident(
+  int_ref td "op.ml" 18 381 396 "op.ml" 18 381 398
+)
+"op.ml" 18 381 402 "op.ml" 18 381 419
+type(
+  namestr ref * 'a
+)
+"op.ml" 19 421 425 "op.ml" 19 421 431
+type(
+  (string * 'a) list -> (namestr ref * 'a) list
+)
+ident(
+  def cvs2vs "op.ml" 22 458 458 "op.ml" 1 0 -1
+)
+"op.ml" 19 421 432 "op.ml" 19 421 434
+type(
+  (string * 'a) list
+)
+ident(
+  def vs "op.ml" 19 421 437 "op.ml" 19 421 455
+)
+"op.ml" 19 421 437 "op.ml" 19 421 445
+type(
+  (string * 'a -> namestr ref * 'a) ->
+  (string * 'a) list -> (namestr ref * 'a) list
+)
+ident(
+  ext_ref List.map
+)
+"op.ml" 19 421 446 "op.ml" 19 421 452
+type(
+  string * 'a -> namestr ref * 'a
+)
+ident(
+  int_ref cna2na "op.ml" 18 381 385 "op.ml" 18 381 391
+)
+"op.ml" 19 421 453 "op.ml" 19 421 455
+type(
+  (string * 'a) list
+)
+ident(
+  int_ref vs "op.ml" 19 421 432 "op.ml" 19 421 434
+)
+"op.ml" 19 421 437 "op.ml" 19 421 455
+call(
+  tail
+)
+type(
+  (namestr ref * 'a) list
+)
+"op.ml" 39 1010 1014 "op.ml" 39 1010 1024
+type(
+  op -> string
+)
+ident(
+  def virtop2str "op.ml" 55 1880 1880 "op.ml" 1 0 -1
+)
+"op.ml" 39 1010 1025 "op.ml" 39 1010 1027
+type(
+  op
+)
+ident(
+  def op "op.ml" 40 1031 1032 "op.ml" 52 1845 1876
+)
+"op.ml" 40 1031 1038 "op.ml" 40 1031 1040
+type(
+  op
+)
+ident(
+  int_ref op "op.ml" 39 1010 1025 "op.ml" 39 1010 1027
+)
+"op.ml" 41 1046 1056 "op.ml" 41 1046 1058
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 41 1046 1065 "op.ml" 41 1046 1113
+)
+"op.ml" 41 1046 1059 "op.ml" 41 1046 1060
+type(
+  Syntax.const
+)
+ident(
+  def c "op.ml" 41 1046 1065 "op.ml" 41 1046 1113
+)
+"op.ml" 41 1046 1049 "op.ml" 41 1046 1061
+type(
+  op
+)
+"op.ml" 41 1046 1065 "op.ml" 41 1046 1069
+type(
+  string
+)
+"op.ml" 41 1046 1070 "op.ml" 41 1046 1071
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 41 1046 1073 "op.ml" 41 1046 1084
+type(
+  namereg -> string
+)
+ident(
+  int_ref namereg2str "op.ml" 11 208 212 "op.ml" 11 208 223
+)
+"op.ml" 41 1046 1085 "op.ml" 41 1046 1087
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 41 1046 1056 "op.ml" 41 1046 1058
+)
+"op.ml" 41 1046 1072 "op.ml" 41 1046 1088
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 41 1046 1089 "op.ml" 41 1046 1090
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 41 1046 1091 "op.ml" 41 1046 1097
+type(
+  string
+)
+"op.ml" 41 1046 1098 "op.ml" 41 1046 1099
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 41 1046 1101 "op.ml" 41 1046 1110
+type(
+  Syntax.const -> string
+)
+ident(
+  ext_ref Syntax.const2str
+)
+"op.ml" 41 1046 1111 "op.ml" 41 1046 1112
+type(
+  Syntax.const
+)
+ident(
+  int_ref c "op.ml" 41 1046 1059 "op.ml" 41 1046 1060
+)
+"op.ml" 41 1046 1100 "op.ml" 41 1046 1113
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 41 1046 1091 "op.ml" 41 1046 1113
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 41 1046 1072 "op.ml" 41 1046 1113
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 41 1046 1065 "op.ml" 41 1046 1113
+call(
+  tail
+)
+type(
+  string
+)
+"op.ml" 42 1114 1123 "op.ml" 42 1114 1125
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 42 1114 1133 "op.ml" 42 1114 1184
+)
+"op.ml" 42 1114 1126 "op.ml" 42 1114 1128
+type(
+  namereg
+)
+ident(
+  def nb "op.ml" 42 1114 1133 "op.ml" 42 1114 1184
+)
+"op.ml" 42 1114 1117 "op.ml" 42 1114 1129
+type(
+  op
+)
+"op.ml" 42 1114 1133 "op.ml" 42 1114 1137
+type(
+  string
+)
+"op.ml" 42 1114 1138 "op.ml" 42 1114 1139
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 42 1114 1141 "op.ml" 42 1114 1152
+type(
+  namereg -> string
+)
+ident(
+  int_ref namereg2str "op.ml" 11 208 212 "op.ml" 11 208 223
+)
+"op.ml" 42 1114 1153 "op.ml" 42 1114 1155
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 42 1114 1123 "op.ml" 42 1114 1125
+)
+"op.ml" 42 1114 1140 "op.ml" 42 1114 1156
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 42 1114 1157 "op.ml" 42 1114 1158
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 42 1114 1159 "op.ml" 42 1114 1165
+type(
+  string
+)
+"op.ml" 42 1114 1166 "op.ml" 42 1114 1167
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 42 1114 1169 "op.ml" 42 1114 1180
+type(
+  namereg -> string
+)
+ident(
+  int_ref namereg2str "op.ml" 11 208 212 "op.ml" 11 208 223
+)
+"op.ml" 42 1114 1181 "op.ml" 42 1114 1183
+type(
+  namereg
+)
+ident(
+  int_ref nb "op.ml" 42 1114 1126 "op.ml" 42 1114 1128
+)
+"op.ml" 42 1114 1168 "op.ml" 42 1114 1184
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 42 1114 1159 "op.ml" 42 1114 1184
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 42 1114 1140 "op.ml" 42 1114 1184
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 42 1114 1133 "op.ml" 42 1114 1184
+call(
+  tail
+)
+type(
+  string
+)
+"op.ml" 43 1185 1194 "op.ml" 43 1185 1196
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 43 1185 1208 "op.ml" 43 1185 1269
+)
+"op.ml" 43 1185 1197 "op.ml" 43 1185 1200
+type(
+  Syntax.optype
+)
+ident(
+  def opr "op.ml" 43 1185 1208 "op.ml" 43 1185 1269
+)
+"op.ml" 43 1185 1201 "op.ml" 43 1185 1203
+type(
+  namereg list
+)
+ident(
+  def vs "op.ml" 43 1185 1208 "op.ml" 43 1185 1269
+)
+"op.ml" 43 1185 1188 "op.ml" 43 1185 1204
+type(
+  op
+)
+"op.ml" 43 1185 1208 "op.ml" 43 1185 1212
+type(
+  string
+)
+"op.ml" 43 1185 1213 "op.ml" 43 1185 1214
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 43 1185 1216 "op.ml" 43 1185 1227
+type(
+  namereg -> string
+)
+ident(
+  int_ref namereg2str "op.ml" 11 208 212 "op.ml" 11 208 223
+)
+"op.ml" 43 1185 1228 "op.ml" 43 1185 1230
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 43 1185 1194 "op.ml" 43 1185 1196
+)
+"op.ml" 43 1185 1215 "op.ml" 43 1185 1231
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 43 1185 1232 "op.ml" 43 1185 1233
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 43 1185 1234 "op.ml" 43 1185 1240
+type(
+  string
+)
+"op.ml" 43 1185 1241 "op.ml" 43 1185 1242
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 43 1185 1244 "op.ml" 43 1185 1250
+type(
+  Syntax.optype -> string
+)
+ident(
+  ext_ref Syntax.op2str
+)
+"op.ml" 43 1185 1251 "op.ml" 43 1185 1254
+type(
+  Syntax.optype
+)
+ident(
+  int_ref opr "op.ml" 43 1185 1197 "op.ml" 43 1185 1200
+)
+"op.ml" 43 1185 1243 "op.ml" 43 1185 1255
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 43 1185 1256 "op.ml" 43 1185 1257
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 43 1185 1259 "op.ml" 43 1185 1265
+type(
+  namereg list -> string
+)
+ident(
+  int_ref vs2str "op.ml" 16 304 308 "op.ml" 16 304 314
+)
+"op.ml" 43 1185 1266 "op.ml" 43 1185 1268
+type(
+  namereg list
+)
+ident(
+  int_ref vs "op.ml" 43 1185 1201 "op.ml" 43 1185 1203
+)
+"op.ml" 43 1185 1258 "op.ml" 43 1185 1269
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 43 1185 1243 "op.ml" 43 1185 1269
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 43 1185 1234 "op.ml" 43 1185 1269
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 43 1185 1215 "op.ml" 43 1185 1269
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 43 1185 1208 "op.ml" 43 1185 1269
+call(
+  tail
+)
+type(
+  string
+)
+"op.ml" 44 1270 1280 "op.ml" 44 1270 1283
+type(
+  Syntax.comptype
+)
+ident(
+  def cmp "op.ml" 44 1270 1297 "op.ml" 44 1270 1395
+)
+"op.ml" 44 1270 1284 "op.ml" 44 1270 1286
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 44 1270 1297 "op.ml" 44 1270 1395
+)
+"op.ml" 44 1270 1287 "op.ml" 44 1270 1289
+type(
+  namereg
+)
+ident(
+  def nb "op.ml" 44 1270 1297 "op.ml" 44 1270 1395
+)
+"op.ml" 44 1270 1290 "op.ml" 44 1270 1292
+type(
+  label
+)
+ident(
+  def la "op.ml" 44 1270 1297 "op.ml" 44 1270 1395
+)
+"op.ml" 44 1270 1273 "op.ml" 44 1270 1293
+type(
+  op
+)
+"op.ml" 44 1270 1297 "op.ml" 44 1270 1304
+type(
+  string
+)
+"op.ml" 44 1270 1305 "op.ml" 44 1270 1306
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 44 1270 1308 "op.ml" 44 1270 1319
+type(
+  namereg -> string
+)
+ident(
+  int_ref namereg2str "op.ml" 11 208 212 "op.ml" 11 208 223
+)
+"op.ml" 44 1270 1320 "op.ml" 44 1270 1322
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 44 1270 1284 "op.ml" 44 1270 1286
+)
+"op.ml" 44 1270 1307 "op.ml" 44 1270 1323
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 44 1270 1324 "op.ml" 44 1270 1325
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 44 1270 1326 "op.ml" 44 1270 1329
+type(
+  string
+)
+"op.ml" 44 1270 1330 "op.ml" 44 1270 1331
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 44 1270 1333 "op.ml" 44 1270 1345
+type(
+  Syntax.comptype -> string
+)
+ident(
+  ext_ref Syntax.comptype2str
+)
+"op.ml" 44 1270 1346 "op.ml" 44 1270 1349
+type(
+  Syntax.comptype
+)
+ident(
+  int_ref cmp "op.ml" 44 1270 1280 "op.ml" 44 1270 1283
+)
+"op.ml" 44 1270 1332 "op.ml" 44 1270 1350
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 44 1270 1351 "op.ml" 44 1270 1352
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 44 1270 1353 "op.ml" 44 1270 1356
+type(
+  string
+)
+"op.ml" 44 1270 1357 "op.ml" 44 1270 1358
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 44 1270 1360 "op.ml" 44 1270 1371
+type(
+  namereg -> string
+)
+ident(
+  int_ref namereg2str "op.ml" 11 208 212 "op.ml" 11 208 223
+)
+"op.ml" 44 1270 1372 "op.ml" 44 1270 1374
+type(
+  namereg
+)
+ident(
+  int_ref nb "op.ml" 44 1270 1287 "op.ml" 44 1270 1289
+)
+"op.ml" 44 1270 1359 "op.ml" 44 1270 1375
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 44 1270 1376 "op.ml" 44 1270 1377
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 44 1270 1378 "op.ml" 44 1270 1390
+type(
+  string
+)
+"op.ml" 44 1270 1391 "op.ml" 44 1270 1392
+type(
+  string -> label -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 44 1270 1393 "op.ml" 44 1270 1395
+type(
+  label
+)
+ident(
+  int_ref la "op.ml" 44 1270 1290 "op.ml" 44 1270 1292
+)
+"op.ml" 44 1270 1378 "op.ml" 44 1270 1395
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 44 1270 1359 "op.ml" 44 1270 1395
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 44 1270 1353 "op.ml" 44 1270 1395
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 44 1270 1332 "op.ml" 44 1270 1395
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 44 1270 1326 "op.ml" 44 1270 1395
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 44 1270 1307 "op.ml" 44 1270 1395
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 44 1270 1297 "op.ml" 44 1270 1395
+call(
+  tail
+)
+type(
+  string
+)
+"op.ml" 45 1396 1405 "op.ml" 45 1396 1407
+ident(
+  def la "op.ml" 45 1396 1412 "op.ml" 45 1396 1425
+)
+"op.ml" 45 1396 1404 "op.ml" 45 1396 1408
+type(
+  label
+)
+"op.ml" 45 1396 1399 "op.ml" 45 1396 1408
+type(
+  op
+)
+"op.ml" 45 1396 1412 "op.ml" 45 1396 1420
+type(
+  string
+)
+"op.ml" 45 1396 1421 "op.ml" 45 1396 1422
+type(
+  string -> label -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 45 1396 1423 "op.ml" 45 1396 1425
+type(
+  label
+)
+ident(
+  int_ref la "op.ml" 45 1396 1404 "op.ml" 45 1396 1408
+)
+"op.ml" 45 1396 1412 "op.ml" 45 1396 1425
+call(
+  tail
+)
+type(
+  string
+)
+"op.ml" 46 1426 1437 "op.ml" 46 1426 1439
+ident(
+  def la "op.ml" 46 1426 1444 "op.ml" 46 1426 1452
+)
+"op.ml" 46 1426 1436 "op.ml" 46 1426 1440
+type(
+  label
+)
+"op.ml" 46 1426 1429 "op.ml" 46 1426 1440
+type(
+  op
+)
+"op.ml" 46 1426 1444 "op.ml" 46 1426 1446
+type(
+  label
+)
+ident(
+  int_ref la "op.ml" 46 1426 1436 "op.ml" 46 1426 1440
+)
+"op.ml" 46 1426 1447 "op.ml" 46 1426 1448
+type(
+  label -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 46 1426 1449 "op.ml" 46 1426 1452
+type(
+  string
+)
+"op.ml" 46 1426 1444 "op.ml" 46 1426 1452
+call(
+  tail
+)
+type(
+  string
+)
+"op.ml" 47 1453 1462 "op.ml" 47 1453 1464
+type(
+  istailcall
+)
+ident(
+  def b1 "op.ml" 47 1453 1481 "op.ml" 47 1453 1546
+)
+"op.ml" 47 1453 1465 "op.ml" 47 1453 1467
+type(
+  isdirapp
+)
+ident(
+  def b2 "op.ml" 47 1453 1481 "op.ml" 47 1453 1546
+)
+"op.ml" 47 1453 1468 "op.ml" 47 1453 1470
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 47 1453 1481 "op.ml" 47 1453 1546
+)
+"op.ml" 47 1453 1471 "op.ml" 47 1453 1473
+type(
+  namereg
+)
+ident(
+  def nb "op.ml" 47 1453 1481 "op.ml" 47 1453 1546
+)
+"op.ml" 47 1453 1474 "op.ml" 47 1453 1476
+type(
+  namereg list
+)
+ident(
+  def vs "op.ml" 47 1453 1481 "op.ml" 47 1453 1546
+)
+"op.ml" 47 1453 1456 "op.ml" 47 1453 1477
+type(
+  op
+)
+"op.ml" 47 1453 1481 "op.ml" 47 1453 1485
+type(
+  string
+)
+"op.ml" 47 1453 1486 "op.ml" 47 1453 1487
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 47 1453 1489 "op.ml" 47 1453 1500
+type(
+  namereg -> string
+)
+ident(
+  int_ref namereg2str "op.ml" 11 208 212 "op.ml" 11 208 223
+)
+"op.ml" 47 1453 1501 "op.ml" 47 1453 1503
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 47 1453 1468 "op.ml" 47 1453 1470
+)
+"op.ml" 47 1453 1488 "op.ml" 47 1453 1504
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 47 1453 1505 "op.ml" 47 1453 1506
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 47 1453 1507 "op.ml" 47 1453 1513
+type(
+  string
+)
+"op.ml" 47 1453 1514 "op.ml" 47 1453 1515
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 47 1453 1517 "op.ml" 47 1453 1528
+type(
+  namereg -> string
+)
+ident(
+  int_ref namereg2str "op.ml" 11 208 212 "op.ml" 11 208 223
+)
+"op.ml" 47 1453 1529 "op.ml" 47 1453 1531
+type(
+  namereg
+)
+ident(
+  int_ref nb "op.ml" 47 1453 1471 "op.ml" 47 1453 1473
+)
+"op.ml" 47 1453 1516 "op.ml" 47 1453 1532
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 47 1453 1533 "op.ml" 47 1453 1534
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 47 1453 1536 "op.ml" 47 1453 1542
+type(
+  namereg list -> string
+)
+ident(
+  int_ref vs2str "op.ml" 16 304 308 "op.ml" 16 304 314
+)
+"op.ml" 47 1453 1543 "op.ml" 47 1453 1545
+type(
+  namereg list
+)
+ident(
+  int_ref vs "op.ml" 47 1453 1474 "op.ml" 47 1453 1476
+)
+"op.ml" 47 1453 1535 "op.ml" 47 1453 1546
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 47 1453 1516 "op.ml" 47 1453 1546
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 47 1453 1507 "op.ml" 47 1453 1546
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 47 1453 1488 "op.ml" 47 1453 1546
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 47 1453 1481 "op.ml" 47 1453 1546
+call(
+  tail
+)
+type(
+  string
+)
+"op.ml" 48 1547 1562 "op.ml" 48 1547 1564
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 48 1547 1572 "op.ml" 48 1547 1618
+)
+"op.ml" 48 1547 1565 "op.ml" 48 1547 1567
+type(
+  namereg list
+)
+ident(
+  def vs "op.ml" 48 1547 1572 "op.ml" 48 1547 1618
+)
+"op.ml" 48 1547 1550 "op.ml" 48 1547 1568
+type(
+  op
+)
+"op.ml" 48 1547 1572 "op.ml" 48 1547 1576
+type(
+  string
+)
+"op.ml" 48 1547 1577 "op.ml" 48 1547 1578
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 48 1547 1580 "op.ml" 48 1547 1591
+type(
+  namereg -> string
+)
+ident(
+  int_ref namereg2str "op.ml" 11 208 212 "op.ml" 11 208 223
+)
+"op.ml" 48 1547 1592 "op.ml" 48 1547 1594
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 48 1547 1562 "op.ml" 48 1547 1564
+)
+"op.ml" 48 1547 1579 "op.ml" 48 1547 1595
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 48 1547 1596 "op.ml" 48 1547 1597
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 48 1547 1598 "op.ml" 48 1547 1604
+type(
+  string
+)
+"op.ml" 48 1547 1605 "op.ml" 48 1547 1606
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 48 1547 1608 "op.ml" 48 1547 1614
+type(
+  namereg list -> string
+)
+ident(
+  int_ref vs2str "op.ml" 16 304 308 "op.ml" 16 304 314
+)
+"op.ml" 48 1547 1615 "op.ml" 48 1547 1617
+type(
+  namereg list
+)
+ident(
+  int_ref vs "op.ml" 48 1547 1565 "op.ml" 48 1547 1567
+)
+"op.ml" 48 1547 1607 "op.ml" 48 1547 1618
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 48 1547 1598 "op.ml" 48 1547 1618
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 48 1547 1579 "op.ml" 48 1547 1618
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 48 1547 1572 "op.ml" 48 1547 1618
+call(
+  tail
+)
+type(
+  string
+)
+"op.ml" 49 1619 1634 "op.ml" 49 1619 1636
+type(
+  namereg list
+)
+ident(
+  def vs "op.ml" 49 1619 1644 "op.ml" 49 1619 1690
+)
+"op.ml" 49 1619 1637 "op.ml" 49 1619 1639
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 49 1619 1644 "op.ml" 49 1619 1690
+)
+"op.ml" 49 1619 1622 "op.ml" 49 1619 1640
+type(
+  op
+)
+"op.ml" 49 1619 1644 "op.ml" 49 1619 1648
+type(
+  string
+)
+"op.ml" 49 1619 1649 "op.ml" 49 1619 1650
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 49 1619 1652 "op.ml" 49 1619 1658
+type(
+  namereg list -> string
+)
+ident(
+  int_ref vs2str "op.ml" 16 304 308 "op.ml" 16 304 314
+)
+"op.ml" 49 1619 1659 "op.ml" 49 1619 1661
+type(
+  namereg list
+)
+ident(
+  int_ref vs "op.ml" 49 1619 1634 "op.ml" 49 1619 1636
+)
+"op.ml" 49 1619 1651 "op.ml" 49 1619 1662
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 49 1619 1663 "op.ml" 49 1619 1664
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 49 1619 1665 "op.ml" 49 1619 1671
+type(
+  string
+)
+"op.ml" 49 1619 1672 "op.ml" 49 1619 1673
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 49 1619 1675 "op.ml" 49 1619 1686
+type(
+  namereg -> string
+)
+ident(
+  int_ref namereg2str "op.ml" 11 208 212 "op.ml" 11 208 223
+)
+"op.ml" 49 1619 1687 "op.ml" 49 1619 1689
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 49 1619 1637 "op.ml" 49 1619 1639
+)
+"op.ml" 49 1619 1674 "op.ml" 49 1619 1690
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 49 1619 1665 "op.ml" 49 1619 1690
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 49 1619 1651 "op.ml" 49 1619 1690
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 49 1619 1644 "op.ml" 49 1619 1690
+call(
+  tail
+)
+type(
+  string
+)
+"op.ml" 50 1692 1705 "op.ml" 50 1692 1707
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 50 1692 1718 "op.ml" 50 1692 1797
+)
+"op.ml" 50 1692 1708 "op.ml" 50 1692 1710
+type(
+  name
+)
+ident(
+  def nb "op.ml" 50 1692 1718 "op.ml" 50 1692 1797
+)
+"op.ml" 50 1692 1711 "op.ml" 50 1692 1713
+type(
+  namereg list
+)
+ident(
+  def vs "op.ml" 50 1692 1718 "op.ml" 50 1692 1797
+)
+"op.ml" 50 1692 1695 "op.ml" 50 1692 1714
+type(
+  op
+)
+"op.ml" 50 1692 1718 "op.ml" 50 1692 1722
+type(
+  string
+)
+"op.ml" 50 1692 1723 "op.ml" 50 1692 1724
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 50 1692 1726 "op.ml" 50 1692 1737
+type(
+  namereg -> string
+)
+ident(
+  int_ref namereg2str "op.ml" 11 208 212 "op.ml" 11 208 223
+)
+"op.ml" 50 1692 1738 "op.ml" 50 1692 1740
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 50 1692 1705 "op.ml" 50 1692 1707
+)
+"op.ml" 50 1692 1725 "op.ml" 50 1692 1741
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 50 1692 1742 "op.ml" 50 1692 1743
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 50 1692 1744 "op.ml" 50 1692 1760
+type(
+  string
+)
+"op.ml" 50 1692 1761 "op.ml" 50 1692 1762
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 50 1692 1764 "op.ml" 50 1692 1772
+type(
+  name -> string
+)
+ident(
+  int_ref name2str "op.ml" 9 176 180 "op.ml" 9 176 188
+)
+"op.ml" 50 1692 1773 "op.ml" 50 1692 1775
+type(
+  name
+)
+ident(
+  int_ref nb "op.ml" 50 1692 1708 "op.ml" 50 1692 1710
+)
+"op.ml" 50 1692 1763 "op.ml" 50 1692 1776
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 50 1692 1777 "op.ml" 50 1692 1778
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 50 1692 1780 "op.ml" 50 1692 1786
+type(
+  namereg list -> string
+)
+ident(
+  int_ref vs2str "op.ml" 16 304 308 "op.ml" 16 304 314
+)
+"op.ml" 50 1692 1787 "op.ml" 50 1692 1789
+type(
+  namereg list
+)
+ident(
+  int_ref vs "op.ml" 50 1692 1711 "op.ml" 50 1692 1713
+)
+"op.ml" 50 1692 1779 "op.ml" 50 1692 1790
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 50 1692 1791 "op.ml" 50 1692 1792
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 50 1692 1793 "op.ml" 50 1692 1797
+type(
+  string
+)
+"op.ml" 50 1692 1779 "op.ml" 50 1692 1797
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 50 1692 1763 "op.ml" 50 1692 1797
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 50 1692 1744 "op.ml" 50 1692 1797
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 50 1692 1725 "op.ml" 50 1692 1797
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 50 1692 1718 "op.ml" 50 1692 1797
+call(
+  tail
+)
+type(
+  string
+)
+"op.ml" 51 1798 1807 "op.ml" 51 1798 1809
+ident(
+  def na "op.ml" 51 1798 1814 "op.ml" 51 1798 1844
+)
+"op.ml" 51 1798 1806 "op.ml" 51 1798 1810
+type(
+  namereg
+)
+"op.ml" 51 1798 1801 "op.ml" 51 1798 1810
+type(
+  op
+)
+"op.ml" 51 1798 1814 "op.ml" 51 1798 1825
+type(
+  string
+)
+"op.ml" 51 1798 1826 "op.ml" 51 1798 1827
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"op.ml" 51 1798 1829 "op.ml" 51 1798 1840
+type(
+  namereg -> string
+)
+ident(
+  int_ref namereg2str "op.ml" 11 208 212 "op.ml" 11 208 223
+)
+"op.ml" 51 1798 1841 "op.ml" 51 1798 1843
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 51 1798 1806 "op.ml" 51 1798 1810
+)
+"op.ml" 51 1798 1828 "op.ml" 51 1798 1844
+call(
+  stack
+)
+type(
+  string
+)
+"op.ml" 51 1798 1814 "op.ml" 51 1798 1844
+call(
+  tail
+)
+type(
+  string
+)
+"op.ml" 52 1845 1848 "op.ml" 52 1845 1857
+type(
+  op
+)
+"op.ml" 52 1845 1861 "op.ml" 52 1845 1876
+type(
+  string
+)
+"op.ml" 40 1031 1032 "op.ml" 52 1845 1876
+type(
+  string
+)
+"op.ml" 55 1880 1884 "op.ml" 55 1880 1900
+type(
+  op -> namereg list
+)
+ident(
+  def get_var_nameregs "op.ml" 71 2309 2309 "op.ml" 1 0 -1
+)
+"op.ml" 55 1880 1901 "op.ml" 55 1880 1903
+type(
+  op
+)
+ident(
+  def op "op.ml" 56 1907 1908 "op.ml" 68 2288 2306
+)
+"op.ml" 56 1907 1914 "op.ml" 56 1907 1916
+type(
+  op
+)
+ident(
+  int_ref op "op.ml" 55 1880 1901 "op.ml" 55 1880 1903
+)
+"op.ml" 57 1922 1932 "op.ml" 57 1922 1934
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 57 1922 1941 "op.ml" 57 1922 1945
+)
+"op.ml" 57 1922 1935 "op.ml" 57 1922 1936
+type(
+  Syntax.const
+)
+ident(
+  def c "op.ml" 57 1922 1941 "op.ml" 57 1922 1945
+)
+"op.ml" 57 1922 1925 "op.ml" 57 1922 1937
+type(
+  op
+)
+"op.ml" 57 1922 1942 "op.ml" 57 1922 1944
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 57 1922 1932 "op.ml" 57 1922 1934
+)
+"op.ml" 57 1922 1941 "op.ml" 57 1922 1945
+type(
+  namereg list
+)
+"op.ml" 58 1946 1955 "op.ml" 58 1946 1957
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 58 1946 1965 "op.ml" 58 1946 1972
+)
+"op.ml" 58 1946 1958 "op.ml" 58 1946 1960
+type(
+  namereg
+)
+ident(
+  def nb "op.ml" 58 1946 1965 "op.ml" 58 1946 1972
+)
+"op.ml" 58 1946 1949 "op.ml" 58 1946 1961
+type(
+  op
+)
+"op.ml" 58 1946 1966 "op.ml" 58 1946 1968
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 58 1946 1955 "op.ml" 58 1946 1957
+)
+"op.ml" 58 1946 1969 "op.ml" 58 1946 1971
+type(
+  namereg
+)
+ident(
+  int_ref nb "op.ml" 58 1946 1958 "op.ml" 58 1946 1960
+)
+"op.ml" 58 1946 1965 "op.ml" 58 1946 1972
+type(
+  namereg list
+)
+"op.ml" 59 1973 1982 "op.ml" 59 1973 1984
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 59 1973 1996 "op.ml" 59 1973 2004
+)
+"op.ml" 59 1973 1985 "op.ml" 59 1973 1988
+type(
+  Syntax.optype
+)
+ident(
+  def opr "op.ml" 59 1973 1996 "op.ml" 59 1973 2004
+)
+"op.ml" 59 1973 1989 "op.ml" 59 1973 1991
+type(
+  namereg list
+)
+ident(
+  def vs "op.ml" 59 1973 1996 "op.ml" 59 1973 2004
+)
+"op.ml" 59 1973 1976 "op.ml" 59 1973 1992
+type(
+  op
+)
+"op.ml" 59 1973 1996 "op.ml" 59 1973 1998
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 59 1973 1982 "op.ml" 59 1973 1984
+)
+"op.ml" 59 1973 2002 "op.ml" 59 1973 2004
+type(
+  namereg list
+)
+ident(
+  int_ref vs "op.ml" 59 1973 1989 "op.ml" 59 1973 1991
+)
+"op.ml" 59 1973 1996 "op.ml" 59 1973 2004
+type(
+  namereg list
+)
+"op.ml" 60 2005 2015 "op.ml" 60 2005 2018
+type(
+  Syntax.comptype
+)
+ident(
+  def cmp "op.ml" 60 2005 2032 "op.ml" 60 2005 2039
+)
+"op.ml" 60 2005 2019 "op.ml" 60 2005 2021
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 60 2005 2032 "op.ml" 60 2005 2039
+)
+"op.ml" 60 2005 2022 "op.ml" 60 2005 2024
+type(
+  namereg
+)
+ident(
+  def nb "op.ml" 60 2005 2032 "op.ml" 60 2005 2039
+)
+"op.ml" 60 2005 2025 "op.ml" 60 2005 2027
+type(
+  label
+)
+ident(
+  def la "op.ml" 60 2005 2032 "op.ml" 60 2005 2039
+)
+"op.ml" 60 2005 2008 "op.ml" 60 2005 2028
+type(
+  op
+)
+"op.ml" 60 2005 2033 "op.ml" 60 2005 2035
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 60 2005 2019 "op.ml" 60 2005 2021
+)
+"op.ml" 60 2005 2036 "op.ml" 60 2005 2038
+type(
+  namereg
+)
+ident(
+  int_ref nb "op.ml" 60 2005 2022 "op.ml" 60 2005 2024
+)
+"op.ml" 60 2005 2032 "op.ml" 60 2005 2039
+type(
+  namereg list
+)
+"op.ml" 61 2040 2049 "op.ml" 61 2040 2051
+ident(
+  def la "op.ml" 61 2040 2056 "op.ml" 61 2040 2058
+)
+"op.ml" 61 2040 2048 "op.ml" 61 2040 2052
+type(
+  label
+)
+"op.ml" 61 2040 2043 "op.ml" 61 2040 2052
+type(
+  op
+)
+"op.ml" 61 2040 2056 "op.ml" 61 2040 2058
+type(
+  namereg list
+)
+"op.ml" 62 2059 2070 "op.ml" 62 2059 2072
+ident(
+  def la "op.ml" 62 2059 2077 "op.ml" 62 2059 2079
+)
+"op.ml" 62 2059 2069 "op.ml" 62 2059 2073
+type(
+  label
+)
+"op.ml" 62 2059 2062 "op.ml" 62 2059 2073
+type(
+  op
+)
+"op.ml" 62 2059 2077 "op.ml" 62 2059 2079
+type(
+  namereg list
+)
+"op.ml" 63 2080 2089 "op.ml" 63 2080 2091
+type(
+  istailcall
+)
+ident(
+  def b1 "op.ml" 63 2080 2108 "op.ml" 63 2080 2122
+)
+"op.ml" 63 2080 2092 "op.ml" 63 2080 2094
+type(
+  isdirapp
+)
+ident(
+  def b2 "op.ml" 63 2080 2108 "op.ml" 63 2080 2122
+)
+"op.ml" 63 2080 2095 "op.ml" 63 2080 2097
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 63 2080 2108 "op.ml" 63 2080 2122
+)
+"op.ml" 63 2080 2098 "op.ml" 63 2080 2100
+type(
+  namereg
+)
+ident(
+  def nb "op.ml" 63 2080 2108 "op.ml" 63 2080 2122
+)
+"op.ml" 63 2080 2101 "op.ml" 63 2080 2103
+type(
+  namereg list
+)
+ident(
+  def vs "op.ml" 63 2080 2108 "op.ml" 63 2080 2122
+)
+"op.ml" 63 2080 2083 "op.ml" 63 2080 2104
+type(
+  op
+)
+"op.ml" 63 2080 2108 "op.ml" 63 2080 2110
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 63 2080 2095 "op.ml" 63 2080 2097
+)
+"op.ml" 63 2080 2114 "op.ml" 63 2080 2116
+type(
+  namereg
+)
+ident(
+  int_ref nb "op.ml" 63 2080 2098 "op.ml" 63 2080 2100
+)
+"op.ml" 63 2080 2120 "op.ml" 63 2080 2122
+type(
+  namereg list
+)
+ident(
+  int_ref vs "op.ml" 63 2080 2101 "op.ml" 63 2080 2103
+)
+"op.ml" 63 2080 2114 "op.ml" 63 2080 2122
+type(
+  namereg list
+)
+"op.ml" 63 2080 2108 "op.ml" 63 2080 2122
+type(
+  namereg list
+)
+"op.ml" 64 2124 2139 "op.ml" 64 2124 2141
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 64 2124 2149 "op.ml" 64 2124 2157
+)
+"op.ml" 64 2124 2142 "op.ml" 64 2124 2144
+type(
+  namereg list
+)
+ident(
+  def vs "op.ml" 64 2124 2149 "op.ml" 64 2124 2157
+)
+"op.ml" 64 2124 2127 "op.ml" 64 2124 2145
+type(
+  op
+)
+"op.ml" 64 2124 2149 "op.ml" 64 2124 2151
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 64 2124 2139 "op.ml" 64 2124 2141
+)
+"op.ml" 64 2124 2155 "op.ml" 64 2124 2157
+type(
+  namereg list
+)
+ident(
+  int_ref vs "op.ml" 64 2124 2142 "op.ml" 64 2124 2144
+)
+"op.ml" 64 2124 2149 "op.ml" 64 2124 2157
+type(
+  namereg list
+)
+"op.ml" 65 2158 2173 "op.ml" 65 2158 2175
+type(
+  namereg list
+)
+ident(
+  def vs "op.ml" 65 2158 2183 "op.ml" 65 2158 2191
+)
+"op.ml" 65 2158 2176 "op.ml" 65 2158 2178
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 65 2158 2183 "op.ml" 65 2158 2191
+)
+"op.ml" 65 2158 2161 "op.ml" 65 2158 2179
+type(
+  op
+)
+"op.ml" 65 2158 2183 "op.ml" 65 2158 2185
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 65 2158 2176 "op.ml" 65 2158 2178
+)
+"op.ml" 65 2158 2189 "op.ml" 65 2158 2191
+type(
+  namereg list
+)
+ident(
+  int_ref vs "op.ml" 65 2158 2173 "op.ml" 65 2158 2175
+)
+"op.ml" 65 2158 2183 "op.ml" 65 2158 2191
+type(
+  namereg list
+)
+"op.ml" 66 2192 2205 "op.ml" 66 2192 2207
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 66 2192 2218 "op.ml" 66 2192 2226
+)
+"op.ml" 66 2192 2208 "op.ml" 66 2192 2210
+type(
+  name
+)
+ident(
+  def nb "op.ml" 66 2192 2218 "op.ml" 66 2192 2226
+)
+"op.ml" 66 2192 2211 "op.ml" 66 2192 2213
+type(
+  namereg list
+)
+ident(
+  def vs "op.ml" 66 2192 2218 "op.ml" 66 2192 2226
+)
+"op.ml" 66 2192 2195 "op.ml" 66 2192 2214
+type(
+  op
+)
+"op.ml" 66 2192 2218 "op.ml" 66 2192 2220
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 66 2192 2205 "op.ml" 66 2192 2207
+)
+"op.ml" 66 2192 2224 "op.ml" 66 2192 2226
+type(
+  namereg list
+)
+ident(
+  int_ref vs "op.ml" 66 2192 2211 "op.ml" 66 2192 2213
+)
+"op.ml" 66 2192 2218 "op.ml" 66 2192 2226
+type(
+  namereg list
+)
+"op.ml" 67 2267 2276 "op.ml" 67 2267 2278
+ident(
+  def na "op.ml" 67 2267 2283 "op.ml" 67 2267 2287
+)
+"op.ml" 67 2267 2275 "op.ml" 67 2267 2279
+type(
+  namereg
+)
+"op.ml" 67 2267 2270 "op.ml" 67 2267 2279
+type(
+  op
+)
+"op.ml" 67 2267 2284 "op.ml" 67 2267 2286
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 67 2267 2275 "op.ml" 67 2267 2279
+)
+"op.ml" 67 2267 2283 "op.ml" 67 2267 2287
+type(
+  namereg list
+)
+"op.ml" 68 2288 2291 "op.ml" 68 2288 2300
+type(
+  op
+)
+"op.ml" 68 2288 2304 "op.ml" 68 2288 2306
+type(
+  namereg list
+)
+"op.ml" 56 1907 1908 "op.ml" 68 2288 2306
+type(
+  namereg list
+)
+"op.ml" 71 2309 2313 "op.ml" 71 2309 2326
+type(
+  op -> (string * (Type_checker.ty * Debug.debug_data)) list
+)
+ident(
+  def get_var_names "op.ml" 76 2453 2453 "op.ml" 1 0 -1
+)
+"op.ml" 71 2309 2327 "op.ml" 71 2309 2329
+type(
+  op
+)
+ident(
+  def op "op.ml" 72 2333 2334 "op.ml" 74 2424 2451
+)
+"op.ml" 72 2333 2334 "op.ml" 72 2333 2348
+type(
+  ((string * (Type_checker.ty * Debug.debug_data)) list ->
+   namereg -> (string * (Type_checker.ty * Debug.debug_data)) list) ->
+  (string * (Type_checker.ty * Debug.debug_data)) list ->
+  namereg list -> (string * (Type_checker.ty * Debug.debug_data)) list
+)
+ident(
+  ext_ref List.fold_left
+)
+"op.ml" 72 2333 2354 "op.ml" 72 2333 2355
+type(
+  (string * (Type_checker.ty * Debug.debug_data)) list
+)
+ident(
+  def r "op.ml" 72 2333 2359 "op.ml" 73 2369 2423
+)
+"op.ml" 72 2333 2363 "op.ml" 72 2333 2364
+type(
+  namereg
+)
+ident(
+  def x "op.ml" 73 2369 2371 "op.ml" 73 2369 2423
+)
+"op.ml" 73 2369 2377 "op.ml" 73 2369 2378
+type(
+  namestr ref -> namestr
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"op.ml" 73 2369 2379 "op.ml" 73 2369 2382
+type(
+  namereg -> namestr ref
+)
+ident(
+  ext_ref Pervasives.fst
+)
+"op.ml" 73 2369 2383 "op.ml" 73 2369 2384
+type(
+  namereg
+)
+ident(
+  int_ref x "op.ml" 72 2333 2363 "op.ml" 72 2333 2364
+)
+"op.ml" 73 2369 2378 "op.ml" 73 2369 2385
+type(
+  namestr ref
+)
+"op.ml" 73 2369 2377 "op.ml" 73 2369 2385
+type(
+  namestr
+)
+"op.ml" 73 2369 2395 "op.ml" 73 2369 2396
+type(
+  string
+)
+ident(
+  def a "op.ml" 73 2369 2400 "op.ml" 73 2369 2414
+)
+"op.ml" 73 2369 2391 "op.ml" 73 2369 2396
+type(
+  namestr
+)
+"op.ml" 73 2369 2401 "op.ml" 73 2369 2402
+type(
+  string
+)
+ident(
+  int_ref a "op.ml" 73 2369 2395 "op.ml" 73 2369 2396
+)
+"op.ml" 73 2369 2403 "op.ml" 73 2369 2406
+type(
+  namereg -> Type_checker.ty * Debug.debug_data
+)
+ident(
+  ext_ref Pervasives.snd
+)
+"op.ml" 73 2369 2407 "op.ml" 73 2369 2408
+type(
+  namereg
+)
+ident(
+  int_ref x "op.ml" 72 2333 2363 "op.ml" 72 2333 2364
+)
+"op.ml" 73 2369 2403 "op.ml" 73 2369 2408
+type(
+  Type_checker.ty * Debug.debug_data
+)
+"op.ml" 73 2369 2400 "op.ml" 73 2369 2409
+type(
+  string * (Type_checker.ty * Debug.debug_data)
+)
+"op.ml" 73 2369 2413 "op.ml" 73 2369 2414
+type(
+  (string * (Type_checker.ty * Debug.debug_data)) list
+)
+ident(
+  int_ref r "op.ml" 72 2333 2354 "op.ml" 72 2333 2355
+)
+"op.ml" 73 2369 2400 "op.ml" 73 2369 2414
+type(
+  (string * (Type_checker.ty * Debug.debug_data)) list
+)
+"op.ml" 73 2369 2417 "op.ml" 73 2369 2418
+type(
+  namestr
+)
+"op.ml" 73 2369 2422 "op.ml" 73 2369 2423
+type(
+  (string * (Type_checker.ty * Debug.debug_data)) list
+)
+ident(
+  int_ref r "op.ml" 72 2333 2354 "op.ml" 72 2333 2355
+)
+"op.ml" 73 2369 2371 "op.ml" 73 2369 2423
+type(
+  (string * (Type_checker.ty * Debug.debug_data)) list
+)
+"op.ml" 72 2333 2359 "op.ml" 73 2369 2423
+type(
+  namereg -> (string * (Type_checker.ty * Debug.debug_data)) list
+)
+"op.ml" 72 2333 2349 "op.ml" 74 2424 2426
+type(
+  (string * (Type_checker.ty * Debug.debug_data)) list ->
+  namereg -> (string * (Type_checker.ty * Debug.debug_data)) list
+)
+"op.ml" 74 2424 2427 "op.ml" 74 2424 2429
+type(
+  (string * (Type_checker.ty * Debug.debug_data)) list
+)
+"op.ml" 74 2424 2431 "op.ml" 74 2424 2447
+type(
+  op -> namereg list
+)
+ident(
+  int_ref get_var_nameregs "op.ml" 55 1880 1884 "op.ml" 55 1880 1900
+)
+"op.ml" 74 2424 2448 "op.ml" 74 2424 2450
+type(
+  op
+)
+ident(
+  int_ref op "op.ml" 71 2309 2327 "op.ml" 71 2309 2329
+)
+"op.ml" 74 2424 2430 "op.ml" 74 2424 2451
+call(
+  stack
+)
+type(
+  namereg list
+)
+"op.ml" 72 2333 2334 "op.ml" 74 2424 2451
+call(
+  tail
+)
+type(
+  (string * (Type_checker.ty * Debug.debug_data)) list
+)
+"op.ml" 76 2453 2457 "op.ml" 76 2453 2469
+type(
+  op -> namestr list
+)
+ident(
+  def get_assigned "op.ml" 83 2712 2742 "op.ml" 1 0 -1
+)
+"op.ml" 76 2453 2470 "op.ml" 76 2453 2472
+type(
+  op
+)
+ident(
+  def op "op.ml" 77 2476 2477 "op.ml" 83 2712 2742
+)
+"op.ml" 77 2476 2481 "op.ml" 77 2476 2483
+type(
+  namereg list
+)
+ident(
+  def vs "op.ml" 83 2712 2713 "op.ml" 83 2712 2742
+)
+"op.ml" 78 2487 2495 "op.ml" 78 2487 2497
+type(
+  op
+)
+ident(
+  int_ref op "op.ml" 76 2453 2470 "op.ml" 76 2453 2472
+)
+"op.ml" 79 2503 2513 "op.ml" 79 2503 2515
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 79 2503 2612 "op.ml" 79 2503 2616
+)
+"op.ml" 79 2503 2516 "op.ml" 79 2503 2517
+type(
+  Syntax.const
+)
+"op.ml" 79 2503 2506 "op.ml" 79 2503 2518
+type(
+  op
+)
+"op.ml" 79 2503 2527 "op.ml" 79 2503 2529
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 79 2503 2612 "op.ml" 79 2503 2616
+)
+"op.ml" 79 2503 2530 "op.ml" 79 2503 2531
+type(
+  namereg
+)
+"op.ml" 79 2503 2521 "op.ml" 79 2503 2532
+type(
+  op
+)
+"op.ml" 79 2503 2506 "op.ml" 79 2503 2532
+type(
+  op
+)
+"op.ml" 79 2503 2541 "op.ml" 79 2503 2543
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 79 2503 2612 "op.ml" 79 2503 2616
+)
+"op.ml" 79 2503 2544 "op.ml" 79 2503 2545
+type(
+  Syntax.optype
+)
+"op.ml" 79 2503 2546 "op.ml" 79 2503 2547
+type(
+  namereg list
+)
+"op.ml" 79 2503 2535 "op.ml" 79 2503 2548
+type(
+  op
+)
+"op.ml" 79 2503 2506 "op.ml" 79 2503 2548
+type(
+  op
+)
+"op.ml" 79 2503 2557 "op.ml" 79 2503 2558
+type(
+  istailcall
+)
+"op.ml" 79 2503 2559 "op.ml" 79 2503 2560
+type(
+  isdirapp
+)
+"op.ml" 79 2503 2561 "op.ml" 79 2503 2563
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 79 2503 2612 "op.ml" 79 2503 2616
+)
+"op.ml" 79 2503 2564 "op.ml" 79 2503 2565
+type(
+  namereg
+)
+"op.ml" 79 2503 2566 "op.ml" 79 2503 2567
+type(
+  namereg list
+)
+"op.ml" 79 2503 2551 "op.ml" 79 2503 2568
+type(
+  op
+)
+"op.ml" 79 2503 2506 "op.ml" 79 2503 2568
+type(
+  op
+)
+"op.ml" 79 2503 2583 "op.ml" 79 2503 2585
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 79 2503 2612 "op.ml" 79 2503 2616
+)
+"op.ml" 79 2503 2586 "op.ml" 79 2503 2587
+type(
+  namereg list
+)
+"op.ml" 79 2503 2571 "op.ml" 79 2503 2588
+type(
+  op
+)
+"op.ml" 79 2503 2506 "op.ml" 79 2503 2588
+type(
+  op
+)
+"op.ml" 79 2503 2601 "op.ml" 79 2503 2603
+type(
+  namereg
+)
+ident(
+  def na "op.ml" 79 2503 2612 "op.ml" 79 2503 2616
+)
+"op.ml" 79 2503 2604 "op.ml" 79 2503 2605
+type(
+  name
+)
+"op.ml" 79 2503 2606 "op.ml" 79 2503 2607
+type(
+  namereg list
+)
+"op.ml" 79 2503 2591 "op.ml" 79 2503 2608
+type(
+  op
+)
+"op.ml" 79 2503 2506 "op.ml" 79 2503 2608
+type(
+  op
+)
+"op.ml" 79 2503 2613 "op.ml" 79 2503 2615
+type(
+  namereg
+)
+ident(
+  int_ref na "op.ml" 79 2503 2513 "op.ml" 79 2503 2515
+)
+"op.ml" 79 2503 2612 "op.ml" 79 2503 2616
+type(
+  namereg list
+)
+"op.ml" 80 2617 2627 "op.ml" 80 2617 2628
+type(
+  label
+)
+type(
+  namereg
+)
+type(
+  namereg
+)
+type(
+  Syntax.comptype
+)
+"op.ml" 80 2617 2620 "op.ml" 80 2617 2628
+type(
+  op
+)
+"op.ml" 80 2617 2637 "op.ml" 80 2617 2638
+type(
+  label
+)
+"op.ml" 80 2617 2631 "op.ml" 80 2617 2638
+type(
+  op
+)
+"op.ml" 80 2617 2620 "op.ml" 80 2617 2638
+type(
+  op
+)
+"op.ml" 80 2617 2649 "op.ml" 80 2617 2650
+type(
+  label
+)
+"op.ml" 80 2617 2641 "op.ml" 80 2617 2650
+type(
+  op
+)
+"op.ml" 80 2617 2620 "op.ml" 80 2617 2650
+type(
+  op
+)
+"op.ml" 80 2617 2659 "op.ml" 80 2617 2660
+type(
+  namereg
+)
+"op.ml" 80 2617 2653 "op.ml" 80 2617 2660
+type(
+  op
+)
+"op.ml" 80 2617 2620 "op.ml" 80 2617 2660
+type(
+  op
+)
+"op.ml" 80 2617 2663 "op.ml" 80 2617 2672
+type(
+  op
+)
+"op.ml" 80 2617 2620 "op.ml" 80 2617 2672
+type(
+  op
+)
+"op.ml" 80 2617 2676 "op.ml" 80 2617 2678
+type(
+  namereg list
+)
+"op.ml" 81 2679 2694 "op.ml" 81 2679 2696
+type(
+  namereg list
+)
+ident(
+  def vs "op.ml" 81 2679 2703 "op.ml" 81 2679 2705
+)
+"op.ml" 81 2679 2697 "op.ml" 81 2679 2698
+type(
+  namereg
+)
+"op.ml" 81 2679 2682 "op.ml" 81 2679 2699
+type(
+  op
+)
+"op.ml" 81 2679 2703 "op.ml" 81 2679 2705
+type(
+  namereg list
+)
+ident(
+  int_ref vs "op.ml" 81 2679 2694 "op.ml" 81 2679 2696
+)
+"op.ml" 78 2487 2488 "op.ml" 82 2706 2708
+type(
+  namereg list
+)
+"op.ml" 83 2712 2713 "op.ml" 83 2712 2721
+type(
+  (namereg -> namestr) -> namereg list -> namestr list
+)
+ident(
+  ext_ref List.map
+)
+"op.ml" 83 2712 2728 "op.ml" 83 2712 2729
+type(
+  namestr ref
+)
+ident(
+  def x "op.ml" 83 2712 2736 "op.ml" 83 2712 2738
+)
+"op.ml" 83 2712 2730 "op.ml" 83 2712 2731
+type(
+  Type_checker.ty * Debug.debug_data
+)
+"op.ml" 83 2712 2727 "op.ml" 83 2712 2732
+type(
+  namereg
+)
+"op.ml" 83 2712 2736 "op.ml" 83 2712 2737
+type(
+  namestr ref -> namestr
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"op.ml" 83 2712 2737 "op.ml" 83 2712 2738
+type(
+  namestr ref
+)
+ident(
+  int_ref x "op.ml" 83 2712 2728 "op.ml" 83 2712 2729
+)
+"op.ml" 83 2712 2736 "op.ml" 83 2712 2738
+type(
+  namestr
+)
+"op.ml" 83 2712 2722 "op.ml" 83 2712 2739
+type(
+  namereg -> namestr
+)
+"op.ml" 83 2712 2740 "op.ml" 83 2712 2742
+type(
+  namereg list
+)
+ident(
+  int_ref vs "op.ml" 77 2476 2481 "op.ml" 77 2476 2483
+)
+"op.ml" 83 2712 2713 "op.ml" 83 2712 2742
+call(
+  tail
+)
+type(
+  namestr list
+)
+"op.ml" 77 2476 2477 "op.ml" 83 2712 2742
+type(
+  namestr list
+)

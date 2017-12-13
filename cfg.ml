@@ -3,6 +3,7 @@ open Type_checker
 open Closure_conv
 open Op
 open Debug
+open Main_option
 
 let genlabel () = Printf.sprintf "@cfg_label_%d" (genint ())
 
@@ -34,11 +35,20 @@ type node = {
 	mutable ops: op array; 
 	src: node set;
 	dst: node set;
-	idx: int;
+	mutable idx: int;
 	mutable gone: bool;
 }
 
 let newnode () = { ops = [||]; src = new set; dst = new set; gone=false; idx=(-1)}
+
+let node2str { ops=ops; src=src; dst=dst; idx=idx; gone=gone; } = 
+	(Printf.sprintf "idx = %d\n" idx) ^ 
+	"ops {\n\t" ^ 
+	(String.concat "\n\t" (List.map virtop2str (Array.to_list ops))) ^ "\n" ^
+	"}\n" ^ 
+	"src = [" ^ (String.concat " , " (List.map (fun x -> (Printf.sprintf "%d" x.idx)) src#vs)) ^ "]\n" ^
+	"dst = [" ^ (String.concat " , " (List.map (fun x -> (Printf.sprintf "%d" x.idx)) dst#vs)) ^ "]\n"
+
 
 let defaultname = "@defaultname"
 
@@ -54,6 +64,13 @@ class cfg_type =
 		val mutable args = ([] : name list)
 		method setargs x = args <- x
 		method args = args
+		
+		method dump_cfg () = (
+			Printf.printf "root %d\n" root.idx;
+			List.iter (fun x -> 
+				Printf.printf "%s\n" (node2str x)
+			) vs
+		) 
 		
 		method ungone () = (
 			List.iter (fun x -> 
@@ -77,6 +94,10 @@ class cfg_type =
 		(* コピー解析をする。 *)
 		(* コピー、 p = ∧ pred(p) なので、おそらく最大不動点をとるのがよさそう。 *)
 		method copy_anal () = (
+			
+			Printf.printf "start_copy_anal\n";
+			sl#dump_cfg ();
+			
 			sl#ungone ();
 			(* 各代入文に対して全探索をする *)
 			let rec dfs1 v = 
@@ -85,56 +106,97 @@ class cfg_type =
 					(* 各命令について、やっていく。 *)
 					match x with
 					| OpMov((na,_),(nb,_)) when !na <> !nb -> (
+						
+						
+						(* 引数まわりから入ってくる変数はあきらめる *)
+						let cut_at_root = 
+							let tas = List.map (fun (x,_) -> Var x) args in
+							(List.mem !na tas || List.mem !nb tas)
+						in
+						Printf.printf "idx %d th %d :: %s cutat %d is %s\n" v.idx p (virtop2str x) root.idx (if cut_at_root then "true" else "false");
 						let head_ok = Array.make (List.length vs) true in
 						let tail_ok = Array.make (List.length vs) true in
 						(* 各ブロックの先頭でコピーできうるか *)
 						(* trueになるのはたかだか1回なので、O(n)でできるはず。 *)
 						let visited w = not head_ok.(w.idx) || not tail_ok.(w.idx) in
 						
-						let rec dfs2 w =
-							if visited w then () else (* 既に訪れている *)
+						let rec dfs2 w b =
+							if visited w then () else ( (* 既に訪れている *)
+							(if not b || (cut_at_root && w.idx = root.idx) then ( (* だめという文脈で訪れた *)
+								Printf.printf "dame at %d\n" w.idx;
+								head_ok.(w.idx) <- false;
+								tail_ok.(w.idx) <- false
+							) else ());
+							
 							Array.iteri (fun q -> fun y -> 
 								let gas = get_assigned y in
 								if v.idx = w.idx && p = q then tail_ok.(w.idx) <- true
 								else if List.mem !na gas || List.mem !nb gas then tail_ok.(w.idx) <- false 
 								else ()
 							) w.ops;
-							
+							(*
+							Printf.printf "%s\n" (node2str w);
+							*)
 							if not tail_ok.(w.idx) then 
-								w.dst#iter (fun x -> dfs2 x)
-							else ()
+								w.dst#iter (fun x -> dfs2 x false)
+							else ())
 						in
-						List.iter (fun w -> if visited w then () else dfs2 w) vs;
+						List.iter (fun w -> if visited w then () else dfs2 w true) vs;
 						
-						(* head_ok なものを、上から可能な限り調べていく。 *)
+						(* 置換できそうなものを、上から可能な限り調べていく。 *)
 						List.iter (fun w -> 
 							let rec loop q = 
 								if q < Array.length w.ops then
-									let gas = get_assigned w.ops.(q) in
+									let nop = w.ops.(q) in
+									let gas = get_assigned nop in
 									if List.mem !na gas || List.mem !nb gas then () else
-									((if v.idx = w.idx && p = q then () else ()
-									(*　実際に、naをnbで置換できる *)
-									);
+									(*　実際に、nbをnaで置換できる *)
+									(*  0x0000000237901d1a -> *)
+									(*
+										Printf.printf "really subst %d : %s \n" q (virtop2str nop);
+									*)
+									(let b = ref false in
+									let gvn = get_var_nameregs nop in
+									List.iter (fun (nc,_) -> 
+										if !nc = !na then (b := true; nc := !nb) else ()
+									) gvn;
+									(if !b then Printf.printf "really subst %d : %s \n" q (virtop2str nop) else ());
 									loop (q+1))
 								else ()
 							in
-							if head_ok.(w.idx) then loop 0 
-							else if v.idx = w.idx then loop (p+1)	
-							else ()
+							
+							Printf.printf "%s %b %b\n" (node2str w)  head_ok.(w.idx) (v.idx = w.idx);
+							if head_ok.(w.idx) then loop 0 else ();
+							if v.idx = w.idx then loop (p+1) else ()
 						) vs;
 					)
 					| _ -> ()
 				) v.ops;
+				
+				v.dst#iter (fun w -> 
+					if w.gone then ()
+					else dfs1 w 
+				)
 			in
-				dfs1 root
+				dfs1 root;
+			
+			(* 自明なMovを取り除く *)
+			List.iter (fun v -> 
+				v.ops <- Array.of_list (Array.fold_right (fun x -> fun r -> 
+					match x with
+					| OpMov((na,_),(nb,_)) when !na = !nb -> r
+					| _ -> x :: r
+				) v.ops []) 
+			) vs;
 		)
 		
 		
 		
 		method contract () = (
 			vs <- List.fold_left (fun r -> fun v -> 
-				(if v.dst#size = 1 && v.dst#hd.src#size = 1 then (
+				(if v.dst#size = 1 && v.dst#hd.src#size = 1 && v.dst#hd.idx <> root.idx then (
 					let w = v.dst#hd in
+					(* rootをマージするのは、やばいので諦めます。 *)
 					(if v = root then sl#setroot w else ());
 					(* vをwにマージする。 *)
 					w.ops <- Array.append v.ops w.ops;
@@ -146,7 +208,14 @@ class cfg_type =
 					);
 					r
 				) else  v :: r)
-			) [] vs
+			) [] vs;
+			(* 縮約したあと、idxを振りなおす *)
+			let rec loop xs n = 
+				match xs with
+				| [] -> ()
+				| x :: xs -> x.idx <- n; loop xs (n+1)
+			in
+				loop vs 0
 		)
 		
 		method flatten_to_vlist () = (
@@ -154,8 +223,7 @@ class cfg_type =
 			sl#idfs (fun v -> 
 				res := (Array.to_list v.ops) @ !res
 			);
-			(* ついでに、不要なJmpを消す *)
-			!res
+			remove_useless_jump !res
 		)
 end
 
@@ -173,7 +241,7 @@ let connect_cfg csrc cdst =
 	cdst.ops <- addhead (OpLabel(la)) cdst.ops
 
 (* cfgの入り口,[出口になりうるもののリスト]、を組でかえす *)
-let rec to_cfgs ast tov istail cfg fn head_label = 
+let rec to_cfgs ast tov istail cfg fn head_label addtoroot = 
 	let multiton ops = 
 		let nd = {
 			(* 雑なアドホック。 min-rt はホゲ。 *)
@@ -199,7 +267,7 @@ let rec to_cfgs ast tov istail cfg fn head_label =
 		let v = multiton [op] in v,[v]
 	in
 	let reccall x = 
-		to_cfgs x tov istail cfg fn head_label
+		to_cfgs x tov istail cfg fn head_label addtoroot
 	in
 	match ast with
 	| CConst(x) -> sres (OpMovi(tov,x))
@@ -211,7 +279,7 @@ let rec to_cfgs ast tov istail cfg fn head_label =
 		)
 	| CLet(na,e1,e2) -> (
 			let na = cna2na na in
-			let ch1,cts1 = (to_cfgs e1 na false cfg fn head_label) in
+			let ch1,cts1 = (to_cfgs e1 na false cfg fn head_label addtoroot) in
 			let ch2,cts2 = (reccall e2) in
 			List.iter (fun x -> 
 				connect_cfg x ch2
@@ -237,7 +305,7 @@ let rec to_cfgs ast tov istail cfg fn head_label =
 	| CVar(x) -> (
 			if List.mem (fst x) (global_funcs ()) then 
 				reccall (CClosure(x,[]))
-			else 
+			else
 				let x = cna2na x in
 				sres (OpMov(tov,x))
 		)
@@ -251,13 +319,15 @@ let rec to_cfgs ast tov istail cfg fn head_label =
 			let b = cvs2vs b in
 			if istail && !(fst a) = (Var fn) then ( 
 				(* 実際に末尾再帰させる*)
-				(* 0x2b09366d9 -> 0x02ade7c115 *)
 				let tvs = List.map genvar cfg#args in
-				mres (
+				let v = multiton (
 					(List.map2 (fun x -> fun y -> OpMov(x,y)) tvs b) @
 					(List.map2 (fun x -> fun y -> OpMov(x,y)) (cvs2vs cfg#args) tvs) @
 					[OpJmp(head_label)]
-				)
+				) in
+				addtoroot := v :: !addtoroot; 
+				v,[] 
+				(* この場合、この後にretは付けなくてよい。 *)
 			)
 			else
 				sres (OpApp((if istail then Tail else NonTail),DirApp,tov,a,b))
@@ -300,14 +370,25 @@ let cfg_toasms fn ismain args ast =
 	in
 	let retop = if ismain then [OpMainRet] else [OpRet(tov)] in
 	
-	let rt,gls = to_cfgs ast tov true ncfg (fst fn) head_label in
+	let addtoroot = ref [] in
+	let rt,gls = to_cfgs ast tov true ncfg (fst fn) head_label addtoroot in
 	rt.ops <- addhead (OpLabel(head_label)) rt.ops;
 	ncfg#setroot rt;
-	
+	(* 末尾再帰をつなぐ *)
+	List.iter (fun x -> 
+		connect_cfg x rt
+	) !addtoroot;
 	ncfg#contract ();
 	List.iter (fun v -> 
 		 v.ops <- Array.append v.ops (Array.of_list retop)
 	) gls;
+	(*
+	*)
+	if !tortesia then
+		ncfg#copy_anal
+		()
+	else ();
+	
 	let res = ncfg#flatten_to_vlist () in
 	(*
 	print_string (String.concat "\n" (List.map virtop2str res));

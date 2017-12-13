@@ -1,0 +1,117 @@
+"source2ast.ml" 5 36 40 "source2ast.ml" 5 36 43
+type(
+  string -> Syntax.decl
+)
+ident(
+  def s2a "source2ast.ml" 8 106 158 "source2ast.ml" 1 0 -1
+)
+"source2ast.ml" 5 36 44 "source2ast.ml" 5 36 49
+type(
+  string
+)
+ident(
+  def fname "source2ast.ml" 6 53 54 "source2ast.ml" 8 106 158
+)
+"source2ast.ml" 6 53 58 "source2ast.ml" 6 53 60
+type(
+  in_channel
+)
+ident(
+  def ic "source2ast.ml" 7 80 81 "source2ast.ml" 8 106 158
+)
+"source2ast.ml" 6 53 63 "source2ast.ml" 6 53 70
+type(
+  string -> in_channel
+)
+ident(
+  ext_ref Pervasives.open_in
+)
+"source2ast.ml" 6 53 71 "source2ast.ml" 6 53 76
+type(
+  string
+)
+ident(
+  int_ref fname "source2ast.ml" 5 36 44 "source2ast.ml" 5 36 49
+)
+"source2ast.ml" 6 53 63 "source2ast.ml" 6 53 76
+call(
+  stack
+)
+type(
+  in_channel
+)
+"source2ast.ml" 7 80 81 "source2ast.ml" 7 80 95
+type(
+  string ref
+)
+ident(
+  ext_ref Debug.filename
+)
+"source2ast.ml" 7 80 96 "source2ast.ml" 7 80 98
+type(
+  string ref -> string -> unit
+)
+ident(
+  ext_ref Pervasives.( := )
+)
+"source2ast.ml" 7 80 99 "source2ast.ml" 7 80 104
+type(
+  string
+)
+ident(
+  int_ref fname "source2ast.ml" 5 36 44 "source2ast.ml" 5 36 49
+)
+"source2ast.ml" 7 80 81 "source2ast.ml" 7 80 104
+type(
+  unit
+)
+"source2ast.ml" 8 106 107 "source2ast.ml" 8 106 122
+type(
+  (Lexing.lexbuf -> Parser.token) -> Lexing.lexbuf -> Syntax.decl
+)
+ident(
+  ext_ref Parser.toplevel
+)
+"source2ast.ml" 8 106 123 "source2ast.ml" 8 106 133
+type(
+  Lexing.lexbuf -> Parser.token
+)
+ident(
+  ext_ref Lexer.main
+)
+"source2ast.ml" 8 106 135 "source2ast.ml" 8 106 154
+type(
+  in_channel -> Lexing.lexbuf
+)
+ident(
+  ext_ref Lexing.from_channel
+)
+"source2ast.ml" 8 106 155 "source2ast.ml" 8 106 157
+type(
+  in_channel
+)
+ident(
+  int_ref ic "source2ast.ml" 6 53 58 "source2ast.ml" 6 53 60
+)
+"source2ast.ml" 8 106 134 "source2ast.ml" 8 106 158
+call(
+  stack
+)
+type(
+  Lexing.lexbuf
+)
+"source2ast.ml" 8 106 107 "source2ast.ml" 8 106 158
+call(
+  tail
+)
+type(
+  Syntax.decl
+)
+"source2ast.ml" 7 80 81 "source2ast.ml" 8 106 158
+type(
+  Syntax.decl
+)
+"source2ast.ml" 6 53 54 "source2ast.ml" 8 106 158
+type(
+  Syntax.decl
+)

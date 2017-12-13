@@ -1,0 +1,733 @@
+"remove_tuple.ml" 3 12 20 "remove_tuple.ml" 3 12 32
+type(
+  (string * Knorm.name list) list -> Knorm.kexp -> Knorm.kexp
+)
+ident(
+  def remove_tuple "remove_tuple.ml" 3 12 12 "remove_tuple.ml" 1 0 -1
+)
+"remove_tuple.ml" 3 12 33 "remove_tuple.ml" 3 12 36
+type(
+  (string * Knorm.name list) list
+)
+ident(
+  def env "remove_tuple.ml" 3 12 37 "remove_tuple.ml" 26 630 641
+)
+"remove_tuple.ml" 3 12 37 "remove_tuple.ml" 3 12 40
+type(
+  Knorm.kexp
+)
+ident(
+  def ast "remove_tuple.ml" 4 44 45 "remove_tuple.ml" 26 630 641
+)
+"remove_tuple.ml" 4 44 49 "remove_tuple.ml" 4 44 56
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  def reccall "remove_tuple.ml" 5 79 80 "remove_tuple.ml" 26 630 641
+)
+"remove_tuple.ml" 4 44 59 "remove_tuple.ml" 4 44 71
+type(
+  (string * Knorm.name list) list -> Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref remove_tuple "remove_tuple.ml" 3 12 20 "remove_tuple.ml" 3 12 32
+)
+"remove_tuple.ml" 4 44 72 "remove_tuple.ml" 4 44 75
+type(
+  (string * Knorm.name list) list
+)
+ident(
+  int_ref env "remove_tuple.ml" 3 12 33 "remove_tuple.ml" 3 12 36
+)
+"remove_tuple.ml" 4 44 59 "remove_tuple.ml" 4 44 75
+call(
+  stack
+)
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+"remove_tuple.ml" 5 79 86 "remove_tuple.ml" 5 79 89
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "remove_tuple.ml" 3 12 37 "remove_tuple.ml" 3 12 40
+)
+"remove_tuple.ml" 6 95 108 "remove_tuple.ml" 6 95 110
+type(
+  Knorm.name list
+)
+ident(
+  def vs "remove_tuple.ml" 6 95 125 "remove_tuple.ml" 14 307 310
+)
+"remove_tuple.ml" 6 95 112 "remove_tuple.ml" 6 95 114
+type(
+  string
+)
+ident(
+  def na "remove_tuple.ml" 6 95 125 "remove_tuple.ml" 14 307 310
+)
+"remove_tuple.ml" 6 95 115 "remove_tuple.ml" 6 95 116
+type(
+  Type_checker.ty * Debug.debug_data
+)
+"remove_tuple.ml" 6 95 111 "remove_tuple.ml" 6 95 117
+type(
+  Knorm.name
+)
+"remove_tuple.ml" 6 95 118 "remove_tuple.ml" 6 95 120
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "remove_tuple.ml" 6 95 125 "remove_tuple.ml" 14 307 310
+)
+"remove_tuple.ml" 6 95 98 "remove_tuple.ml" 6 95 121
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 7 127 133 "remove_tuple.ml" 7 127 136
+type(
+  Knorm.kexp
+)
+ident(
+  def te1 "remove_tuple.ml" 8 153 155 "remove_tuple.ml" 13 285 306
+)
+"remove_tuple.ml" 7 127 139 "remove_tuple.ml" 7 127 146
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref reccall "remove_tuple.ml" 4 44 49 "remove_tuple.ml" 4 44 56
+)
+"remove_tuple.ml" 7 127 147 "remove_tuple.ml" 7 127 149
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "remove_tuple.ml" 6 95 118 "remove_tuple.ml" 6 95 120
+)
+"remove_tuple.ml" 7 127 139 "remove_tuple.ml" 7 127 149
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 9 160 167 "remove_tuple.ml" 9 160 170
+type(
+  Knorm.name list
+)
+ident(
+  def nvs "remove_tuple.ml" 10 194 198 "remove_tuple.ml" 11 243 277
+)
+"remove_tuple.ml" 9 160 173 "remove_tuple.ml" 9 160 183
+type(
+  string -> (string * Knorm.name list) list -> Knorm.name list
+)
+ident(
+  ext_ref List.assoc
+)
+"remove_tuple.ml" 9 160 184 "remove_tuple.ml" 9 160 186
+type(
+  string
+)
+ident(
+  int_ref na "remove_tuple.ml" 6 95 112 "remove_tuple.ml" 6 95 114
+)
+"remove_tuple.ml" 9 160 187 "remove_tuple.ml" 9 160 190
+type(
+  (string * Knorm.name list) list
+)
+ident(
+  int_ref env "remove_tuple.ml" 3 12 33 "remove_tuple.ml" 3 12 36
+)
+"remove_tuple.ml" 9 160 173 "remove_tuple.ml" 9 160 190
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"remove_tuple.ml" 10 194 198 "remove_tuple.ml" 10 194 213
+type(
+  (Knorm.kexp -> Knorm.name -> Knorm.name -> Knorm.kexp) ->
+  Knorm.kexp -> Knorm.name list -> Knorm.name list -> Knorm.kexp
+)
+ident(
+  ext_ref List.fold_left2
+)
+"remove_tuple.ml" 10 194 219 "remove_tuple.ml" 10 194 220
+type(
+  Knorm.kexp
+)
+ident(
+  def r "remove_tuple.ml" 10 194 224 "remove_tuple.ml" 11 243 265
+)
+"remove_tuple.ml" 10 194 228 "remove_tuple.ml" 10 194 229
+type(
+  Knorm.name
+)
+ident(
+  def a "remove_tuple.ml" 10 194 233 "remove_tuple.ml" 11 243 265
+)
+"remove_tuple.ml" 10 194 237 "remove_tuple.ml" 10 194 238
+type(
+  Knorm.name
+)
+ident(
+  def b "remove_tuple.ml" 11 243 248 "remove_tuple.ml" 11 243 265
+)
+"remove_tuple.ml" 11 243 253 "remove_tuple.ml" 11 243 254
+type(
+  Knorm.name
+)
+ident(
+  int_ref a "remove_tuple.ml" 10 194 228 "remove_tuple.ml" 10 194 229
+)
+"remove_tuple.ml" 11 243 259 "remove_tuple.ml" 11 243 262
+type(
+  Knorm.name
+)
+ident(
+  int_ref b "remove_tuple.ml" 10 194 237 "remove_tuple.ml" 10 194 238
+)
+"remove_tuple.ml" 11 243 255 "remove_tuple.ml" 11 243 262
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 11 243 263 "remove_tuple.ml" 11 243 264
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref r "remove_tuple.ml" 10 194 219 "remove_tuple.ml" 10 194 220
+)
+"remove_tuple.ml" 11 243 248 "remove_tuple.ml" 11 243 265
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 10 194 233 "remove_tuple.ml" 11 243 265
+type(
+  Knorm.name -> Knorm.kexp
+)
+"remove_tuple.ml" 10 194 224 "remove_tuple.ml" 11 243 265
+type(
+  Knorm.name -> Knorm.name -> Knorm.kexp
+)
+"remove_tuple.ml" 10 194 214 "remove_tuple.ml" 11 243 266
+type(
+  Knorm.kexp -> Knorm.name -> Knorm.name -> Knorm.kexp
+)
+"remove_tuple.ml" 11 243 267 "remove_tuple.ml" 11 243 270
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref te1 "remove_tuple.ml" 7 127 133 "remove_tuple.ml" 7 127 136
+)
+"remove_tuple.ml" 11 243 271 "remove_tuple.ml" 11 243 273
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "remove_tuple.ml" 6 95 108 "remove_tuple.ml" 6 95 110
+)
+"remove_tuple.ml" 11 243 274 "remove_tuple.ml" 11 243 277
+type(
+  Knorm.name list
+)
+ident(
+  int_ref nvs "remove_tuple.ml" 9 160 167 "remove_tuple.ml" 9 160 170
+)
+"remove_tuple.ml" 10 194 198 "remove_tuple.ml" 11 243 277
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 9 160 163 "remove_tuple.ml" 11 243 277
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 13 285 290 "remove_tuple.ml" 13 285 299
+type(
+  exn
+)
+"remove_tuple.ml" 13 285 303 "remove_tuple.ml" 13 285 306
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "remove_tuple.ml" 3 12 37 "remove_tuple.ml" 3 12 40
+)
+"remove_tuple.ml" 8 153 155 "remove_tuple.ml" 13 285 306
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 6 95 125 "remove_tuple.ml" 14 307 310
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 15 311 320 "remove_tuple.ml" 15 311 322
+type(
+  string
+)
+ident(
+  def na "remove_tuple.ml" 15 311 341 "remove_tuple.ml" 23 506 509
+)
+"remove_tuple.ml" 15 311 323 "remove_tuple.ml" 15 311 324
+type(
+  Type_checker.ty * Debug.debug_data
+)
+"remove_tuple.ml" 15 311 319 "remove_tuple.ml" 15 311 325
+type(
+  Knorm.name
+)
+"remove_tuple.ml" 15 311 329 "remove_tuple.ml" 15 311 330
+ident(
+  def a "remove_tuple.ml" 15 311 341 "remove_tuple.ml" 23 506 509
+)
+"remove_tuple.ml" 15 311 319 "remove_tuple.ml" 15 311 330
+type(
+  Knorm.name
+)
+"remove_tuple.ml" 15 311 331 "remove_tuple.ml" 15 311 333
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "remove_tuple.ml" 15 311 341 "remove_tuple.ml" 23 506 509
+)
+"remove_tuple.ml" 15 311 334 "remove_tuple.ml" 15 311 336
+type(
+  Knorm.kexp
+)
+ident(
+  def e2 "remove_tuple.ml" 15 311 341 "remove_tuple.ml" 23 506 509
+)
+"remove_tuple.ml" 15 311 314 "remove_tuple.ml" 15 311 337
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 16 343 350 "remove_tuple.ml" 16 343 353
+type(
+  Knorm.kexp
+)
+ident(
+  def te1 "remove_tuple.ml" 17 370 373 "remove_tuple.ml" 22 487 505
+)
+"remove_tuple.ml" 16 343 356 "remove_tuple.ml" 16 343 363
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref reccall "remove_tuple.ml" 4 44 49 "remove_tuple.ml" 4 44 56
+)
+"remove_tuple.ml" 16 343 364 "remove_tuple.ml" 16 343 366
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "remove_tuple.ml" 15 311 331 "remove_tuple.ml" 15 311 333
+)
+"remove_tuple.ml" 16 343 356 "remove_tuple.ml" 16 343 366
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 17 370 377 "remove_tuple.ml" 17 370 380
+type(
+  Knorm.kexp
+)
+ident(
+  def te2 "remove_tuple.ml" 22 487 490 "remove_tuple.ml" 22 487 505
+)
+"remove_tuple.ml" 18 385 395 "remove_tuple.ml" 18 385 398
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref te1 "remove_tuple.ml" 16 343 350 "remove_tuple.ml" 16 343 353
+)
+"remove_tuple.ml" 19 404 417 "remove_tuple.ml" 19 404 419
+ident(
+  def vs "remove_tuple.ml" 19 404 424 "remove_tuple.ml" 19 404 456
+)
+"remove_tuple.ml" 19 404 416 "remove_tuple.ml" 19 404 420
+type(
+  Knorm.name list
+)
+"remove_tuple.ml" 19 404 410 "remove_tuple.ml" 19 404 420
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 19 404 424 "remove_tuple.ml" 19 404 436
+type(
+  (string * Knorm.name list) list -> Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref remove_tuple "remove_tuple.ml" 3 12 20 "remove_tuple.ml" 3 12 32
+)
+"remove_tuple.ml" 19 404 439 "remove_tuple.ml" 19 404 441
+type(
+  string
+)
+ident(
+  int_ref na "remove_tuple.ml" 15 311 320 "remove_tuple.ml" 15 311 322
+)
+"remove_tuple.ml" 19 404 442 "remove_tuple.ml" 19 404 444
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "remove_tuple.ml" 19 404 416 "remove_tuple.ml" 19 404 420
+)
+"remove_tuple.ml" 19 404 438 "remove_tuple.ml" 19 404 445
+type(
+  string * Knorm.name list
+)
+"remove_tuple.ml" 19 404 449 "remove_tuple.ml" 19 404 452
+type(
+  (string * Knorm.name list) list
+)
+ident(
+  int_ref env "remove_tuple.ml" 3 12 33 "remove_tuple.ml" 3 12 36
+)
+"remove_tuple.ml" 19 404 437 "remove_tuple.ml" 19 404 453
+type(
+  (string * Knorm.name list) list
+)
+"remove_tuple.ml" 19 404 454 "remove_tuple.ml" 19 404 456
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "remove_tuple.ml" 15 311 334 "remove_tuple.ml" 15 311 336
+)
+"remove_tuple.ml" 19 404 424 "remove_tuple.ml" 19 404 456
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 20 457 463 "remove_tuple.ml" 20 457 464
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 20 457 468 "remove_tuple.ml" 20 457 475
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref reccall "remove_tuple.ml" 4 44 49 "remove_tuple.ml" 4 44 56
+)
+"remove_tuple.ml" 20 457 476 "remove_tuple.ml" 20 457 478
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "remove_tuple.ml" 15 311 334 "remove_tuple.ml" 15 311 336
+)
+"remove_tuple.ml" 20 457 468 "remove_tuple.ml" 20 457 478
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 17 370 383 "remove_tuple.ml" 21 479 483
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 22 487 495 "remove_tuple.ml" 22 487 496
+type(
+  Knorm.name
+)
+ident(
+  int_ref a "remove_tuple.ml" 15 311 319 "remove_tuple.ml" 15 311 330
+)
+"remove_tuple.ml" 22 487 497 "remove_tuple.ml" 22 487 500
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref te1 "remove_tuple.ml" 16 343 350 "remove_tuple.ml" 16 343 353
+)
+"remove_tuple.ml" 22 487 501 "remove_tuple.ml" 22 487 504
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref te2 "remove_tuple.ml" 17 370 377 "remove_tuple.ml" 17 370 380
+)
+"remove_tuple.ml" 22 487 490 "remove_tuple.ml" 22 487 505
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 17 370 373 "remove_tuple.ml" 22 487 505
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 15 311 341 "remove_tuple.ml" 23 506 509
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 24 510 517 "remove_tuple.ml" 24 510 518
+type(
+  Syntax.comptype
+)
+ident(
+  def c "remove_tuple.ml" 24 510 533 "remove_tuple.ml" 24 510 565
+)
+"remove_tuple.ml" 24 510 519 "remove_tuple.ml" 24 510 520
+type(
+  Knorm.name
+)
+ident(
+  def a "remove_tuple.ml" 24 510 533 "remove_tuple.ml" 24 510 565
+)
+"remove_tuple.ml" 24 510 521 "remove_tuple.ml" 24 510 522
+type(
+  Knorm.name
+)
+ident(
+  def b "remove_tuple.ml" 24 510 533 "remove_tuple.ml" 24 510 565
+)
+"remove_tuple.ml" 24 510 523 "remove_tuple.ml" 24 510 525
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "remove_tuple.ml" 24 510 533 "remove_tuple.ml" 24 510 565
+)
+"remove_tuple.ml" 24 510 526 "remove_tuple.ml" 24 510 528
+type(
+  Knorm.kexp
+)
+ident(
+  def e2 "remove_tuple.ml" 24 510 533 "remove_tuple.ml" 24 510 565
+)
+"remove_tuple.ml" 24 510 513 "remove_tuple.ml" 24 510 529
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 24 510 537 "remove_tuple.ml" 24 510 538
+type(
+  Syntax.comptype
+)
+ident(
+  int_ref c "remove_tuple.ml" 24 510 517 "remove_tuple.ml" 24 510 518
+)
+"remove_tuple.ml" 24 510 539 "remove_tuple.ml" 24 510 540
+type(
+  Knorm.name
+)
+ident(
+  int_ref a "remove_tuple.ml" 24 510 519 "remove_tuple.ml" 24 510 520
+)
+"remove_tuple.ml" 24 510 541 "remove_tuple.ml" 24 510 542
+type(
+  Knorm.name
+)
+ident(
+  int_ref b "remove_tuple.ml" 24 510 521 "remove_tuple.ml" 24 510 522
+)
+"remove_tuple.ml" 24 510 543 "remove_tuple.ml" 24 510 550
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref reccall "remove_tuple.ml" 4 44 49 "remove_tuple.ml" 4 44 56
+)
+"remove_tuple.ml" 24 510 551 "remove_tuple.ml" 24 510 553
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "remove_tuple.ml" 24 510 523 "remove_tuple.ml" 24 510 525
+)
+"remove_tuple.ml" 24 510 543 "remove_tuple.ml" 24 510 553
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 24 510 554 "remove_tuple.ml" 24 510 561
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref reccall "remove_tuple.ml" 4 44 49 "remove_tuple.ml" 4 44 56
+)
+"remove_tuple.ml" 24 510 562 "remove_tuple.ml" 24 510 564
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "remove_tuple.ml" 24 510 526 "remove_tuple.ml" 24 510 528
+)
+"remove_tuple.ml" 24 510 554 "remove_tuple.ml" 24 510 564
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 24 510 533 "remove_tuple.ml" 24 510 565
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 25 566 577 "remove_tuple.ml" 25 566 579
+type(
+  Knorm.name
+)
+ident(
+  def fn "remove_tuple.ml" 25 566 593 "remove_tuple.ml" 25 566 629
+)
+"remove_tuple.ml" 25 566 580 "remove_tuple.ml" 25 566 582
+type(
+  Knorm.name list
+)
+ident(
+  def vs "remove_tuple.ml" 25 566 593 "remove_tuple.ml" 25 566 629
+)
+"remove_tuple.ml" 25 566 583 "remove_tuple.ml" 25 566 585
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "remove_tuple.ml" 25 566 593 "remove_tuple.ml" 25 566 629
+)
+"remove_tuple.ml" 25 566 586 "remove_tuple.ml" 25 566 588
+type(
+  Knorm.kexp
+)
+ident(
+  def e2 "remove_tuple.ml" 25 566 593 "remove_tuple.ml" 25 566 629
+)
+"remove_tuple.ml" 25 566 569 "remove_tuple.ml" 25 566 589
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 25 566 601 "remove_tuple.ml" 25 566 603
+type(
+  Knorm.name
+)
+ident(
+  int_ref fn "remove_tuple.ml" 25 566 577 "remove_tuple.ml" 25 566 579
+)
+"remove_tuple.ml" 25 566 604 "remove_tuple.ml" 25 566 606
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "remove_tuple.ml" 25 566 580 "remove_tuple.ml" 25 566 582
+)
+"remove_tuple.ml" 25 566 607 "remove_tuple.ml" 25 566 614
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref reccall "remove_tuple.ml" 4 44 49 "remove_tuple.ml" 4 44 56
+)
+"remove_tuple.ml" 25 566 615 "remove_tuple.ml" 25 566 617
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "remove_tuple.ml" 25 566 583 "remove_tuple.ml" 25 566 585
+)
+"remove_tuple.ml" 25 566 607 "remove_tuple.ml" 25 566 617
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 25 566 618 "remove_tuple.ml" 25 566 625
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref reccall "remove_tuple.ml" 4 44 49 "remove_tuple.ml" 4 44 56
+)
+"remove_tuple.ml" 25 566 626 "remove_tuple.ml" 25 566 628
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "remove_tuple.ml" 25 566 586 "remove_tuple.ml" 25 566 588
+)
+"remove_tuple.ml" 25 566 618 "remove_tuple.ml" 25 566 628
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 25 566 593 "remove_tuple.ml" 25 566 629
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 26 630 633 "remove_tuple.ml" 26 630 634
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 26 630 638 "remove_tuple.ml" 26 630 641
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "remove_tuple.ml" 3 12 37 "remove_tuple.ml" 3 12 40
+)
+"remove_tuple.ml" 5 79 80 "remove_tuple.ml" 26 630 641
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 4 44 45 "remove_tuple.ml" 26 630 641
+type(
+  Knorm.kexp
+)
+"remove_tuple.ml" 28 643 647 "remove_tuple.ml" 28 643 653
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  def remove "remove_tuple.ml" 28 643 679 "remove_tuple.ml" 1 0 -1
+)
+"remove_tuple.ml" 28 643 654 "remove_tuple.ml" 28 643 657
+type(
+  Knorm.kexp
+)
+ident(
+  def ast "remove_tuple.ml" 28 643 660 "remove_tuple.ml" 28 643 679
+)
+"remove_tuple.ml" 28 643 660 "remove_tuple.ml" 28 643 672
+type(
+  (string * Knorm.name list) list -> Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref remove_tuple "remove_tuple.ml" 3 12 20 "remove_tuple.ml" 3 12 32
+)
+"remove_tuple.ml" 28 643 673 "remove_tuple.ml" 28 643 675
+type(
+  (string * Knorm.name list) list
+)
+"remove_tuple.ml" 28 643 676 "remove_tuple.ml" 28 643 679
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "remove_tuple.ml" 28 643 654 "remove_tuple.ml" 28 643 657
+)
+"remove_tuple.ml" 28 643 660 "remove_tuple.ml" 28 643 679
+call(
+  tail
+)
+type(
+  Knorm.kexp
+)

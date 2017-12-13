@@ -42,7 +42,7 @@ class State:
 		sl.stack = gdb.execute('x/20xw _r1',to_string=True)
 		sl.heap = gdb.execute('x/20xw _r3',to_string=True)
 
-gdb.execute('r < fcomp_i.txt')
+gdb.execute('r')
 
 sts = []
 
@@ -76,7 +76,7 @@ while 1:
 	#print(s)
 	t += 1
 	
-	if t > 100 or not ("SIGTRAP" in s):
+	if t > 1000 or not ("SIGTRAP" in s):
 		shell()
 		
 		

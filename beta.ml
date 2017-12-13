@@ -21,7 +21,13 @@ let rec beta_reduce letenv tupleenv ast =
 		(*
 			| KTuple(vs) -> KLet((na,td),te1,beta_reduce letenv ((na,vs) :: tupleenv) e2)
 		*)
-			| _ -> KLet((na,td),te1,reccall e2)
+			| _ -> ( 
+				(* let x = e1 in x の形のを簡約しておく。(末尾再帰のために) *)
+				let te2 = reccall e2 in
+				match te2 with
+				| KVar((tna,_)) when na = tna -> te1
+				| _ -> KLet((na,td),te1,te2)
+			)
 		)
 	| KVar(x) -> KVar(conv_var x)
 	| KLetRec(na,vs,e1,e2) -> KLetRec(na,vs,reccall e1,reccall e2)

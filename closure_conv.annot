@@ -1,0 +1,5971 @@
+"closure_conv.ml" 6 47 51 "closure_conv.ml" 6 47 59
+type(
+  unit -> string
+)
+ident(
+  def gencname "closure_conv.ml" 8 103 103 "closure_conv.ml" 1 0 -1
+)
+"closure_conv.ml" 6 47 60 "closure_conv.ml" 6 47 62
+type(
+  unit
+)
+"closure_conv.ml" 6 47 65 "closure_conv.ml" 6 47 79
+type(
+  (int -> string, unit, string) format -> int -> string
+)
+ident(
+  ext_ref Printf.sprintf
+)
+"closure_conv.ml" 6 47 80 "closure_conv.ml" 6 47 89
+type(
+  (int -> string, unit, string) format
+)
+"closure_conv.ml" 6 47 91 "closure_conv.ml" 6 47 97
+type(
+  unit -> int
+)
+ident(
+  ext_ref Genint.genint
+)
+"closure_conv.ml" 6 47 98 "closure_conv.ml" 6 47 100
+type(
+  unit
+)
+"closure_conv.ml" 6 47 90 "closure_conv.ml" 6 47 101
+call(
+  stack
+)
+type(
+  int
+)
+"closure_conv.ml" 6 47 65 "closure_conv.ml" 6 47 101
+call(
+  tail
+)
+type(
+  string
+)
+"closure_conv.ml" 26 634 638 "closure_conv.ml" 26 634 645
+type(
+  (name * globdef) list ref
+)
+ident(
+  def globals "closure_conv.ml" 29 756 756 "closure_conv.ml" 1 0 -1
+)
+"closure_conv.ml" 26 634 648 "closure_conv.ml" 26 634 651
+type(
+  (name * globdef) list -> (name * globdef) list ref
+)
+ident(
+  ext_ref Pervasives.ref
+)
+"closure_conv.ml" 26 634 653 "closure_conv.ml" 26 634 655
+type(
+  (name * globdef) list
+)
+type(
+  (name * globdef) list
+)
+"closure_conv.ml" 26 634 648 "closure_conv.ml" 26 634 680
+type(
+  (name * globdef) list ref
+)
+"closure_conv.ml" 29 756 760 "closure_conv.ml" 29 756 768
+type(
+  string list ref
+)
+ident(
+  def globvars "closure_conv.ml" 35 832 832 "closure_conv.ml" 1 0 -1
+)
+"closure_conv.ml" 29 756 771 "closure_conv.ml" 29 756 774
+type(
+  string list -> string list ref
+)
+ident(
+  ext_ref Pervasives.ref
+)
+"closure_conv.ml" 29 756 776 "closure_conv.ml" 29 756 778
+type(
+  string list
+)
+type(
+  string list
+)
+"closure_conv.ml" 29 756 771 "closure_conv.ml" 29 756 793
+type(
+  string list ref
+)
+"closure_conv.ml" 35 832 836 "closure_conv.ml" 35 832 844
+type(
+  string * (Type_checker.ty * 'a) -> string
+)
+ident(
+  def name2str "closure_conv.ml" 37 887 887 "closure_conv.ml" 1 0 -1
+)
+"closure_conv.ml" 35 832 846 "closure_conv.ml" 35 832 848
+type(
+  string
+)
+ident(
+  def na "closure_conv.ml" 35 832 859 "closure_conv.ml" 35 832 885
+)
+"closure_conv.ml" 35 832 850 "closure_conv.ml" 35 832 852
+type(
+  Type_checker.ty
+)
+ident(
+  def ty "closure_conv.ml" 35 832 859 "closure_conv.ml" 35 832 885
+)
+"closure_conv.ml" 35 832 853 "closure_conv.ml" 35 832 854
+type(
+  'a
+)
+"closure_conv.ml" 35 832 849 "closure_conv.ml" 35 832 855
+type(
+  Type_checker.ty * 'a
+)
+"closure_conv.ml" 35 832 845 "closure_conv.ml" 35 832 856
+type(
+  string * (Type_checker.ty * 'a)
+)
+"closure_conv.ml" 35 832 859 "closure_conv.ml" 35 832 861
+type(
+  string
+)
+ident(
+  int_ref na "closure_conv.ml" 35 832 846 "closure_conv.ml" 35 832 848
+)
+"closure_conv.ml" 35 832 862 "closure_conv.ml" 35 832 863
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 35 832 864 "closure_conv.ml" 35 832 869
+type(
+  string
+)
+"closure_conv.ml" 35 832 870 "closure_conv.ml" 35 832 871
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 35 832 873 "closure_conv.ml" 35 832 881
+type(
+  Type_checker.ty -> string
+)
+ident(
+  ext_ref Type_checker.type2str
+)
+"closure_conv.ml" 35 832 882 "closure_conv.ml" 35 832 884
+type(
+  Type_checker.ty
+)
+ident(
+  int_ref ty "closure_conv.ml" 35 832 850 "closure_conv.ml" 35 832 852
+)
+"closure_conv.ml" 35 832 872 "closure_conv.ml" 35 832 885
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 35 832 864 "closure_conv.ml" 35 832 885
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 35 832 859 "closure_conv.ml" 35 832 885
+call(
+  tail
+)
+type(
+  string
+)
+"closure_conv.ml" 37 887 891 "closure_conv.ml" 37 887 897
+type(
+  (string * (Type_checker.ty * 'a)) list -> string
+)
+ident(
+  def vs2str "closure_conv.ml" 39 961 961 "closure_conv.ml" 1 0 -1
+)
+"closure_conv.ml" 37 887 898 "closure_conv.ml" 37 887 900
+type(
+  (string * (Type_checker.ty * 'a)) list
+)
+ident(
+  def vs "closure_conv.ml" 37 887 903 "closure_conv.ml" 37 887 959
+)
+"closure_conv.ml" 37 887 903 "closure_conv.ml" 37 887 906
+type(
+  string
+)
+"closure_conv.ml" 37 887 907 "closure_conv.ml" 37 887 908
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 37 887 910 "closure_conv.ml" 37 887 923
+type(
+  string -> string list -> string
+)
+ident(
+  ext_ref String.concat
+)
+"closure_conv.ml" 37 887 924 "closure_conv.ml" 37 887 929
+type(
+  string
+)
+"closure_conv.ml" 37 887 931 "closure_conv.ml" 37 887 939
+type(
+  (string * (Type_checker.ty * 'a) -> string) ->
+  (string * (Type_checker.ty * 'a)) list -> string list
+)
+ident(
+  ext_ref List.map
+)
+"closure_conv.ml" 37 887 940 "closure_conv.ml" 37 887 948
+type(
+  string * (Type_checker.ty * 'a) -> string
+)
+ident(
+  int_ref name2str "closure_conv.ml" 35 832 836 "closure_conv.ml" 35 832 844
+)
+"closure_conv.ml" 37 887 949 "closure_conv.ml" 37 887 951
+type(
+  (string * (Type_checker.ty * 'a)) list
+)
+ident(
+  int_ref vs "closure_conv.ml" 37 887 898 "closure_conv.ml" 37 887 900
+)
+"closure_conv.ml" 37 887 930 "closure_conv.ml" 37 887 952
+call(
+  stack
+)
+type(
+  string list
+)
+"closure_conv.ml" 37 887 909 "closure_conv.ml" 37 887 953
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 37 887 954 "closure_conv.ml" 37 887 955
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 37 887 956 "closure_conv.ml" 37 887 959
+type(
+  string
+)
+"closure_conv.ml" 37 887 909 "closure_conv.ml" 37 887 959
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 37 887 903 "closure_conv.ml" 37 887 959
+call(
+  tail
+)
+type(
+  string
+)
+"closure_conv.ml" 39 961 969 "closure_conv.ml" 39 961 982
+type(
+  cexp -> int -> (int * string) list
+)
+ident(
+  def cexp2str_base "closure_conv.ml" 39 961 961 "closure_conv.ml" 1 0 -1
+)
+"closure_conv.ml" 39 961 983 "closure_conv.ml" 39 961 986
+type(
+  cexp
+)
+ident(
+  def ast "closure_conv.ml" 39 961 987 "closure_conv.ml" 50 1713 1794
+)
+"closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+type(
+  int
+)
+ident(
+  def d "closure_conv.ml" 40 992 993 "closure_conv.ml" 50 1713 1794
+)
+"closure_conv.ml" 40 992 999 "closure_conv.ml" 40 992 1002
+type(
+  cexp
+)
+ident(
+  int_ref ast "closure_conv.ml" 39 961 983 "closure_conv.ml" 39 961 986
+)
+"closure_conv.ml" 41 1008 1018 "closure_conv.ml" 41 1008 1019
+type(
+  Syntax.const
+)
+ident(
+  def x "closure_conv.ml" 41 1008 1023 "closure_conv.ml" 41 1008 1040
+)
+"closure_conv.ml" 41 1008 1011 "closure_conv.ml" 41 1008 1019
+type(
+  cexp
+)
+"closure_conv.ml" 41 1008 1025 "closure_conv.ml" 41 1008 1026
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 41 1008 1027 "closure_conv.ml" 41 1008 1036
+type(
+  Syntax.const -> string
+)
+ident(
+  ext_ref Syntax.const2str
+)
+"closure_conv.ml" 41 1008 1037 "closure_conv.ml" 41 1008 1038
+type(
+  Syntax.const
+)
+ident(
+  int_ref x "closure_conv.ml" 41 1008 1018 "closure_conv.ml" 41 1008 1019
+)
+"closure_conv.ml" 41 1008 1027 "closure_conv.ml" 41 1008 1038
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 41 1008 1024 "closure_conv.ml" 41 1008 1039
+type(
+  int * string
+)
+"closure_conv.ml" 41 1008 1023 "closure_conv.ml" 41 1008 1040
+type(
+  (int * string) list
+)
+"closure_conv.ml" 42 1041 1048 "closure_conv.ml" 42 1041 1050
+type(
+  Syntax.optype
+)
+ident(
+  def op "closure_conv.ml" 42 1041 1058 "closure_conv.ml" 42 1041 1089
+)
+"closure_conv.ml" 42 1041 1051 "closure_conv.ml" 42 1041 1053
+type(
+  name list
+)
+ident(
+  def vs "closure_conv.ml" 42 1041 1058 "closure_conv.ml" 42 1041 1089
+)
+"closure_conv.ml" 42 1041 1044 "closure_conv.ml" 42 1041 1054
+type(
+  cexp
+)
+"closure_conv.ml" 42 1041 1060 "closure_conv.ml" 42 1041 1061
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 42 1041 1063 "closure_conv.ml" 42 1041 1069
+type(
+  Syntax.optype -> string
+)
+ident(
+  ext_ref Syntax.op2str
+)
+"closure_conv.ml" 42 1041 1070 "closure_conv.ml" 42 1041 1072
+type(
+  Syntax.optype
+)
+ident(
+  int_ref op "closure_conv.ml" 42 1041 1048 "closure_conv.ml" 42 1041 1050
+)
+"closure_conv.ml" 42 1041 1062 "closure_conv.ml" 42 1041 1073
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 42 1041 1074 "closure_conv.ml" 42 1041 1075
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 42 1041 1077 "closure_conv.ml" 42 1041 1083
+type(
+  name list -> string
+)
+ident(
+  int_ref vs2str "closure_conv.ml" 37 887 891 "closure_conv.ml" 37 887 897
+)
+"closure_conv.ml" 42 1041 1084 "closure_conv.ml" 42 1041 1086
+type(
+  name list
+)
+ident(
+  int_ref vs "closure_conv.ml" 42 1041 1051 "closure_conv.ml" 42 1041 1053
+)
+"closure_conv.ml" 42 1041 1076 "closure_conv.ml" 42 1041 1087
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 42 1041 1062 "closure_conv.ml" 42 1041 1087
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 42 1041 1059 "closure_conv.ml" 42 1041 1088
+type(
+  int * string
+)
+"closure_conv.ml" 42 1041 1058 "closure_conv.ml" 42 1041 1089
+type(
+  (int * string) list
+)
+"closure_conv.ml" 43 1090 1098 "closure_conv.ml" 43 1090 1100
+type(
+  name
+)
+ident(
+  def na "closure_conv.ml" 43 1090 1111 "closure_conv.ml" 43 1090 1212
+)
+"closure_conv.ml" 43 1090 1101 "closure_conv.ml" 43 1090 1103
+type(
+  cexp
+)
+ident(
+  def e1 "closure_conv.ml" 43 1090 1111 "closure_conv.ml" 43 1090 1212
+)
+"closure_conv.ml" 43 1090 1104 "closure_conv.ml" 43 1090 1106
+type(
+  cexp
+)
+ident(
+  def e2 "closure_conv.ml" 43 1090 1111 "closure_conv.ml" 43 1090 1212
+)
+"closure_conv.ml" 43 1090 1093 "closure_conv.ml" 43 1090 1107
+type(
+  cexp
+)
+"closure_conv.ml" 43 1090 1112 "closure_conv.ml" 43 1090 1113
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 43 1090 1114 "closure_conv.ml" 43 1090 1120
+type(
+  string
+)
+"closure_conv.ml" 43 1090 1121 "closure_conv.ml" 43 1090 1122
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 43 1090 1124 "closure_conv.ml" 43 1090 1132
+type(
+  name -> string
+)
+ident(
+  int_ref name2str "closure_conv.ml" 35 832 836 "closure_conv.ml" 35 832 844
+)
+"closure_conv.ml" 43 1090 1133 "closure_conv.ml" 43 1090 1135
+type(
+  name
+)
+ident(
+  int_ref na "closure_conv.ml" 43 1090 1098 "closure_conv.ml" 43 1090 1100
+)
+"closure_conv.ml" 43 1090 1123 "closure_conv.ml" 43 1090 1136
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 43 1090 1137 "closure_conv.ml" 43 1090 1138
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 43 1090 1139 "closure_conv.ml" 43 1090 1143
+type(
+  string
+)
+"closure_conv.ml" 43 1090 1123 "closure_conv.ml" 43 1090 1143
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 43 1090 1114 "closure_conv.ml" 43 1090 1143
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 43 1090 1111 "closure_conv.ml" 43 1090 1144
+type(
+  int * string
+)
+"closure_conv.ml" 43 1090 1149 "closure_conv.ml" 43 1090 1162
+type(
+  cexp -> int -> (int * string) list
+)
+ident(
+  int_ref cexp2str_base "closure_conv.ml" 39 961 969 "closure_conv.ml" 39 961 982
+)
+"closure_conv.ml" 43 1090 1163 "closure_conv.ml" 43 1090 1165
+type(
+  cexp
+)
+ident(
+  int_ref e1 "closure_conv.ml" 43 1090 1101 "closure_conv.ml" 43 1090 1103
+)
+"closure_conv.ml" 43 1090 1167 "closure_conv.ml" 43 1090 1168
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 43 1090 1168 "closure_conv.ml" 43 1090 1169
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"closure_conv.ml" 43 1090 1169 "closure_conv.ml" 43 1090 1170
+type(
+  int
+)
+"closure_conv.ml" 43 1090 1166 "closure_conv.ml" 43 1090 1171
+type(
+  int
+)
+"closure_conv.ml" 43 1090 1148 "closure_conv.ml" 43 1090 1172
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"closure_conv.ml" 43 1090 1111 "closure_conv.ml" 43 1090 1172
+type(
+  (int * string) list
+)
+"closure_conv.ml" 43 1090 1173 "closure_conv.ml" 43 1090 1174
+type(
+  (int * string) list -> (int * string) list -> (int * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"closure_conv.ml" 43 1090 1177 "closure_conv.ml" 43 1090 1178
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 43 1090 1179 "closure_conv.ml" 43 1090 1183
+type(
+  string
+)
+"closure_conv.ml" 43 1090 1176 "closure_conv.ml" 43 1090 1184
+type(
+  int * string
+)
+"closure_conv.ml" 43 1090 1175 "closure_conv.ml" 43 1090 1185
+type(
+  (int * string) list
+)
+"closure_conv.ml" 43 1090 1186 "closure_conv.ml" 43 1090 1187
+type(
+  (int * string) list -> (int * string) list -> (int * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"closure_conv.ml" 43 1090 1189 "closure_conv.ml" 43 1090 1202
+type(
+  cexp -> int -> (int * string) list
+)
+ident(
+  int_ref cexp2str_base "closure_conv.ml" 39 961 969 "closure_conv.ml" 39 961 982
+)
+"closure_conv.ml" 43 1090 1203 "closure_conv.ml" 43 1090 1205
+type(
+  cexp
+)
+ident(
+  int_ref e2 "closure_conv.ml" 43 1090 1104 "closure_conv.ml" 43 1090 1106
+)
+"closure_conv.ml" 43 1090 1207 "closure_conv.ml" 43 1090 1208
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 43 1090 1208 "closure_conv.ml" 43 1090 1209
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"closure_conv.ml" 43 1090 1209 "closure_conv.ml" 43 1090 1210
+type(
+  int
+)
+"closure_conv.ml" 43 1090 1206 "closure_conv.ml" 43 1090 1211
+type(
+  int
+)
+"closure_conv.ml" 43 1090 1188 "closure_conv.ml" 43 1090 1212
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"closure_conv.ml" 43 1090 1175 "closure_conv.ml" 43 1090 1212
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"closure_conv.ml" 43 1090 1111 "closure_conv.ml" 43 1090 1212
+call(
+  tail
+)
+type(
+  (int * string) list
+)
+"closure_conv.ml" 44 1213 1220 "closure_conv.ml" 44 1213 1222
+type(
+  Syntax.comptype
+)
+ident(
+  def ty "closure_conv.ml" 44 1213 1237 "closure_conv.ml" 44 1213 1388
+)
+"closure_conv.ml" 44 1213 1223 "closure_conv.ml" 44 1213 1224
+type(
+  name
+)
+ident(
+  def a "closure_conv.ml" 44 1213 1237 "closure_conv.ml" 44 1213 1388
+)
+"closure_conv.ml" 44 1213 1225 "closure_conv.ml" 44 1213 1226
+type(
+  name
+)
+ident(
+  def b "closure_conv.ml" 44 1213 1237 "closure_conv.ml" 44 1213 1388
+)
+"closure_conv.ml" 44 1213 1227 "closure_conv.ml" 44 1213 1229
+type(
+  cexp
+)
+ident(
+  def e1 "closure_conv.ml" 44 1213 1237 "closure_conv.ml" 44 1213 1388
+)
+"closure_conv.ml" 44 1213 1230 "closure_conv.ml" 44 1213 1232
+type(
+  cexp
+)
+ident(
+  def e2 "closure_conv.ml" 44 1213 1237 "closure_conv.ml" 44 1213 1388
+)
+"closure_conv.ml" 44 1213 1216 "closure_conv.ml" 44 1213 1233
+type(
+  cexp
+)
+"closure_conv.ml" 44 1213 1238 "closure_conv.ml" 44 1213 1239
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 44 1213 1240 "closure_conv.ml" 44 1213 1245
+type(
+  string
+)
+"closure_conv.ml" 44 1213 1246 "closure_conv.ml" 44 1213 1247
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 44 1213 1249 "closure_conv.ml" 44 1213 1257
+type(
+  name -> string
+)
+ident(
+  int_ref name2str "closure_conv.ml" 35 832 836 "closure_conv.ml" 35 832 844
+)
+"closure_conv.ml" 44 1213 1258 "closure_conv.ml" 44 1213 1259
+type(
+  name
+)
+ident(
+  int_ref a "closure_conv.ml" 44 1213 1223 "closure_conv.ml" 44 1213 1224
+)
+"closure_conv.ml" 44 1213 1248 "closure_conv.ml" 44 1213 1260
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 44 1213 1261 "closure_conv.ml" 44 1213 1262
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 44 1213 1263 "closure_conv.ml" 44 1213 1266
+type(
+  string
+)
+"closure_conv.ml" 44 1213 1267 "closure_conv.ml" 44 1213 1268
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 44 1213 1270 "closure_conv.ml" 44 1213 1282
+type(
+  Syntax.comptype -> string
+)
+ident(
+  ext_ref Syntax.comptype2str
+)
+"closure_conv.ml" 44 1213 1283 "closure_conv.ml" 44 1213 1285
+type(
+  Syntax.comptype
+)
+ident(
+  int_ref ty "closure_conv.ml" 44 1213 1220 "closure_conv.ml" 44 1213 1222
+)
+"closure_conv.ml" 44 1213 1269 "closure_conv.ml" 44 1213 1286
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 44 1213 1287 "closure_conv.ml" 44 1213 1288
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 44 1213 1289 "closure_conv.ml" 44 1213 1292
+type(
+  string
+)
+"closure_conv.ml" 44 1213 1293 "closure_conv.ml" 44 1213 1294
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 44 1213 1296 "closure_conv.ml" 44 1213 1304
+type(
+  name -> string
+)
+ident(
+  int_ref name2str "closure_conv.ml" 35 832 836 "closure_conv.ml" 35 832 844
+)
+"closure_conv.ml" 44 1213 1305 "closure_conv.ml" 44 1213 1306
+type(
+  name
+)
+ident(
+  int_ref b "closure_conv.ml" 44 1213 1225 "closure_conv.ml" 44 1213 1226
+)
+"closure_conv.ml" 44 1213 1295 "closure_conv.ml" 44 1213 1307
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 44 1213 1308 "closure_conv.ml" 44 1213 1309
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 44 1213 1310 "closure_conv.ml" 44 1213 1317
+type(
+  string
+)
+"closure_conv.ml" 44 1213 1295 "closure_conv.ml" 44 1213 1317
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 44 1213 1289 "closure_conv.ml" 44 1213 1317
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 44 1213 1269 "closure_conv.ml" 44 1213 1317
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 44 1213 1263 "closure_conv.ml" 44 1213 1317
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 44 1213 1248 "closure_conv.ml" 44 1213 1317
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 44 1213 1240 "closure_conv.ml" 44 1213 1317
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 44 1213 1237 "closure_conv.ml" 44 1213 1318
+type(
+  int * string
+)
+"closure_conv.ml" 44 1213 1323 "closure_conv.ml" 44 1213 1336
+type(
+  cexp -> int -> (int * string) list
+)
+ident(
+  int_ref cexp2str_base "closure_conv.ml" 39 961 969 "closure_conv.ml" 39 961 982
+)
+"closure_conv.ml" 44 1213 1337 "closure_conv.ml" 44 1213 1339
+type(
+  cexp
+)
+ident(
+  int_ref e1 "closure_conv.ml" 44 1213 1227 "closure_conv.ml" 44 1213 1229
+)
+"closure_conv.ml" 44 1213 1341 "closure_conv.ml" 44 1213 1342
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 44 1213 1342 "closure_conv.ml" 44 1213 1343
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"closure_conv.ml" 44 1213 1343 "closure_conv.ml" 44 1213 1344
+type(
+  int
+)
+"closure_conv.ml" 44 1213 1340 "closure_conv.ml" 44 1213 1345
+type(
+  int
+)
+"closure_conv.ml" 44 1213 1322 "closure_conv.ml" 44 1213 1346
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"closure_conv.ml" 44 1213 1237 "closure_conv.ml" 44 1213 1346
+type(
+  (int * string) list
+)
+"closure_conv.ml" 44 1213 1347 "closure_conv.ml" 44 1213 1348
+type(
+  (int * string) list -> (int * string) list -> (int * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"closure_conv.ml" 44 1213 1351 "closure_conv.ml" 44 1213 1352
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 44 1213 1353 "closure_conv.ml" 44 1213 1359
+type(
+  string
+)
+"closure_conv.ml" 44 1213 1350 "closure_conv.ml" 44 1213 1360
+type(
+  int * string
+)
+"closure_conv.ml" 44 1213 1349 "closure_conv.ml" 44 1213 1361
+type(
+  (int * string) list
+)
+"closure_conv.ml" 44 1213 1362 "closure_conv.ml" 44 1213 1363
+type(
+  (int * string) list -> (int * string) list -> (int * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"closure_conv.ml" 44 1213 1365 "closure_conv.ml" 44 1213 1378
+type(
+  cexp -> int -> (int * string) list
+)
+ident(
+  int_ref cexp2str_base "closure_conv.ml" 39 961 969 "closure_conv.ml" 39 961 982
+)
+"closure_conv.ml" 44 1213 1379 "closure_conv.ml" 44 1213 1381
+type(
+  cexp
+)
+ident(
+  int_ref e2 "closure_conv.ml" 44 1213 1230 "closure_conv.ml" 44 1213 1232
+)
+"closure_conv.ml" 44 1213 1383 "closure_conv.ml" 44 1213 1384
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 44 1213 1384 "closure_conv.ml" 44 1213 1385
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"closure_conv.ml" 44 1213 1385 "closure_conv.ml" 44 1213 1386
+type(
+  int
+)
+"closure_conv.ml" 44 1213 1382 "closure_conv.ml" 44 1213 1387
+type(
+  int
+)
+"closure_conv.ml" 44 1213 1364 "closure_conv.ml" 44 1213 1388
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"closure_conv.ml" 44 1213 1349 "closure_conv.ml" 44 1213 1388
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"closure_conv.ml" 44 1213 1237 "closure_conv.ml" 44 1213 1388
+call(
+  tail
+)
+type(
+  (int * string) list
+)
+"closure_conv.ml" 45 1389 1397 "closure_conv.ml" 45 1389 1398
+ident(
+  def x "closure_conv.ml" 45 1389 1403 "closure_conv.ml" 45 1389 1430
+)
+"closure_conv.ml" 45 1389 1396 "closure_conv.ml" 45 1389 1399
+type(
+  name
+)
+"closure_conv.ml" 45 1389 1392 "closure_conv.ml" 45 1389 1399
+type(
+  cexp
+)
+"closure_conv.ml" 45 1389 1405 "closure_conv.ml" 45 1389 1406
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 45 1389 1407 "closure_conv.ml" 45 1389 1413
+type(
+  string
+)
+"closure_conv.ml" 45 1389 1414 "closure_conv.ml" 45 1389 1415
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 45 1389 1417 "closure_conv.ml" 45 1389 1425
+type(
+  name -> string
+)
+ident(
+  int_ref name2str "closure_conv.ml" 35 832 836 "closure_conv.ml" 35 832 844
+)
+"closure_conv.ml" 45 1389 1426 "closure_conv.ml" 45 1389 1427
+type(
+  name
+)
+ident(
+  int_ref x "closure_conv.ml" 45 1389 1396 "closure_conv.ml" 45 1389 1399
+)
+"closure_conv.ml" 45 1389 1416 "closure_conv.ml" 45 1389 1428
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 45 1389 1407 "closure_conv.ml" 45 1389 1428
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 45 1389 1404 "closure_conv.ml" 45 1389 1429
+type(
+  int * string
+)
+"closure_conv.ml" 45 1389 1403 "closure_conv.ml" 45 1389 1430
+type(
+  (int * string) list
+)
+"closure_conv.ml" 46 1431 1439 "closure_conv.ml" 46 1431 1441
+type(
+  name
+)
+ident(
+  def fn "closure_conv.ml" 46 1431 1449 "closure_conv.ml" 46 1431 1494
+)
+"closure_conv.ml" 46 1431 1442 "closure_conv.ml" 46 1431 1444
+type(
+  name list
+)
+ident(
+  def vs "closure_conv.ml" 46 1431 1449 "closure_conv.ml" 46 1431 1494
+)
+"closure_conv.ml" 46 1431 1434 "closure_conv.ml" 46 1431 1445
+type(
+  cexp
+)
+"closure_conv.ml" 46 1431 1451 "closure_conv.ml" 46 1431 1452
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 46 1431 1453 "closure_conv.ml" 46 1431 1462
+type(
+  string
+)
+"closure_conv.ml" 46 1431 1463 "closure_conv.ml" 46 1431 1464
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 46 1431 1466 "closure_conv.ml" 46 1431 1474
+type(
+  name -> string
+)
+ident(
+  int_ref name2str "closure_conv.ml" 35 832 836 "closure_conv.ml" 35 832 844
+)
+"closure_conv.ml" 46 1431 1475 "closure_conv.ml" 46 1431 1477
+type(
+  name
+)
+ident(
+  int_ref fn "closure_conv.ml" 46 1431 1439 "closure_conv.ml" 46 1431 1441
+)
+"closure_conv.ml" 46 1431 1465 "closure_conv.ml" 46 1431 1478
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 46 1431 1479 "closure_conv.ml" 46 1431 1480
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 46 1431 1482 "closure_conv.ml" 46 1431 1488
+type(
+  name list -> string
+)
+ident(
+  int_ref vs2str "closure_conv.ml" 37 887 891 "closure_conv.ml" 37 887 897
+)
+"closure_conv.ml" 46 1431 1489 "closure_conv.ml" 46 1431 1491
+type(
+  name list
+)
+ident(
+  int_ref vs "closure_conv.ml" 46 1431 1442 "closure_conv.ml" 46 1431 1444
+)
+"closure_conv.ml" 46 1431 1481 "closure_conv.ml" 46 1431 1492
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 46 1431 1465 "closure_conv.ml" 46 1431 1492
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 46 1431 1453 "closure_conv.ml" 46 1431 1492
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 46 1431 1450 "closure_conv.ml" 46 1431 1493
+type(
+  int * string
+)
+"closure_conv.ml" 46 1431 1449 "closure_conv.ml" 46 1431 1494
+type(
+  (int * string) list
+)
+"closure_conv.ml" 47 1495 1506 "closure_conv.ml" 47 1495 1508
+type(
+  name
+)
+ident(
+  def fn "closure_conv.ml" 47 1495 1516 "closure_conv.ml" 47 1495 1561
+)
+"closure_conv.ml" 47 1495 1509 "closure_conv.ml" 47 1495 1511
+type(
+  name list
+)
+ident(
+  def vs "closure_conv.ml" 47 1495 1516 "closure_conv.ml" 47 1495 1561
+)
+"closure_conv.ml" 47 1495 1498 "closure_conv.ml" 47 1495 1512
+type(
+  cexp
+)
+"closure_conv.ml" 47 1495 1518 "closure_conv.ml" 47 1495 1519
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 47 1495 1520 "closure_conv.ml" 47 1495 1529
+type(
+  string
+)
+"closure_conv.ml" 47 1495 1530 "closure_conv.ml" 47 1495 1531
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 47 1495 1533 "closure_conv.ml" 47 1495 1541
+type(
+  name -> string
+)
+ident(
+  int_ref name2str "closure_conv.ml" 35 832 836 "closure_conv.ml" 35 832 844
+)
+"closure_conv.ml" 47 1495 1542 "closure_conv.ml" 47 1495 1544
+type(
+  name
+)
+ident(
+  int_ref fn "closure_conv.ml" 47 1495 1506 "closure_conv.ml" 47 1495 1508
+)
+"closure_conv.ml" 47 1495 1532 "closure_conv.ml" 47 1495 1545
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 47 1495 1546 "closure_conv.ml" 47 1495 1547
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 47 1495 1549 "closure_conv.ml" 47 1495 1555
+type(
+  name list -> string
+)
+ident(
+  int_ref vs2str "closure_conv.ml" 37 887 891 "closure_conv.ml" 37 887 897
+)
+"closure_conv.ml" 47 1495 1556 "closure_conv.ml" 47 1495 1558
+type(
+  name list
+)
+ident(
+  int_ref vs "closure_conv.ml" 47 1495 1509 "closure_conv.ml" 47 1495 1511
+)
+"closure_conv.ml" 47 1495 1548 "closure_conv.ml" 47 1495 1559
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 47 1495 1532 "closure_conv.ml" 47 1495 1559
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 47 1495 1520 "closure_conv.ml" 47 1495 1559
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 47 1495 1517 "closure_conv.ml" 47 1495 1560
+type(
+  int * string
+)
+"closure_conv.ml" 47 1495 1516 "closure_conv.ml" 47 1495 1561
+type(
+  (int * string) list
+)
+"closure_conv.ml" 48 1562 1572 "closure_conv.ml" 48 1562 1574
+ident(
+  def vs "closure_conv.ml" 48 1562 1579 "closure_conv.ml" 48 1562 1596
+)
+"closure_conv.ml" 48 1562 1571 "closure_conv.ml" 48 1562 1575
+type(
+  name list
+)
+"closure_conv.ml" 48 1562 1565 "closure_conv.ml" 48 1562 1575
+type(
+  cexp
+)
+"closure_conv.ml" 48 1562 1581 "closure_conv.ml" 48 1562 1582
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 48 1562 1584 "closure_conv.ml" 48 1562 1590
+type(
+  name list -> string
+)
+ident(
+  int_ref vs2str "closure_conv.ml" 37 887 891 "closure_conv.ml" 37 887 897
+)
+"closure_conv.ml" 48 1562 1591 "closure_conv.ml" 48 1562 1593
+type(
+  name list
+)
+ident(
+  int_ref vs "closure_conv.ml" 48 1562 1571 "closure_conv.ml" 48 1562 1575
+)
+"closure_conv.ml" 48 1562 1583 "closure_conv.ml" 48 1562 1594
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 48 1562 1580 "closure_conv.ml" 48 1562 1595
+type(
+  int * string
+)
+"closure_conv.ml" 48 1562 1579 "closure_conv.ml" 48 1562 1596
+type(
+  (int * string) list
+)
+"closure_conv.ml" 49 1597 1610 "closure_conv.ml" 49 1597 1612
+type(
+  name list
+)
+ident(
+  def vs "closure_conv.ml" 49 1597 1623 "closure_conv.ml" 49 1597 1712
+)
+"closure_conv.ml" 49 1597 1613 "closure_conv.ml" 49 1597 1615
+type(
+  name
+)
+ident(
+  def tn "closure_conv.ml" 49 1597 1623 "closure_conv.ml" 49 1597 1712
+)
+"closure_conv.ml" 49 1597 1616 "closure_conv.ml" 49 1597 1618
+type(
+  cexp
+)
+ident(
+  def e1 "closure_conv.ml" 49 1597 1623 "closure_conv.ml" 49 1597 1712
+)
+"closure_conv.ml" 49 1597 1600 "closure_conv.ml" 49 1597 1619
+type(
+  cexp
+)
+"closure_conv.ml" 49 1597 1624 "closure_conv.ml" 49 1597 1625
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 49 1597 1626 "closure_conv.ml" 49 1597 1632
+type(
+  string
+)
+"closure_conv.ml" 49 1597 1633 "closure_conv.ml" 49 1597 1634
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 49 1597 1636 "closure_conv.ml" 49 1597 1642
+type(
+  name list -> string
+)
+ident(
+  int_ref vs2str "closure_conv.ml" 37 887 891 "closure_conv.ml" 37 887 897
+)
+"closure_conv.ml" 49 1597 1643 "closure_conv.ml" 49 1597 1645
+type(
+  name list
+)
+ident(
+  int_ref vs "closure_conv.ml" 49 1597 1610 "closure_conv.ml" 49 1597 1612
+)
+"closure_conv.ml" 49 1597 1635 "closure_conv.ml" 49 1597 1646
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 49 1597 1647 "closure_conv.ml" 49 1597 1648
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 49 1597 1649 "closure_conv.ml" 49 1597 1654
+type(
+  string
+)
+"closure_conv.ml" 49 1597 1655 "closure_conv.ml" 49 1597 1656
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 49 1597 1658 "closure_conv.ml" 49 1597 1666
+type(
+  name -> string
+)
+ident(
+  int_ref name2str "closure_conv.ml" 35 832 836 "closure_conv.ml" 35 832 844
+)
+"closure_conv.ml" 49 1597 1667 "closure_conv.ml" 49 1597 1669
+type(
+  name
+)
+ident(
+  int_ref tn "closure_conv.ml" 49 1597 1613 "closure_conv.ml" 49 1597 1615
+)
+"closure_conv.ml" 49 1597 1657 "closure_conv.ml" 49 1597 1670
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 49 1597 1649 "closure_conv.ml" 49 1597 1670
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 49 1597 1635 "closure_conv.ml" 49 1597 1670
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 49 1597 1626 "closure_conv.ml" 49 1597 1670
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 49 1597 1623 "closure_conv.ml" 49 1597 1671
+type(
+  int * string
+)
+"closure_conv.ml" 49 1597 1677 "closure_conv.ml" 49 1597 1678
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 49 1597 1679 "closure_conv.ml" 49 1597 1683
+type(
+  string
+)
+"closure_conv.ml" 49 1597 1676 "closure_conv.ml" 49 1597 1684
+type(
+  int * string
+)
+"closure_conv.ml" 49 1597 1675 "closure_conv.ml" 49 1597 1685
+type(
+  (int * string) list
+)
+"closure_conv.ml" 49 1597 1623 "closure_conv.ml" 49 1597 1685
+type(
+  (int * string) list
+)
+"closure_conv.ml" 49 1597 1686 "closure_conv.ml" 49 1597 1687
+type(
+  (int * string) list -> (int * string) list -> (int * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"closure_conv.ml" 49 1597 1689 "closure_conv.ml" 49 1597 1702
+type(
+  cexp -> int -> (int * string) list
+)
+ident(
+  int_ref cexp2str_base "closure_conv.ml" 39 961 969 "closure_conv.ml" 39 961 982
+)
+"closure_conv.ml" 49 1597 1703 "closure_conv.ml" 49 1597 1705
+type(
+  cexp
+)
+ident(
+  int_ref e1 "closure_conv.ml" 49 1597 1616 "closure_conv.ml" 49 1597 1618
+)
+"closure_conv.ml" 49 1597 1707 "closure_conv.ml" 49 1597 1708
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 49 1597 1708 "closure_conv.ml" 49 1597 1709
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"closure_conv.ml" 49 1597 1709 "closure_conv.ml" 49 1597 1710
+type(
+  int
+)
+"closure_conv.ml" 49 1597 1706 "closure_conv.ml" 49 1597 1711
+type(
+  int
+)
+"closure_conv.ml" 49 1597 1688 "closure_conv.ml" 49 1597 1712
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"closure_conv.ml" 49 1597 1623 "closure_conv.ml" 49 1597 1712
+call(
+  tail
+)
+type(
+  (int * string) list
+)
+"closure_conv.ml" 50 1713 1725 "closure_conv.ml" 50 1713 1727
+type(
+  name
+)
+ident(
+  def na "closure_conv.ml" 50 1713 1735 "closure_conv.ml" 50 1713 1794
+)
+"closure_conv.ml" 50 1713 1728 "closure_conv.ml" 50 1713 1730
+type(
+  name list
+)
+ident(
+  def vs "closure_conv.ml" 50 1713 1735 "closure_conv.ml" 50 1713 1794
+)
+"closure_conv.ml" 50 1713 1716 "closure_conv.ml" 50 1713 1731
+type(
+  cexp
+)
+"closure_conv.ml" 50 1713 1737 "closure_conv.ml" 50 1713 1738
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 39 961 987 "closure_conv.ml" 39 961 988
+)
+"closure_conv.ml" 50 1713 1739 "closure_conv.ml" 50 1713 1750
+type(
+  string
+)
+"closure_conv.ml" 50 1713 1751 "closure_conv.ml" 50 1713 1752
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 50 1713 1754 "closure_conv.ml" 50 1713 1762
+type(
+  name -> string
+)
+ident(
+  int_ref name2str "closure_conv.ml" 35 832 836 "closure_conv.ml" 35 832 844
+)
+"closure_conv.ml" 50 1713 1763 "closure_conv.ml" 50 1713 1765
+type(
+  name
+)
+ident(
+  int_ref na "closure_conv.ml" 50 1713 1725 "closure_conv.ml" 50 1713 1727
+)
+"closure_conv.ml" 50 1713 1753 "closure_conv.ml" 50 1713 1766
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 50 1713 1767 "closure_conv.ml" 50 1713 1768
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 50 1713 1769 "closure_conv.ml" 50 1713 1772
+type(
+  string
+)
+"closure_conv.ml" 50 1713 1773 "closure_conv.ml" 50 1713 1774
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 50 1713 1776 "closure_conv.ml" 50 1713 1782
+type(
+  name list -> string
+)
+ident(
+  int_ref vs2str "closure_conv.ml" 37 887 891 "closure_conv.ml" 37 887 897
+)
+"closure_conv.ml" 50 1713 1783 "closure_conv.ml" 50 1713 1785
+type(
+  name list
+)
+ident(
+  int_ref vs "closure_conv.ml" 50 1713 1728 "closure_conv.ml" 50 1713 1730
+)
+"closure_conv.ml" 50 1713 1775 "closure_conv.ml" 50 1713 1786
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 50 1713 1787 "closure_conv.ml" 50 1713 1788
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 50 1713 1789 "closure_conv.ml" 50 1713 1792
+type(
+  string
+)
+"closure_conv.ml" 50 1713 1775 "closure_conv.ml" 50 1713 1792
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 50 1713 1769 "closure_conv.ml" 50 1713 1792
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 50 1713 1753 "closure_conv.ml" 50 1713 1792
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 50 1713 1739 "closure_conv.ml" 50 1713 1792
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 50 1713 1736 "closure_conv.ml" 50 1713 1793
+type(
+  int * string
+)
+"closure_conv.ml" 50 1713 1735 "closure_conv.ml" 50 1713 1794
+type(
+  (int * string) list
+)
+"closure_conv.ml" 40 992 993 "closure_conv.ml" 50 1713 1794
+type(
+  (int * string) list
+)
+"closure_conv.ml" 52 1796 1800 "closure_conv.ml" 52 1796 1808
+type(
+  cexp -> string
+)
+ident(
+  def cexp2str "closure_conv.ml" 56 1937 1937 "closure_conv.ml" 1 0 -1
+)
+"closure_conv.ml" 52 1796 1809 "closure_conv.ml" 52 1796 1812
+type(
+  cexp
+)
+ident(
+  def ast "closure_conv.ml" 53 1816 1817 "closure_conv.ml" 54 1849 1935
+)
+"closure_conv.ml" 53 1816 1821 "closure_conv.ml" 53 1816 1823
+type(
+  (int * string) list
+)
+ident(
+  def ss "closure_conv.ml" 54 1849 1851 "closure_conv.ml" 54 1849 1935
+)
+"closure_conv.ml" 53 1816 1826 "closure_conv.ml" 53 1816 1839
+type(
+  cexp -> int -> (int * string) list
+)
+ident(
+  int_ref cexp2str_base "closure_conv.ml" 39 961 969 "closure_conv.ml" 39 961 982
+)
+"closure_conv.ml" 53 1816 1840 "closure_conv.ml" 53 1816 1843
+type(
+  cexp
+)
+ident(
+  int_ref ast "closure_conv.ml" 52 1796 1809 "closure_conv.ml" 52 1796 1812
+)
+"closure_conv.ml" 53 1816 1844 "closure_conv.ml" 53 1816 1845
+type(
+  int
+)
+"closure_conv.ml" 53 1816 1826 "closure_conv.ml" 53 1816 1845
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"closure_conv.ml" 54 1849 1852 "closure_conv.ml" 54 1849 1865
+type(
+  string -> string list -> string
+)
+ident(
+  ext_ref String.concat
+)
+"closure_conv.ml" 54 1849 1866 "closure_conv.ml" 54 1849 1870
+type(
+  string
+)
+"closure_conv.ml" 54 1849 1872 "closure_conv.ml" 54 1849 1880
+type(
+  (int * string -> string) -> (int * string) list -> string list
+)
+ident(
+  ext_ref List.map
+)
+"closure_conv.ml" 54 1849 1887 "closure_conv.ml" 54 1849 1888
+type(
+  int
+)
+ident(
+  def d "closure_conv.ml" 54 1849 1895 "closure_conv.ml" 54 1849 1922
+)
+"closure_conv.ml" 54 1849 1889 "closure_conv.ml" 54 1849 1890
+type(
+  string
+)
+ident(
+  def s "closure_conv.ml" 54 1849 1895 "closure_conv.ml" 54 1849 1922
+)
+"closure_conv.ml" 54 1849 1886 "closure_conv.ml" 54 1849 1891
+type(
+  int * string
+)
+"closure_conv.ml" 54 1849 1896 "closure_conv.ml" 54 1849 1907
+type(
+  int -> char -> string
+)
+ident(
+  ext_ref String.make
+)
+"closure_conv.ml" 54 1849 1909 "closure_conv.ml" 54 1849 1910
+type(
+  int
+)
+ident(
+  int_ref d "closure_conv.ml" 54 1849 1887 "closure_conv.ml" 54 1849 1888
+)
+"closure_conv.ml" 54 1849 1910 "closure_conv.ml" 54 1849 1911
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( * )
+)
+"closure_conv.ml" 54 1849 1911 "closure_conv.ml" 54 1849 1912
+type(
+  int
+)
+"closure_conv.ml" 54 1849 1908 "closure_conv.ml" 54 1849 1913
+type(
+  int
+)
+"closure_conv.ml" 54 1849 1914 "closure_conv.ml" 54 1849 1917
+type(
+  char
+)
+"closure_conv.ml" 54 1849 1895 "closure_conv.ml" 54 1849 1918
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 54 1849 1919 "closure_conv.ml" 54 1849 1920
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 54 1849 1921 "closure_conv.ml" 54 1849 1922
+type(
+  string
+)
+ident(
+  int_ref s "closure_conv.ml" 54 1849 1889 "closure_conv.ml" 54 1849 1890
+)
+"closure_conv.ml" 54 1849 1895 "closure_conv.ml" 54 1849 1922
+call(
+  tail
+)
+type(
+  string
+)
+"closure_conv.ml" 54 1849 1881 "closure_conv.ml" 54 1849 1923
+type(
+  int * string -> string
+)
+"closure_conv.ml" 54 1849 1924 "closure_conv.ml" 54 1849 1926
+type(
+  (int * string) list
+)
+ident(
+  int_ref ss "closure_conv.ml" 53 1816 1821 "closure_conv.ml" 53 1816 1823
+)
+"closure_conv.ml" 54 1849 1871 "closure_conv.ml" 54 1849 1927
+call(
+  stack
+)
+type(
+  string list
+)
+"closure_conv.ml" 54 1849 1851 "closure_conv.ml" 54 1849 1928
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 54 1849 1929 "closure_conv.ml" 54 1849 1930
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 54 1849 1931 "closure_conv.ml" 54 1849 1935
+type(
+  string
+)
+"closure_conv.ml" 54 1849 1851 "closure_conv.ml" 54 1849 1935
+call(
+  tail
+)
+type(
+  string
+)
+"closure_conv.ml" 53 1816 1817 "closure_conv.ml" 54 1849 1935
+type(
+  string
+)
+"closure_conv.ml" 56 1937 1941 "closure_conv.ml" 56 1937 1948
+type(
+  globdef -> string
+)
+ident(
+  def def2str "closure_conv.ml" 60 2070 2070 "closure_conv.ml" 1 0 -1
+)
+"closure_conv.ml" 56 1937 1949 "closure_conv.ml" 56 1937 1952
+type(
+  globdef
+)
+ident(
+  def def "closure_conv.ml" 57 1956 1957 "closure_conv.ml" 58 1972 2068
+)
+"closure_conv.ml" 57 1956 1963 "closure_conv.ml" 57 1956 1966
+type(
+  globdef
+)
+ident(
+  int_ref def "closure_conv.ml" 56 1937 1949 "closure_conv.ml" 56 1937 1952
+)
+"closure_conv.ml" 58 1972 1986 "closure_conv.ml" 58 1972 1989
+type(
+  name list
+)
+ident(
+  def vs1 "closure_conv.ml" 58 1972 2000 "closure_conv.ml" 58 1972 2068
+)
+"closure_conv.ml" 58 1972 1990 "closure_conv.ml" 58 1972 1993
+type(
+  name list
+)
+ident(
+  def vs2 "closure_conv.ml" 58 1972 2000 "closure_conv.ml" 58 1972 2068
+)
+"closure_conv.ml" 58 1972 1994 "closure_conv.ml" 58 1972 1995
+type(
+  cexp
+)
+ident(
+  def e "closure_conv.ml" 58 1972 2000 "closure_conv.ml" 58 1972 2068
+)
+"closure_conv.ml" 58 1972 1975 "closure_conv.ml" 58 1972 1996
+type(
+  globdef
+)
+"closure_conv.ml" 58 1972 2000 "closure_conv.ml" 58 1972 2007
+type(
+  string
+)
+"closure_conv.ml" 58 1972 2008 "closure_conv.ml" 58 1972 2009
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 58 1972 2011 "closure_conv.ml" 58 1972 2017
+type(
+  name list -> string
+)
+ident(
+  int_ref vs2str "closure_conv.ml" 37 887 891 "closure_conv.ml" 37 887 897
+)
+"closure_conv.ml" 58 1972 2018 "closure_conv.ml" 58 1972 2021
+type(
+  name list
+)
+ident(
+  int_ref vs1 "closure_conv.ml" 58 1972 1986 "closure_conv.ml" 58 1972 1989
+)
+"closure_conv.ml" 58 1972 2010 "closure_conv.ml" 58 1972 2022
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 58 1972 2023 "closure_conv.ml" 58 1972 2024
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 58 1972 2026 "closure_conv.ml" 58 1972 2032
+type(
+  name list -> string
+)
+ident(
+  int_ref vs2str "closure_conv.ml" 37 887 891 "closure_conv.ml" 37 887 897
+)
+"closure_conv.ml" 58 1972 2033 "closure_conv.ml" 58 1972 2036
+type(
+  name list
+)
+ident(
+  int_ref vs2 "closure_conv.ml" 58 1972 1990 "closure_conv.ml" 58 1972 1993
+)
+"closure_conv.ml" 58 1972 2025 "closure_conv.ml" 58 1972 2037
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 58 1972 2038 "closure_conv.ml" 58 1972 2039
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 58 1972 2040 "closure_conv.ml" 58 1972 2045
+type(
+  string
+)
+"closure_conv.ml" 58 1972 2046 "closure_conv.ml" 58 1972 2047
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 58 1972 2049 "closure_conv.ml" 58 1972 2057
+type(
+  cexp -> string
+)
+ident(
+  int_ref cexp2str "closure_conv.ml" 52 1796 1800 "closure_conv.ml" 52 1796 1808
+)
+"closure_conv.ml" 58 1972 2058 "closure_conv.ml" 58 1972 2059
+type(
+  cexp
+)
+ident(
+  int_ref e "closure_conv.ml" 58 1972 1994 "closure_conv.ml" 58 1972 1995
+)
+"closure_conv.ml" 58 1972 2048 "closure_conv.ml" 58 1972 2060
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 58 1972 2061 "closure_conv.ml" 58 1972 2062
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 58 1972 2063 "closure_conv.ml" 58 1972 2068
+type(
+  string
+)
+"closure_conv.ml" 58 1972 2048 "closure_conv.ml" 58 1972 2068
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 58 1972 2040 "closure_conv.ml" 58 1972 2068
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 58 1972 2025 "closure_conv.ml" 58 1972 2068
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 58 1972 2010 "closure_conv.ml" 58 1972 2068
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 58 1972 2000 "closure_conv.ml" 58 1972 2068
+call(
+  tail
+)
+type(
+  string
+)
+"closure_conv.ml" 57 1956 1957 "closure_conv.ml" 58 1972 2068
+type(
+  string
+)
+"closure_conv.ml" 60 2070 2074 "closure_conv.ml" 60 2070 2082
+type(
+  ((string * 'a) * globdef) list * string list * cexp -> string
+)
+ident(
+  def clos2str "closure_conv.ml" 70 2342 2342 "closure_conv.ml" 1 0 -1
+)
+"closure_conv.ml" 60 2070 2084 "closure_conv.ml" 60 2070 2086
+type(
+  ((string * 'a) * globdef) list
+)
+ident(
+  def gs "closure_conv.ml" 61 2102 2103 "closure_conv.ml" 64 2251 2273
+)
+"closure_conv.ml" 60 2070 2087 "closure_conv.ml" 60 2070 2095
+type(
+  string list
+)
+ident(
+  def globvars "closure_conv.ml" 61 2102 2103 "closure_conv.ml" 64 2251 2273
+)
+"closure_conv.ml" 60 2070 2096 "closure_conv.ml" 60 2070 2097
+type(
+  cexp
+)
+ident(
+  def v "closure_conv.ml" 61 2102 2103 "closure_conv.ml" 64 2251 2273
+)
+"closure_conv.ml" 60 2070 2083 "closure_conv.ml" 60 2070 2098
+type(
+  ((string * 'a) * globdef) list * string list * cexp
+)
+"closure_conv.ml" 61 2102 2103 "closure_conv.ml" 61 2102 2116
+type(
+  string
+)
+"closure_conv.ml" 61 2102 2117 "closure_conv.ml" 61 2102 2118
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 62 2120 2122 "closure_conv.ml" 62 2120 2135
+type(
+  string -> string list -> string
+)
+ident(
+  ext_ref String.concat
+)
+"closure_conv.ml" 62 2120 2136 "closure_conv.ml" 62 2120 2140
+type(
+  string
+)
+"closure_conv.ml" 62 2120 2141 "closure_conv.ml" 62 2120 2149
+type(
+  string list
+)
+ident(
+  int_ref globvars "closure_conv.ml" 60 2070 2087 "closure_conv.ml" 60 2070 2095
+)
+"closure_conv.ml" 62 2120 2121 "closure_conv.ml" 62 2120 2150
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 62 2120 2151 "closure_conv.ml" 62 2120 2152
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 62 2120 2153 "closure_conv.ml" 62 2120 2157
+type(
+  string
+)
+"closure_conv.ml" 62 2120 2158 "closure_conv.ml" 62 2120 2159
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 63 2160 2162 "closure_conv.ml" 63 2160 2175
+type(
+  string -> string list -> string
+)
+ident(
+  ext_ref String.concat
+)
+"closure_conv.ml" 63 2160 2176 "closure_conv.ml" 63 2160 2178
+type(
+  string
+)
+"closure_conv.ml" 63 2160 2180 "closure_conv.ml" 63 2160 2188
+type(
+  ((string * 'a) * globdef -> string) ->
+  ((string * 'a) * globdef) list -> string list
+)
+ident(
+  ext_ref List.map
+)
+"closure_conv.ml" 63 2160 2196 "closure_conv.ml" 63 2160 2197
+type(
+  string
+)
+ident(
+  def x "closure_conv.ml" 63 2160 2208 "closure_conv.ml" 63 2160 2232
+)
+"closure_conv.ml" 63 2160 2198 "closure_conv.ml" 63 2160 2199
+type(
+  'a
+)
+"closure_conv.ml" 63 2160 2195 "closure_conv.ml" 63 2160 2200
+type(
+  string * 'a
+)
+"closure_conv.ml" 63 2160 2201 "closure_conv.ml" 63 2160 2203
+type(
+  globdef
+)
+ident(
+  def bo "closure_conv.ml" 63 2160 2208 "closure_conv.ml" 63 2160 2232
+)
+"closure_conv.ml" 63 2160 2194 "closure_conv.ml" 63 2160 2204
+type(
+  (string * 'a) * globdef
+)
+"closure_conv.ml" 63 2160 2208 "closure_conv.ml" 63 2160 2209
+type(
+  string
+)
+ident(
+  int_ref x "closure_conv.ml" 63 2160 2196 "closure_conv.ml" 63 2160 2197
+)
+"closure_conv.ml" 63 2160 2210 "closure_conv.ml" 63 2160 2211
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 63 2160 2212 "closure_conv.ml" 63 2160 2217
+type(
+  string
+)
+"closure_conv.ml" 63 2160 2218 "closure_conv.ml" 63 2160 2219
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 63 2160 2221 "closure_conv.ml" 63 2160 2228
+type(
+  globdef -> string
+)
+ident(
+  int_ref def2str "closure_conv.ml" 56 1937 1941 "closure_conv.ml" 56 1937 1948
+)
+"closure_conv.ml" 63 2160 2229 "closure_conv.ml" 63 2160 2231
+type(
+  globdef
+)
+ident(
+  int_ref bo "closure_conv.ml" 63 2160 2201 "closure_conv.ml" 63 2160 2203
+)
+"closure_conv.ml" 63 2160 2220 "closure_conv.ml" 63 2160 2232
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 63 2160 2212 "closure_conv.ml" 63 2160 2232
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 63 2160 2208 "closure_conv.ml" 63 2160 2232
+call(
+  tail
+)
+type(
+  string
+)
+"closure_conv.ml" 63 2160 2189 "closure_conv.ml" 63 2160 2233
+type(
+  (string * 'a) * globdef -> string
+)
+"closure_conv.ml" 63 2160 2235 "closure_conv.ml" 63 2160 2243
+type(
+  ((string * 'a) * globdef) list -> ((string * 'a) * globdef) list
+)
+ident(
+  ext_ref List.rev
+)
+"closure_conv.ml" 63 2160 2244 "closure_conv.ml" 63 2160 2246
+type(
+  ((string * 'a) * globdef) list
+)
+ident(
+  int_ref gs "closure_conv.ml" 60 2070 2084 "closure_conv.ml" 60 2070 2086
+)
+"closure_conv.ml" 63 2160 2234 "closure_conv.ml" 63 2160 2247
+call(
+  stack
+)
+type(
+  ((string * 'a) * globdef) list
+)
+"closure_conv.ml" 63 2160 2179 "closure_conv.ml" 63 2160 2248
+call(
+  stack
+)
+type(
+  string list
+)
+"closure_conv.ml" 63 2160 2161 "closure_conv.ml" 63 2160 2249
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 64 2251 2252 "closure_conv.ml" 64 2251 2253
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 64 2251 2255 "closure_conv.ml" 64 2251 2263
+type(
+  cexp -> string
+)
+ident(
+  int_ref cexp2str "closure_conv.ml" 52 1796 1800 "closure_conv.ml" 52 1796 1808
+)
+"closure_conv.ml" 64 2251 2264 "closure_conv.ml" 64 2251 2265
+type(
+  cexp
+)
+ident(
+  int_ref v "closure_conv.ml" 60 2070 2096 "closure_conv.ml" 60 2070 2097
+)
+"closure_conv.ml" 64 2251 2254 "closure_conv.ml" 64 2251 2266
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 64 2251 2267 "closure_conv.ml" 64 2251 2268
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"closure_conv.ml" 64 2251 2269 "closure_conv.ml" 64 2251 2273
+type(
+  string
+)
+"closure_conv.ml" 64 2251 2254 "closure_conv.ml" 64 2251 2273
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 63 2160 2161 "closure_conv.ml" 64 2251 2273
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 62 2120 2153 "closure_conv.ml" 64 2251 2273
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 62 2120 2121 "closure_conv.ml" 64 2251 2273
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 61 2102 2103 "closure_conv.ml" 64 2251 2273
+call(
+  tail
+)
+type(
+  string
+)
+"closure_conv.ml" 70 2342 2350 "closure_conv.ml" 70 2342 2357
+type(
+  Knorm.kexp -> string list -> Knorm.name list
+)
+ident(
+  def get_fvs "closure_conv.ml" 70 2342 2342 "closure_conv.ml" 1 0 -1
+)
+"closure_conv.ml" 70 2342 2358 "closure_conv.ml" 70 2342 2361
+type(
+  Knorm.kexp
+)
+ident(
+  def ast "closure_conv.ml" 70 2342 2362 "closure_conv.ml" 85 3113 3138
+)
+"closure_conv.ml" 70 2342 2363 "closure_conv.ml" 70 2342 2366
+type(
+  string list
+)
+ident(
+  def env "closure_conv.ml" 71 2385 2386 "closure_conv.ml" 85 3113 3138
+)
+"closure_conv.ml" 71 2385 2390 "closure_conv.ml" 71 2385 2396
+type(
+  (string * 'a) list -> (string * 'a) list
+)
+ident(
+  def filter "closure_conv.ml" 74 2576 2577 "closure_conv.ml" 85 3113 3138
+)
+"closure_conv.ml" 71 2385 2397 "closure_conv.ml" 71 2385 2399
+type(
+  (string * 'a) list
+)
+ident(
+  def vs "closure_conv.ml" 71 2385 2402 "closure_conv.ml" 71 2385 2466
+)
+"closure_conv.ml" 71 2385 2402 "closure_conv.ml" 71 2385 2413
+type(
+  (string * 'a -> bool) -> (string * 'a) list -> (string * 'a) list
+)
+ident(
+  ext_ref List.filter
+)
+"closure_conv.ml" 71 2385 2420 "closure_conv.ml" 71 2385 2421
+type(
+  string
+)
+ident(
+  def x "closure_conv.ml" 71 2385 2428 "closure_conv.ml" 71 2385 2462
+)
+"closure_conv.ml" 71 2385 2422 "closure_conv.ml" 71 2385 2423
+type(
+  'a
+)
+"closure_conv.ml" 71 2385 2419 "closure_conv.ml" 71 2385 2424
+type(
+  string * 'a
+)
+"closure_conv.ml" 71 2385 2428 "closure_conv.ml" 71 2385 2431
+type(
+  bool -> bool
+)
+ident(
+  ext_ref Pervasives.not
+)
+"closure_conv.ml" 71 2385 2433 "closure_conv.ml" 71 2385 2441
+type(
+  string -> string list -> bool
+)
+ident(
+  ext_ref List.mem
+)
+"closure_conv.ml" 71 2385 2442 "closure_conv.ml" 71 2385 2443
+type(
+  string
+)
+ident(
+  int_ref x "closure_conv.ml" 71 2385 2420 "closure_conv.ml" 71 2385 2421
+)
+"closure_conv.ml" 71 2385 2445 "closure_conv.ml" 71 2385 2448
+type(
+  string list
+)
+ident(
+  int_ref env "closure_conv.ml" 70 2342 2363 "closure_conv.ml" 70 2342 2366
+)
+"closure_conv.ml" 71 2385 2449 "closure_conv.ml" 71 2385 2450
+type(
+  string list -> string list -> string list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"closure_conv.ml" 71 2385 2451 "closure_conv.ml" 71 2385 2452
+type(
+  string list ref -> string list
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"closure_conv.ml" 71 2385 2452 "closure_conv.ml" 71 2385 2460
+type(
+  string list ref
+)
+ident(
+  int_ref globvars "closure_conv.ml" 29 756 760 "closure_conv.ml" 29 756 768
+)
+"closure_conv.ml" 71 2385 2451 "closure_conv.ml" 71 2385 2460
+type(
+  string list
+)
+"closure_conv.ml" 71 2385 2444 "closure_conv.ml" 71 2385 2461
+call(
+  stack
+)
+type(
+  string list
+)
+"closure_conv.ml" 71 2385 2432 "closure_conv.ml" 71 2385 2462
+call(
+  stack
+)
+type(
+  bool
+)
+"closure_conv.ml" 71 2385 2428 "closure_conv.ml" 71 2385 2462
+type(
+  bool
+)
+"closure_conv.ml" 71 2385 2414 "closure_conv.ml" 71 2385 2463
+type(
+  string * 'a -> bool
+)
+"closure_conv.ml" 71 2385 2464 "closure_conv.ml" 71 2385 2466
+type(
+  (string * 'a) list
+)
+ident(
+  int_ref vs "closure_conv.ml" 71 2385 2397 "closure_conv.ml" 71 2385 2399
+)
+"closure_conv.ml" 71 2385 2402 "closure_conv.ml" 71 2385 2466
+call(
+  tail
+)
+type(
+  (string * 'a) list
+)
+"closure_conv.ml" 74 2576 2583 "closure_conv.ml" 74 2576 2586
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "closure_conv.ml" 70 2342 2358 "closure_conv.ml" 70 2342 2361
+)
+"closure_conv.ml" 75 2592 2602 "closure_conv.ml" 75 2592 2603
+type(
+  Syntax.const
+)
+"closure_conv.ml" 75 2592 2595 "closure_conv.ml" 75 2592 2603
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 75 2592 2607 "closure_conv.ml" 75 2592 2609
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 76 2610 2617 "closure_conv.ml" 76 2610 2618
+type(
+  Syntax.optype
+)
+"closure_conv.ml" 76 2610 2619 "closure_conv.ml" 76 2610 2621
+type(
+  Knorm.name list
+)
+ident(
+  def vs "closure_conv.ml" 76 2610 2638 "closure_conv.ml" 76 2610 2647
+)
+"closure_conv.ml" 76 2610 2613 "closure_conv.ml" 76 2610 2622
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 76 2610 2632 "closure_conv.ml" 76 2610 2634
+type(
+  Knorm.name list
+)
+ident(
+  def vs "closure_conv.ml" 76 2610 2638 "closure_conv.ml" 76 2610 2647
+)
+"closure_conv.ml" 76 2610 2625 "closure_conv.ml" 76 2610 2634
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 76 2610 2613 "closure_conv.ml" 76 2610 2634
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 76 2610 2638 "closure_conv.ml" 76 2610 2644
+type(
+  Knorm.name list -> Knorm.name list
+)
+ident(
+  int_ref filter "closure_conv.ml" 71 2385 2390 "closure_conv.ml" 71 2385 2396
+)
+"closure_conv.ml" 76 2610 2645 "closure_conv.ml" 76 2610 2647
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "closure_conv.ml" 76 2610 2619 "closure_conv.ml" 76 2610 2621
+)
+"closure_conv.ml" 76 2610 2638 "closure_conv.ml" 76 2610 2647
+call(
+  tail
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 77 2648 2655 "closure_conv.ml" 77 2648 2656
+type(
+  Syntax.comptype
+)
+"closure_conv.ml" 77 2648 2657 "closure_conv.ml" 77 2648 2658
+type(
+  Knorm.name
+)
+ident(
+  def x "closure_conv.ml" 77 2648 2671 "closure_conv.ml" 77 2648 2723
+)
+"closure_conv.ml" 77 2648 2659 "closure_conv.ml" 77 2648 2660
+type(
+  Knorm.name
+)
+ident(
+  def y "closure_conv.ml" 77 2648 2671 "closure_conv.ml" 77 2648 2723
+)
+"closure_conv.ml" 77 2648 2661 "closure_conv.ml" 77 2648 2663
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "closure_conv.ml" 77 2648 2671 "closure_conv.ml" 77 2648 2723
+)
+"closure_conv.ml" 77 2648 2664 "closure_conv.ml" 77 2648 2666
+type(
+  Knorm.kexp
+)
+ident(
+  def e2 "closure_conv.ml" 77 2648 2671 "closure_conv.ml" 77 2648 2723
+)
+"closure_conv.ml" 77 2648 2651 "closure_conv.ml" 77 2648 2667
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 77 2648 2672 "closure_conv.ml" 77 2648 2678
+type(
+  Knorm.name list -> Knorm.name list
+)
+ident(
+  int_ref filter "closure_conv.ml" 71 2385 2390 "closure_conv.ml" 71 2385 2396
+)
+"closure_conv.ml" 77 2648 2680 "closure_conv.ml" 77 2648 2681
+type(
+  Knorm.name
+)
+ident(
+  int_ref x "closure_conv.ml" 77 2648 2657 "closure_conv.ml" 77 2648 2658
+)
+"closure_conv.ml" 77 2648 2682 "closure_conv.ml" 77 2648 2683
+type(
+  Knorm.name
+)
+ident(
+  int_ref y "closure_conv.ml" 77 2648 2659 "closure_conv.ml" 77 2648 2660
+)
+"closure_conv.ml" 77 2648 2679 "closure_conv.ml" 77 2648 2684
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 77 2648 2671 "closure_conv.ml" 77 2648 2685
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 77 2648 2686 "closure_conv.ml" 77 2648 2687
+type(
+  Knorm.name list -> Knorm.name list -> Knorm.name list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"closure_conv.ml" 77 2648 2689 "closure_conv.ml" 77 2648 2696
+type(
+  Knorm.kexp -> string list -> Knorm.name list
+)
+ident(
+  int_ref get_fvs "closure_conv.ml" 70 2342 2350 "closure_conv.ml" 70 2342 2357
+)
+"closure_conv.ml" 77 2648 2697 "closure_conv.ml" 77 2648 2699
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "closure_conv.ml" 77 2648 2661 "closure_conv.ml" 77 2648 2663
+)
+"closure_conv.ml" 77 2648 2700 "closure_conv.ml" 77 2648 2703
+type(
+  string list
+)
+ident(
+  int_ref env "closure_conv.ml" 70 2342 2363 "closure_conv.ml" 70 2342 2366
+)
+"closure_conv.ml" 77 2648 2688 "closure_conv.ml" 77 2648 2704
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 77 2648 2705 "closure_conv.ml" 77 2648 2706
+type(
+  Knorm.name list -> Knorm.name list -> Knorm.name list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"closure_conv.ml" 77 2648 2708 "closure_conv.ml" 77 2648 2715
+type(
+  Knorm.kexp -> string list -> Knorm.name list
+)
+ident(
+  int_ref get_fvs "closure_conv.ml" 70 2342 2350 "closure_conv.ml" 70 2342 2357
+)
+"closure_conv.ml" 77 2648 2716 "closure_conv.ml" 77 2648 2718
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "closure_conv.ml" 77 2648 2664 "closure_conv.ml" 77 2648 2666
+)
+"closure_conv.ml" 77 2648 2719 "closure_conv.ml" 77 2648 2722
+type(
+  string list
+)
+ident(
+  int_ref env "closure_conv.ml" 70 2342 2363 "closure_conv.ml" 70 2342 2366
+)
+"closure_conv.ml" 77 2648 2707 "closure_conv.ml" 77 2648 2723
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 77 2648 2688 "closure_conv.ml" 77 2648 2723
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 77 2648 2671 "closure_conv.ml" 77 2648 2723
+call(
+  tail
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 78 2724 2733 "closure_conv.ml" 78 2724 2734
+type(
+  string
+)
+ident(
+  def x "closure_conv.ml" 78 2724 2748 "closure_conv.ml" 78 2724 2790
+)
+"closure_conv.ml" 78 2724 2735 "closure_conv.ml" 78 2724 2736
+type(
+  Type_checker.ty * Debug.debug_data
+)
+"closure_conv.ml" 78 2724 2732 "closure_conv.ml" 78 2724 2737
+type(
+  Knorm.name
+)
+"closure_conv.ml" 78 2724 2738 "closure_conv.ml" 78 2724 2740
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "closure_conv.ml" 78 2724 2748 "closure_conv.ml" 78 2724 2790
+)
+"closure_conv.ml" 78 2724 2741 "closure_conv.ml" 78 2724 2743
+type(
+  Knorm.kexp
+)
+ident(
+  def e2 "closure_conv.ml" 78 2724 2748 "closure_conv.ml" 78 2724 2790
+)
+"closure_conv.ml" 78 2724 2727 "closure_conv.ml" 78 2724 2744
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 78 2724 2749 "closure_conv.ml" 78 2724 2756
+type(
+  Knorm.kexp -> string list -> Knorm.name list
+)
+ident(
+  int_ref get_fvs "closure_conv.ml" 70 2342 2350 "closure_conv.ml" 70 2342 2357
+)
+"closure_conv.ml" 78 2724 2757 "closure_conv.ml" 78 2724 2759
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "closure_conv.ml" 78 2724 2738 "closure_conv.ml" 78 2724 2740
+)
+"closure_conv.ml" 78 2724 2760 "closure_conv.ml" 78 2724 2763
+type(
+  string list
+)
+ident(
+  int_ref env "closure_conv.ml" 70 2342 2363 "closure_conv.ml" 70 2342 2366
+)
+"closure_conv.ml" 78 2724 2748 "closure_conv.ml" 78 2724 2764
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 78 2724 2765 "closure_conv.ml" 78 2724 2766
+type(
+  Knorm.name list -> Knorm.name list -> Knorm.name list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"closure_conv.ml" 78 2724 2768 "closure_conv.ml" 78 2724 2775
+type(
+  Knorm.kexp -> string list -> Knorm.name list
+)
+ident(
+  int_ref get_fvs "closure_conv.ml" 70 2342 2350 "closure_conv.ml" 70 2342 2357
+)
+"closure_conv.ml" 78 2724 2776 "closure_conv.ml" 78 2724 2778
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "closure_conv.ml" 78 2724 2741 "closure_conv.ml" 78 2724 2743
+)
+"closure_conv.ml" 78 2724 2780 "closure_conv.ml" 78 2724 2781
+type(
+  string
+)
+ident(
+  int_ref x "closure_conv.ml" 78 2724 2733 "closure_conv.ml" 78 2724 2734
+)
+"closure_conv.ml" 78 2724 2785 "closure_conv.ml" 78 2724 2788
+type(
+  string list
+)
+ident(
+  int_ref env "closure_conv.ml" 70 2342 2363 "closure_conv.ml" 70 2342 2366
+)
+"closure_conv.ml" 78 2724 2779 "closure_conv.ml" 78 2724 2789
+type(
+  string list
+)
+"closure_conv.ml" 78 2724 2767 "closure_conv.ml" 78 2724 2790
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 78 2724 2748 "closure_conv.ml" 78 2724 2790
+call(
+  tail
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 79 2791 2803 "closure_conv.ml" 79 2791 2805
+type(
+  string
+)
+ident(
+  def na "closure_conv.ml" 79 2791 2822 "closure_conv.ml" 82 2994 2997
+)
+"closure_conv.ml" 79 2791 2806 "closure_conv.ml" 79 2791 2807
+type(
+  Type_checker.ty * Debug.debug_data
+)
+"closure_conv.ml" 79 2791 2802 "closure_conv.ml" 79 2791 2808
+type(
+  Knorm.name
+)
+"closure_conv.ml" 79 2791 2809 "closure_conv.ml" 79 2791 2811
+type(
+  Knorm.name list
+)
+ident(
+  def vs "closure_conv.ml" 79 2791 2822 "closure_conv.ml" 82 2994 2997
+)
+"closure_conv.ml" 79 2791 2812 "closure_conv.ml" 79 2791 2814
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "closure_conv.ml" 79 2791 2822 "closure_conv.ml" 82 2994 2997
+)
+"closure_conv.ml" 79 2791 2815 "closure_conv.ml" 79 2791 2817
+type(
+  Knorm.kexp
+)
+ident(
+  def e2 "closure_conv.ml" 79 2791 2822 "closure_conv.ml" 82 2994 2997
+)
+"closure_conv.ml" 79 2791 2794 "closure_conv.ml" 79 2791 2818
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 80 2824 2828 "closure_conv.ml" 80 2824 2835
+type(
+  Knorm.kexp -> string list -> Knorm.name list
+)
+ident(
+  int_ref get_fvs "closure_conv.ml" 70 2342 2350 "closure_conv.ml" 70 2342 2357
+)
+"closure_conv.ml" 80 2824 2836 "closure_conv.ml" 80 2824 2838
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "closure_conv.ml" 79 2791 2812 "closure_conv.ml" 79 2791 2814
+)
+"closure_conv.ml" 80 2824 2840 "closure_conv.ml" 80 2824 2842
+type(
+  string
+)
+ident(
+  int_ref na "closure_conv.ml" 79 2791 2803 "closure_conv.ml" 79 2791 2805
+)
+"closure_conv.ml" 80 2824 2847 "closure_conv.ml" 80 2824 2855
+type(
+  (Knorm.name -> string) -> Knorm.name list -> string list
+)
+ident(
+  ext_ref List.map
+)
+"closure_conv.ml" 80 2824 2856 "closure_conv.ml" 80 2824 2859
+type(
+  Knorm.name -> string
+)
+ident(
+  ext_ref Pervasives.fst
+)
+"closure_conv.ml" 80 2824 2860 "closure_conv.ml" 80 2824 2862
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "closure_conv.ml" 79 2791 2809 "closure_conv.ml" 79 2791 2811
+)
+"closure_conv.ml" 80 2824 2846 "closure_conv.ml" 80 2824 2863
+call(
+  stack
+)
+type(
+  string list
+)
+"closure_conv.ml" 80 2824 2840 "closure_conv.ml" 80 2824 2863
+type(
+  string list
+)
+"closure_conv.ml" 80 2824 2864 "closure_conv.ml" 80 2824 2865
+type(
+  string list -> string list -> string list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"closure_conv.ml" 80 2824 2866 "closure_conv.ml" 80 2824 2869
+type(
+  string list
+)
+ident(
+  int_ref env "closure_conv.ml" 70 2342 2363 "closure_conv.ml" 70 2342 2366
+)
+"closure_conv.ml" 80 2824 2839 "closure_conv.ml" 80 2824 2870
+call(
+  stack
+)
+type(
+  string list
+)
+"closure_conv.ml" 80 2824 2827 "closure_conv.ml" 80 2824 2871
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 80 2824 2872 "closure_conv.ml" 80 2824 2873
+type(
+  Knorm.name list -> Knorm.name list -> Knorm.name list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"closure_conv.ml" 80 2824 2875 "closure_conv.ml" 80 2824 2882
+type(
+  Knorm.kexp -> string list -> Knorm.name list
+)
+ident(
+  int_ref get_fvs "closure_conv.ml" 70 2342 2350 "closure_conv.ml" 70 2342 2357
+)
+"closure_conv.ml" 80 2824 2883 "closure_conv.ml" 80 2824 2885
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "closure_conv.ml" 79 2791 2815 "closure_conv.ml" 79 2791 2817
+)
+"closure_conv.ml" 80 2824 2887 "closure_conv.ml" 80 2824 2889
+type(
+  string
+)
+ident(
+  int_ref na "closure_conv.ml" 79 2791 2803 "closure_conv.ml" 79 2791 2805
+)
+"closure_conv.ml" 80 2824 2893 "closure_conv.ml" 80 2824 2896
+type(
+  string list
+)
+ident(
+  int_ref env "closure_conv.ml" 70 2342 2363 "closure_conv.ml" 70 2342 2366
+)
+"closure_conv.ml" 80 2824 2886 "closure_conv.ml" 80 2824 2897
+type(
+  string list
+)
+"closure_conv.ml" 80 2824 2874 "closure_conv.ml" 80 2824 2898
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 79 2791 2822 "closure_conv.ml" 82 2994 2997
+call(
+  tail
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 83 2998 3006 "closure_conv.ml" 83 2998 3007
+type(
+  Knorm.name
+)
+ident(
+  def f "closure_conv.ml" 83 2998 3015 "closure_conv.ml" 83 2998 3031
+)
+"closure_conv.ml" 83 2998 3008 "closure_conv.ml" 83 2998 3010
+type(
+  Knorm.name list
+)
+ident(
+  def vs "closure_conv.ml" 83 2998 3015 "closure_conv.ml" 83 2998 3031
+)
+"closure_conv.ml" 83 2998 3001 "closure_conv.ml" 83 2998 3011
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 83 2998 3015 "closure_conv.ml" 83 2998 3021
+type(
+  Knorm.name list -> Knorm.name list
+)
+ident(
+  int_ref filter "closure_conv.ml" 71 2385 2390 "closure_conv.ml" 71 2385 2396
+)
+"closure_conv.ml" 83 2998 3023 "closure_conv.ml" 83 2998 3024
+type(
+  Knorm.name
+)
+ident(
+  int_ref f "closure_conv.ml" 83 2998 3006 "closure_conv.ml" 83 2998 3007
+)
+"closure_conv.ml" 83 2998 3028 "closure_conv.ml" 83 2998 3030
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "closure_conv.ml" 83 2998 3008 "closure_conv.ml" 83 2998 3010
+)
+"closure_conv.ml" 83 2998 3022 "closure_conv.ml" 83 2998 3031
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 83 2998 3015 "closure_conv.ml" 83 2998 3031
+call(
+  tail
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 84 3032 3045 "closure_conv.ml" 84 3032 3047
+type(
+  Knorm.name list
+)
+ident(
+  def vs "closure_conv.ml" 84 3032 3058 "closure_conv.ml" 84 3032 3112
+)
+"closure_conv.ml" 84 3032 3048 "closure_conv.ml" 84 3032 3050
+type(
+  Knorm.name
+)
+ident(
+  def tp "closure_conv.ml" 84 3032 3058 "closure_conv.ml" 84 3032 3112
+)
+"closure_conv.ml" 84 3032 3051 "closure_conv.ml" 84 3032 3053
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "closure_conv.ml" 84 3032 3058 "closure_conv.ml" 84 3032 3112
+)
+"closure_conv.ml" 84 3032 3035 "closure_conv.ml" 84 3032 3054
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 84 3032 3059 "closure_conv.ml" 84 3032 3065
+type(
+  Knorm.name list -> Knorm.name list
+)
+ident(
+  int_ref filter "closure_conv.ml" 71 2385 2390 "closure_conv.ml" 71 2385 2396
+)
+"closure_conv.ml" 84 3032 3067 "closure_conv.ml" 84 3032 3069
+type(
+  Knorm.name
+)
+ident(
+  int_ref tp "closure_conv.ml" 84 3032 3048 "closure_conv.ml" 84 3032 3050
+)
+"closure_conv.ml" 84 3032 3066 "closure_conv.ml" 84 3032 3070
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 84 3032 3058 "closure_conv.ml" 84 3032 3071
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 84 3032 3072 "closure_conv.ml" 84 3032 3073
+type(
+  Knorm.name list -> Knorm.name list -> Knorm.name list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"closure_conv.ml" 84 3032 3075 "closure_conv.ml" 84 3032 3082
+type(
+  Knorm.kexp -> string list -> Knorm.name list
+)
+ident(
+  int_ref get_fvs "closure_conv.ml" 70 2342 2350 "closure_conv.ml" 70 2342 2357
+)
+"closure_conv.ml" 84 3032 3083 "closure_conv.ml" 84 3032 3085
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "closure_conv.ml" 84 3032 3051 "closure_conv.ml" 84 3032 3053
+)
+"closure_conv.ml" 84 3032 3088 "closure_conv.ml" 84 3032 3096
+type(
+  (Knorm.name -> string) -> Knorm.name list -> string list
+)
+ident(
+  ext_ref List.map
+)
+"closure_conv.ml" 84 3032 3097 "closure_conv.ml" 84 3032 3100
+type(
+  Knorm.name -> string
+)
+ident(
+  ext_ref Pervasives.fst
+)
+"closure_conv.ml" 84 3032 3101 "closure_conv.ml" 84 3032 3103
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "closure_conv.ml" 84 3032 3045 "closure_conv.ml" 84 3032 3047
+)
+"closure_conv.ml" 84 3032 3087 "closure_conv.ml" 84 3032 3104
+call(
+  stack
+)
+type(
+  string list
+)
+"closure_conv.ml" 84 3032 3105 "closure_conv.ml" 84 3032 3106
+type(
+  string list -> string list -> string list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"closure_conv.ml" 84 3032 3107 "closure_conv.ml" 84 3032 3110
+type(
+  string list
+)
+ident(
+  int_ref env "closure_conv.ml" 70 2342 2363 "closure_conv.ml" 70 2342 2366
+)
+"closure_conv.ml" 84 3032 3086 "closure_conv.ml" 84 3032 3111
+call(
+  stack
+)
+type(
+  string list
+)
+"closure_conv.ml" 84 3032 3074 "closure_conv.ml" 84 3032 3112
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 84 3032 3058 "closure_conv.ml" 84 3032 3112
+call(
+  tail
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 85 3113 3121 "closure_conv.ml" 85 3113 3122
+type(
+  Knorm.name
+)
+ident(
+  def x "closure_conv.ml" 85 3113 3126 "closure_conv.ml" 85 3113 3138
+)
+"closure_conv.ml" 85 3113 3116 "closure_conv.ml" 85 3113 3122
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 85 3113 3127 "closure_conv.ml" 85 3113 3133
+type(
+  Knorm.name list -> Knorm.name list
+)
+ident(
+  int_ref filter "closure_conv.ml" 71 2385 2390 "closure_conv.ml" 71 2385 2396
+)
+"closure_conv.ml" 85 3113 3135 "closure_conv.ml" 85 3113 3136
+type(
+  Knorm.name
+)
+ident(
+  int_ref x "closure_conv.ml" 85 3113 3121 "closure_conv.ml" 85 3113 3122
+)
+"closure_conv.ml" 85 3113 3134 "closure_conv.ml" 85 3113 3137
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 85 3113 3126 "closure_conv.ml" 85 3113 3138
+call(
+  tail
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 74 2576 2577 "closure_conv.ml" 85 3113 3138
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 71 2385 2386 "closure_conv.ml" 85 3113 3138
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 87 3140 3148 "closure_conv.ml" 87 3140 3159
+type(
+  ('a * 'b) list -> ('a * 'b) list
+)
+ident(
+  def unique_name "closure_conv.ml" 87 3140 3140 "closure_conv.ml" 1 0 -1
+)
+"closure_conv.ml" 87 3140 3160 "closure_conv.ml" 87 3140 3162
+type(
+  ('a * 'b) list
+)
+ident(
+  def vs "closure_conv.ml" 88 3165 3166 "closure_conv.ml" 92 3242 3312
+)
+"closure_conv.ml" 88 3165 3172 "closure_conv.ml" 88 3165 3174
+type(
+  ('a * 'b) list
+)
+ident(
+  int_ref vs "closure_conv.ml" 87 3140 3160 "closure_conv.ml" 87 3140 3162
+)
+"closure_conv.ml" 89 3180 3183 "closure_conv.ml" 89 3180 3185
+type(
+  ('a * 'b) list
+)
+"closure_conv.ml" 89 3180 3189 "closure_conv.ml" 89 3180 3191
+type(
+  ('a * 'b) list
+)
+"closure_conv.ml" 90 3192 3196 "closure_conv.ml" 90 3192 3197
+type(
+  'a
+)
+ident(
+  def x "closure_conv.ml" 91 3212 3214 "closure_conv.ml" 92 3242 3312
+)
+"closure_conv.ml" 90 3192 3198 "closure_conv.ml" 90 3192 3200
+type(
+  'b
+)
+ident(
+  def dt "closure_conv.ml" 91 3212 3214 "closure_conv.ml" 92 3242 3312
+)
+"closure_conv.ml" 90 3192 3195 "closure_conv.ml" 90 3192 3201
+type(
+  'a * 'b
+)
+"closure_conv.ml" 90 3192 3205 "closure_conv.ml" 90 3192 3207
+type(
+  ('a * 'b) list
+)
+ident(
+  def xs "closure_conv.ml" 91 3212 3214 "closure_conv.ml" 92 3242 3312
+)
+"closure_conv.ml" 90 3192 3195 "closure_conv.ml" 90 3192 3207
+type(
+  ('a * 'b) list
+)
+"closure_conv.ml" 91 3212 3218 "closure_conv.ml" 91 3212 3221
+type(
+  ('a * 'b) list
+)
+ident(
+  def txs "closure_conv.ml" 92 3242 3245 "closure_conv.ml" 92 3242 3312
+)
+"closure_conv.ml" 91 3212 3224 "closure_conv.ml" 91 3212 3235
+type(
+  ('a * 'b) list -> ('a * 'b) list
+)
+ident(
+  int_ref unique_name "closure_conv.ml" 87 3140 3148 "closure_conv.ml" 87 3140 3159
+)
+"closure_conv.ml" 91 3212 3236 "closure_conv.ml" 91 3212 3238
+type(
+  ('a * 'b) list
+)
+ident(
+  int_ref xs "closure_conv.ml" 90 3192 3205 "closure_conv.ml" 90 3192 3207
+)
+"closure_conv.ml" 91 3212 3224 "closure_conv.ml" 91 3212 3238
+call(
+  stack
+)
+type(
+  ('a * 'b) list
+)
+"closure_conv.ml" 92 3242 3248 "closure_conv.ml" 92 3242 3259
+type(
+  ('a * 'b -> bool) -> ('a * 'b) list -> bool
+)
+ident(
+  ext_ref List.exists
+)
+"closure_conv.ml" 92 3242 3266 "closure_conv.ml" 92 3242 3267
+type(
+  'a
+)
+ident(
+  def y "closure_conv.ml" 92 3242 3274 "closure_conv.ml" 92 3242 3279
+)
+"closure_conv.ml" 92 3242 3268 "closure_conv.ml" 92 3242 3269
+type(
+  'b
+)
+"closure_conv.ml" 92 3242 3265 "closure_conv.ml" 92 3242 3270
+type(
+  'a * 'b
+)
+"closure_conv.ml" 92 3242 3274 "closure_conv.ml" 92 3242 3275
+type(
+  'a
+)
+ident(
+  int_ref x "closure_conv.ml" 90 3192 3196 "closure_conv.ml" 90 3192 3197
+)
+"closure_conv.ml" 92 3242 3276 "closure_conv.ml" 92 3242 3277
+type(
+  'a -> 'a -> bool
+)
+ident(
+  ext_ref Pervasives.( = )
+)
+"closure_conv.ml" 92 3242 3278 "closure_conv.ml" 92 3242 3279
+type(
+  'a
+)
+ident(
+  int_ref y "closure_conv.ml" 92 3242 3266 "closure_conv.ml" 92 3242 3267
+)
+"closure_conv.ml" 92 3242 3274 "closure_conv.ml" 92 3242 3279
+type(
+  bool
+)
+"closure_conv.ml" 92 3242 3260 "closure_conv.ml" 92 3242 3280
+type(
+  'a * 'b -> bool
+)
+"closure_conv.ml" 92 3242 3281 "closure_conv.ml" 92 3242 3284
+type(
+  ('a * 'b) list
+)
+ident(
+  int_ref txs "closure_conv.ml" 91 3212 3218 "closure_conv.ml" 91 3212 3221
+)
+"closure_conv.ml" 92 3242 3248 "closure_conv.ml" 92 3242 3284
+call(
+  stack
+)
+type(
+  bool
+)
+"closure_conv.ml" 92 3242 3290 "closure_conv.ml" 92 3242 3293
+type(
+  ('a * 'b) list
+)
+ident(
+  int_ref txs "closure_conv.ml" 91 3212 3218 "closure_conv.ml" 91 3212 3221
+)
+"closure_conv.ml" 92 3242 3300 "closure_conv.ml" 92 3242 3301
+type(
+  'a
+)
+ident(
+  int_ref x "closure_conv.ml" 90 3192 3196 "closure_conv.ml" 90 3192 3197
+)
+"closure_conv.ml" 92 3242 3302 "closure_conv.ml" 92 3242 3304
+type(
+  'b
+)
+ident(
+  int_ref dt "closure_conv.ml" 90 3192 3198 "closure_conv.ml" 90 3192 3200
+)
+"closure_conv.ml" 92 3242 3299 "closure_conv.ml" 92 3242 3305
+type(
+  'a * 'b
+)
+"closure_conv.ml" 92 3242 3309 "closure_conv.ml" 92 3242 3312
+type(
+  ('a * 'b) list
+)
+ident(
+  int_ref txs "closure_conv.ml" 91 3212 3218 "closure_conv.ml" 91 3212 3221
+)
+"closure_conv.ml" 92 3242 3299 "closure_conv.ml" 92 3242 3312
+type(
+  ('a * 'b) list
+)
+"closure_conv.ml" 92 3242 3245 "closure_conv.ml" 92 3242 3312
+type(
+  ('a * 'b) list
+)
+"closure_conv.ml" 91 3212 3214 "closure_conv.ml" 92 3242 3312
+type(
+  ('a * 'b) list
+)
+"closure_conv.ml" 88 3165 3166 "closure_conv.ml" 92 3242 3312
+type(
+  ('a * 'b) list
+)
+"closure_conv.ml" 140 4192 4200 "closure_conv.ml" 140 4192 4214
+type(
+  (string * (string * (cexp -> cexp))) list -> bool -> Knorm.kexp -> cexp
+)
+ident(
+  def remove_closure "closure_conv.ml" 140 4192 4192 "closure_conv.ml" 1 0 -1
+)
+"closure_conv.ml" 140 4192 4215 "closure_conv.ml" 140 4192 4220
+type(
+  (string * (string * (cexp -> cexp))) list
+)
+ident(
+  def known "closure_conv.ml" 140 4192 4221 "closure_conv.ml" 207 6927 6930
+)
+"closure_conv.ml" 140 4192 4221 "closure_conv.ml" 140 4192 4231
+type(
+  bool
+)
+ident(
+  def istoplevel "closure_conv.ml" 140 4192 4232 "closure_conv.ml" 207 6927 6930
+)
+"closure_conv.ml" 140 4192 4232 "closure_conv.ml" 140 4192 4235
+type(
+  Knorm.kexp
+)
+ident(
+  def ast "closure_conv.ml" 141 4238 4239 "closure_conv.ml" 207 6927 6930
+)
+"closure_conv.ml" 141 4238 4243 "closure_conv.ml" 141 4238 4250
+type(
+  Knorm.kexp -> cexp
+)
+ident(
+  def reccall "closure_conv.ml" 143 4372 4373 "closure_conv.ml" 207 6927 6930
+)
+"closure_conv.ml" 141 4238 4253 "closure_conv.ml" 141 4238 4267
+type(
+  (string * (string * (cexp -> cexp))) list -> bool -> Knorm.kexp -> cexp
+)
+ident(
+  int_ref remove_closure "closure_conv.ml" 140 4192 4200 "closure_conv.ml" 140 4192 4214
+)
+"closure_conv.ml" 141 4238 4268 "closure_conv.ml" 141 4238 4273
+type(
+  (string * (string * (cexp -> cexp))) list
+)
+ident(
+  int_ref known "closure_conv.ml" 140 4192 4215 "closure_conv.ml" 140 4192 4220
+)
+"closure_conv.ml" 141 4238 4274 "closure_conv.ml" 141 4238 4284
+type(
+  bool
+)
+ident(
+  int_ref istoplevel "closure_conv.ml" 140 4192 4221 "closure_conv.ml" 140 4192 4231
+)
+"closure_conv.ml" 141 4238 4253 "closure_conv.ml" 141 4238 4284
+call(
+  stack
+)
+type(
+  Knorm.kexp -> cexp
+)
+"closure_conv.ml" 143 4372 4377 "closure_conv.ml" 143 4372 4381
+type(
+  string * 'a -> (string * 'a -> cexp) -> cexp
+)
+ident(
+  def conv "closure_conv.ml" 151 4519 4520 "closure_conv.ml" 207 6927 6930
+)
+"closure_conv.ml" 143 4372 4383 "closure_conv.ml" 143 4372 4384
+type(
+  string
+)
+ident(
+  def a "closure_conv.ml" 143 4372 4388 "closure_conv.ml" 148 4462 4490
+)
+"closure_conv.ml" 143 4372 4385 "closure_conv.ml" 143 4372 4386
+type(
+  'a
+)
+ident(
+  def d "closure_conv.ml" 143 4372 4388 "closure_conv.ml" 148 4462 4490
+)
+"closure_conv.ml" 143 4372 4382 "closure_conv.ml" 143 4372 4387
+type(
+  string * 'a
+)
+"closure_conv.ml" 143 4372 4388 "closure_conv.ml" 143 4372 4390
+type(
+  string * 'a -> cexp
+)
+ident(
+  def cf "closure_conv.ml" 144 4394 4396 "closure_conv.ml" 148 4462 4490
+)
+"closure_conv.ml" 145 4400 4408 "closure_conv.ml" 145 4400 4410
+type(
+  string
+)
+ident(
+  def tn "closure_conv.ml" 146 4438 4441 "closure_conv.ml" 146 4438 4454
+)
+"closure_conv.ml" 145 4400 4411 "closure_conv.ml" 145 4400 4412
+type(
+  cexp -> cexp
+)
+ident(
+  def f "closure_conv.ml" 146 4438 4441 "closure_conv.ml" 146 4438 4454
+)
+"closure_conv.ml" 145 4400 4407 "closure_conv.ml" 145 4400 4413
+type(
+  string * (cexp -> cexp)
+)
+"closure_conv.ml" 145 4400 4416 "closure_conv.ml" 145 4400 4426
+type(
+  string ->
+  (string * (string * (cexp -> cexp))) list -> string * (cexp -> cexp)
+)
+ident(
+  ext_ref List.assoc
+)
+"closure_conv.ml" 145 4400 4427 "closure_conv.ml" 145 4400 4428
+type(
+  string
+)
+ident(
+  int_ref a "closure_conv.ml" 143 4372 4383 "closure_conv.ml" 143 4372 4384
+)
+"closure_conv.ml" 145 4400 4429 "closure_conv.ml" 145 4400 4434
+type(
+  (string * (string * (cexp -> cexp))) list
+)
+ident(
+  int_ref known "closure_conv.ml" 140 4192 4215 "closure_conv.ml" 140 4192 4220
+)
+"closure_conv.ml" 145 4400 4416 "closure_conv.ml" 145 4400 4434
+call(
+  stack
+)
+type(
+  string * (cexp -> cexp)
+)
+"closure_conv.ml" 146 4438 4441 "closure_conv.ml" 146 4438 4442
+type(
+  cexp -> cexp
+)
+ident(
+  int_ref f "closure_conv.ml" 145 4400 4411 "closure_conv.ml" 145 4400 4412
+)
+"closure_conv.ml" 146 4438 4444 "closure_conv.ml" 146 4438 4446
+type(
+  string * 'a -> cexp
+)
+ident(
+  int_ref cf "closure_conv.ml" 143 4372 4388 "closure_conv.ml" 143 4372 4390
+)
+"closure_conv.ml" 146 4438 4448 "closure_conv.ml" 146 4438 4450
+type(
+  string
+)
+ident(
+  int_ref tn "closure_conv.ml" 145 4400 4408 "closure_conv.ml" 145 4400 4410
+)
+"closure_conv.ml" 146 4438 4451 "closure_conv.ml" 146 4438 4452
+type(
+  'a
+)
+ident(
+  int_ref d "closure_conv.ml" 143 4372 4385 "closure_conv.ml" 143 4372 4386
+)
+"closure_conv.ml" 146 4438 4447 "closure_conv.ml" 146 4438 4453
+type(
+  string * 'a
+)
+"closure_conv.ml" 146 4438 4443 "closure_conv.ml" 146 4438 4454
+call(
+  stack
+)
+type(
+  cexp
+)
+"closure_conv.ml" 146 4438 4441 "closure_conv.ml" 146 4438 4454
+call(
+  stack
+)
+type(
+  cexp
+)
+"closure_conv.ml" 145 4400 4403 "closure_conv.ml" 146 4438 4454
+type(
+  cexp
+)
+"closure_conv.ml" 148 4462 4467 "closure_conv.ml" 148 4462 4476
+type(
+  exn
+)
+"closure_conv.ml" 148 4462 4481 "closure_conv.ml" 148 4462 4483
+type(
+  string * 'a -> cexp
+)
+ident(
+  int_ref cf "closure_conv.ml" 143 4372 4388 "closure_conv.ml" 143 4372 4390
+)
+"closure_conv.ml" 148 4462 4485 "closure_conv.ml" 148 4462 4486
+type(
+  string
+)
+ident(
+  int_ref a "closure_conv.ml" 143 4372 4383 "closure_conv.ml" 143 4372 4384
+)
+"closure_conv.ml" 148 4462 4487 "closure_conv.ml" 148 4462 4488
+type(
+  'a
+)
+ident(
+  int_ref d "closure_conv.ml" 143 4372 4385 "closure_conv.ml" 143 4372 4386
+)
+"closure_conv.ml" 148 4462 4484 "closure_conv.ml" 148 4462 4489
+type(
+  string * 'a
+)
+"closure_conv.ml" 148 4462 4480 "closure_conv.ml" 148 4462 4490
+call(
+  tail
+)
+type(
+  cexp
+)
+"closure_conv.ml" 144 4394 4396 "closure_conv.ml" 148 4462 4490
+type(
+  cexp
+)
+"closure_conv.ml" 151 4519 4524 "closure_conv.ml" 151 4519 4529
+type(
+  (string * 'b) list -> ((string * 'b) list -> cexp) -> cexp
+)
+ident(
+  def convv "closure_conv.ml" 162 4783 4784 "closure_conv.ml" 207 6927 6930
+)
+"closure_conv.ml" 151 4519 4530 "closure_conv.ml" 151 4519 4532
+type(
+  (string * 'b) list
+)
+ident(
+  def vs "closure_conv.ml" 151 4519 4533 "closure_conv.ml" 160 4763 4777
+)
+"closure_conv.ml" 151 4519 4533 "closure_conv.ml" 151 4519 4535
+type(
+  (string * 'b) list -> cexp
+)
+ident(
+  def cf "closure_conv.ml" 152 4539 4541 "closure_conv.ml" 160 4763 4777
+)
+"closure_conv.ml" 152 4539 4545 "closure_conv.ml" 152 4539 4548
+type(
+  (string * 'b) list
+)
+ident(
+  def tvs "closure_conv.ml" 160 4763 4766 "closure_conv.ml" 160 4763 4777
+)
+"closure_conv.ml" 152 4539 4549 "closure_conv.ml" 152 4539 4551
+type(
+  cexp -> cexp
+)
+ident(
+  def tf "closure_conv.ml" 160 4763 4766 "closure_conv.ml" 160 4763 4777
+)
+"closure_conv.ml" 152 4539 4545 "closure_conv.ml" 152 4539 4551
+type(
+  (string * 'b) list * (cexp -> cexp)
+)
+"closure_conv.ml" 152 4539 4555 "closure_conv.ml" 152 4539 4570
+type(
+  (string * 'b ->
+   (string * 'b) list * (cexp -> cexp) -> (string * 'b) list * (cexp -> cexp)) ->
+  (string * 'b) list ->
+  (string * 'b) list * (cexp -> cexp) -> (string * 'b) list * (cexp -> cexp)
+)
+ident(
+  ext_ref List.fold_right
+)
+"closure_conv.ml" 152 4539 4577 "closure_conv.ml" 152 4539 4578
+type(
+  string
+)
+ident(
+  def a "closure_conv.ml" 152 4539 4585 "closure_conv.ml" 157 4697 4733
+)
+"closure_conv.ml" 152 4539 4579 "closure_conv.ml" 152 4539 4580
+type(
+  'b
+)
+ident(
+  def d "closure_conv.ml" 152 4539 4585 "closure_conv.ml" 157 4697 4733
+)
+"closure_conv.ml" 152 4539 4576 "closure_conv.ml" 152 4539 4581
+type(
+  string * 'b
+)
+"closure_conv.ml" 152 4539 4590 "closure_conv.ml" 152 4539 4593
+type(
+  (string * 'b) list
+)
+ident(
+  def rvs "closure_conv.ml" 153 4602 4605 "closure_conv.ml" 157 4697 4733
+)
+"closure_conv.ml" 152 4539 4594 "closure_conv.ml" 152 4539 4596
+type(
+  cexp -> cexp
+)
+ident(
+  def rf "closure_conv.ml" 153 4602 4605 "closure_conv.ml" 157 4697 4733
+)
+"closure_conv.ml" 152 4539 4589 "closure_conv.ml" 152 4539 4597
+type(
+  (string * 'b) list * (cexp -> cexp)
+)
+"closure_conv.ml" 154 4610 4619 "closure_conv.ml" 154 4610 4621
+type(
+  string
+)
+ident(
+  def tn "closure_conv.ml" 155 4649 4653 "closure_conv.ml" 155 4649 4688
+)
+"closure_conv.ml" 154 4610 4622 "closure_conv.ml" 154 4610 4623
+type(
+  cexp -> cexp
+)
+ident(
+  def f "closure_conv.ml" 155 4649 4653 "closure_conv.ml" 155 4649 4688
+)
+"closure_conv.ml" 154 4610 4618 "closure_conv.ml" 154 4610 4624
+type(
+  string * (cexp -> cexp)
+)
+"closure_conv.ml" 154 4610 4627 "closure_conv.ml" 154 4610 4637
+type(
+  string ->
+  (string * (string * (cexp -> cexp))) list -> string * (cexp -> cexp)
+)
+ident(
+  ext_ref List.assoc
+)
+"closure_conv.ml" 154 4610 4638 "closure_conv.ml" 154 4610 4639
+type(
+  string
+)
+ident(
+  int_ref a "closure_conv.ml" 152 4539 4577 "closure_conv.ml" 152 4539 4578
+)
+"closure_conv.ml" 154 4610 4640 "closure_conv.ml" 154 4610 4645
+type(
+  (string * (string * (cexp -> cexp))) list
+)
+ident(
+  int_ref known "closure_conv.ml" 140 4192 4215 "closure_conv.ml" 140 4192 4220
+)
+"closure_conv.ml" 154 4610 4627 "closure_conv.ml" 154 4610 4645
+call(
+  stack
+)
+type(
+  string * (cexp -> cexp)
+)
+"closure_conv.ml" 155 4649 4655 "closure_conv.ml" 155 4649 4657
+type(
+  string
+)
+ident(
+  int_ref tn "closure_conv.ml" 154 4610 4619 "closure_conv.ml" 154 4610 4621
+)
+"closure_conv.ml" 155 4649 4658 "closure_conv.ml" 155 4649 4659
+type(
+  'b
+)
+ident(
+  int_ref d "closure_conv.ml" 152 4539 4579 "closure_conv.ml" 152 4539 4580
+)
+"closure_conv.ml" 155 4649 4654 "closure_conv.ml" 155 4649 4660
+type(
+  string * 'b
+)
+"closure_conv.ml" 155 4649 4664 "closure_conv.ml" 155 4649 4667
+type(
+  (string * 'b) list
+)
+ident(
+  int_ref rvs "closure_conv.ml" 152 4539 4590 "closure_conv.ml" 152 4539 4593
+)
+"closure_conv.ml" 155 4649 4654 "closure_conv.ml" 155 4649 4667
+type(
+  (string * 'b) list
+)
+"closure_conv.ml" 155 4649 4673 "closure_conv.ml" 155 4649 4674
+type(
+  cexp
+)
+ident(
+  def x "closure_conv.ml" 155 4649 4678 "closure_conv.ml" 155 4649 4686
+)
+"closure_conv.ml" 155 4649 4678 "closure_conv.ml" 155 4649 4679
+type(
+  cexp -> cexp
+)
+ident(
+  int_ref f "closure_conv.ml" 154 4610 4622 "closure_conv.ml" 154 4610 4623
+)
+"closure_conv.ml" 155 4649 4681 "closure_conv.ml" 155 4649 4683
+type(
+  cexp -> cexp
+)
+ident(
+  int_ref rf "closure_conv.ml" 152 4539 4594 "closure_conv.ml" 152 4539 4596
+)
+"closure_conv.ml" 155 4649 4684 "closure_conv.ml" 155 4649 4685
+type(
+  cexp
+)
+ident(
+  int_ref x "closure_conv.ml" 155 4649 4673 "closure_conv.ml" 155 4649 4674
+)
+"closure_conv.ml" 155 4649 4680 "closure_conv.ml" 155 4649 4686
+call(
+  stack
+)
+type(
+  cexp
+)
+"closure_conv.ml" 155 4649 4678 "closure_conv.ml" 155 4649 4686
+call(
+  tail
+)
+type(
+  cexp
+)
+"closure_conv.ml" 155 4649 4668 "closure_conv.ml" 155 4649 4687
+type(
+  cexp -> cexp
+)
+"closure_conv.ml" 155 4649 4653 "closure_conv.ml" 155 4649 4688
+type(
+  (string * 'b) list * (cexp -> cexp)
+)
+"closure_conv.ml" 154 4610 4614 "closure_conv.ml" 155 4649 4688
+type(
+  (string * 'b) list * (cexp -> cexp)
+)
+"closure_conv.ml" 157 4697 4703 "closure_conv.ml" 157 4697 4712
+type(
+  exn
+)
+"closure_conv.ml" 157 4697 4718 "closure_conv.ml" 157 4697 4719
+type(
+  string
+)
+ident(
+  int_ref a "closure_conv.ml" 152 4539 4577 "closure_conv.ml" 152 4539 4578
+)
+"closure_conv.ml" 157 4697 4720 "closure_conv.ml" 157 4697 4721
+type(
+  'b
+)
+ident(
+  int_ref d "closure_conv.ml" 152 4539 4579 "closure_conv.ml" 152 4539 4580
+)
+"closure_conv.ml" 157 4697 4717 "closure_conv.ml" 157 4697 4722
+type(
+  string * 'b
+)
+"closure_conv.ml" 157 4697 4726 "closure_conv.ml" 157 4697 4729
+type(
+  (string * 'b) list
+)
+ident(
+  int_ref rvs "closure_conv.ml" 152 4539 4590 "closure_conv.ml" 152 4539 4593
+)
+"closure_conv.ml" 157 4697 4717 "closure_conv.ml" 157 4697 4729
+type(
+  (string * 'b) list
+)
+"closure_conv.ml" 157 4697 4730 "closure_conv.ml" 157 4697 4732
+type(
+  cexp -> cexp
+)
+ident(
+  int_ref rf "closure_conv.ml" 152 4539 4594 "closure_conv.ml" 152 4539 4596
+)
+"closure_conv.ml" 157 4697 4716 "closure_conv.ml" 157 4697 4733
+type(
+  (string * 'b) list * (cexp -> cexp)
+)
+"closure_conv.ml" 153 4602 4605 "closure_conv.ml" 157 4697 4733
+type(
+  (string * 'b) list * (cexp -> cexp)
+)
+"closure_conv.ml" 152 4539 4585 "closure_conv.ml" 157 4697 4733
+type(
+  (string * 'b) list * (cexp -> cexp) -> (string * 'b) list * (cexp -> cexp)
+)
+"closure_conv.ml" 152 4539 4571 "closure_conv.ml" 158 4734 4737
+type(
+  string * 'b ->
+  (string * 'b) list * (cexp -> cexp) -> (string * 'b) list * (cexp -> cexp)
+)
+"closure_conv.ml" 158 4734 4738 "closure_conv.ml" 158 4734 4740
+type(
+  (string * 'b) list
+)
+ident(
+  int_ref vs "closure_conv.ml" 151 4519 4530 "closure_conv.ml" 151 4519 4532
+)
+"closure_conv.ml" 158 4734 4742 "closure_conv.ml" 158 4734 4744
+type(
+  (string * 'b) list
+)
+"closure_conv.ml" 158 4734 4749 "closure_conv.ml" 158 4734 4750
+type(
+  cexp
+)
+ident(
+  def x "closure_conv.ml" 158 4734 4754 "closure_conv.ml" 158 4734 4755
+)
+"closure_conv.ml" 158 4734 4754 "closure_conv.ml" 158 4734 4755
+type(
+  cexp
+)
+ident(
+  int_ref x "closure_conv.ml" 158 4734 4749 "closure_conv.ml" 158 4734 4750
+)
+"closure_conv.ml" 158 4734 4745 "closure_conv.ml" 158 4734 4755
+type(
+  cexp -> cexp
+)
+"closure_conv.ml" 158 4734 4741 "closure_conv.ml" 158 4734 4756
+type(
+  (string * 'b) list * (cexp -> cexp)
+)
+"closure_conv.ml" 152 4539 4554 "closure_conv.ml" 158 4734 4757
+call(
+  stack
+)
+type(
+  (string * 'b) list * (cexp -> cexp)
+)
+"closure_conv.ml" 160 4763 4766 "closure_conv.ml" 160 4763 4768
+type(
+  cexp -> cexp
+)
+ident(
+  int_ref tf "closure_conv.ml" 152 4539 4549 "closure_conv.ml" 152 4539 4551
+)
+"closure_conv.ml" 160 4763 4770 "closure_conv.ml" 160 4763 4772
+type(
+  (string * 'b) list -> cexp
+)
+ident(
+  int_ref cf "closure_conv.ml" 151 4519 4533 "closure_conv.ml" 151 4519 4535
+)
+"closure_conv.ml" 160 4763 4773 "closure_conv.ml" 160 4763 4776
+type(
+  (string * 'b) list
+)
+ident(
+  int_ref tvs "closure_conv.ml" 152 4539 4545 "closure_conv.ml" 152 4539 4548
+)
+"closure_conv.ml" 160 4763 4769 "closure_conv.ml" 160 4763 4777
+call(
+  stack
+)
+type(
+  cexp
+)
+"closure_conv.ml" 160 4763 4766 "closure_conv.ml" 160 4763 4777
+call(
+  tail
+)
+type(
+  cexp
+)
+"closure_conv.ml" 152 4539 4541 "closure_conv.ml" 160 4763 4777
+type(
+  cexp
+)
+"closure_conv.ml" 162 4783 4790 "closure_conv.ml" 162 4783 4793
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "closure_conv.ml" 140 4192 4232 "closure_conv.ml" 140 4192 4235
+)
+"closure_conv.ml" 163 4799 4811 "closure_conv.ml" 163 4799 4813
+type(
+  string
+)
+ident(
+  def fn "closure_conv.ml" 163 4799 4833 "closure_conv.ml" 189 6271 6274
+)
+"closure_conv.ml" 163 4799 4814 "closure_conv.ml" 163 4799 4816
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  def ft "closure_conv.ml" 163 4799 4833 "closure_conv.ml" 189 6271 6274
+)
+"closure_conv.ml" 163 4799 4810 "closure_conv.ml" 163 4799 4817
+type(
+  Knorm.name
+)
+"closure_conv.ml" 163 4799 4818 "closure_conv.ml" 163 4799 4822
+type(
+  Knorm.name list
+)
+ident(
+  def args "closure_conv.ml" 163 4799 4833 "closure_conv.ml" 189 6271 6274
+)
+"closure_conv.ml" 163 4799 4823 "closure_conv.ml" 163 4799 4825
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "closure_conv.ml" 163 4799 4833 "closure_conv.ml" 189 6271 6274
+)
+"closure_conv.ml" 163 4799 4826 "closure_conv.ml" 163 4799 4828
+type(
+  Knorm.kexp
+)
+ident(
+  def e2 "closure_conv.ml" 163 4799 4833 "closure_conv.ml" 189 6271 6274
+)
+"closure_conv.ml" 163 4799 4802 "closure_conv.ml" 163 4799 4829
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 166 4934 4941 "closure_conv.ml" 166 4934 4944
+type(
+  (string * (Type_checker.ty * Debug.debug_data)) list
+)
+ident(
+  def fvs "closure_conv.ml" 167 5046 5049 "closure_conv.ml" 188 6266 6270
+)
+"closure_conv.ml" 166 4934 4947 "closure_conv.ml" 166 4934 4958
+type(
+  Knorm.name list -> (string * (Type_checker.ty * Debug.debug_data)) list
+)
+ident(
+  int_ref unique_name "closure_conv.ml" 87 3140 3148 "closure_conv.ml" 87 3140 3159
+)
+"closure_conv.ml" 166 4934 4960 "closure_conv.ml" 166 4934 4967
+type(
+  Knorm.kexp -> string list -> Knorm.name list
+)
+ident(
+  int_ref get_fvs "closure_conv.ml" 70 2342 2350 "closure_conv.ml" 70 2342 2357
+)
+"closure_conv.ml" 166 4934 4968 "closure_conv.ml" 166 4934 4970
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "closure_conv.ml" 163 4799 4823 "closure_conv.ml" 163 4799 4825
+)
+"closure_conv.ml" 166 4934 4972 "closure_conv.ml" 166 4934 4974
+type(
+  string
+)
+ident(
+  int_ref fn "closure_conv.ml" 163 4799 4811 "closure_conv.ml" 163 4799 4813
+)
+"closure_conv.ml" 166 4934 4979 "closure_conv.ml" 166 4934 4987
+type(
+  (string * (string * (cexp -> cexp)) -> string) ->
+  (string * (string * (cexp -> cexp))) list -> string list
+)
+ident(
+  ext_ref List.map
+)
+"closure_conv.ml" 166 4934 4988 "closure_conv.ml" 166 4934 4991
+type(
+  string * (string * (cexp -> cexp)) -> string
+)
+ident(
+  ext_ref Pervasives.fst
+)
+"closure_conv.ml" 166 4934 4992 "closure_conv.ml" 166 4934 4997
+type(
+  (string * (string * (cexp -> cexp))) list
+)
+ident(
+  int_ref known "closure_conv.ml" 140 4192 4215 "closure_conv.ml" 140 4192 4220
+)
+"closure_conv.ml" 166 4934 4978 "closure_conv.ml" 166 4934 4998
+call(
+  stack
+)
+type(
+  string list
+)
+"closure_conv.ml" 166 4934 4972 "closure_conv.ml" 166 4934 4998
+type(
+  string list
+)
+"closure_conv.ml" 166 4934 4999 "closure_conv.ml" 166 4934 5000
+type(
+  string list -> string list -> string list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"closure_conv.ml" 166 4934 5002 "closure_conv.ml" 166 4934 5010
+type(
+  (Knorm.name -> string) -> Knorm.name list -> string list
+)
+ident(
+  ext_ref List.map
+)
+"closure_conv.ml" 166 4934 5011 "closure_conv.ml" 166 4934 5014
+type(
+  Knorm.name -> string
+)
+ident(
+  ext_ref Pervasives.fst
+)
+"closure_conv.ml" 166 4934 5015 "closure_conv.ml" 166 4934 5019
+type(
+  Knorm.name list
+)
+ident(
+  int_ref args "closure_conv.ml" 163 4799 4818 "closure_conv.ml" 163 4799 4822
+)
+"closure_conv.ml" 166 4934 5001 "closure_conv.ml" 166 4934 5020
+call(
+  stack
+)
+type(
+  string list
+)
+"closure_conv.ml" 166 4934 5021 "closure_conv.ml" 166 4934 5022
+type(
+  string list -> string list -> string list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"closure_conv.ml" 166 4934 5024 "closure_conv.ml" 166 4934 5036
+type(
+  unit -> string list
+)
+ident(
+  ext_ref Type_checker.global_funcs
+)
+"closure_conv.ml" 166 4934 5037 "closure_conv.ml" 166 4934 5039
+type(
+  unit
+)
+"closure_conv.ml" 166 4934 5023 "closure_conv.ml" 166 4934 5040
+call(
+  stack
+)
+type(
+  string list
+)
+"closure_conv.ml" 166 4934 5001 "closure_conv.ml" 166 4934 5040
+call(
+  stack
+)
+type(
+  string list
+)
+"closure_conv.ml" 166 4934 4971 "closure_conv.ml" 166 4934 5041
+call(
+  stack
+)
+type(
+  string list
+)
+"closure_conv.ml" 166 4934 4959 "closure_conv.ml" 166 4934 5042
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 166 4934 4947 "closure_conv.ml" 166 4934 5042
+call(
+  stack
+)
+type(
+  (string * (Type_checker.ty * Debug.debug_data)) list
+)
+"closure_conv.ml" 167 5046 5052 "closure_conv.ml" 167 5046 5063
+type(
+  (string * (Type_checker.ty * Debug.debug_data)) list -> int
+)
+ident(
+  ext_ref List.length
+)
+"closure_conv.ml" 167 5046 5064 "closure_conv.ml" 167 5046 5067
+type(
+  (string * (Type_checker.ty * Debug.debug_data)) list
+)
+ident(
+  int_ref fvs "closure_conv.ml" 166 4934 4941 "closure_conv.ml" 166 4934 4944
+)
+"closure_conv.ml" 167 5046 5052 "closure_conv.ml" 167 5046 5067
+call(
+  stack
+)
+type(
+  int
+)
+"closure_conv.ml" 167 5046 5068 "closure_conv.ml" 167 5046 5069
+type(
+  int -> int -> bool
+)
+ident(
+  ext_ref Pervasives.( = )
+)
+"closure_conv.ml" 167 5046 5070 "closure_conv.ml" 167 5046 5071
+type(
+  int
+)
+"closure_conv.ml" 167 5046 5052 "closure_conv.ml" 167 5046 5071
+type(
+  bool
+)
+"closure_conv.ml" 168 5079 5083 "closure_conv.ml" 168 5079 5096
+type(
+  (string -> unit, out_channel, unit) format -> string -> unit
+)
+ident(
+  ext_ref Printf.printf
+)
+"closure_conv.ml" 168 5079 5097 "closure_conv.ml" 168 5079 5119
+type(
+  (string -> unit, out_channel, unit) format
+)
+"closure_conv.ml" 168 5079 5120 "closure_conv.ml" 168 5079 5122
+type(
+  string
+)
+ident(
+  int_ref fn "closure_conv.ml" 163 4799 4811 "closure_conv.ml" 163 4799 4813
+)
+"closure_conv.ml" 168 5079 5083 "closure_conv.ml" 168 5079 5122
+call(
+  stack
+)
+type(
+  unit
+)
+"closure_conv.ml" 170 5190 5198 "closure_conv.ml" 170 5190 5200
+type(
+  string
+)
+ident(
+  def cn "closure_conv.ml" 171 5257 5261 "closure_conv.ml" 174 5454 5494
+)
+"closure_conv.ml" 170 5190 5203 "closure_conv.ml" 170 5190 5211
+type(
+  unit -> string
+)
+ident(
+  int_ref gencname "closure_conv.ml" 6 47 51 "closure_conv.ml" 6 47 59
+)
+"closure_conv.ml" 170 5190 5212 "closure_conv.ml" 170 5190 5214
+type(
+  unit
+)
+"closure_conv.ml" 170 5190 5203 "closure_conv.ml" 170 5190 5214
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 171 5257 5265 "closure_conv.ml" 171 5257 5271
+type(
+  (string * (string * (cexp -> cexp))) list
+)
+ident(
+  def tknown "closure_conv.ml" 172 5342 5346 "closure_conv.ml" 174 5454 5494
+)
+"closure_conv.ml" 171 5257 5275 "closure_conv.ml" 171 5257 5277
+type(
+  string
+)
+ident(
+  int_ref fn "closure_conv.ml" 163 4799 4811 "closure_conv.ml" 163 4799 4813
+)
+"closure_conv.ml" 171 5257 5279 "closure_conv.ml" 171 5257 5281
+type(
+  string
+)
+ident(
+  int_ref cn "closure_conv.ml" 170 5190 5198 "closure_conv.ml" 170 5190 5200
+)
+"closure_conv.ml" 171 5257 5286 "closure_conv.ml" 171 5257 5287
+type(
+  cexp
+)
+ident(
+  def x "closure_conv.ml" 171 5257 5291 "closure_conv.ml" 171 5257 5327
+)
+"closure_conv.ml" 171 5257 5297 "closure_conv.ml" 171 5257 5299
+type(
+  string
+)
+ident(
+  int_ref cn "closure_conv.ml" 170 5190 5198 "closure_conv.ml" 170 5190 5200
+)
+"closure_conv.ml" 171 5257 5300 "closure_conv.ml" 171 5257 5302
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  int_ref ft "closure_conv.ml" 163 4799 4814 "closure_conv.ml" 163 4799 4816
+)
+"closure_conv.ml" 171 5257 5296 "closure_conv.ml" 171 5257 5303
+type(
+  name
+)
+"closure_conv.ml" 171 5257 5314 "closure_conv.ml" 171 5257 5316
+type(
+  string
+)
+ident(
+  int_ref fn "closure_conv.ml" 163 4799 4811 "closure_conv.ml" 163 4799 4813
+)
+"closure_conv.ml" 171 5257 5317 "closure_conv.ml" 171 5257 5319
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  int_ref ft "closure_conv.ml" 163 4799 4814 "closure_conv.ml" 163 4799 4816
+)
+"closure_conv.ml" 171 5257 5313 "closure_conv.ml" 171 5257 5320
+type(
+  name
+)
+"closure_conv.ml" 171 5257 5321 "closure_conv.ml" 171 5257 5323
+type(
+  name list
+)
+"closure_conv.ml" 171 5257 5304 "closure_conv.ml" 171 5257 5324
+type(
+  cexp
+)
+"closure_conv.ml" 171 5257 5325 "closure_conv.ml" 171 5257 5326
+type(
+  cexp
+)
+ident(
+  int_ref x "closure_conv.ml" 171 5257 5286 "closure_conv.ml" 171 5257 5287
+)
+"closure_conv.ml" 171 5257 5291 "closure_conv.ml" 171 5257 5327
+type(
+  cexp
+)
+"closure_conv.ml" 171 5257 5282 "closure_conv.ml" 171 5257 5327
+type(
+  cexp -> cexp
+)
+"closure_conv.ml" 171 5257 5278 "closure_conv.ml" 171 5257 5328
+type(
+  string * (cexp -> cexp)
+)
+"closure_conv.ml" 171 5257 5274 "closure_conv.ml" 171 5257 5329
+type(
+  string * (string * (cexp -> cexp))
+)
+"closure_conv.ml" 171 5257 5333 "closure_conv.ml" 171 5257 5338
+type(
+  (string * (string * (cexp -> cexp))) list
+)
+ident(
+  int_ref known "closure_conv.ml" 140 4192 4215 "closure_conv.ml" 140 4192 4220
+)
+"closure_conv.ml" 171 5257 5274 "closure_conv.ml" 171 5257 5338
+type(
+  (string * (string * (cexp -> cexp))) list
+)
+"closure_conv.ml" 172 5342 5350 "closure_conv.ml" 172 5342 5353
+type(
+  cexp
+)
+ident(
+  def te1 "closure_conv.ml" 173 5390 5395 "closure_conv.ml" 174 5454 5494
+)
+"closure_conv.ml" 172 5342 5356 "closure_conv.ml" 172 5342 5370
+type(
+  (string * (string * (cexp -> cexp))) list -> bool -> Knorm.kexp -> cexp
+)
+ident(
+  int_ref remove_closure "closure_conv.ml" 140 4192 4200 "closure_conv.ml" 140 4192 4214
+)
+"closure_conv.ml" 172 5342 5371 "closure_conv.ml" 172 5342 5377
+type(
+  (string * (string * (cexp -> cexp))) list
+)
+ident(
+  int_ref tknown "closure_conv.ml" 171 5257 5265 "closure_conv.ml" 171 5257 5271
+)
+"closure_conv.ml" 172 5342 5378 "closure_conv.ml" 172 5342 5383
+type(
+  bool
+)
+"closure_conv.ml" 172 5342 5384 "closure_conv.ml" 172 5342 5386
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "closure_conv.ml" 163 4799 4823 "closure_conv.ml" 163 4799 4825
+)
+"closure_conv.ml" 172 5342 5356 "closure_conv.ml" 172 5342 5386
+call(
+  stack
+)
+type(
+  cexp
+)
+"closure_conv.ml" 173 5390 5395 "closure_conv.ml" 173 5390 5402
+type(
+  (name * globdef) list ref
+)
+ident(
+  int_ref globals "closure_conv.ml" 26 634 638 "closure_conv.ml" 26 634 645
+)
+"closure_conv.ml" 173 5390 5403 "closure_conv.ml" 173 5390 5405
+type(
+  (name * globdef) list ref -> (name * globdef) list -> unit
+)
+ident(
+  ext_ref Pervasives.( := )
+)
+"closure_conv.ml" 173 5390 5408 "closure_conv.ml" 173 5390 5410
+type(
+  string
+)
+ident(
+  int_ref fn "closure_conv.ml" 163 4799 4811 "closure_conv.ml" 163 4799 4813
+)
+"closure_conv.ml" 173 5390 5411 "closure_conv.ml" 173 5390 5413
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  int_ref ft "closure_conv.ml" 163 4799 4814 "closure_conv.ml" 163 4799 4816
+)
+"closure_conv.ml" 173 5390 5407 "closure_conv.ml" 173 5390 5414
+type(
+  name
+)
+"closure_conv.ml" 173 5390 5426 "closure_conv.ml" 173 5390 5429
+type(
+  name list
+)
+ident(
+  int_ref fvs "closure_conv.ml" 166 4934 4941 "closure_conv.ml" 166 4934 4944
+)
+"closure_conv.ml" 173 5390 5430 "closure_conv.ml" 173 5390 5434
+type(
+  name list
+)
+ident(
+  int_ref args "closure_conv.ml" 163 4799 4818 "closure_conv.ml" 163 4799 4822
+)
+"closure_conv.ml" 173 5390 5435 "closure_conv.ml" 173 5390 5438
+type(
+  cexp
+)
+ident(
+  int_ref te1 "closure_conv.ml" 172 5342 5350 "closure_conv.ml" 172 5342 5353
+)
+"closure_conv.ml" 173 5390 5415 "closure_conv.ml" 173 5390 5439
+type(
+  globdef
+)
+"closure_conv.ml" 173 5390 5406 "closure_conv.ml" 173 5390 5440
+type(
+  name * globdef
+)
+"closure_conv.ml" 173 5390 5444 "closure_conv.ml" 173 5390 5445
+type(
+  (name * globdef) list ref -> (name * globdef) list
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"closure_conv.ml" 173 5390 5445 "closure_conv.ml" 173 5390 5452
+type(
+  (name * globdef) list ref
+)
+ident(
+  int_ref globals "closure_conv.ml" 26 634 638 "closure_conv.ml" 26 634 645
+)
+"closure_conv.ml" 173 5390 5444 "closure_conv.ml" 173 5390 5452
+type(
+  (name * globdef) list
+)
+"closure_conv.ml" 173 5390 5406 "closure_conv.ml" 173 5390 5452
+type(
+  (name * globdef) list
+)
+"closure_conv.ml" 173 5390 5395 "closure_conv.ml" 173 5390 5452
+type(
+  unit
+)
+"closure_conv.ml" 174 5454 5459 "closure_conv.ml" 174 5454 5473
+type(
+  (string * (string * (cexp -> cexp))) list -> bool -> Knorm.kexp -> cexp
+)
+ident(
+  int_ref remove_closure "closure_conv.ml" 140 4192 4200 "closure_conv.ml" 140 4192 4214
+)
+"closure_conv.ml" 174 5454 5474 "closure_conv.ml" 174 5454 5480
+type(
+  (string * (string * (cexp -> cexp))) list
+)
+ident(
+  int_ref tknown "closure_conv.ml" 171 5257 5265 "closure_conv.ml" 171 5257 5271
+)
+"closure_conv.ml" 174 5454 5481 "closure_conv.ml" 174 5454 5491
+type(
+  bool
+)
+ident(
+  int_ref istoplevel "closure_conv.ml" 140 4192 4221 "closure_conv.ml" 140 4192 4231
+)
+"closure_conv.ml" 174 5454 5492 "closure_conv.ml" 174 5454 5494
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "closure_conv.ml" 163 4799 4826 "closure_conv.ml" 163 4799 4828
+)
+"closure_conv.ml" 174 5454 5459 "closure_conv.ml" 174 5454 5494
+call(
+  tail
+)
+type(
+  cexp
+)
+"closure_conv.ml" 173 5390 5395 "closure_conv.ml" 174 5454 5494
+type(
+  cexp
+)
+"closure_conv.ml" 172 5342 5346 "closure_conv.ml" 174 5454 5494
+type(
+  cexp
+)
+"closure_conv.ml" 171 5257 5261 "closure_conv.ml" 174 5454 5494
+type(
+  cexp
+)
+"closure_conv.ml" 170 5190 5194 "closure_conv.ml" 174 5454 5494
+type(
+  cexp
+)
+"closure_conv.ml" 167 5046 5077 "closure_conv.ml" 175 5495 5499
+type(
+  cexp
+)
+"closure_conv.ml" 177 5585 5593 "closure_conv.ml" 177 5585 5604
+type(
+  string
+)
+ident(
+  def global_name "closure_conv.ml" 179 5752 5756 "closure_conv.ml" 187 6233 6265
+)
+"closure_conv.ml" 177 5585 5607 "closure_conv.ml" 177 5585 5615
+type(
+  unit -> string
+)
+ident(
+  int_ref gencname "closure_conv.ml" 6 47 51 "closure_conv.ml" 6 47 59
+)
+"closure_conv.ml" 177 5585 5616 "closure_conv.ml" 177 5585 5618
+type(
+  unit
+)
+"closure_conv.ml" 177 5585 5607 "closure_conv.ml" 177 5585 5618
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 179 5752 5760 "closure_conv.ml" 179 5752 5774
+type(
+  cexp -> cexp
+)
+ident(
+  def to_add_closure "closure_conv.ml" 181 5859 5863 "closure_conv.ml" 187 6233 6265
+)
+"closure_conv.ml" 179 5752 5781 "closure_conv.ml" 179 5752 5782
+type(
+  cexp
+)
+ident(
+  def x "closure_conv.ml" 179 5752 5786 "closure_conv.ml" 179 5752 5832
+)
+"closure_conv.ml" 179 5752 5792 "closure_conv.ml" 179 5752 5794
+type(
+  string
+)
+ident(
+  int_ref fn "closure_conv.ml" 163 4799 4811 "closure_conv.ml" 163 4799 4813
+)
+"closure_conv.ml" 179 5752 5795 "closure_conv.ml" 179 5752 5797
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  int_ref ft "closure_conv.ml" 163 4799 4814 "closure_conv.ml" 163 4799 4816
+)
+"closure_conv.ml" 179 5752 5791 "closure_conv.ml" 179 5752 5798
+type(
+  name
+)
+"closure_conv.ml" 179 5752 5809 "closure_conv.ml" 179 5752 5820
+type(
+  string
+)
+ident(
+  int_ref global_name "closure_conv.ml" 177 5585 5593 "closure_conv.ml" 177 5585 5604
+)
+"closure_conv.ml" 179 5752 5821 "closure_conv.ml" 179 5752 5823
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  int_ref ft "closure_conv.ml" 163 4799 4814 "closure_conv.ml" 163 4799 4816
+)
+"closure_conv.ml" 179 5752 5808 "closure_conv.ml" 179 5752 5824
+type(
+  name
+)
+"closure_conv.ml" 179 5752 5825 "closure_conv.ml" 179 5752 5828
+type(
+  name list
+)
+ident(
+  int_ref fvs "closure_conv.ml" 166 4934 4941 "closure_conv.ml" 166 4934 4944
+)
+"closure_conv.ml" 179 5752 5799 "closure_conv.ml" 179 5752 5829
+type(
+  cexp
+)
+"closure_conv.ml" 179 5752 5830 "closure_conv.ml" 179 5752 5831
+type(
+  cexp
+)
+ident(
+  int_ref x "closure_conv.ml" 179 5752 5781 "closure_conv.ml" 179 5752 5782
+)
+"closure_conv.ml" 179 5752 5786 "closure_conv.ml" 179 5752 5832
+type(
+  cexp
+)
+"closure_conv.ml" 179 5752 5777 "closure_conv.ml" 179 5752 5832
+type(
+  cexp -> cexp
+)
+"closure_conv.ml" 181 5859 5867 "closure_conv.ml" 181 5859 5870
+type(
+  cexp
+)
+ident(
+  def te1 "closure_conv.ml" 184 6046 6051 "closure_conv.ml" 187 6233 6265
+)
+"closure_conv.ml" 181 5859 5873 "closure_conv.ml" 181 5859 5887
+type(
+  cexp -> cexp
+)
+ident(
+  int_ref to_add_closure "closure_conv.ml" 179 5752 5760 "closure_conv.ml" 179 5752 5774
+)
+"closure_conv.ml" 181 5859 5889 "closure_conv.ml" 181 5859 5896
+type(
+  Knorm.kexp -> cexp
+)
+ident(
+  int_ref reccall "closure_conv.ml" 141 4238 4243 "closure_conv.ml" 141 4238 4250
+)
+"closure_conv.ml" 181 5859 5897 "closure_conv.ml" 181 5859 5899
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "closure_conv.ml" 163 4799 4823 "closure_conv.ml" 163 4799 4825
+)
+"closure_conv.ml" 181 5859 5888 "closure_conv.ml" 181 5859 5900
+call(
+  stack
+)
+type(
+  cexp
+)
+"closure_conv.ml" 181 5859 5873 "closure_conv.ml" 181 5859 5900
+call(
+  stack
+)
+type(
+  cexp
+)
+"closure_conv.ml" 184 6046 6051 "closure_conv.ml" 184 6046 6063
+type(
+  string -> unit
+)
+ident(
+  ext_ref Pervasives.print_string
+)
+"closure_conv.ml" 184 6046 6065 "closure_conv.ml" 184 6046 6078
+type(
+  string -> string list -> string
+)
+ident(
+  ext_ref String.concat
+)
+"closure_conv.ml" 184 6046 6079 "closure_conv.ml" 184 6046 6084
+type(
+  string
+)
+"closure_conv.ml" 184 6046 6086 "closure_conv.ml" 184 6046 6094
+type(
+  (string * (Type_checker.ty * Debug.debug_data) -> string) ->
+  (string * (Type_checker.ty * Debug.debug_data)) list -> string list
+)
+ident(
+  ext_ref List.map
+)
+"closure_conv.ml" 184 6046 6095 "closure_conv.ml" 184 6046 6098
+type(
+  string * (Type_checker.ty * Debug.debug_data) -> string
+)
+ident(
+  ext_ref Pervasives.fst
+)
+"closure_conv.ml" 184 6046 6099 "closure_conv.ml" 184 6046 6102
+type(
+  (string * (Type_checker.ty * Debug.debug_data)) list
+)
+ident(
+  int_ref fvs "closure_conv.ml" 166 4934 4941 "closure_conv.ml" 166 4934 4944
+)
+"closure_conv.ml" 184 6046 6085 "closure_conv.ml" 184 6046 6103
+call(
+  stack
+)
+type(
+  string list
+)
+"closure_conv.ml" 184 6046 6064 "closure_conv.ml" 184 6046 6104
+call(
+  stack
+)
+type(
+  string
+)
+"closure_conv.ml" 184 6046 6051 "closure_conv.ml" 184 6046 6104
+call(
+  stack
+)
+type(
+  unit
+)
+"closure_conv.ml" 185 6106 6111 "closure_conv.ml" 185 6106 6124
+type(
+  (string -> string -> unit, out_channel, unit) format ->
+  string -> string -> unit
+)
+ident(
+  ext_ref Printf.printf
+)
+"closure_conv.ml" 185 6106 6125 "closure_conv.ml" 185 6106 6143
+type(
+  (string -> string -> unit, out_channel, unit) format
+)
+"closure_conv.ml" 185 6106 6144 "closure_conv.ml" 185 6106 6155
+type(
+  string
+)
+ident(
+  int_ref global_name "closure_conv.ml" 177 5585 5593 "closure_conv.ml" 177 5585 5604
+)
+"closure_conv.ml" 185 6106 6156 "closure_conv.ml" 185 6106 6158
+type(
+  string
+)
+ident(
+  int_ref fn "closure_conv.ml" 163 4799 4811 "closure_conv.ml" 163 4799 4813
+)
+"closure_conv.ml" 185 6106 6111 "closure_conv.ml" 185 6106 6158
+call(
+  stack
+)
+type(
+  unit
+)
+"closure_conv.ml" 186 6160 6165 "closure_conv.ml" 186 6160 6172
+type(
+  (name * globdef) list ref
+)
+ident(
+  int_ref globals "closure_conv.ml" 26 634 638 "closure_conv.ml" 26 634 645
+)
+"closure_conv.ml" 186 6160 6173 "closure_conv.ml" 186 6160 6175
+type(
+  (name * globdef) list ref -> (name * globdef) list -> unit
+)
+ident(
+  ext_ref Pervasives.( := )
+)
+"closure_conv.ml" 186 6160 6178 "closure_conv.ml" 186 6160 6189
+type(
+  string
+)
+ident(
+  int_ref global_name "closure_conv.ml" 177 5585 5593 "closure_conv.ml" 177 5585 5604
+)
+"closure_conv.ml" 186 6160 6190 "closure_conv.ml" 186 6160 6192
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  int_ref ft "closure_conv.ml" 163 4799 4814 "closure_conv.ml" 163 4799 4816
+)
+"closure_conv.ml" 186 6160 6177 "closure_conv.ml" 186 6160 6193
+type(
+  name
+)
+"closure_conv.ml" 186 6160 6205 "closure_conv.ml" 186 6160 6208
+type(
+  name list
+)
+ident(
+  int_ref fvs "closure_conv.ml" 166 4934 4941 "closure_conv.ml" 166 4934 4944
+)
+"closure_conv.ml" 186 6160 6209 "closure_conv.ml" 186 6160 6213
+type(
+  name list
+)
+ident(
+  int_ref args "closure_conv.ml" 163 4799 4818 "closure_conv.ml" 163 4799 4822
+)
+"closure_conv.ml" 186 6160 6214 "closure_conv.ml" 186 6160 6217
+type(
+  cexp
+)
+ident(
+  int_ref te1 "closure_conv.ml" 181 5859 5867 "closure_conv.ml" 181 5859 5870
+)
+"closure_conv.ml" 186 6160 6194 "closure_conv.ml" 186 6160 6218
+type(
+  globdef
+)
+"closure_conv.ml" 186 6160 6176 "closure_conv.ml" 186 6160 6219
+type(
+  name * globdef
+)
+"closure_conv.ml" 186 6160 6223 "closure_conv.ml" 186 6160 6224
+type(
+  (name * globdef) list ref -> (name * globdef) list
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"closure_conv.ml" 186 6160 6224 "closure_conv.ml" 186 6160 6231
+type(
+  (name * globdef) list ref
+)
+ident(
+  int_ref globals "closure_conv.ml" 26 634 638 "closure_conv.ml" 26 634 645
+)
+"closure_conv.ml" 186 6160 6223 "closure_conv.ml" 186 6160 6231
+type(
+  (name * globdef) list
+)
+"closure_conv.ml" 186 6160 6176 "closure_conv.ml" 186 6160 6231
+type(
+  (name * globdef) list
+)
+"closure_conv.ml" 186 6160 6165 "closure_conv.ml" 186 6160 6231
+type(
+  unit
+)
+"closure_conv.ml" 187 6233 6238 "closure_conv.ml" 187 6233 6252
+type(
+  cexp -> cexp
+)
+ident(
+  int_ref to_add_closure "closure_conv.ml" 179 5752 5760 "closure_conv.ml" 179 5752 5774
+)
+"closure_conv.ml" 187 6233 6254 "closure_conv.ml" 187 6233 6261
+type(
+  Knorm.kexp -> cexp
+)
+ident(
+  int_ref reccall "closure_conv.ml" 141 4238 4243 "closure_conv.ml" 141 4238 4250
+)
+"closure_conv.ml" 187 6233 6262 "closure_conv.ml" 187 6233 6264
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "closure_conv.ml" 163 4799 4826 "closure_conv.ml" 163 4799 4828
+)
+"closure_conv.ml" 187 6233 6253 "closure_conv.ml" 187 6233 6265
+call(
+  stack
+)
+type(
+  cexp
+)
+"closure_conv.ml" 187 6233 6238 "closure_conv.ml" 187 6233 6265
+call(
+  tail
+)
+type(
+  cexp
+)
+"closure_conv.ml" 186 6160 6165 "closure_conv.ml" 187 6233 6265
+type(
+  cexp
+)
+"closure_conv.ml" 185 6106 6111 "closure_conv.ml" 187 6233 6265
+type(
+  cexp
+)
+"closure_conv.ml" 184 6046 6051 "closure_conv.ml" 187 6233 6265
+type(
+  cexp
+)
+"closure_conv.ml" 181 5859 5863 "closure_conv.ml" 187 6233 6265
+type(
+  cexp
+)
+"closure_conv.ml" 179 5752 5756 "closure_conv.ml" 187 6233 6265
+type(
+  cexp
+)
+"closure_conv.ml" 175 5495 5505 "closure_conv.ml" 188 6266 6270
+type(
+  cexp
+)
+"closure_conv.ml" 167 5046 5049 "closure_conv.ml" 188 6266 6270
+type(
+  cexp
+)
+"closure_conv.ml" 163 4799 4833 "closure_conv.ml" 189 6271 6274
+type(
+  cexp
+)
+"closure_conv.ml" 190 6275 6285 "closure_conv.ml" 190 6275 6286
+ident(
+  def a "closure_conv.ml" 190 6275 6291 "closure_conv.ml" 190 6275 6300
+)
+"closure_conv.ml" 190 6275 6284 "closure_conv.ml" 190 6275 6287
+type(
+  Syntax.const
+)
+"closure_conv.ml" 190 6275 6278 "closure_conv.ml" 190 6275 6287
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 190 6275 6297 "closure_conv.ml" 190 6275 6300
+type(
+  Syntax.const
+)
+ident(
+  int_ref a "closure_conv.ml" 190 6275 6284 "closure_conv.ml" 190 6275 6287
+)
+"closure_conv.ml" 190 6275 6291 "closure_conv.ml" 190 6275 6300
+type(
+  cexp
+)
+"closure_conv.ml" 191 6301 6308 "closure_conv.ml" 191 6301 6309
+type(
+  Syntax.optype
+)
+ident(
+  def a "closure_conv.ml" 191 6301 6316 "closure_conv.ml" 191 6301 6343
+)
+"closure_conv.ml" 191 6301 6310 "closure_conv.ml" 191 6301 6311
+type(
+  Knorm.name list
+)
+ident(
+  def b "closure_conv.ml" 191 6301 6316 "closure_conv.ml" 191 6301 6343
+)
+"closure_conv.ml" 191 6301 6304 "closure_conv.ml" 191 6301 6312
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 191 6301 6316 "closure_conv.ml" 191 6301 6321
+type(
+  Knorm.name list -> (name list -> cexp) -> cexp
+)
+ident(
+  int_ref convv "closure_conv.ml" 151 4519 4524 "closure_conv.ml" 151 4519 4529
+)
+"closure_conv.ml" 191 6301 6322 "closure_conv.ml" 191 6301 6323
+type(
+  Knorm.name list
+)
+ident(
+  int_ref b "closure_conv.ml" 191 6301 6310 "closure_conv.ml" 191 6301 6311
+)
+"closure_conv.ml" 191 6301 6329 "closure_conv.ml" 191 6301 6330
+type(
+  name list
+)
+ident(
+  def y "closure_conv.ml" 191 6301 6334 "closure_conv.ml" 191 6301 6342
+)
+"closure_conv.ml" 191 6301 6338 "closure_conv.ml" 191 6301 6339
+type(
+  Syntax.optype
+)
+ident(
+  int_ref a "closure_conv.ml" 191 6301 6308 "closure_conv.ml" 191 6301 6309
+)
+"closure_conv.ml" 191 6301 6340 "closure_conv.ml" 191 6301 6341
+type(
+  name list
+)
+ident(
+  int_ref y "closure_conv.ml" 191 6301 6329 "closure_conv.ml" 191 6301 6330
+)
+"closure_conv.ml" 191 6301 6334 "closure_conv.ml" 191 6301 6342
+type(
+  cexp
+)
+"closure_conv.ml" 191 6301 6324 "closure_conv.ml" 191 6301 6343
+type(
+  name list -> cexp
+)
+"closure_conv.ml" 191 6301 6316 "closure_conv.ml" 191 6301 6343
+call(
+  tail
+)
+type(
+  cexp
+)
+"closure_conv.ml" 192 6344 6351 "closure_conv.ml" 192 6344 6354
+type(
+  Syntax.comptype
+)
+ident(
+  def cmp "closure_conv.ml" 192 6344 6367 "closure_conv.ml" 192 6344 6435
+)
+"closure_conv.ml" 192 6344 6355 "closure_conv.ml" 192 6344 6356
+type(
+  Knorm.name
+)
+ident(
+  def a "closure_conv.ml" 192 6344 6367 "closure_conv.ml" 192 6344 6435
+)
+"closure_conv.ml" 192 6344 6357 "closure_conv.ml" 192 6344 6358
+type(
+  Knorm.name
+)
+ident(
+  def b "closure_conv.ml" 192 6344 6367 "closure_conv.ml" 192 6344 6435
+)
+"closure_conv.ml" 192 6344 6359 "closure_conv.ml" 192 6344 6360
+type(
+  Knorm.kexp
+)
+ident(
+  def c "closure_conv.ml" 192 6344 6367 "closure_conv.ml" 192 6344 6435
+)
+"closure_conv.ml" 192 6344 6361 "closure_conv.ml" 192 6344 6362
+type(
+  Knorm.kexp
+)
+ident(
+  def d "closure_conv.ml" 192 6344 6367 "closure_conv.ml" 192 6344 6435
+)
+"closure_conv.ml" 192 6344 6347 "closure_conv.ml" 192 6344 6363
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 192 6344 6367 "closure_conv.ml" 192 6344 6371
+type(
+  Knorm.name -> (name -> cexp) -> cexp
+)
+ident(
+  int_ref conv "closure_conv.ml" 143 4372 4377 "closure_conv.ml" 143 4372 4381
+)
+"closure_conv.ml" 192 6344 6372 "closure_conv.ml" 192 6344 6373
+type(
+  Knorm.name
+)
+ident(
+  int_ref a "closure_conv.ml" 192 6344 6355 "closure_conv.ml" 192 6344 6356
+)
+"closure_conv.ml" 192 6344 6379 "closure_conv.ml" 192 6344 6380
+type(
+  name
+)
+ident(
+  def x "closure_conv.ml" 192 6344 6384 "closure_conv.ml" 192 6344 6434
+)
+"closure_conv.ml" 192 6344 6384 "closure_conv.ml" 192 6344 6388
+type(
+  Knorm.name -> (name -> cexp) -> cexp
+)
+ident(
+  int_ref conv "closure_conv.ml" 143 4372 4377 "closure_conv.ml" 143 4372 4381
+)
+"closure_conv.ml" 192 6344 6389 "closure_conv.ml" 192 6344 6390
+type(
+  Knorm.name
+)
+ident(
+  int_ref b "closure_conv.ml" 192 6344 6357 "closure_conv.ml" 192 6344 6358
+)
+"closure_conv.ml" 192 6344 6396 "closure_conv.ml" 192 6344 6397
+type(
+  name
+)
+ident(
+  def y "closure_conv.ml" 192 6344 6401 "closure_conv.ml" 192 6344 6433
+)
+"closure_conv.ml" 192 6344 6405 "closure_conv.ml" 192 6344 6408
+type(
+  Syntax.comptype
+)
+ident(
+  int_ref cmp "closure_conv.ml" 192 6344 6351 "closure_conv.ml" 192 6344 6354
+)
+"closure_conv.ml" 192 6344 6409 "closure_conv.ml" 192 6344 6410
+type(
+  name
+)
+ident(
+  int_ref x "closure_conv.ml" 192 6344 6379 "closure_conv.ml" 192 6344 6380
+)
+"closure_conv.ml" 192 6344 6411 "closure_conv.ml" 192 6344 6412
+type(
+  name
+)
+ident(
+  int_ref y "closure_conv.ml" 192 6344 6396 "closure_conv.ml" 192 6344 6397
+)
+"closure_conv.ml" 192 6344 6413 "closure_conv.ml" 192 6344 6420
+type(
+  Knorm.kexp -> cexp
+)
+ident(
+  int_ref reccall "closure_conv.ml" 141 4238 4243 "closure_conv.ml" 141 4238 4250
+)
+"closure_conv.ml" 192 6344 6421 "closure_conv.ml" 192 6344 6422
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref c "closure_conv.ml" 192 6344 6359 "closure_conv.ml" 192 6344 6360
+)
+"closure_conv.ml" 192 6344 6413 "closure_conv.ml" 192 6344 6422
+call(
+  stack
+)
+type(
+  cexp
+)
+"closure_conv.ml" 192 6344 6423 "closure_conv.ml" 192 6344 6430
+type(
+  Knorm.kexp -> cexp
+)
+ident(
+  int_ref reccall "closure_conv.ml" 141 4238 4243 "closure_conv.ml" 141 4238 4250
+)
+"closure_conv.ml" 192 6344 6431 "closure_conv.ml" 192 6344 6432
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref d "closure_conv.ml" 192 6344 6361 "closure_conv.ml" 192 6344 6362
+)
+"closure_conv.ml" 192 6344 6423 "closure_conv.ml" 192 6344 6432
+call(
+  stack
+)
+type(
+  cexp
+)
+"closure_conv.ml" 192 6344 6401 "closure_conv.ml" 192 6344 6433
+type(
+  cexp
+)
+"closure_conv.ml" 192 6344 6391 "closure_conv.ml" 192 6344 6434
+type(
+  name -> cexp
+)
+"closure_conv.ml" 192 6344 6384 "closure_conv.ml" 192 6344 6434
+call(
+  tail
+)
+type(
+  cexp
+)
+"closure_conv.ml" 192 6344 6374 "closure_conv.ml" 192 6344 6435
+type(
+  name -> cexp
+)
+"closure_conv.ml" 192 6344 6367 "closure_conv.ml" 192 6344 6435
+call(
+  tail
+)
+type(
+  cexp
+)
+"closure_conv.ml" 194 6466 6475 "closure_conv.ml" 194 6466 6476
+type(
+  string
+)
+ident(
+  def a "closure_conv.ml" 194 6466 6494 "closure_conv.ml" 197 6588 6591
+)
+"closure_conv.ml" 194 6466 6477 "closure_conv.ml" 194 6466 6478
+type(
+  Type_checker.ty * Debug.debug_data
+)
+"closure_conv.ml" 194 6466 6474 "closure_conv.ml" 194 6466 6479
+type(
+  Knorm.name
+)
+"closure_conv.ml" 194 6466 6483 "closure_conv.ml" 194 6466 6485
+ident(
+  def na "closure_conv.ml" 194 6466 6494 "closure_conv.ml" 197 6588 6591
+)
+"closure_conv.ml" 194 6466 6474 "closure_conv.ml" 194 6466 6485
+type(
+  Knorm.name
+)
+"closure_conv.ml" 194 6466 6486 "closure_conv.ml" 194 6466 6487
+type(
+  Knorm.kexp
+)
+ident(
+  def b "closure_conv.ml" 194 6466 6494 "closure_conv.ml" 197 6588 6591
+)
+"closure_conv.ml" 194 6466 6488 "closure_conv.ml" 194 6466 6489
+type(
+  Knorm.kexp
+)
+ident(
+  def c "closure_conv.ml" 194 6466 6494 "closure_conv.ml" 197 6588 6591
+)
+"closure_conv.ml" 194 6466 6469 "closure_conv.ml" 194 6466 6490
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 195 6496 6503 "closure_conv.ml" 195 6496 6513
+type(
+  bool
+)
+ident(
+  int_ref istoplevel "closure_conv.ml" 140 4192 4221 "closure_conv.ml" 140 4192 4231
+)
+"closure_conv.ml" 195 6496 6519 "closure_conv.ml" 195 6496 6527
+type(
+  string list ref
+)
+ident(
+  int_ref globvars "closure_conv.ml" 29 756 760 "closure_conv.ml" 29 756 768
+)
+"closure_conv.ml" 195 6496 6528 "closure_conv.ml" 195 6496 6530
+type(
+  string list ref -> string list -> unit
+)
+ident(
+  ext_ref Pervasives.( := )
+)
+"closure_conv.ml" 195 6496 6531 "closure_conv.ml" 195 6496 6532
+type(
+  string
+)
+ident(
+  int_ref a "closure_conv.ml" 194 6466 6475 "closure_conv.ml" 194 6466 6476
+)
+"closure_conv.ml" 195 6496 6536 "closure_conv.ml" 195 6496 6537
+type(
+  string list ref -> string list
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"closure_conv.ml" 195 6496 6537 "closure_conv.ml" 195 6496 6545
+type(
+  string list ref
+)
+ident(
+  int_ref globvars "closure_conv.ml" 29 756 760 "closure_conv.ml" 29 756 768
+)
+"closure_conv.ml" 195 6496 6536 "closure_conv.ml" 195 6496 6545
+type(
+  string list
+)
+"closure_conv.ml" 195 6496 6531 "closure_conv.ml" 195 6496 6545
+type(
+  string list
+)
+"closure_conv.ml" 195 6496 6519 "closure_conv.ml" 195 6496 6545
+type(
+  unit
+)
+"closure_conv.ml" 195 6496 6551 "closure_conv.ml" 195 6496 6553
+type(
+  unit
+)
+"closure_conv.ml" 195 6496 6499 "closure_conv.ml" 195 6496 6554
+type(
+  unit
+)
+"closure_conv.ml" 196 6556 6564 "closure_conv.ml" 196 6556 6566
+type(
+  name
+)
+ident(
+  int_ref na "closure_conv.ml" 194 6466 6474 "closure_conv.ml" 194 6466 6485
+)
+"closure_conv.ml" 196 6556 6567 "closure_conv.ml" 196 6556 6574
+type(
+  Knorm.kexp -> cexp
+)
+ident(
+  int_ref reccall "closure_conv.ml" 141 4238 4243 "closure_conv.ml" 141 4238 4250
+)
+"closure_conv.ml" 196 6556 6575 "closure_conv.ml" 196 6556 6576
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref b "closure_conv.ml" 194 6466 6486 "closure_conv.ml" 194 6466 6487
+)
+"closure_conv.ml" 196 6556 6567 "closure_conv.ml" 196 6556 6576
+call(
+  stack
+)
+type(
+  cexp
+)
+"closure_conv.ml" 196 6556 6577 "closure_conv.ml" 196 6556 6584
+type(
+  Knorm.kexp -> cexp
+)
+ident(
+  int_ref reccall "closure_conv.ml" 141 4238 4243 "closure_conv.ml" 141 4238 4250
+)
+"closure_conv.ml" 196 6556 6585 "closure_conv.ml" 196 6556 6586
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref c "closure_conv.ml" 194 6466 6488 "closure_conv.ml" 194 6466 6489
+)
+"closure_conv.ml" 196 6556 6577 "closure_conv.ml" 196 6556 6586
+call(
+  stack
+)
+type(
+  cexp
+)
+"closure_conv.ml" 196 6556 6559 "closure_conv.ml" 196 6556 6587
+type(
+  cexp
+)
+"closure_conv.ml" 194 6466 6494 "closure_conv.ml" 197 6588 6591
+type(
+  cexp
+)
+"closure_conv.ml" 198 6592 6600 "closure_conv.ml" 198 6592 6601
+ident(
+  def a "closure_conv.ml" 198 6592 6606 "closure_conv.ml" 198 6592 6631
+)
+"closure_conv.ml" 198 6592 6599 "closure_conv.ml" 198 6592 6602
+type(
+  Knorm.name
+)
+"closure_conv.ml" 198 6592 6595 "closure_conv.ml" 198 6592 6602
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 198 6592 6606 "closure_conv.ml" 198 6592 6610
+type(
+  Knorm.name -> (name -> cexp) -> cexp
+)
+ident(
+  int_ref conv "closure_conv.ml" 143 4372 4377 "closure_conv.ml" 143 4372 4381
+)
+"closure_conv.ml" 198 6592 6611 "closure_conv.ml" 198 6592 6612
+type(
+  Knorm.name
+)
+ident(
+  int_ref a "closure_conv.ml" 198 6592 6599 "closure_conv.ml" 198 6592 6602
+)
+"closure_conv.ml" 198 6592 6618 "closure_conv.ml" 198 6592 6619
+type(
+  name
+)
+ident(
+  def x "closure_conv.ml" 198 6592 6623 "closure_conv.ml" 198 6592 6630
+)
+"closure_conv.ml" 198 6592 6627 "closure_conv.ml" 198 6592 6630
+type(
+  name
+)
+ident(
+  int_ref x "closure_conv.ml" 198 6592 6618 "closure_conv.ml" 198 6592 6619
+)
+"closure_conv.ml" 198 6592 6623 "closure_conv.ml" 198 6592 6630
+type(
+  cexp
+)
+"closure_conv.ml" 198 6592 6613 "closure_conv.ml" 198 6592 6631
+type(
+  name -> cexp
+)
+"closure_conv.ml" 198 6592 6606 "closure_conv.ml" 198 6592 6631
+call(
+  tail
+)
+type(
+  cexp
+)
+"closure_conv.ml" 199 6632 6642 "closure_conv.ml" 199 6632 6643
+ident(
+  def a "closure_conv.ml" 199 6632 6648 "closure_conv.ml" 199 6632 6676
+)
+"closure_conv.ml" 199 6632 6641 "closure_conv.ml" 199 6632 6644
+type(
+  Knorm.name list
+)
+"closure_conv.ml" 199 6632 6635 "closure_conv.ml" 199 6632 6644
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 199 6632 6648 "closure_conv.ml" 199 6632 6653
+type(
+  Knorm.name list -> (name list -> cexp) -> cexp
+)
+ident(
+  int_ref convv "closure_conv.ml" 151 4519 4524 "closure_conv.ml" 151 4519 4529
+)
+"closure_conv.ml" 199 6632 6654 "closure_conv.ml" 199 6632 6655
+type(
+  Knorm.name list
+)
+ident(
+  int_ref a "closure_conv.ml" 199 6632 6641 "closure_conv.ml" 199 6632 6644
+)
+"closure_conv.ml" 199 6632 6661 "closure_conv.ml" 199 6632 6662
+type(
+  name list
+)
+ident(
+  def x "closure_conv.ml" 199 6632 6666 "closure_conv.ml" 199 6632 6675
+)
+"closure_conv.ml" 199 6632 6672 "closure_conv.ml" 199 6632 6675
+type(
+  name list
+)
+ident(
+  int_ref x "closure_conv.ml" 199 6632 6661 "closure_conv.ml" 199 6632 6662
+)
+"closure_conv.ml" 199 6632 6666 "closure_conv.ml" 199 6632 6675
+type(
+  cexp
+)
+"closure_conv.ml" 199 6632 6656 "closure_conv.ml" 199 6632 6676
+type(
+  name list -> cexp
+)
+"closure_conv.ml" 199 6632 6648 "closure_conv.ml" 199 6632 6676
+call(
+  tail
+)
+type(
+  cexp
+)
+"closure_conv.ml" 200 6677 6690 "closure_conv.ml" 200 6677 6691
+type(
+  Knorm.name list
+)
+ident(
+  def a "closure_conv.ml" 200 6677 6700 "closure_conv.ml" 200 6677 6742
+)
+"closure_conv.ml" 200 6677 6692 "closure_conv.ml" 200 6677 6693
+type(
+  Knorm.name
+)
+ident(
+  def b "closure_conv.ml" 200 6677 6700 "closure_conv.ml" 200 6677 6742
+)
+"closure_conv.ml" 200 6677 6694 "closure_conv.ml" 200 6677 6695
+type(
+  Knorm.kexp
+)
+ident(
+  def c "closure_conv.ml" 200 6677 6700 "closure_conv.ml" 200 6677 6742
+)
+"closure_conv.ml" 200 6677 6680 "closure_conv.ml" 200 6677 6696
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 200 6677 6700 "closure_conv.ml" 200 6677 6704
+type(
+  Knorm.name -> (name -> cexp) -> cexp
+)
+ident(
+  int_ref conv "closure_conv.ml" 143 4372 4377 "closure_conv.ml" 143 4372 4381
+)
+"closure_conv.ml" 200 6677 6705 "closure_conv.ml" 200 6677 6706
+type(
+  Knorm.name
+)
+ident(
+  int_ref b "closure_conv.ml" 200 6677 6692 "closure_conv.ml" 200 6677 6693
+)
+"closure_conv.ml" 200 6677 6712 "closure_conv.ml" 200 6677 6713
+type(
+  name
+)
+ident(
+  def y "closure_conv.ml" 200 6677 6717 "closure_conv.ml" 200 6677 6741
+)
+"closure_conv.ml" 200 6677 6727 "closure_conv.ml" 200 6677 6728
+type(
+  name list
+)
+ident(
+  int_ref a "closure_conv.ml" 200 6677 6690 "closure_conv.ml" 200 6677 6691
+)
+"closure_conv.ml" 200 6677 6729 "closure_conv.ml" 200 6677 6730
+type(
+  name
+)
+ident(
+  int_ref y "closure_conv.ml" 200 6677 6712 "closure_conv.ml" 200 6677 6713
+)
+"closure_conv.ml" 200 6677 6731 "closure_conv.ml" 200 6677 6738
+type(
+  Knorm.kexp -> cexp
+)
+ident(
+  int_ref reccall "closure_conv.ml" 141 4238 4243 "closure_conv.ml" 141 4238 4250
+)
+"closure_conv.ml" 200 6677 6739 "closure_conv.ml" 200 6677 6740
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref c "closure_conv.ml" 200 6677 6694 "closure_conv.ml" 200 6677 6695
+)
+"closure_conv.ml" 200 6677 6731 "closure_conv.ml" 200 6677 6740
+call(
+  stack
+)
+type(
+  cexp
+)
+"closure_conv.ml" 200 6677 6717 "closure_conv.ml" 200 6677 6741
+type(
+  cexp
+)
+"closure_conv.ml" 200 6677 6707 "closure_conv.ml" 200 6677 6742
+type(
+  name -> cexp
+)
+"closure_conv.ml" 200 6677 6700 "closure_conv.ml" 200 6677 6742
+call(
+  tail
+)
+type(
+  cexp
+)
+"closure_conv.ml" 202 6776 6785 "closure_conv.ml" 202 6776 6786
+type(
+  string
+)
+ident(
+  def a "closure_conv.ml" 202 6776 6802 "closure_conv.ml" 207 6927 6930
+)
+"closure_conv.ml" 202 6776 6787 "closure_conv.ml" 202 6776 6788
+type(
+  Type_checker.ty * Debug.debug_data
+)
+"closure_conv.ml" 202 6776 6784 "closure_conv.ml" 202 6776 6789
+type(
+  Knorm.name
+)
+"closure_conv.ml" 202 6776 6793 "closure_conv.ml" 202 6776 6795
+ident(
+  def ad "closure_conv.ml" 202 6776 6802 "closure_conv.ml" 207 6927 6930
+)
+"closure_conv.ml" 202 6776 6784 "closure_conv.ml" 202 6776 6795
+type(
+  Knorm.name
+)
+"closure_conv.ml" 202 6776 6796 "closure_conv.ml" 202 6776 6797
+type(
+  Knorm.name list
+)
+ident(
+  def b "closure_conv.ml" 202 6776 6802 "closure_conv.ml" 207 6927 6930
+)
+"closure_conv.ml" 202 6776 6779 "closure_conv.ml" 202 6776 6798
+type(
+  Knorm.kexp
+)
+"closure_conv.ml" 203 6804 6810 "closure_conv.ml" 203 6804 6818
+type(
+  string -> string list -> bool
+)
+ident(
+  ext_ref List.mem
+)
+"closure_conv.ml" 203 6804 6819 "closure_conv.ml" 203 6804 6820
+type(
+  string
+)
+ident(
+  int_ref a "closure_conv.ml" 202 6776 6785 "closure_conv.ml" 202 6776 6786
+)
+"closure_conv.ml" 203 6804 6822 "closure_conv.ml" 203 6804 6830
+type(
+  (string * (string * (cexp -> cexp)) -> string) ->
+  (string * (string * (cexp -> cexp))) list -> string list
+)
+ident(
+  ext_ref List.map
+)
+"closure_conv.ml" 203 6804 6831 "closure_conv.ml" 203 6804 6834
+type(
+  string * (string * (cexp -> cexp)) -> string
+)
+ident(
+  ext_ref Pervasives.fst
+)
+"closure_conv.ml" 203 6804 6835 "closure_conv.ml" 203 6804 6840
+type(
+  (string * (string * (cexp -> cexp))) list
+)
+ident(
+  int_ref known "closure_conv.ml" 140 4192 4215 "closure_conv.ml" 140 4192 4220
+)
+"closure_conv.ml" 203 6804 6821 "closure_conv.ml" 203 6804 6841
+call(
+  stack
+)
+type(
+  string list
+)
+"closure_conv.ml" 203 6804 6810 "closure_conv.ml" 203 6804 6841
+call(
+  stack
+)
+type(
+  bool
+)
+"closure_conv.ml" 204 6848 6852 "closure_conv.ml" 204 6848 6857
+type(
+  Knorm.name list -> (name list -> cexp) -> cexp
+)
+ident(
+  int_ref convv "closure_conv.ml" 151 4519 4524 "closure_conv.ml" 151 4519 4529
+)
+"closure_conv.ml" 204 6848 6858 "closure_conv.ml" 204 6848 6859
+type(
+  Knorm.name list
+)
+ident(
+  int_ref b "closure_conv.ml" 202 6776 6796 "closure_conv.ml" 202 6776 6797
+)
+"closure_conv.ml" 204 6848 6865 "closure_conv.ml" 204 6848 6866
+type(
+  name list
+)
+ident(
+  def y "closure_conv.ml" 204 6848 6870 "closure_conv.ml" 204 6848 6883
+)
+"closure_conv.ml" 204 6848 6878 "closure_conv.ml" 204 6848 6880
+type(
+  name
+)
+ident(
+  int_ref ad "closure_conv.ml" 202 6776 6784 "closure_conv.ml" 202 6776 6795
+)
+"closure_conv.ml" 204 6848 6881 "closure_conv.ml" 204 6848 6882
+type(
+  name list
+)
+ident(
+  int_ref y "closure_conv.ml" 204 6848 6865 "closure_conv.ml" 204 6848 6866
+)
+"closure_conv.ml" 204 6848 6870 "closure_conv.ml" 204 6848 6883
+type(
+  cexp
+)
+"closure_conv.ml" 204 6848 6860 "closure_conv.ml" 204 6848 6884
+type(
+  name list -> cexp
+)
+"closure_conv.ml" 204 6848 6852 "closure_conv.ml" 204 6848 6884
+call(
+  tail
+)
+type(
+  cexp
+)
+"closure_conv.ml" 206 6893 6897 "closure_conv.ml" 206 6893 6902
+type(
+  Knorm.name list -> (name list -> cexp) -> cexp
+)
+ident(
+  int_ref convv "closure_conv.ml" 151 4519 4524 "closure_conv.ml" 151 4519 4529
+)
+"closure_conv.ml" 206 6893 6903 "closure_conv.ml" 206 6893 6904
+type(
+  Knorm.name list
+)
+ident(
+  int_ref b "closure_conv.ml" 202 6776 6796 "closure_conv.ml" 202 6776 6797
+)
+"closure_conv.ml" 206 6893 6910 "closure_conv.ml" 206 6893 6911
+type(
+  name list
+)
+ident(
+  def y "closure_conv.ml" 206 6893 6915 "closure_conv.ml" 206 6893 6925
+)
+"closure_conv.ml" 206 6893 6920 "closure_conv.ml" 206 6893 6922
+type(
+  name
+)
+ident(
+  int_ref ad "closure_conv.ml" 202 6776 6784 "closure_conv.ml" 202 6776 6795
+)
+"closure_conv.ml" 206 6893 6923 "closure_conv.ml" 206 6893 6924
+type(
+  name list
+)
+ident(
+  int_ref y "closure_conv.ml" 206 6893 6910 "closure_conv.ml" 206 6893 6911
+)
+"closure_conv.ml" 206 6893 6915 "closure_conv.ml" 206 6893 6925
+type(
+  cexp
+)
+"closure_conv.ml" 206 6893 6905 "closure_conv.ml" 206 6893 6926
+type(
+  name list -> cexp
+)
+"closure_conv.ml" 206 6893 6897 "closure_conv.ml" 206 6893 6926
+call(
+  tail
+)
+type(
+  cexp
+)
+"closure_conv.ml" 202 6776 6802 "closure_conv.ml" 207 6927 6930
+type(
+  cexp
+)
+"closure_conv.ml" 162 4783 4784 "closure_conv.ml" 207 6927 6930
+type(
+  cexp
+)
+"closure_conv.ml" 151 4519 4520 "closure_conv.ml" 207 6927 6930
+type(
+  cexp
+)
+"closure_conv.ml" 143 4372 4373 "closure_conv.ml" 207 6927 6930
+type(
+  cexp
+)
+"closure_conv.ml" 141 4238 4239 "closure_conv.ml" 207 6927 6930
+type(
+  cexp
+)
+"closure_conv.ml" 209 6932 6936 "closure_conv.ml" 209 6932 6940
+type(
+  Knorm.kexp -> (name * globdef) list * string list * cexp
+)
+ident(
+  def conv "closure_conv.ml" 210 6948 7011 "closure_conv.ml" 1 0 -1
+)
+"closure_conv.ml" 209 6932 6941 "closure_conv.ml" 209 6932 6944
+type(
+  Knorm.kexp
+)
+ident(
+  def ast "closure_conv.ml" 210 6948 6949 "closure_conv.ml" 210 6948 7011
+)
+"closure_conv.ml" 210 6948 6953 "closure_conv.ml" 210 6948 6955
+type(
+  cexp
+)
+ident(
+  def ta "closure_conv.ml" 210 6948 6988 "closure_conv.ml" 210 6948 7011
+)
+"closure_conv.ml" 210 6948 6958 "closure_conv.ml" 210 6948 6972
+type(
+  (string * (string * (cexp -> cexp))) list -> bool -> Knorm.kexp -> cexp
+)
+ident(
+  int_ref remove_closure "closure_conv.ml" 140 4192 4200 "closure_conv.ml" 140 4192 4214
+)
+"closure_conv.ml" 210 6948 6973 "closure_conv.ml" 210 6948 6975
+type(
+  (string * (string * (cexp -> cexp))) list
+)
+"closure_conv.ml" 210 6948 6976 "closure_conv.ml" 210 6948 6980
+type(
+  bool
+)
+"closure_conv.ml" 210 6948 6981 "closure_conv.ml" 210 6948 6984
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "closure_conv.ml" 209 6932 6941 "closure_conv.ml" 209 6932 6944
+)
+"closure_conv.ml" 210 6948 6958 "closure_conv.ml" 210 6948 6984
+call(
+  stack
+)
+type(
+  cexp
+)
+"closure_conv.ml" 210 6948 6989 "closure_conv.ml" 210 6948 6990
+type(
+  (name * globdef) list ref -> (name * globdef) list
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"closure_conv.ml" 210 6948 6990 "closure_conv.ml" 210 6948 6997
+type(
+  (name * globdef) list ref
+)
+ident(
+  int_ref globals "closure_conv.ml" 26 634 638 "closure_conv.ml" 26 634 645
+)
+"closure_conv.ml" 210 6948 6989 "closure_conv.ml" 210 6948 6997
+type(
+  (name * globdef) list
+)
+"closure_conv.ml" 210 6948 6998 "closure_conv.ml" 210 6948 6999
+type(
+  string list ref -> string list
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"closure_conv.ml" 210 6948 6999 "closure_conv.ml" 210 6948 7007
+type(
+  string list ref
+)
+ident(
+  int_ref globvars "closure_conv.ml" 29 756 760 "closure_conv.ml" 29 756 768
+)
+"closure_conv.ml" 210 6948 6998 "closure_conv.ml" 210 6948 7007
+type(
+  string list
+)
+"closure_conv.ml" 210 6948 7008 "closure_conv.ml" 210 6948 7010
+type(
+  cexp
+)
+ident(
+  int_ref ta "closure_conv.ml" 210 6948 6953 "closure_conv.ml" 210 6948 6955
+)
+"closure_conv.ml" 210 6948 6988 "closure_conv.ml" 210 6948 7011
+type(
+  (name * globdef) list * string list * cexp
+)
+"closure_conv.ml" 210 6948 6949 "closure_conv.ml" 210 6948 7011
+type(
+  (name * globdef) list * string list * cexp
+)

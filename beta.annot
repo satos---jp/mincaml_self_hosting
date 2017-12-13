@@ -1,0 +1,974 @@
+"beta.ml" 3 12 20 "beta.ml" 3 12 31
+type(
+  (string * string) list -> 'a -> Knorm.kexp -> Knorm.kexp
+)
+ident(
+  def beta_reduce "beta.ml" 3 12 12 "beta.ml" 1 0 -1
+)
+"beta.ml" 3 12 32 "beta.ml" 3 12 38
+type(
+  (string * string) list
+)
+ident(
+  def letenv "beta.ml" 3 12 39 "beta.ml" 30 851 913
+)
+"beta.ml" 3 12 39 "beta.ml" 3 12 47
+type(
+  'a
+)
+ident(
+  def tupleenv "beta.ml" 3 12 48 "beta.ml" 30 851 913
+)
+"beta.ml" 3 12 48 "beta.ml" 3 12 51
+type(
+  Knorm.kexp
+)
+ident(
+  def ast "beta.ml" 4 55 56 "beta.ml" 30 851 913
+)
+"beta.ml" 4 55 60 "beta.ml" 4 55 68
+type(
+  string * 'b -> string * 'b
+)
+ident(
+  def conv_var "beta.ml" 10 150 151 "beta.ml" 30 851 913
+)
+"beta.ml" 4 55 70 "beta.ml" 4 55 71
+type(
+  string
+)
+ident(
+  def x "beta.ml" 5 79 81 "beta.ml" 8 121 145
+)
+"beta.ml" 4 55 72 "beta.ml" 4 55 74
+type(
+  'b
+)
+ident(
+  def td "beta.ml" 5 79 81 "beta.ml" 8 121 145
+)
+"beta.ml" 4 55 69 "beta.ml" 4 55 75
+type(
+  string * 'b
+)
+"beta.ml" 6 86 90 "beta.ml" 6 86 100
+type(
+  string -> (string * string) list -> string
+)
+ident(
+  ext_ref List.assoc
+)
+"beta.ml" 6 86 101 "beta.ml" 6 86 102
+type(
+  string
+)
+ident(
+  int_ref x "beta.ml" 4 55 70 "beta.ml" 4 55 71
+)
+"beta.ml" 6 86 103 "beta.ml" 6 86 109
+type(
+  (string * string) list
+)
+ident(
+  int_ref letenv "beta.ml" 3 12 32 "beta.ml" 3 12 38
+)
+"beta.ml" 6 86 90 "beta.ml" 6 86 109
+call(
+  stack
+)
+type(
+  string
+)
+"beta.ml" 6 86 110 "beta.ml" 6 86 112
+type(
+  'b
+)
+ident(
+  int_ref td "beta.ml" 4 55 72 "beta.ml" 4 55 74
+)
+"beta.ml" 6 86 89 "beta.ml" 6 86 113
+type(
+  string * 'b
+)
+"beta.ml" 8 121 126 "beta.ml" 8 121 135
+type(
+  exn
+)
+"beta.ml" 8 121 140 "beta.ml" 8 121 141
+type(
+  string
+)
+ident(
+  int_ref x "beta.ml" 4 55 70 "beta.ml" 4 55 71
+)
+"beta.ml" 8 121 142 "beta.ml" 8 121 144
+type(
+  'b
+)
+ident(
+  int_ref td "beta.ml" 4 55 72 "beta.ml" 4 55 74
+)
+"beta.ml" 8 121 139 "beta.ml" 8 121 145
+type(
+  string * 'b
+)
+"beta.ml" 5 79 81 "beta.ml" 8 121 145
+type(
+  string * 'b
+)
+"beta.ml" 10 150 155 "beta.ml" 10 150 164
+type(
+  (string * 'c) list -> (string * 'c) list
+)
+ident(
+  def conv_list "beta.ml" 12 195 196 "beta.ml" 30 851 913
+)
+"beta.ml" 10 150 165 "beta.ml" 10 150 167
+type(
+  (string * 'c) list
+)
+ident(
+  def vs "beta.ml" 10 150 170 "beta.ml" 10 150 190
+)
+"beta.ml" 10 150 170 "beta.ml" 10 150 178
+type(
+  (string * 'c -> string * 'c) -> (string * 'c) list -> (string * 'c) list
+)
+ident(
+  ext_ref List.map
+)
+"beta.ml" 10 150 179 "beta.ml" 10 150 187
+type(
+  string * 'c -> string * 'c
+)
+ident(
+  int_ref conv_var "beta.ml" 4 55 60 "beta.ml" 4 55 68
+)
+"beta.ml" 10 150 188 "beta.ml" 10 150 190
+type(
+  (string * 'c) list
+)
+ident(
+  int_ref vs "beta.ml" 10 150 165 "beta.ml" 10 150 167
+)
+"beta.ml" 10 150 170 "beta.ml" 10 150 190
+call(
+  tail
+)
+type(
+  (string * 'c) list
+)
+"beta.ml" 12 195 204 "beta.ml" 12 195 211
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  def reccall "beta.ml" 12 195 196 "beta.ml" 30 851 913
+)
+"beta.ml" 12 195 214 "beta.ml" 12 195 225
+type(
+  (string * string) list -> 'a -> Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref beta_reduce "beta.ml" 3 12 20 "beta.ml" 3 12 31
+)
+"beta.ml" 12 195 226 "beta.ml" 12 195 232
+type(
+  (string * string) list
+)
+ident(
+  int_ref letenv "beta.ml" 3 12 32 "beta.ml" 3 12 38
+)
+"beta.ml" 12 195 233 "beta.ml" 12 195 241
+type(
+  'a
+)
+ident(
+  int_ref tupleenv "beta.ml" 3 12 39 "beta.ml" 3 12 47
+)
+"beta.ml" 12 195 214 "beta.ml" 12 195 241
+call(
+  stack
+)
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+"beta.ml" 13 246 253 "beta.ml" 13 246 256
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "beta.ml" 3 12 48 "beta.ml" 3 12 51
+)
+"beta.ml" 14 262 272 "beta.ml" 14 262 273
+type(
+  Syntax.const
+)
+"beta.ml" 14 262 265 "beta.ml" 14 262 273
+type(
+  Knorm.kexp
+)
+"beta.ml" 14 262 277 "beta.ml" 14 262 280
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "beta.ml" 3 12 48 "beta.ml" 3 12 51
+)
+"beta.ml" 15 281 288 "beta.ml" 15 281 290
+type(
+  Syntax.optype
+)
+ident(
+  def op "beta.ml" 15 281 298 "beta.ml" 15 281 318
+)
+"beta.ml" 15 281 291 "beta.ml" 15 281 293
+type(
+  Knorm.name list
+)
+ident(
+  def vs "beta.ml" 15 281 298 "beta.ml" 15 281 318
+)
+"beta.ml" 15 281 284 "beta.ml" 15 281 294
+type(
+  Knorm.kexp
+)
+"beta.ml" 15 281 302 "beta.ml" 15 281 304
+type(
+  Syntax.optype
+)
+ident(
+  int_ref op "beta.ml" 15 281 288 "beta.ml" 15 281 290
+)
+"beta.ml" 15 281 305 "beta.ml" 15 281 314
+type(
+  Knorm.name list -> Knorm.name list
+)
+ident(
+  int_ref conv_list "beta.ml" 10 150 155 "beta.ml" 10 150 164
+)
+"beta.ml" 15 281 315 "beta.ml" 15 281 317
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "beta.ml" 15 281 291 "beta.ml" 15 281 293
+)
+"beta.ml" 15 281 305 "beta.ml" 15 281 317
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"beta.ml" 15 281 298 "beta.ml" 15 281 318
+type(
+  Knorm.kexp
+)
+"beta.ml" 16 319 326 "beta.ml" 16 319 328
+type(
+  Syntax.comptype
+)
+ident(
+  def op "beta.ml" 16 319 343 "beta.ml" 16 319 394
+)
+"beta.ml" 16 319 329 "beta.ml" 16 319 330
+type(
+  Knorm.name
+)
+ident(
+  def a "beta.ml" 16 319 343 "beta.ml" 16 319 394
+)
+"beta.ml" 16 319 331 "beta.ml" 16 319 332
+type(
+  Knorm.name
+)
+ident(
+  def b "beta.ml" 16 319 343 "beta.ml" 16 319 394
+)
+"beta.ml" 16 319 333 "beta.ml" 16 319 335
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "beta.ml" 16 319 343 "beta.ml" 16 319 394
+)
+"beta.ml" 16 319 336 "beta.ml" 16 319 338
+type(
+  Knorm.kexp
+)
+ident(
+  def e2 "beta.ml" 16 319 343 "beta.ml" 16 319 394
+)
+"beta.ml" 16 319 322 "beta.ml" 16 319 339
+type(
+  Knorm.kexp
+)
+"beta.ml" 16 319 347 "beta.ml" 16 319 349
+type(
+  Syntax.comptype
+)
+ident(
+  int_ref op "beta.ml" 16 319 326 "beta.ml" 16 319 328
+)
+"beta.ml" 16 319 350 "beta.ml" 16 319 358
+type(
+  Knorm.name -> Knorm.name
+)
+ident(
+  int_ref conv_var "beta.ml" 4 55 60 "beta.ml" 4 55 68
+)
+"beta.ml" 16 319 359 "beta.ml" 16 319 360
+type(
+  Knorm.name
+)
+ident(
+  int_ref a "beta.ml" 16 319 329 "beta.ml" 16 319 330
+)
+"beta.ml" 16 319 350 "beta.ml" 16 319 360
+call(
+  stack
+)
+type(
+  Knorm.name
+)
+"beta.ml" 16 319 361 "beta.ml" 16 319 369
+type(
+  Knorm.name -> Knorm.name
+)
+ident(
+  int_ref conv_var "beta.ml" 4 55 60 "beta.ml" 4 55 68
+)
+"beta.ml" 16 319 370 "beta.ml" 16 319 371
+type(
+  Knorm.name
+)
+ident(
+  int_ref b "beta.ml" 16 319 331 "beta.ml" 16 319 332
+)
+"beta.ml" 16 319 361 "beta.ml" 16 319 371
+call(
+  stack
+)
+type(
+  Knorm.name
+)
+"beta.ml" 16 319 372 "beta.ml" 16 319 379
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref reccall "beta.ml" 12 195 204 "beta.ml" 12 195 211
+)
+"beta.ml" 16 319 380 "beta.ml" 16 319 382
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "beta.ml" 16 319 333 "beta.ml" 16 319 335
+)
+"beta.ml" 16 319 372 "beta.ml" 16 319 382
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"beta.ml" 16 319 383 "beta.ml" 16 319 390
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref reccall "beta.ml" 12 195 204 "beta.ml" 12 195 211
+)
+"beta.ml" 16 319 391 "beta.ml" 16 319 393
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "beta.ml" 16 319 336 "beta.ml" 16 319 338
+)
+"beta.ml" 16 319 383 "beta.ml" 16 319 393
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"beta.ml" 16 319 343 "beta.ml" 16 319 394
+type(
+  Knorm.kexp
+)
+"beta.ml" 17 395 404 "beta.ml" 17 395 406
+type(
+  string
+)
+ident(
+  def na "beta.ml" 17 395 421 "beta.ml" 25 665 668
+)
+"beta.ml" 17 395 407 "beta.ml" 17 395 409
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  def td "beta.ml" 17 395 421 "beta.ml" 25 665 668
+)
+"beta.ml" 17 395 403 "beta.ml" 17 395 410
+type(
+  Knorm.name
+)
+"beta.ml" 17 395 411 "beta.ml" 17 395 413
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "beta.ml" 17 395 421 "beta.ml" 25 665 668
+)
+"beta.ml" 17 395 414 "beta.ml" 17 395 416
+type(
+  Knorm.kexp
+)
+ident(
+  def e2 "beta.ml" 17 395 421 "beta.ml" 25 665 668
+)
+"beta.ml" 17 395 398 "beta.ml" 17 395 417
+type(
+  Knorm.kexp
+)
+"beta.ml" 18 423 430 "beta.ml" 18 423 433
+type(
+  Knorm.kexp
+)
+ident(
+  def te1 "beta.ml" 19 450 453 "beta.ml" 24 626 664
+)
+"beta.ml" 18 423 436 "beta.ml" 18 423 443
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref reccall "beta.ml" 12 195 204 "beta.ml" 12 195 211
+)
+"beta.ml" 18 423 444 "beta.ml" 18 423 446
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "beta.ml" 17 395 411 "beta.ml" 17 395 413
+)
+"beta.ml" 18 423 436 "beta.ml" 18 423 446
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"beta.ml" 19 450 459 "beta.ml" 19 450 462
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref te1 "beta.ml" 18 423 430 "beta.ml" 18 423 433
+)
+"beta.ml" 20 468 479 "beta.ml" 20 468 482
+type(
+  string
+)
+ident(
+  def tna "beta.ml" 20 468 490 "beta.ml" 20 468 534
+)
+"beta.ml" 20 468 483 "beta.ml" 20 468 484
+type(
+  Type_checker.ty * Debug.debug_data
+)
+"beta.ml" 20 468 477 "beta.ml" 20 468 486
+type(
+  Knorm.name
+)
+"beta.ml" 20 468 473 "beta.ml" 20 468 486
+type(
+  Knorm.kexp
+)
+"beta.ml" 20 468 490 "beta.ml" 20 468 501
+type(
+  (string * string) list -> 'a -> Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref beta_reduce "beta.ml" 3 12 20 "beta.ml" 3 12 31
+)
+"beta.ml" 20 468 504 "beta.ml" 20 468 506
+type(
+  string
+)
+ident(
+  int_ref na "beta.ml" 17 395 404 "beta.ml" 17 395 406
+)
+"beta.ml" 20 468 507 "beta.ml" 20 468 510
+type(
+  string
+)
+ident(
+  int_ref tna "beta.ml" 20 468 479 "beta.ml" 20 468 482
+)
+"beta.ml" 20 468 503 "beta.ml" 20 468 511
+type(
+  string * string
+)
+"beta.ml" 20 468 515 "beta.ml" 20 468 521
+type(
+  (string * string) list
+)
+ident(
+  int_ref letenv "beta.ml" 3 12 32 "beta.ml" 3 12 38
+)
+"beta.ml" 20 468 502 "beta.ml" 20 468 522
+type(
+  (string * string) list
+)
+"beta.ml" 20 468 523 "beta.ml" 20 468 531
+type(
+  'a
+)
+ident(
+  int_ref tupleenv "beta.ml" 3 12 39 "beta.ml" 3 12 47
+)
+"beta.ml" 20 468 532 "beta.ml" 20 468 534
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "beta.ml" 17 395 414 "beta.ml" 17 395 416
+)
+"beta.ml" 20 468 490 "beta.ml" 20 468 534
+call(
+  tail
+)
+type(
+  Knorm.kexp
+)
+"beta.ml" 24 626 631 "beta.ml" 24 626 632
+type(
+  Knorm.kexp
+)
+"beta.ml" 24 626 642 "beta.ml" 24 626 644
+type(
+  string
+)
+ident(
+  int_ref na "beta.ml" 17 395 404 "beta.ml" 17 395 406
+)
+"beta.ml" 24 626 645 "beta.ml" 24 626 647
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  int_ref td "beta.ml" 17 395 407 "beta.ml" 17 395 409
+)
+"beta.ml" 24 626 641 "beta.ml" 24 626 648
+type(
+  Knorm.name
+)
+"beta.ml" 24 626 649 "beta.ml" 24 626 652
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref te1 "beta.ml" 18 423 430 "beta.ml" 18 423 433
+)
+"beta.ml" 24 626 653 "beta.ml" 24 626 660
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref reccall "beta.ml" 12 195 204 "beta.ml" 12 195 211
+)
+"beta.ml" 24 626 661 "beta.ml" 24 626 663
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "beta.ml" 17 395 414 "beta.ml" 17 395 416
+)
+"beta.ml" 24 626 653 "beta.ml" 24 626 663
+type(
+  Knorm.kexp
+)
+"beta.ml" 24 626 636 "beta.ml" 24 626 664
+type(
+  Knorm.kexp
+)
+"beta.ml" 19 450 453 "beta.ml" 24 626 664
+type(
+  Knorm.kexp
+)
+"beta.ml" 17 395 421 "beta.ml" 25 665 668
+type(
+  Knorm.kexp
+)
+"beta.ml" 26 669 677 "beta.ml" 26 669 678
+ident(
+  def x "beta.ml" 26 669 683 "beta.ml" 26 669 699
+)
+"beta.ml" 26 669 676 "beta.ml" 26 669 679
+type(
+  Knorm.name
+)
+"beta.ml" 26 669 672 "beta.ml" 26 669 679
+type(
+  Knorm.kexp
+)
+"beta.ml" 26 669 688 "beta.ml" 26 669 696
+type(
+  Knorm.name -> Knorm.name
+)
+ident(
+  int_ref conv_var "beta.ml" 4 55 60 "beta.ml" 4 55 68
+)
+"beta.ml" 26 669 697 "beta.ml" 26 669 698
+type(
+  Knorm.name
+)
+ident(
+  int_ref x "beta.ml" 26 669 676 "beta.ml" 26 669 679
+)
+"beta.ml" 26 669 687 "beta.ml" 26 669 699
+call(
+  stack
+)
+type(
+  Knorm.name
+)
+"beta.ml" 26 669 683 "beta.ml" 26 669 699
+type(
+  Knorm.kexp
+)
+"beta.ml" 27 700 711 "beta.ml" 27 700 713
+type(
+  Knorm.name
+)
+ident(
+  def na "beta.ml" 27 700 727 "beta.ml" 27 700 763
+)
+"beta.ml" 27 700 714 "beta.ml" 27 700 716
+type(
+  Knorm.name list
+)
+ident(
+  def vs "beta.ml" 27 700 727 "beta.ml" 27 700 763
+)
+"beta.ml" 27 700 717 "beta.ml" 27 700 719
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "beta.ml" 27 700 727 "beta.ml" 27 700 763
+)
+"beta.ml" 27 700 720 "beta.ml" 27 700 722
+type(
+  Knorm.kexp
+)
+ident(
+  def e2 "beta.ml" 27 700 727 "beta.ml" 27 700 763
+)
+"beta.ml" 27 700 703 "beta.ml" 27 700 723
+type(
+  Knorm.kexp
+)
+"beta.ml" 27 700 735 "beta.ml" 27 700 737
+type(
+  Knorm.name
+)
+ident(
+  int_ref na "beta.ml" 27 700 711 "beta.ml" 27 700 713
+)
+"beta.ml" 27 700 738 "beta.ml" 27 700 740
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "beta.ml" 27 700 714 "beta.ml" 27 700 716
+)
+"beta.ml" 27 700 741 "beta.ml" 27 700 748
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref reccall "beta.ml" 12 195 204 "beta.ml" 12 195 211
+)
+"beta.ml" 27 700 749 "beta.ml" 27 700 751
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "beta.ml" 27 700 717 "beta.ml" 27 700 719
+)
+"beta.ml" 27 700 741 "beta.ml" 27 700 751
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"beta.ml" 27 700 752 "beta.ml" 27 700 759
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref reccall "beta.ml" 12 195 204 "beta.ml" 12 195 211
+)
+"beta.ml" 27 700 760 "beta.ml" 27 700 762
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "beta.ml" 27 700 720 "beta.ml" 27 700 722
+)
+"beta.ml" 27 700 752 "beta.ml" 27 700 762
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"beta.ml" 27 700 727 "beta.ml" 27 700 763
+type(
+  Knorm.kexp
+)
+"beta.ml" 28 764 772 "beta.ml" 28 764 774
+type(
+  Knorm.name
+)
+ident(
+  def fn "beta.ml" 28 764 782 "beta.ml" 28 764 812
+)
+"beta.ml" 28 764 775 "beta.ml" 28 764 777
+type(
+  Knorm.name list
+)
+ident(
+  def vs "beta.ml" 28 764 782 "beta.ml" 28 764 812
+)
+"beta.ml" 28 764 767 "beta.ml" 28 764 778
+type(
+  Knorm.kexp
+)
+"beta.ml" 28 764 787 "beta.ml" 28 764 795
+type(
+  Knorm.name -> Knorm.name
+)
+ident(
+  int_ref conv_var "beta.ml" 4 55 60 "beta.ml" 4 55 68
+)
+"beta.ml" 28 764 796 "beta.ml" 28 764 798
+type(
+  Knorm.name
+)
+ident(
+  int_ref fn "beta.ml" 28 764 772 "beta.ml" 28 764 774
+)
+"beta.ml" 28 764 787 "beta.ml" 28 764 798
+call(
+  stack
+)
+type(
+  Knorm.name
+)
+"beta.ml" 28 764 799 "beta.ml" 28 764 808
+type(
+  Knorm.name list -> Knorm.name list
+)
+ident(
+  int_ref conv_list "beta.ml" 10 150 155 "beta.ml" 10 150 164
+)
+"beta.ml" 28 764 809 "beta.ml" 28 764 811
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "beta.ml" 28 764 775 "beta.ml" 28 764 777
+)
+"beta.ml" 28 764 799 "beta.ml" 28 764 811
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"beta.ml" 28 764 782 "beta.ml" 28 764 812
+type(
+  Knorm.kexp
+)
+"beta.ml" 29 813 823 "beta.ml" 29 813 825
+ident(
+  def vs "beta.ml" 29 813 830 "beta.ml" 29 813 850
+)
+"beta.ml" 29 813 822 "beta.ml" 29 813 826
+type(
+  Knorm.name list
+)
+"beta.ml" 29 813 816 "beta.ml" 29 813 826
+type(
+  Knorm.kexp
+)
+"beta.ml" 29 813 837 "beta.ml" 29 813 846
+type(
+  Knorm.name list -> Knorm.name list
+)
+ident(
+  int_ref conv_list "beta.ml" 10 150 155 "beta.ml" 10 150 164
+)
+"beta.ml" 29 813 847 "beta.ml" 29 813 849
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "beta.ml" 29 813 822 "beta.ml" 29 813 826
+)
+"beta.ml" 29 813 836 "beta.ml" 29 813 850
+call(
+  stack
+)
+type(
+  Knorm.name list
+)
+"beta.ml" 29 813 830 "beta.ml" 29 813 850
+type(
+  Knorm.kexp
+)
+"beta.ml" 30 851 864 "beta.ml" 30 851 866
+type(
+  Knorm.name list
+)
+ident(
+  def vs "beta.ml" 30 851 877 "beta.ml" 30 851 913
+)
+"beta.ml" 30 851 867 "beta.ml" 30 851 869
+type(
+  Knorm.name
+)
+ident(
+  def na "beta.ml" 30 851 877 "beta.ml" 30 851 913
+)
+"beta.ml" 30 851 870 "beta.ml" 30 851 872
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "beta.ml" 30 851 877 "beta.ml" 30 851 913
+)
+"beta.ml" 30 851 854 "beta.ml" 30 851 873
+type(
+  Knorm.kexp
+)
+"beta.ml" 30 851 887 "beta.ml" 30 851 889
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "beta.ml" 30 851 864 "beta.ml" 30 851 866
+)
+"beta.ml" 30 851 890 "beta.ml" 30 851 898
+type(
+  Knorm.name -> Knorm.name
+)
+ident(
+  int_ref conv_var "beta.ml" 4 55 60 "beta.ml" 4 55 68
+)
+"beta.ml" 30 851 899 "beta.ml" 30 851 901
+type(
+  Knorm.name
+)
+ident(
+  int_ref na "beta.ml" 30 851 867 "beta.ml" 30 851 869
+)
+"beta.ml" 30 851 890 "beta.ml" 30 851 901
+call(
+  stack
+)
+type(
+  Knorm.name
+)
+"beta.ml" 30 851 902 "beta.ml" 30 851 909
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref reccall "beta.ml" 12 195 204 "beta.ml" 12 195 211
+)
+"beta.ml" 30 851 910 "beta.ml" 30 851 912
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "beta.ml" 30 851 870 "beta.ml" 30 851 872
+)
+"beta.ml" 30 851 902 "beta.ml" 30 851 912
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"beta.ml" 30 851 877 "beta.ml" 30 851 913
+type(
+  Knorm.kexp
+)
+"beta.ml" 13 246 247 "beta.ml" 30 851 913
+type(
+  Knorm.kexp
+)
+"beta.ml" 12 195 196 "beta.ml" 30 851 913
+type(
+  Knorm.kexp
+)
+"beta.ml" 10 150 151 "beta.ml" 30 851 913
+type(
+  Knorm.kexp
+)
+"beta.ml" 4 55 56 "beta.ml" 30 851 913
+type(
+  Knorm.kexp
+)
+"beta.ml" 32 916 920 "beta.ml" 32 916 925
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  def beter "beta.ml" 32 916 953 "beta.ml" 1 0 -1
+)
+"beta.ml" 32 916 926 "beta.ml" 32 916 929
+type(
+  Knorm.kexp
+)
+ident(
+  def ast "beta.ml" 32 916 932 "beta.ml" 32 916 953
+)
+"beta.ml" 32 916 932 "beta.ml" 32 916 943
+type(
+  (string * string) list -> '_a list -> Knorm.kexp -> Knorm.kexp
+)
+ident(
+  int_ref beta_reduce "beta.ml" 3 12 20 "beta.ml" 3 12 31
+)
+"beta.ml" 32 916 944 "beta.ml" 32 916 946
+type(
+  (string * string) list
+)
+"beta.ml" 32 916 947 "beta.ml" 32 916 949
+type(
+  '_a list
+)
+"beta.ml" 32 916 950 "beta.ml" 32 916 953
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "beta.ml" 32 916 926 "beta.ml" 32 916 929
+)
+"beta.ml" 32 916 932 "beta.ml" 32 916 953
+call(
+  tail
+)
+type(
+  Knorm.kexp
+)

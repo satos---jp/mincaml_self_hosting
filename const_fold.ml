@@ -58,6 +58,13 @@ let rec const_fold tupleenv cenv ast =
 			with
 				| Not_found -> ast
 		)
+	(* 末尾再帰のため、ここで消しておく。 *)
+	| KOp(Osemi1,[_]) -> (
+			KTuple([])
+		)
+	| KOp(Osemi2,[_;nb]) -> (
+			KVar(nb)
+		)
 	| KLet((na,_) as natd,e1,e2) -> (
 			let te1 = reccall e1 in
 			KLet(natd,te1,(

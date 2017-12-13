@@ -1,0 +1,2272 @@
+"syntax.ml" 9 82 86 "syntax.ml" 9 82 95
+type(
+  const -> string
+)
+ident(
+  def const2str "syntax.ml" 14 200 200 "syntax.ml" 1 0 -1
+)
+"syntax.ml" 9 82 96 "syntax.ml" 9 82 97
+type(
+  const
+)
+ident(
+  def c "syntax.ml" 10 101 102 "syntax.ml" 12 155 198
+)
+"syntax.ml" 10 101 108 "syntax.ml" 10 101 109
+type(
+  const
+)
+ident(
+  int_ref c "syntax.ml" 9 82 96 "syntax.ml" 9 82 97
+)
+"syntax.ml" 11 115 123 "syntax.ml" 11 115 124
+type(
+  int
+)
+ident(
+  def x "syntax.ml" 11 115 128 "syntax.ml" 11 115 154
+)
+"syntax.ml" 11 115 118 "syntax.ml" 11 115 124
+type(
+  const
+)
+"syntax.ml" 11 115 128 "syntax.ml" 11 115 142
+type(
+  (int -> string, unit, string) format -> int -> string
+)
+ident(
+  ext_ref Printf.sprintf
+)
+"syntax.ml" 11 115 143 "syntax.ml" 11 115 152
+type(
+  (int -> string, unit, string) format
+)
+"syntax.ml" 11 115 153 "syntax.ml" 11 115 154
+type(
+  int
+)
+ident(
+  int_ref x "syntax.ml" 11 115 123 "syntax.ml" 11 115 124
+)
+"syntax.ml" 11 115 128 "syntax.ml" 11 115 154
+call(
+  tail
+)
+type(
+  string
+)
+"syntax.ml" 12 155 165 "syntax.ml" 12 155 166
+type(
+  float
+)
+ident(
+  def x "syntax.ml" 12 155 170 "syntax.ml" 12 155 198
+)
+"syntax.ml" 12 155 158 "syntax.ml" 12 155 166
+type(
+  const
+)
+"syntax.ml" 12 155 170 "syntax.ml" 12 155 184
+type(
+  (float -> string, unit, string) format -> float -> string
+)
+ident(
+  ext_ref Printf.sprintf
+)
+"syntax.ml" 12 155 185 "syntax.ml" 12 155 196
+type(
+  (float -> string, unit, string) format
+)
+"syntax.ml" 12 155 197 "syntax.ml" 12 155 198
+type(
+  float
+)
+ident(
+  int_ref x "syntax.ml" 12 155 165 "syntax.ml" 12 155 166
+)
+"syntax.ml" 12 155 170 "syntax.ml" 12 155 198
+call(
+  tail
+)
+type(
+  string
+)
+"syntax.ml" 10 101 102 "syntax.ml" 12 155 198
+type(
+  string
+)
+"syntax.ml" 18 236 240 "syntax.ml" 18 236 252
+type(
+  comptype -> string
+)
+ident(
+  def comptype2str "syntax.ml" 23 309 309 "syntax.ml" 1 0 -1
+)
+"syntax.ml" 18 236 253 "syntax.ml" 18 236 254
+type(
+  comptype
+)
+ident(
+  def x "syntax.ml" 19 258 259 "syntax.ml" 21 290 307
+)
+"syntax.ml" 19 258 265 "syntax.ml" 19 258 266
+type(
+  comptype
+)
+ident(
+  int_ref x "syntax.ml" 18 236 253 "syntax.ml" 18 236 254
+)
+"syntax.ml" 20 272 275 "syntax.ml" 20 272 280
+type(
+  comptype
+)
+"syntax.ml" 20 272 284 "syntax.ml" 20 272 289
+type(
+  string
+)
+"syntax.ml" 21 290 293 "syntax.ml" 21 290 298
+type(
+  comptype
+)
+"syntax.ml" 21 290 302 "syntax.ml" 21 290 307
+type(
+  string
+)
+"syntax.ml" 19 258 259 "syntax.ml" 21 290 307
+type(
+  string
+)
+"syntax.ml" 33 576 580 "syntax.ml" 33 576 586
+type(
+  optype -> string
+)
+ident(
+  def op2str "syntax.ml" 61 1228 1228 "syntax.ml" 1 0 -1
+)
+"syntax.ml" 33 576 587 "syntax.ml" 33 576 588
+type(
+  optype
+)
+ident(
+  def o "syntax.ml" 34 592 593 "syntax.ml" 59 1175 1226
+)
+"syntax.ml" 34 592 599 "syntax.ml" 34 592 600
+type(
+  optype
+)
+ident(
+  int_ref o "syntax.ml" 33 576 587 "syntax.ml" 33 576 588
+)
+"syntax.ml" 35 606 609 "syntax.ml" 35 606 615
+type(
+  optype
+)
+"syntax.ml" 35 606 619 "syntax.ml" 35 606 627
+type(
+  string
+)
+"syntax.ml" 36 628 631 "syntax.ml" 36 628 635
+type(
+  optype
+)
+"syntax.ml" 36 628 639 "syntax.ml" 36 628 645
+type(
+  string
+)
+"syntax.ml" 37 646 649 "syntax.ml" 37 646 653
+type(
+  optype
+)
+"syntax.ml" 37 646 657 "syntax.ml" 37 646 663
+type(
+  string
+)
+"syntax.ml" 38 664 667 "syntax.ml" 38 664 671
+type(
+  optype
+)
+"syntax.ml" 38 664 675 "syntax.ml" 38 664 681
+type(
+  string
+)
+"syntax.ml" 39 682 685 "syntax.ml" 39 682 689
+type(
+  optype
+)
+"syntax.ml" 39 682 693 "syntax.ml" 39 682 699
+type(
+  string
+)
+"syntax.ml" 40 700 709 "syntax.ml" 40 700 710
+ident(
+  def a "syntax.ml" 40 700 715 "syntax.ml" 40 700 744
+)
+"syntax.ml" 40 700 708 "syntax.ml" 40 700 711
+type(
+  int
+)
+"syntax.ml" 40 700 703 "syntax.ml" 40 700 711
+type(
+  optype
+)
+"syntax.ml" 40 700 715 "syntax.ml" 40 700 729
+type(
+  (int -> string, unit, string) format -> int -> string
+)
+ident(
+  ext_ref Printf.sprintf
+)
+"syntax.ml" 40 700 730 "syntax.ml" 40 700 741
+type(
+  (int -> string, unit, string) format
+)
+"syntax.ml" 40 700 743 "syntax.ml" 40 700 744
+type(
+  int
+)
+ident(
+  int_ref a "syntax.ml" 40 700 708 "syntax.ml" 40 700 711
+)
+"syntax.ml" 40 700 715 "syntax.ml" 40 700 744
+call(
+  tail
+)
+type(
+  string
+)
+"syntax.ml" 41 745 756 "syntax.ml" 41 745 757
+ident(
+  def a "syntax.ml" 41 745 762 "syntax.ml" 41 745 793
+)
+"syntax.ml" 41 745 755 "syntax.ml" 41 745 758
+type(
+  int
+)
+"syntax.ml" 41 745 748 "syntax.ml" 41 745 758
+type(
+  optype
+)
+"syntax.ml" 41 745 762 "syntax.ml" 41 745 776
+type(
+  (int -> string, unit, string) format -> int -> string
+)
+ident(
+  ext_ref Printf.sprintf
+)
+"syntax.ml" 41 745 777 "syntax.ml" 41 745 790
+type(
+  (int -> string, unit, string) format
+)
+"syntax.ml" 41 745 792 "syntax.ml" 41 745 793
+type(
+  int
+)
+ident(
+  int_ref a "syntax.ml" 41 745 755 "syntax.ml" 41 745 758
+)
+"syntax.ml" 41 745 762 "syntax.ml" 41 745 793
+call(
+  tail
+)
+type(
+  string
+)
+"syntax.ml" 42 794 797 "syntax.ml" 42 794 802
+type(
+  optype
+)
+"syntax.ml" 42 794 806 "syntax.ml" 42 794 813
+type(
+  string
+)
+"syntax.ml" 43 814 817 "syntax.ml" 43 814 822
+type(
+  optype
+)
+"syntax.ml" 43 814 826 "syntax.ml" 43 814 833
+type(
+  string
+)
+"syntax.ml" 44 834 837 "syntax.ml" 44 834 842
+type(
+  optype
+)
+"syntax.ml" 44 834 846 "syntax.ml" 44 834 853
+type(
+  string
+)
+"syntax.ml" 45 854 857 "syntax.ml" 45 854 862
+type(
+  optype
+)
+"syntax.ml" 45 854 866 "syntax.ml" 45 854 873
+type(
+  string
+)
+"syntax.ml" 46 874 877 "syntax.ml" 46 874 880
+type(
+  optype
+)
+"syntax.ml" 46 874 884 "syntax.ml" 46 874 889
+type(
+  string
+)
+"syntax.ml" 47 890 893 "syntax.ml" 47 890 897
+type(
+  optype
+)
+"syntax.ml" 47 890 901 "syntax.ml" 47 890 907
+type(
+  string
+)
+"syntax.ml" 48 908 911 "syntax.ml" 48 908 914
+type(
+  optype
+)
+"syntax.ml" 48 908 918 "syntax.ml" 48 908 923
+type(
+  string
+)
+"syntax.ml" 49 924 927 "syntax.ml" 49 924 931
+type(
+  optype
+)
+"syntax.ml" 49 924 935 "syntax.ml" 49 924 941
+type(
+  string
+)
+"syntax.ml" 50 942 945 "syntax.ml" 50 942 948
+type(
+  optype
+)
+"syntax.ml" 50 942 952 "syntax.ml" 50 942 957
+type(
+  string
+)
+"syntax.ml" 51 958 961 "syntax.ml" 51 958 965
+type(
+  optype
+)
+"syntax.ml" 51 958 969 "syntax.ml" 51 958 975
+type(
+  string
+)
+"syntax.ml" 52 976 979 "syntax.ml" 52 976 985
+type(
+  optype
+)
+"syntax.ml" 52 976 989 "syntax.ml" 52 976 997
+type(
+  string
+)
+"syntax.ml" 53 998 1001 "syntax.ml" 53 998 1007
+type(
+  optype
+)
+"syntax.ml" 53 998 1011 "syntax.ml" 53 998 1019
+type(
+  string
+)
+"syntax.ml" 54 1020 1023 "syntax.ml" 54 1020 1027
+type(
+  optype
+)
+"syntax.ml" 54 1020 1031 "syntax.ml" 54 1020 1037
+type(
+  string
+)
+"syntax.ml" 55 1038 1041 "syntax.ml" 55 1038 1048
+type(
+  optype
+)
+"syntax.ml" 55 1038 1052 "syntax.ml" 55 1038 1061
+type(
+  string
+)
+"syntax.ml" 56 1062 1065 "syntax.ml" 56 1062 1073
+type(
+  optype
+)
+"syntax.ml" 56 1062 1077 "syntax.ml" 56 1062 1087
+type(
+  string
+)
+"syntax.ml" 57 1088 1091 "syntax.ml" 57 1088 1100
+type(
+  optype
+)
+"syntax.ml" 57 1088 1104 "syntax.ml" 57 1088 1115
+type(
+  string
+)
+"syntax.ml" 58 1116 1129 "syntax.ml" 58 1116 1130
+type(
+  int
+)
+ident(
+  def a "syntax.ml" 58 1116 1137 "syntax.ml" 58 1116 1174
+)
+"syntax.ml" 58 1116 1131 "syntax.ml" 58 1116 1132
+type(
+  int
+)
+ident(
+  def b "syntax.ml" 58 1116 1137 "syntax.ml" 58 1116 1174
+)
+"syntax.ml" 58 1116 1119 "syntax.ml" 58 1116 1133
+type(
+  optype
+)
+"syntax.ml" 58 1116 1137 "syntax.ml" 58 1116 1151
+type(
+  (int -> int -> string, unit, string) format -> int -> int -> string
+)
+ident(
+  ext_ref Printf.sprintf
+)
+"syntax.ml" 58 1116 1152 "syntax.ml" 58 1116 1170
+type(
+  (int -> int -> string, unit, string) format
+)
+"syntax.ml" 58 1116 1171 "syntax.ml" 58 1116 1172
+type(
+  int
+)
+ident(
+  int_ref a "syntax.ml" 58 1116 1129 "syntax.ml" 58 1116 1130
+)
+"syntax.ml" 58 1116 1173 "syntax.ml" 58 1116 1174
+type(
+  int
+)
+ident(
+  int_ref b "syntax.ml" 58 1116 1131 "syntax.ml" 58 1116 1132
+)
+"syntax.ml" 58 1116 1137 "syntax.ml" 58 1116 1174
+call(
+  tail
+)
+type(
+  string
+)
+"syntax.ml" 59 1175 1188 "syntax.ml" 59 1175 1189
+ident(
+  def a "syntax.ml" 59 1175 1194 "syntax.ml" 59 1175 1226
+)
+"syntax.ml" 59 1175 1187 "syntax.ml" 59 1175 1190
+type(
+  int
+)
+"syntax.ml" 59 1175 1178 "syntax.ml" 59 1175 1190
+type(
+  optype
+)
+"syntax.ml" 59 1175 1194 "syntax.ml" 59 1175 1208
+type(
+  (int -> string, unit, string) format -> int -> string
+)
+ident(
+  ext_ref Printf.sprintf
+)
+"syntax.ml" 59 1175 1209 "syntax.ml" 59 1175 1224
+type(
+  (int -> string, unit, string) format
+)
+"syntax.ml" 59 1175 1225 "syntax.ml" 59 1175 1226
+type(
+  int
+)
+ident(
+  int_ref a "syntax.ml" 59 1175 1187 "syntax.ml" 59 1175 1190
+)
+"syntax.ml" 59 1175 1194 "syntax.ml" 59 1175 1226
+call(
+  tail
+)
+type(
+  string
+)
+"syntax.ml" 34 592 593 "syntax.ml" 59 1175 1226
+type(
+  string
+)
+"syntax.ml" 77 1679 1683 "syntax.ml" 77 1679 1693
+type(
+  string -> unit
+)
+ident(
+  def print_name "syntax.ml" 79 1711 1711 "syntax.ml" 1 0 -1
+)
+"syntax.ml" 77 1679 1696 "syntax.ml" 77 1679 1708
+type(
+  string -> unit
+)
+ident(
+  ext_ref Pervasives.print_string
+)
+"syntax.ml" 79 1711 1719 "syntax.ml" 79 1711 1732
+type(
+  expr -> int -> (int * string) list
+)
+ident(
+  def expr2str_base "syntax.ml" 79 1711 1711 "syntax.ml" 1 0 -1
+)
+"syntax.ml" 79 1711 1733 "syntax.ml" 79 1711 1739
+type(
+  expr
+)
+ident(
+  def astdeb "syntax.ml" 79 1711 1740 "syntax.ml" 93 2553 2692
+)
+"syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+type(
+  int
+)
+ident(
+  def d "syntax.ml" 80 1745 1746 "syntax.ml" 93 2553 2692
+)
+"syntax.ml" 80 1745 1750 "syntax.ml" 80 1745 1753
+type(
+  expr_base
+)
+ident(
+  def ast "syntax.ml" 81 1768 1769 "syntax.ml" 93 2553 2692
+)
+"syntax.ml" 80 1745 1754 "syntax.ml" 80 1745 1755
+type(
+  Debug.debug_data
+)
+"syntax.ml" 80 1745 1750 "syntax.ml" 80 1745 1755
+type(
+  expr
+)
+"syntax.ml" 80 1745 1758 "syntax.ml" 80 1745 1764
+type(
+  expr
+)
+ident(
+  int_ref astdeb "syntax.ml" 79 1711 1733 "syntax.ml" 79 1711 1739
+)
+"syntax.ml" 81 1768 1775 "syntax.ml" 81 1768 1778
+type(
+  expr_base
+)
+ident(
+  int_ref ast "syntax.ml" 80 1745 1750 "syntax.ml" 80 1745 1753
+)
+"syntax.ml" 82 1784 1794 "syntax.ml" 82 1784 1795
+type(
+  const
+)
+ident(
+  def x "syntax.ml" 82 1784 1799 "syntax.ml" 82 1784 1816
+)
+"syntax.ml" 82 1784 1787 "syntax.ml" 82 1784 1795
+type(
+  expr_base
+)
+"syntax.ml" 82 1784 1801 "syntax.ml" 82 1784 1802
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 82 1784 1803 "syntax.ml" 82 1784 1812
+type(
+  const -> string
+)
+ident(
+  int_ref const2str "syntax.ml" 9 82 86 "syntax.ml" 9 82 95
+)
+"syntax.ml" 82 1784 1813 "syntax.ml" 82 1784 1814
+type(
+  const
+)
+ident(
+  int_ref x "syntax.ml" 82 1784 1794 "syntax.ml" 82 1784 1795
+)
+"syntax.ml" 82 1784 1803 "syntax.ml" 82 1784 1814
+call(
+  stack
+)
+type(
+  string
+)
+"syntax.ml" 82 1784 1800 "syntax.ml" 82 1784 1815
+type(
+  int * string
+)
+"syntax.ml" 82 1784 1799 "syntax.ml" 82 1784 1816
+type(
+  (int * string) list
+)
+"syntax.ml" 83 1817 1825 "syntax.ml" 83 1817 1826
+ident(
+  def x "syntax.ml" 83 1817 1831 "syntax.ml" 83 1817 1847
+)
+"syntax.ml" 83 1817 1824 "syntax.ml" 83 1817 1827
+type(
+  name
+)
+"syntax.ml" 83 1817 1820 "syntax.ml" 83 1817 1827
+type(
+  expr_base
+)
+"syntax.ml" 83 1817 1833 "syntax.ml" 83 1817 1834
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 83 1817 1835 "syntax.ml" 83 1817 1841
+type(
+  string
+)
+"syntax.ml" 83 1817 1842 "syntax.ml" 83 1817 1843
+type(
+  string -> name -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"syntax.ml" 83 1817 1844 "syntax.ml" 83 1817 1845
+type(
+  name
+)
+ident(
+  int_ref x "syntax.ml" 83 1817 1824 "syntax.ml" 83 1817 1827
+)
+"syntax.ml" 83 1817 1835 "syntax.ml" 83 1817 1845
+call(
+  stack
+)
+type(
+  string
+)
+"syntax.ml" 83 1817 1832 "syntax.ml" 83 1817 1846
+type(
+  int * string
+)
+"syntax.ml" 83 1817 1831 "syntax.ml" 83 1817 1847
+type(
+  (int * string) list
+)
+"syntax.ml" 84 1848 1855 "syntax.ml" 84 1848 1857
+type(
+  optype
+)
+ident(
+  def op "syntax.ml" 84 1848 1865 "syntax.ml" 84 1848 1942
+)
+"syntax.ml" 84 1848 1858 "syntax.ml" 84 1848 1860
+type(
+  expr list
+)
+ident(
+  def es "syntax.ml" 84 1848 1865 "syntax.ml" 84 1848 1942
+)
+"syntax.ml" 84 1848 1851 "syntax.ml" 84 1848 1861
+type(
+  expr_base
+)
+"syntax.ml" 84 1848 1866 "syntax.ml" 84 1848 1867
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 84 1848 1868 "syntax.ml" 84 1848 1874
+type(
+  optype -> string
+)
+ident(
+  int_ref op2str "syntax.ml" 33 576 580 "syntax.ml" 33 576 586
+)
+"syntax.ml" 84 1848 1875 "syntax.ml" 84 1848 1877
+type(
+  optype
+)
+ident(
+  int_ref op "syntax.ml" 84 1848 1855 "syntax.ml" 84 1848 1857
+)
+"syntax.ml" 84 1848 1868 "syntax.ml" 84 1848 1877
+call(
+  stack
+)
+type(
+  string
+)
+"syntax.ml" 84 1848 1865 "syntax.ml" 84 1848 1878
+type(
+  int * string
+)
+"syntax.ml" 84 1848 1882 "syntax.ml" 84 1848 1893
+type(
+  (int * string) list list -> (int * string) list
+)
+ident(
+  ext_ref List.concat
+)
+"syntax.ml" 84 1848 1895 "syntax.ml" 84 1848 1903
+type(
+  (expr -> (int * string) list) -> expr list -> (int * string) list list
+)
+ident(
+  ext_ref List.map
+)
+"syntax.ml" 84 1848 1909 "syntax.ml" 84 1848 1910
+type(
+  expr
+)
+ident(
+  def x "syntax.ml" 84 1848 1914 "syntax.ml" 84 1848 1937
+)
+"syntax.ml" 84 1848 1915 "syntax.ml" 84 1848 1928
+type(
+  expr -> int -> (int * string) list
+)
+ident(
+  int_ref expr2str_base "syntax.ml" 79 1711 1719 "syntax.ml" 79 1711 1732
+)
+"syntax.ml" 84 1848 1929 "syntax.ml" 84 1848 1930
+type(
+  expr
+)
+ident(
+  int_ref x "syntax.ml" 84 1848 1909 "syntax.ml" 84 1848 1910
+)
+"syntax.ml" 84 1848 1932 "syntax.ml" 84 1848 1933
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 84 1848 1933 "syntax.ml" 84 1848 1934
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"syntax.ml" 84 1848 1934 "syntax.ml" 84 1848 1935
+type(
+  int
+)
+"syntax.ml" 84 1848 1931 "syntax.ml" 84 1848 1936
+type(
+  int
+)
+"syntax.ml" 84 1848 1914 "syntax.ml" 84 1848 1937
+call(
+  tail
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 84 1848 1904 "syntax.ml" 84 1848 1938
+type(
+  expr -> (int * string) list
+)
+"syntax.ml" 84 1848 1939 "syntax.ml" 84 1848 1941
+type(
+  expr list
+)
+ident(
+  int_ref es "syntax.ml" 84 1848 1858 "syntax.ml" 84 1848 1860
+)
+"syntax.ml" 84 1848 1894 "syntax.ml" 84 1848 1942
+call(
+  stack
+)
+type(
+  (int * string) list list
+)
+"syntax.ml" 84 1848 1882 "syntax.ml" 84 1848 1942
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 84 1848 1865 "syntax.ml" 84 1848 1942
+type(
+  (int * string) list
+)
+"syntax.ml" 85 1943 1950 "syntax.ml" 85 1943 1952
+type(
+  expr
+)
+ident(
+  def e1 "syntax.ml" 85 1943 1963 "syntax.ml" 88 2093 2096
+)
+"syntax.ml" 85 1943 1953 "syntax.ml" 85 1943 1955
+type(
+  expr
+)
+ident(
+  def e2 "syntax.ml" 85 1943 1963 "syntax.ml" 88 2093 2096
+)
+"syntax.ml" 85 1943 1956 "syntax.ml" 85 1943 1958
+type(
+  expr
+)
+ident(
+  def e3 "syntax.ml" 85 1943 1963 "syntax.ml" 88 2093 2096
+)
+"syntax.ml" 85 1943 1946 "syntax.ml" 85 1943 1959
+type(
+  expr_base
+)
+"syntax.ml" 86 1965 1969 "syntax.ml" 86 1965 1970
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 86 1965 1971 "syntax.ml" 86 1965 1975
+type(
+  string
+)
+"syntax.ml" 86 1965 1968 "syntax.ml" 86 1965 1976
+type(
+  int * string
+)
+"syntax.ml" 86 1965 1981 "syntax.ml" 86 1965 1994
+type(
+  expr -> int -> (int * string) list
+)
+ident(
+  int_ref expr2str_base "syntax.ml" 79 1711 1719 "syntax.ml" 79 1711 1732
+)
+"syntax.ml" 86 1965 1995 "syntax.ml" 86 1965 1997
+type(
+  expr
+)
+ident(
+  int_ref e1 "syntax.ml" 85 1943 1950 "syntax.ml" 85 1943 1952
+)
+"syntax.ml" 86 1965 1999 "syntax.ml" 86 1965 2000
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 86 1965 2000 "syntax.ml" 86 1965 2001
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"syntax.ml" 86 1965 2001 "syntax.ml" 86 1965 2002
+type(
+  int
+)
+"syntax.ml" 86 1965 1998 "syntax.ml" 86 1965 2003
+type(
+  int
+)
+"syntax.ml" 86 1965 1980 "syntax.ml" 86 1965 2004
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 86 1965 1968 "syntax.ml" 86 1965 2004
+type(
+  (int * string) list
+)
+"syntax.ml" 87 2005 2009 "syntax.ml" 87 2005 2010
+type(
+  (int * string) list -> (int * string) list -> (int * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"syntax.ml" 87 2005 2013 "syntax.ml" 87 2005 2014
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 87 2005 2015 "syntax.ml" 87 2005 2021
+type(
+  string
+)
+"syntax.ml" 87 2005 2012 "syntax.ml" 87 2005 2022
+type(
+  int * string
+)
+"syntax.ml" 87 2005 2011 "syntax.ml" 87 2005 2023
+type(
+  (int * string) list
+)
+"syntax.ml" 87 2005 2024 "syntax.ml" 87 2005 2025
+type(
+  (int * string) list -> (int * string) list -> (int * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"syntax.ml" 87 2005 2027 "syntax.ml" 87 2005 2040
+type(
+  expr -> int -> (int * string) list
+)
+ident(
+  int_ref expr2str_base "syntax.ml" 79 1711 1719 "syntax.ml" 79 1711 1732
+)
+"syntax.ml" 87 2005 2041 "syntax.ml" 87 2005 2043
+type(
+  expr
+)
+ident(
+  int_ref e2 "syntax.ml" 85 1943 1953 "syntax.ml" 85 1943 1955
+)
+"syntax.ml" 87 2005 2045 "syntax.ml" 87 2005 2046
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 87 2005 2046 "syntax.ml" 87 2005 2047
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"syntax.ml" 87 2005 2047 "syntax.ml" 87 2005 2048
+type(
+  int
+)
+"syntax.ml" 87 2005 2044 "syntax.ml" 87 2005 2049
+type(
+  int
+)
+"syntax.ml" 87 2005 2026 "syntax.ml" 87 2005 2050
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 87 2005 2051 "syntax.ml" 87 2005 2052
+type(
+  (int * string) list -> (int * string) list -> (int * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"syntax.ml" 87 2005 2055 "syntax.ml" 87 2005 2056
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 87 2005 2057 "syntax.ml" 87 2005 2063
+type(
+  string
+)
+"syntax.ml" 87 2005 2054 "syntax.ml" 87 2005 2064
+type(
+  int * string
+)
+"syntax.ml" 87 2005 2053 "syntax.ml" 87 2005 2065
+type(
+  (int * string) list
+)
+"syntax.ml" 87 2005 2066 "syntax.ml" 87 2005 2067
+type(
+  (int * string) list -> (int * string) list -> (int * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"syntax.ml" 87 2005 2069 "syntax.ml" 87 2005 2082
+type(
+  expr -> int -> (int * string) list
+)
+ident(
+  int_ref expr2str_base "syntax.ml" 79 1711 1719 "syntax.ml" 79 1711 1732
+)
+"syntax.ml" 87 2005 2083 "syntax.ml" 87 2005 2085
+type(
+  expr
+)
+ident(
+  int_ref e3 "syntax.ml" 85 1943 1956 "syntax.ml" 85 1943 1958
+)
+"syntax.ml" 87 2005 2087 "syntax.ml" 87 2005 2088
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 87 2005 2088 "syntax.ml" 87 2005 2089
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"syntax.ml" 87 2005 2089 "syntax.ml" 87 2005 2090
+type(
+  int
+)
+"syntax.ml" 87 2005 2086 "syntax.ml" 87 2005 2091
+type(
+  int
+)
+"syntax.ml" 87 2005 2068 "syntax.ml" 87 2005 2092
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 87 2005 2053 "syntax.ml" 87 2005 2092
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 87 2005 2026 "syntax.ml" 87 2005 2092
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 87 2005 2011 "syntax.ml" 87 2005 2092
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 85 1943 1963 "syntax.ml" 88 2093 2096
+call(
+  tail
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 89 2097 2105 "syntax.ml" 89 2097 2107
+type(
+  name
+)
+ident(
+  def na "syntax.ml" 89 2097 2118 "syntax.ml" 89 2097 2208
+)
+"syntax.ml" 89 2097 2108 "syntax.ml" 89 2097 2110
+type(
+  expr
+)
+ident(
+  def e1 "syntax.ml" 89 2097 2118 "syntax.ml" 89 2097 2208
+)
+"syntax.ml" 89 2097 2111 "syntax.ml" 89 2097 2113
+type(
+  expr
+)
+ident(
+  def e2 "syntax.ml" 89 2097 2118 "syntax.ml" 89 2097 2208
+)
+"syntax.ml" 89 2097 2100 "syntax.ml" 89 2097 2114
+type(
+  expr_base
+)
+"syntax.ml" 89 2097 2119 "syntax.ml" 89 2097 2120
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 89 2097 2121 "syntax.ml" 89 2097 2127
+type(
+  string
+)
+"syntax.ml" 89 2097 2128 "syntax.ml" 89 2097 2129
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"syntax.ml" 89 2097 2130 "syntax.ml" 89 2097 2132
+type(
+  name
+)
+ident(
+  int_ref na "syntax.ml" 89 2097 2105 "syntax.ml" 89 2097 2107
+)
+"syntax.ml" 89 2097 2133 "syntax.ml" 89 2097 2134
+type(
+  name -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"syntax.ml" 89 2097 2135 "syntax.ml" 89 2097 2139
+type(
+  string
+)
+"syntax.ml" 89 2097 2130 "syntax.ml" 89 2097 2139
+call(
+  stack
+)
+type(
+  string
+)
+"syntax.ml" 89 2097 2121 "syntax.ml" 89 2097 2139
+call(
+  stack
+)
+type(
+  string
+)
+"syntax.ml" 89 2097 2118 "syntax.ml" 89 2097 2140
+type(
+  int * string
+)
+"syntax.ml" 89 2097 2145 "syntax.ml" 89 2097 2158
+type(
+  expr -> int -> (int * string) list
+)
+ident(
+  int_ref expr2str_base "syntax.ml" 79 1711 1719 "syntax.ml" 79 1711 1732
+)
+"syntax.ml" 89 2097 2159 "syntax.ml" 89 2097 2161
+type(
+  expr
+)
+ident(
+  int_ref e1 "syntax.ml" 89 2097 2108 "syntax.ml" 89 2097 2110
+)
+"syntax.ml" 89 2097 2163 "syntax.ml" 89 2097 2164
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 89 2097 2164 "syntax.ml" 89 2097 2165
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"syntax.ml" 89 2097 2165 "syntax.ml" 89 2097 2166
+type(
+  int
+)
+"syntax.ml" 89 2097 2162 "syntax.ml" 89 2097 2167
+type(
+  int
+)
+"syntax.ml" 89 2097 2144 "syntax.ml" 89 2097 2168
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 89 2097 2118 "syntax.ml" 89 2097 2168
+type(
+  (int * string) list
+)
+"syntax.ml" 89 2097 2169 "syntax.ml" 89 2097 2170
+type(
+  (int * string) list -> (int * string) list -> (int * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"syntax.ml" 89 2097 2173 "syntax.ml" 89 2097 2174
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 89 2097 2175 "syntax.ml" 89 2097 2179
+type(
+  string
+)
+"syntax.ml" 89 2097 2172 "syntax.ml" 89 2097 2180
+type(
+  int * string
+)
+"syntax.ml" 89 2097 2171 "syntax.ml" 89 2097 2181
+type(
+  (int * string) list
+)
+"syntax.ml" 89 2097 2182 "syntax.ml" 89 2097 2183
+type(
+  (int * string) list -> (int * string) list -> (int * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"syntax.ml" 89 2097 2185 "syntax.ml" 89 2097 2198
+type(
+  expr -> int -> (int * string) list
+)
+ident(
+  int_ref expr2str_base "syntax.ml" 79 1711 1719 "syntax.ml" 79 1711 1732
+)
+"syntax.ml" 89 2097 2199 "syntax.ml" 89 2097 2201
+type(
+  expr
+)
+ident(
+  int_ref e2 "syntax.ml" 89 2097 2111 "syntax.ml" 89 2097 2113
+)
+"syntax.ml" 89 2097 2203 "syntax.ml" 89 2097 2204
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 89 2097 2204 "syntax.ml" 89 2097 2205
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"syntax.ml" 89 2097 2205 "syntax.ml" 89 2097 2206
+type(
+  int
+)
+"syntax.ml" 89 2097 2202 "syntax.ml" 89 2097 2207
+type(
+  int
+)
+"syntax.ml" 89 2097 2184 "syntax.ml" 89 2097 2208
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 89 2097 2171 "syntax.ml" 89 2097 2208
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 89 2097 2118 "syntax.ml" 89 2097 2208
+call(
+  tail
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 90 2209 2220 "syntax.ml" 90 2209 2222
+type(
+  name
+)
+ident(
+  def na "syntax.ml" 90 2209 2236 "syntax.ml" 90 2209 2329
+)
+"syntax.ml" 90 2209 2223 "syntax.ml" 90 2209 2225
+type(
+  name list
+)
+ident(
+  def vs "syntax.ml" 90 2209 2236 "syntax.ml" 90 2209 2329
+)
+"syntax.ml" 90 2209 2226 "syntax.ml" 90 2209 2228
+type(
+  expr
+)
+ident(
+  def e1 "syntax.ml" 90 2209 2236 "syntax.ml" 90 2209 2329
+)
+"syntax.ml" 90 2209 2229 "syntax.ml" 90 2209 2231
+type(
+  expr
+)
+ident(
+  def e2 "syntax.ml" 90 2209 2236 "syntax.ml" 90 2209 2329
+)
+"syntax.ml" 90 2209 2212 "syntax.ml" 90 2209 2232
+type(
+  expr_base
+)
+"syntax.ml" 90 2209 2237 "syntax.ml" 90 2209 2238
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 90 2209 2239 "syntax.ml" 90 2209 2248
+type(
+  string
+)
+"syntax.ml" 90 2209 2249 "syntax.ml" 90 2209 2250
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"syntax.ml" 90 2209 2251 "syntax.ml" 90 2209 2253
+type(
+  name
+)
+ident(
+  int_ref na "syntax.ml" 90 2209 2220 "syntax.ml" 90 2209 2222
+)
+"syntax.ml" 90 2209 2254 "syntax.ml" 90 2209 2255
+type(
+  name -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"syntax.ml" 90 2209 2256 "syntax.ml" 90 2209 2260
+type(
+  string
+)
+"syntax.ml" 90 2209 2251 "syntax.ml" 90 2209 2260
+call(
+  stack
+)
+type(
+  string
+)
+"syntax.ml" 90 2209 2239 "syntax.ml" 90 2209 2260
+call(
+  stack
+)
+type(
+  string
+)
+"syntax.ml" 90 2209 2236 "syntax.ml" 90 2209 2261
+type(
+  int * string
+)
+"syntax.ml" 90 2209 2266 "syntax.ml" 90 2209 2279
+type(
+  expr -> int -> (int * string) list
+)
+ident(
+  int_ref expr2str_base "syntax.ml" 79 1711 1719 "syntax.ml" 79 1711 1732
+)
+"syntax.ml" 90 2209 2280 "syntax.ml" 90 2209 2282
+type(
+  expr
+)
+ident(
+  int_ref e1 "syntax.ml" 90 2209 2226 "syntax.ml" 90 2209 2228
+)
+"syntax.ml" 90 2209 2284 "syntax.ml" 90 2209 2285
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 90 2209 2285 "syntax.ml" 90 2209 2286
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"syntax.ml" 90 2209 2286 "syntax.ml" 90 2209 2287
+type(
+  int
+)
+"syntax.ml" 90 2209 2283 "syntax.ml" 90 2209 2288
+type(
+  int
+)
+"syntax.ml" 90 2209 2265 "syntax.ml" 90 2209 2289
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 90 2209 2236 "syntax.ml" 90 2209 2289
+type(
+  (int * string) list
+)
+"syntax.ml" 90 2209 2290 "syntax.ml" 90 2209 2291
+type(
+  (int * string) list -> (int * string) list -> (int * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"syntax.ml" 90 2209 2294 "syntax.ml" 90 2209 2295
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 90 2209 2296 "syntax.ml" 90 2209 2300
+type(
+  string
+)
+"syntax.ml" 90 2209 2293 "syntax.ml" 90 2209 2301
+type(
+  int * string
+)
+"syntax.ml" 90 2209 2292 "syntax.ml" 90 2209 2302
+type(
+  (int * string) list
+)
+"syntax.ml" 90 2209 2303 "syntax.ml" 90 2209 2304
+type(
+  (int * string) list -> (int * string) list -> (int * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"syntax.ml" 90 2209 2306 "syntax.ml" 90 2209 2319
+type(
+  expr -> int -> (int * string) list
+)
+ident(
+  int_ref expr2str_base "syntax.ml" 79 1711 1719 "syntax.ml" 79 1711 1732
+)
+"syntax.ml" 90 2209 2320 "syntax.ml" 90 2209 2322
+type(
+  expr
+)
+ident(
+  int_ref e2 "syntax.ml" 90 2209 2229 "syntax.ml" 90 2209 2231
+)
+"syntax.ml" 90 2209 2324 "syntax.ml" 90 2209 2325
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 90 2209 2325 "syntax.ml" 90 2209 2326
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"syntax.ml" 90 2209 2326 "syntax.ml" 90 2209 2327
+type(
+  int
+)
+"syntax.ml" 90 2209 2323 "syntax.ml" 90 2209 2328
+type(
+  int
+)
+"syntax.ml" 90 2209 2305 "syntax.ml" 90 2209 2329
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 90 2209 2292 "syntax.ml" 90 2209 2329
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 90 2209 2236 "syntax.ml" 90 2209 2329
+call(
+  tail
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 91 2330 2338 "syntax.ml" 91 2330 2340
+type(
+  expr
+)
+ident(
+  def e1 "syntax.ml" 91 2330 2348 "syntax.ml" 91 2330 2449
+)
+"syntax.ml" 91 2330 2341 "syntax.ml" 91 2330 2343
+type(
+  expr list
+)
+ident(
+  def es "syntax.ml" 91 2330 2348 "syntax.ml" 91 2330 2449
+)
+"syntax.ml" 91 2330 2333 "syntax.ml" 91 2330 2344
+type(
+  expr_base
+)
+"syntax.ml" 91 2330 2349 "syntax.ml" 91 2330 2350
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 91 2330 2351 "syntax.ml" 91 2330 2357
+type(
+  string
+)
+"syntax.ml" 91 2330 2348 "syntax.ml" 91 2330 2358
+type(
+  int * string
+)
+"syntax.ml" 91 2330 2363 "syntax.ml" 91 2330 2376
+type(
+  expr -> int -> (int * string) list
+)
+ident(
+  int_ref expr2str_base "syntax.ml" 79 1711 1719 "syntax.ml" 79 1711 1732
+)
+"syntax.ml" 91 2330 2377 "syntax.ml" 91 2330 2379
+type(
+  expr
+)
+ident(
+  int_ref e1 "syntax.ml" 91 2330 2338 "syntax.ml" 91 2330 2340
+)
+"syntax.ml" 91 2330 2381 "syntax.ml" 91 2330 2382
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 91 2330 2382 "syntax.ml" 91 2330 2383
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"syntax.ml" 91 2330 2383 "syntax.ml" 91 2330 2384
+type(
+  int
+)
+"syntax.ml" 91 2330 2380 "syntax.ml" 91 2330 2385
+type(
+  int
+)
+"syntax.ml" 91 2330 2362 "syntax.ml" 91 2330 2386
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 91 2330 2348 "syntax.ml" 91 2330 2386
+type(
+  (int * string) list
+)
+"syntax.ml" 91 2330 2387 "syntax.ml" 91 2330 2388
+type(
+  (int * string) list -> (int * string) list -> (int * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"syntax.ml" 91 2330 2389 "syntax.ml" 91 2330 2400
+type(
+  (int * string) list list -> (int * string) list
+)
+ident(
+  ext_ref List.concat
+)
+"syntax.ml" 91 2330 2402 "syntax.ml" 91 2330 2410
+type(
+  (expr -> (int * string) list) -> expr list -> (int * string) list list
+)
+ident(
+  ext_ref List.map
+)
+"syntax.ml" 91 2330 2416 "syntax.ml" 91 2330 2417
+type(
+  expr
+)
+ident(
+  def x "syntax.ml" 91 2330 2421 "syntax.ml" 91 2330 2444
+)
+"syntax.ml" 91 2330 2422 "syntax.ml" 91 2330 2435
+type(
+  expr -> int -> (int * string) list
+)
+ident(
+  int_ref expr2str_base "syntax.ml" 79 1711 1719 "syntax.ml" 79 1711 1732
+)
+"syntax.ml" 91 2330 2436 "syntax.ml" 91 2330 2437
+type(
+  expr
+)
+ident(
+  int_ref x "syntax.ml" 91 2330 2416 "syntax.ml" 91 2330 2417
+)
+"syntax.ml" 91 2330 2439 "syntax.ml" 91 2330 2440
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 91 2330 2440 "syntax.ml" 91 2330 2441
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"syntax.ml" 91 2330 2441 "syntax.ml" 91 2330 2442
+type(
+  int
+)
+"syntax.ml" 91 2330 2438 "syntax.ml" 91 2330 2443
+type(
+  int
+)
+"syntax.ml" 91 2330 2421 "syntax.ml" 91 2330 2444
+call(
+  tail
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 91 2330 2411 "syntax.ml" 91 2330 2445
+type(
+  expr -> (int * string) list
+)
+"syntax.ml" 91 2330 2446 "syntax.ml" 91 2330 2448
+type(
+  expr list
+)
+ident(
+  int_ref es "syntax.ml" 91 2330 2341 "syntax.ml" 91 2330 2343
+)
+"syntax.ml" 91 2330 2401 "syntax.ml" 91 2330 2449
+call(
+  stack
+)
+type(
+  (int * string) list list
+)
+"syntax.ml" 91 2330 2389 "syntax.ml" 91 2330 2449
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 91 2330 2348 "syntax.ml" 91 2330 2449
+call(
+  tail
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 92 2450 2460 "syntax.ml" 92 2450 2462
+ident(
+  def es "syntax.ml" 92 2450 2467 "syntax.ml" 92 2450 2552
+)
+"syntax.ml" 92 2450 2459 "syntax.ml" 92 2450 2463
+type(
+  expr list
+)
+"syntax.ml" 92 2450 2453 "syntax.ml" 92 2450 2463
+type(
+  expr_base
+)
+"syntax.ml" 92 2450 2468 "syntax.ml" 92 2450 2469
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 92 2450 2470 "syntax.ml" 92 2450 2474
+type(
+  string
+)
+"syntax.ml" 92 2450 2467 "syntax.ml" 92 2450 2475
+type(
+  int * string
+)
+"syntax.ml" 92 2450 2479 "syntax.ml" 92 2450 2490
+type(
+  (int * string) list list -> (int * string) list
+)
+ident(
+  ext_ref List.concat
+)
+"syntax.ml" 92 2450 2492 "syntax.ml" 92 2450 2500
+type(
+  (expr -> (int * string) list) -> expr list -> (int * string) list list
+)
+ident(
+  ext_ref List.map
+)
+"syntax.ml" 92 2450 2506 "syntax.ml" 92 2450 2507
+type(
+  expr
+)
+ident(
+  def x "syntax.ml" 92 2450 2511 "syntax.ml" 92 2450 2534
+)
+"syntax.ml" 92 2450 2512 "syntax.ml" 92 2450 2525
+type(
+  expr -> int -> (int * string) list
+)
+ident(
+  int_ref expr2str_base "syntax.ml" 79 1711 1719 "syntax.ml" 79 1711 1732
+)
+"syntax.ml" 92 2450 2526 "syntax.ml" 92 2450 2527
+type(
+  expr
+)
+ident(
+  int_ref x "syntax.ml" 92 2450 2506 "syntax.ml" 92 2450 2507
+)
+"syntax.ml" 92 2450 2529 "syntax.ml" 92 2450 2530
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 92 2450 2530 "syntax.ml" 92 2450 2531
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"syntax.ml" 92 2450 2531 "syntax.ml" 92 2450 2532
+type(
+  int
+)
+"syntax.ml" 92 2450 2528 "syntax.ml" 92 2450 2533
+type(
+  int
+)
+"syntax.ml" 92 2450 2511 "syntax.ml" 92 2450 2534
+call(
+  tail
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 92 2450 2501 "syntax.ml" 92 2450 2535
+type(
+  expr -> (int * string) list
+)
+"syntax.ml" 92 2450 2536 "syntax.ml" 92 2450 2538
+type(
+  expr list
+)
+ident(
+  int_ref es "syntax.ml" 92 2450 2459 "syntax.ml" 92 2450 2463
+)
+"syntax.ml" 92 2450 2491 "syntax.ml" 92 2450 2539
+call(
+  stack
+)
+type(
+  (int * string) list list
+)
+"syntax.ml" 92 2450 2479 "syntax.ml" 92 2450 2539
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 92 2450 2467 "syntax.ml" 92 2450 2539
+type(
+  (int * string) list
+)
+"syntax.ml" 92 2450 2540 "syntax.ml" 92 2450 2541
+type(
+  (int * string) list -> (int * string) list -> (int * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"syntax.ml" 92 2450 2544 "syntax.ml" 92 2450 2545
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 92 2450 2546 "syntax.ml" 92 2450 2550
+type(
+  string
+)
+"syntax.ml" 92 2450 2543 "syntax.ml" 92 2450 2551
+type(
+  int * string
+)
+"syntax.ml" 92 2450 2542 "syntax.ml" 92 2450 2552
+type(
+  (int * string) list
+)
+"syntax.ml" 92 2450 2467 "syntax.ml" 92 2450 2552
+call(
+  tail
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 93 2553 2566 "syntax.ml" 93 2553 2568
+type(
+  name list
+)
+ident(
+  def vs "syntax.ml" 93 2553 2579 "syntax.ml" 93 2553 2692
+)
+"syntax.ml" 93 2553 2569 "syntax.ml" 93 2553 2571
+type(
+  expr
+)
+ident(
+  def e1 "syntax.ml" 93 2553 2579 "syntax.ml" 93 2553 2692
+)
+"syntax.ml" 93 2553 2572 "syntax.ml" 93 2553 2574
+type(
+  expr
+)
+ident(
+  def e2 "syntax.ml" 93 2553 2579 "syntax.ml" 93 2553 2692
+)
+"syntax.ml" 93 2553 2556 "syntax.ml" 93 2553 2575
+type(
+  expr_base
+)
+"syntax.ml" 93 2553 2580 "syntax.ml" 93 2553 2581
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 93 2553 2582 "syntax.ml" 93 2553 2588
+type(
+  string
+)
+"syntax.ml" 93 2553 2589 "syntax.ml" 93 2553 2590
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"syntax.ml" 93 2553 2592 "syntax.ml" 93 2553 2605
+type(
+  string -> name list -> string
+)
+ident(
+  ext_ref String.concat
+)
+"syntax.ml" 93 2553 2606 "syntax.ml" 93 2553 2611
+type(
+  string
+)
+"syntax.ml" 93 2553 2612 "syntax.ml" 93 2553 2614
+type(
+  name list
+)
+ident(
+  int_ref vs "syntax.ml" 93 2553 2566 "syntax.ml" 93 2553 2568
+)
+"syntax.ml" 93 2553 2591 "syntax.ml" 93 2553 2615
+call(
+  stack
+)
+type(
+  string
+)
+"syntax.ml" 93 2553 2616 "syntax.ml" 93 2553 2617
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"syntax.ml" 93 2553 2618 "syntax.ml" 93 2553 2623
+type(
+  string
+)
+"syntax.ml" 93 2553 2591 "syntax.ml" 93 2553 2623
+call(
+  stack
+)
+type(
+  string
+)
+"syntax.ml" 93 2553 2582 "syntax.ml" 93 2553 2623
+call(
+  stack
+)
+type(
+  string
+)
+"syntax.ml" 93 2553 2579 "syntax.ml" 93 2553 2624
+type(
+  int * string
+)
+"syntax.ml" 93 2553 2629 "syntax.ml" 93 2553 2642
+type(
+  expr -> int -> (int * string) list
+)
+ident(
+  int_ref expr2str_base "syntax.ml" 79 1711 1719 "syntax.ml" 79 1711 1732
+)
+"syntax.ml" 93 2553 2643 "syntax.ml" 93 2553 2645
+type(
+  expr
+)
+ident(
+  int_ref e1 "syntax.ml" 93 2553 2569 "syntax.ml" 93 2553 2571
+)
+"syntax.ml" 93 2553 2647 "syntax.ml" 93 2553 2648
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 93 2553 2648 "syntax.ml" 93 2553 2649
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"syntax.ml" 93 2553 2649 "syntax.ml" 93 2553 2650
+type(
+  int
+)
+"syntax.ml" 93 2553 2646 "syntax.ml" 93 2553 2651
+type(
+  int
+)
+"syntax.ml" 93 2553 2628 "syntax.ml" 93 2553 2652
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 93 2553 2579 "syntax.ml" 93 2553 2652
+type(
+  (int * string) list
+)
+"syntax.ml" 93 2553 2653 "syntax.ml" 93 2553 2654
+type(
+  (int * string) list -> (int * string) list -> (int * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"syntax.ml" 93 2553 2657 "syntax.ml" 93 2553 2658
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 93 2553 2659 "syntax.ml" 93 2553 2663
+type(
+  string
+)
+"syntax.ml" 93 2553 2656 "syntax.ml" 93 2553 2664
+type(
+  int * string
+)
+"syntax.ml" 93 2553 2655 "syntax.ml" 93 2553 2665
+type(
+  (int * string) list
+)
+"syntax.ml" 93 2553 2666 "syntax.ml" 93 2553 2667
+type(
+  (int * string) list -> (int * string) list -> (int * string) list
+)
+ident(
+  ext_ref Pervasives.( @ )
+)
+"syntax.ml" 93 2553 2669 "syntax.ml" 93 2553 2682
+type(
+  expr -> int -> (int * string) list
+)
+ident(
+  int_ref expr2str_base "syntax.ml" 79 1711 1719 "syntax.ml" 79 1711 1732
+)
+"syntax.ml" 93 2553 2683 "syntax.ml" 93 2553 2685
+type(
+  expr
+)
+ident(
+  int_ref e2 "syntax.ml" 93 2553 2572 "syntax.ml" 93 2553 2574
+)
+"syntax.ml" 93 2553 2687 "syntax.ml" 93 2553 2688
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 79 1711 1740 "syntax.ml" 79 1711 1741
+)
+"syntax.ml" 93 2553 2688 "syntax.ml" 93 2553 2689
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"syntax.ml" 93 2553 2689 "syntax.ml" 93 2553 2690
+type(
+  int
+)
+"syntax.ml" 93 2553 2686 "syntax.ml" 93 2553 2691
+type(
+  int
+)
+"syntax.ml" 93 2553 2668 "syntax.ml" 93 2553 2692
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 93 2553 2655 "syntax.ml" 93 2553 2692
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 93 2553 2579 "syntax.ml" 93 2553 2692
+call(
+  tail
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 81 1768 1769 "syntax.ml" 93 2553 2692
+type(
+  (int * string) list
+)
+"syntax.ml" 80 1745 1746 "syntax.ml" 93 2553 2692
+type(
+  (int * string) list
+)
+"syntax.ml" 95 2694 2698 "syntax.ml" 95 2694 2706
+type(
+  expr -> string
+)
+ident(
+  def expr2str "syntax.ml" 97 2747 2831 "syntax.ml" 1 0 -1
+)
+"syntax.ml" 95 2694 2707 "syntax.ml" 95 2694 2710
+type(
+  expr
+)
+ident(
+  def ast "syntax.ml" 96 2714 2715 "syntax.ml" 97 2747 2831
+)
+"syntax.ml" 96 2714 2719 "syntax.ml" 96 2714 2721
+type(
+  (int * string) list
+)
+ident(
+  def ss "syntax.ml" 97 2747 2749 "syntax.ml" 97 2747 2831
+)
+"syntax.ml" 96 2714 2724 "syntax.ml" 96 2714 2737
+type(
+  expr -> int -> (int * string) list
+)
+ident(
+  int_ref expr2str_base "syntax.ml" 79 1711 1719 "syntax.ml" 79 1711 1732
+)
+"syntax.ml" 96 2714 2738 "syntax.ml" 96 2714 2741
+type(
+  expr
+)
+ident(
+  int_ref ast "syntax.ml" 95 2694 2707 "syntax.ml" 95 2694 2710
+)
+"syntax.ml" 96 2714 2742 "syntax.ml" 96 2714 2743
+type(
+  int
+)
+"syntax.ml" 96 2714 2724 "syntax.ml" 96 2714 2743
+call(
+  stack
+)
+type(
+  (int * string) list
+)
+"syntax.ml" 97 2747 2749 "syntax.ml" 97 2747 2762
+type(
+  string -> string list -> string
+)
+ident(
+  ext_ref String.concat
+)
+"syntax.ml" 97 2747 2763 "syntax.ml" 97 2747 2767
+type(
+  string
+)
+"syntax.ml" 97 2747 2769 "syntax.ml" 97 2747 2777
+type(
+  (int * string -> string) -> (int * string) list -> string list
+)
+ident(
+  ext_ref List.map
+)
+"syntax.ml" 97 2747 2784 "syntax.ml" 97 2747 2785
+type(
+  int
+)
+ident(
+  def d "syntax.ml" 97 2747 2792 "syntax.ml" 97 2747 2819
+)
+"syntax.ml" 97 2747 2786 "syntax.ml" 97 2747 2787
+type(
+  string
+)
+ident(
+  def s "syntax.ml" 97 2747 2792 "syntax.ml" 97 2747 2819
+)
+"syntax.ml" 97 2747 2783 "syntax.ml" 97 2747 2788
+type(
+  int * string
+)
+"syntax.ml" 97 2747 2793 "syntax.ml" 97 2747 2804
+type(
+  int -> char -> string
+)
+ident(
+  ext_ref String.make
+)
+"syntax.ml" 97 2747 2806 "syntax.ml" 97 2747 2807
+type(
+  int
+)
+ident(
+  int_ref d "syntax.ml" 97 2747 2784 "syntax.ml" 97 2747 2785
+)
+"syntax.ml" 97 2747 2807 "syntax.ml" 97 2747 2808
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( * )
+)
+"syntax.ml" 97 2747 2808 "syntax.ml" 97 2747 2809
+type(
+  int
+)
+"syntax.ml" 97 2747 2805 "syntax.ml" 97 2747 2810
+type(
+  int
+)
+"syntax.ml" 97 2747 2811 "syntax.ml" 97 2747 2814
+type(
+  char
+)
+"syntax.ml" 97 2747 2792 "syntax.ml" 97 2747 2815
+call(
+  stack
+)
+type(
+  string
+)
+"syntax.ml" 97 2747 2816 "syntax.ml" 97 2747 2817
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"syntax.ml" 97 2747 2818 "syntax.ml" 97 2747 2819
+type(
+  string
+)
+ident(
+  int_ref s "syntax.ml" 97 2747 2786 "syntax.ml" 97 2747 2787
+)
+"syntax.ml" 97 2747 2792 "syntax.ml" 97 2747 2819
+call(
+  tail
+)
+type(
+  string
+)
+"syntax.ml" 97 2747 2778 "syntax.ml" 97 2747 2820
+type(
+  int * string -> string
+)
+"syntax.ml" 97 2747 2821 "syntax.ml" 97 2747 2823
+type(
+  (int * string) list
+)
+ident(
+  int_ref ss "syntax.ml" 96 2714 2719 "syntax.ml" 96 2714 2721
+)
+"syntax.ml" 97 2747 2768 "syntax.ml" 97 2747 2824
+call(
+  stack
+)
+type(
+  string list
+)
+"syntax.ml" 97 2747 2749 "syntax.ml" 97 2747 2824
+call(
+  stack
+)
+type(
+  string
+)
+"syntax.ml" 97 2747 2825 "syntax.ml" 97 2747 2826
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"syntax.ml" 97 2747 2827 "syntax.ml" 97 2747 2831
+type(
+  string
+)
+"syntax.ml" 97 2747 2749 "syntax.ml" 97 2747 2831
+call(
+  tail
+)
+type(
+  string
+)
+"syntax.ml" 96 2714 2715 "syntax.ml" 97 2747 2831
+type(
+  string
+)

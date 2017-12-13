@@ -52,8 +52,7 @@ let virtop2str op =
 	| OpMainRet -> "\tMainReturn " 
 
 
-let get_var_names op = 
-	let res = 
+let get_var_nameregs op = 
 	match op with
 	| OpMovi(na,c) -> [na]
 	| OpMov(na,nb) -> [na;nb]
@@ -67,8 +66,12 @@ let get_var_names op =
 	| OpMakeCls(na,nb,vs) -> na :: vs (* globalな関数名は含まない *)
 	| OpRet(na) -> [na]
 	| OpMainRet -> []
-	in
-		List.fold_left (fun r -> fun x -> match !(fst x) with Var a -> (a,snd x) :: r | _ -> r) [] res
+
+
+let get_var_names op = 
+	List.fold_left (fun r -> fun x -> 
+		match !(fst x) with Var a -> (a,snd x) :: r | _ -> r
+	) [] (get_var_nameregs op)
 
 let get_assigned op = 
 	let vs = 
@@ -79,17 +82,17 @@ let get_assigned op =
 	) in
 	List.map (fun (x,_) -> !x) vs
 	
-(*
-型情報について
-Movi .. 不要
-Mov .. どちらかいる
-Opr .. 必要(Oprにのってるきがしたが、ArrReadなどはいる)
-Jcnd .. (いまのところ)不要(intの比較なので)
-Label .. なし
-Jmp .. なし
-App .. 必要(引数もしくは関数に)
-MakeTuple,DestTuple .. 必要(どっちかに)
-MakeDCls .. 必要(どっちかに)
-OpRet .. 必要
-*)
+let remove_useless_jump ops = 
+	 (* とりあえず、雑に、隣り合っているやつを消す *)
+	let rec f xs = 
+		match xs with
+		| _ :: [] | [] -> xs
+		| a :: b :: ys -> (
+				match a,b with
+				| OpJmp(x),OpLabel(y) when x = y -> f ys
+				| _ -> a :: (f (b :: ys))
+			)
+	in
+		f ops
+
 

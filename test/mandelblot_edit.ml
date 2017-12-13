@@ -1,11 +1,8 @@
-(*MINCAML*) let rec dbl f = f +. f in
-(*NOMINCAML let dbl f = 2. *. f in *)
-(*NOMINCAML for y = 0 to 399 do *)
-(*MINCAML*) let rec yloop y =
-(*MINCAML*)   if y >= 40 then () else
-(*NOMINCAML   for x = 0 to 399 do *)
-(*MINCAML*)   let rec xloop x y =
-(*MINCAML*)     if x >= 40 then () else
+let rec dbl f = f +. f in
+let rec yloop y =
+	if y >= 40 then () else
+  let rec xloop x y =
+    if x >= 40 then () else
                 let cr = dbl (float_of_int x) /. 40.0 -. 1.5 in
                 let ci = dbl (float_of_int y) /. 40.0 -. 1.0 in
                 let rec iloop i zr zi zr2 zi2 cr ci =
@@ -19,28 +16,8 @@
                   if fless (2.0 *. 2.0) (zr2 +. zi2) then print_int 0 else
                   iloop (i - 1) zr zi zr2 zi2 cr ci in
                 iloop 1000 0.0 0.0 0.0 0.0 cr ci;
-(*
-                let i = ref 1000 in
-                let zr = ref 0.0 in
-                let zi = ref 0.0 in
-                let zr2 = ref 0.0 in
-                let zi2 = ref 0.0 in
-                while (if !i = 0 then (print_int 1; false) else
-                       let tr = !zr2 -. !zi2 +. cr in
-                       let ti = dbl !zr *. !zi +. ci in
-                       zr := tr;
-                       zi := ti;
-                       zr2 := !zr *. !zr;
-                       zi2 := !zi *. !zi;
-                       if !zr2 +. !zi2 > 2.0 *. 2.0 then (print_int 0; false) else
-                       true) do
-                  i := !i - 1
-                done;
-*)
-(*MINCAML*)     xloop (x + 1) y in
-(*MINCAML*)   xloop 0 y;
-				print_char 10;
-(*NOMINCAML   done; *)
-(*MINCAML*)   yloop (y + 1) in
-(*MINCAML*) yloop 0
-(*NOMINCAML done; *)
+     xloop (x + 1) y in
+   xloop 0 y;
+	print_char 10;
+  yloop (y + 1) in
+yloop 0

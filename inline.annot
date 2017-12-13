@@ -1,0 +1,939 @@
+"inline.ml" 5 40 48 "inline.ml" 5 40 54
+type(
+  Knorm.kexp -> (string * (Knorm.name list * Knorm.kexp)) list -> Knorm.kexp
+)
+ident(
+  def inline "inline.ml" 5 40 40 "inline.ml" 1 0 -1
+)
+"inline.ml" 5 40 55 "inline.ml" 5 40 58
+type(
+  Knorm.kexp
+)
+ident(
+  def ast "inline.ml" 5 40 59 "inline.ml" 29 810 821
+)
+"inline.ml" 5 40 59 "inline.ml" 5 40 62
+type(
+  (string * (Knorm.name list * Knorm.kexp)) list
+)
+ident(
+  def fns "inline.ml" 6 66 67 "inline.ml" 29 810 821
+)
+"inline.ml" 6 66 73 "inline.ml" 6 66 76
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "inline.ml" 5 40 55 "inline.ml" 5 40 58
+)
+"inline.ml" 7 82 89 "inline.ml" 7 82 91
+type(
+  Syntax.comptype
+)
+ident(
+  def op "inline.ml" 7 82 106 "inline.ml" 7 82 145
+)
+"inline.ml" 7 82 92 "inline.ml" 7 82 93
+type(
+  Knorm.name
+)
+ident(
+  def a "inline.ml" 7 82 106 "inline.ml" 7 82 145
+)
+"inline.ml" 7 82 94 "inline.ml" 7 82 95
+type(
+  Knorm.name
+)
+ident(
+  def b "inline.ml" 7 82 106 "inline.ml" 7 82 145
+)
+"inline.ml" 7 82 96 "inline.ml" 7 82 98
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "inline.ml" 7 82 106 "inline.ml" 7 82 145
+)
+"inline.ml" 7 82 99 "inline.ml" 7 82 101
+type(
+  Knorm.kexp
+)
+ident(
+  def e2 "inline.ml" 7 82 106 "inline.ml" 7 82 145
+)
+"inline.ml" 7 82 85 "inline.ml" 7 82 102
+type(
+  Knorm.kexp
+)
+"inline.ml" 7 82 110 "inline.ml" 7 82 112
+type(
+  Syntax.comptype
+)
+ident(
+  int_ref op "inline.ml" 7 82 89 "inline.ml" 7 82 91
+)
+"inline.ml" 7 82 113 "inline.ml" 7 82 114
+type(
+  Knorm.name
+)
+ident(
+  int_ref a "inline.ml" 7 82 92 "inline.ml" 7 82 93
+)
+"inline.ml" 7 82 115 "inline.ml" 7 82 116
+type(
+  Knorm.name
+)
+ident(
+  int_ref b "inline.ml" 7 82 94 "inline.ml" 7 82 95
+)
+"inline.ml" 7 82 117 "inline.ml" 7 82 123
+type(
+  Knorm.kexp -> (string * (Knorm.name list * Knorm.kexp)) list -> Knorm.kexp
+)
+ident(
+  int_ref inline "inline.ml" 5 40 48 "inline.ml" 5 40 54
+)
+"inline.ml" 7 82 124 "inline.ml" 7 82 126
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "inline.ml" 7 82 96 "inline.ml" 7 82 98
+)
+"inline.ml" 7 82 127 "inline.ml" 7 82 130
+type(
+  (string * (Knorm.name list * Knorm.kexp)) list
+)
+ident(
+  int_ref fns "inline.ml" 5 40 59 "inline.ml" 5 40 62
+)
+"inline.ml" 7 82 117 "inline.ml" 7 82 130
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"inline.ml" 7 82 131 "inline.ml" 7 82 137
+type(
+  Knorm.kexp -> (string * (Knorm.name list * Knorm.kexp)) list -> Knorm.kexp
+)
+ident(
+  int_ref inline "inline.ml" 5 40 48 "inline.ml" 5 40 54
+)
+"inline.ml" 7 82 138 "inline.ml" 7 82 140
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "inline.ml" 7 82 99 "inline.ml" 7 82 101
+)
+"inline.ml" 7 82 141 "inline.ml" 7 82 144
+type(
+  (string * (Knorm.name list * Knorm.kexp)) list
+)
+ident(
+  int_ref fns "inline.ml" 5 40 59 "inline.ml" 5 40 62
+)
+"inline.ml" 7 82 131 "inline.ml" 7 82 144
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"inline.ml" 7 82 106 "inline.ml" 7 82 145
+type(
+  Knorm.kexp
+)
+"inline.ml" 8 146 154 "inline.ml" 8 146 156
+type(
+  Knorm.name
+)
+ident(
+  def na "inline.ml" 8 146 167 "inline.ml" 8 146 203
+)
+"inline.ml" 8 146 157 "inline.ml" 8 146 159
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "inline.ml" 8 146 167 "inline.ml" 8 146 203
+)
+"inline.ml" 8 146 160 "inline.ml" 8 146 162
+type(
+  Knorm.kexp
+)
+ident(
+  def e2 "inline.ml" 8 146 167 "inline.ml" 8 146 203
+)
+"inline.ml" 8 146 149 "inline.ml" 8 146 163
+type(
+  Knorm.kexp
+)
+"inline.ml" 8 146 172 "inline.ml" 8 146 174
+type(
+  Knorm.name
+)
+ident(
+  int_ref na "inline.ml" 8 146 154 "inline.ml" 8 146 156
+)
+"inline.ml" 8 146 175 "inline.ml" 8 146 181
+type(
+  Knorm.kexp -> (string * (Knorm.name list * Knorm.kexp)) list -> Knorm.kexp
+)
+ident(
+  int_ref inline "inline.ml" 5 40 48 "inline.ml" 5 40 54
+)
+"inline.ml" 8 146 182 "inline.ml" 8 146 184
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "inline.ml" 8 146 157 "inline.ml" 8 146 159
+)
+"inline.ml" 8 146 185 "inline.ml" 8 146 188
+type(
+  (string * (Knorm.name list * Knorm.kexp)) list
+)
+ident(
+  int_ref fns "inline.ml" 5 40 59 "inline.ml" 5 40 62
+)
+"inline.ml" 8 146 175 "inline.ml" 8 146 188
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"inline.ml" 8 146 189 "inline.ml" 8 146 195
+type(
+  Knorm.kexp -> (string * (Knorm.name list * Knorm.kexp)) list -> Knorm.kexp
+)
+ident(
+  int_ref inline "inline.ml" 5 40 48 "inline.ml" 5 40 54
+)
+"inline.ml" 8 146 196 "inline.ml" 8 146 198
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "inline.ml" 8 146 160 "inline.ml" 8 146 162
+)
+"inline.ml" 8 146 199 "inline.ml" 8 146 202
+type(
+  (string * (Knorm.name list * Knorm.kexp)) list
+)
+ident(
+  int_ref fns "inline.ml" 5 40 59 "inline.ml" 5 40 62
+)
+"inline.ml" 8 146 189 "inline.ml" 8 146 202
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"inline.ml" 8 146 167 "inline.ml" 8 146 203
+type(
+  Knorm.kexp
+)
+"inline.ml" 9 204 217 "inline.ml" 9 204 219
+type(
+  Knorm.name list
+)
+ident(
+  def na "inline.ml" 9 204 230 "inline.ml" 9 204 260
+)
+"inline.ml" 9 204 220 "inline.ml" 9 204 222
+type(
+  Knorm.name
+)
+ident(
+  def vs "inline.ml" 9 204 230 "inline.ml" 9 204 260
+)
+"inline.ml" 9 204 223 "inline.ml" 9 204 225
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "inline.ml" 9 204 230 "inline.ml" 9 204 260
+)
+"inline.ml" 9 204 207 "inline.ml" 9 204 226
+type(
+  Knorm.kexp
+)
+"inline.ml" 9 204 240 "inline.ml" 9 204 242
+type(
+  Knorm.name list
+)
+ident(
+  int_ref na "inline.ml" 9 204 217 "inline.ml" 9 204 219
+)
+"inline.ml" 9 204 243 "inline.ml" 9 204 245
+type(
+  Knorm.name
+)
+ident(
+  int_ref vs "inline.ml" 9 204 220 "inline.ml" 9 204 222
+)
+"inline.ml" 9 204 246 "inline.ml" 9 204 252
+type(
+  Knorm.kexp -> (string * (Knorm.name list * Knorm.kexp)) list -> Knorm.kexp
+)
+ident(
+  int_ref inline "inline.ml" 5 40 48 "inline.ml" 5 40 54
+)
+"inline.ml" 9 204 253 "inline.ml" 9 204 255
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "inline.ml" 9 204 223 "inline.ml" 9 204 225
+)
+"inline.ml" 9 204 256 "inline.ml" 9 204 259
+type(
+  (string * (Knorm.name list * Knorm.kexp)) list
+)
+ident(
+  int_ref fns "inline.ml" 5 40 59 "inline.ml" 5 40 62
+)
+"inline.ml" 9 204 246 "inline.ml" 9 204 259
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"inline.ml" 9 204 230 "inline.ml" 9 204 260
+type(
+  Knorm.kexp
+)
+"inline.ml" 10 261 273 "inline.ml" 10 261 275
+type(
+  string
+)
+ident(
+  def fn "inline.ml" 10 261 294 "inline.ml" 16 469 472
+)
+"inline.ml" 10 261 276 "inline.ml" 10 261 279
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  def fdt "inline.ml" 10 261 294 "inline.ml" 16 469 472
+)
+"inline.ml" 10 261 272 "inline.ml" 10 261 280
+type(
+  Knorm.name
+)
+"inline.ml" 10 261 281 "inline.ml" 10 261 283
+type(
+  Knorm.name list
+)
+ident(
+  def vs "inline.ml" 10 261 294 "inline.ml" 16 469 472
+)
+"inline.ml" 10 261 284 "inline.ml" 10 261 286
+type(
+  Knorm.kexp
+)
+ident(
+  def e1 "inline.ml" 10 261 294 "inline.ml" 16 469 472
+)
+"inline.ml" 10 261 287 "inline.ml" 10 261 289
+type(
+  Knorm.kexp
+)
+ident(
+  def e2 "inline.ml" 10 261 294 "inline.ml" 16 469 472
+)
+"inline.ml" 10 261 264 "inline.ml" 10 261 290
+type(
+  Knorm.kexp
+)
+"inline.ml" 11 296 303 "inline.ml" 11 296 307
+type(
+  (string * (Knorm.name list * Knorm.kexp)) list
+)
+ident(
+  def tfns "inline.ml" 15 415 418 "inline.ml" 15 415 468
+)
+"inline.ml" 11 296 313 "inline.ml" 11 296 322
+type(
+  Knorm.kexp -> int
+)
+ident(
+  ext_ref Knorm.kexp_size
+)
+"inline.ml" 11 296 323 "inline.ml" 11 296 325
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "inline.ml" 10 261 284 "inline.ml" 10 261 286
+)
+"inline.ml" 11 296 313 "inline.ml" 11 296 325
+call(
+  stack
+)
+type(
+  int
+)
+"inline.ml" 11 296 326 "inline.ml" 11 296 327
+type(
+  int -> int -> bool
+)
+ident(
+  ext_ref Pervasives.( < )
+)
+"inline.ml" 11 296 328 "inline.ml" 11 296 330
+type(
+  int
+)
+"inline.ml" 11 296 313 "inline.ml" 11 296 330
+type(
+  bool
+)
+"inline.ml" 12 337 342 "inline.ml" 12 337 355
+type(
+  (string -> unit, out_channel, unit) format -> string -> unit
+)
+ident(
+  ext_ref Printf.printf
+)
+"inline.ml" 12 337 356 "inline.ml" 12 337 371
+type(
+  (string -> unit, out_channel, unit) format
+)
+"inline.ml" 12 337 372 "inline.ml" 12 337 374
+type(
+  string
+)
+ident(
+  int_ref fn "inline.ml" 10 261 273 "inline.ml" 10 261 275
+)
+"inline.ml" 12 337 342 "inline.ml" 12 337 374
+call(
+  stack
+)
+type(
+  unit
+)
+"inline.ml" 12 337 377 "inline.ml" 12 337 379
+type(
+  string
+)
+ident(
+  int_ref fn "inline.ml" 10 261 273 "inline.ml" 10 261 275
+)
+"inline.ml" 12 337 381 "inline.ml" 12 337 383
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "inline.ml" 10 261 281 "inline.ml" 10 261 283
+)
+"inline.ml" 12 337 384 "inline.ml" 12 337 386
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "inline.ml" 10 261 284 "inline.ml" 10 261 286
+)
+"inline.ml" 12 337 380 "inline.ml" 12 337 387
+type(
+  Knorm.name list * Knorm.kexp
+)
+"inline.ml" 12 337 376 "inline.ml" 12 337 388
+type(
+  string * (Knorm.name list * Knorm.kexp)
+)
+"inline.ml" 12 337 392 "inline.ml" 12 337 395
+type(
+  (string * (Knorm.name list * Knorm.kexp)) list
+)
+ident(
+  int_ref fns "inline.ml" 5 40 59 "inline.ml" 5 40 62
+)
+"inline.ml" 12 337 376 "inline.ml" 12 337 395
+type(
+  (string * (Knorm.name list * Knorm.kexp)) list
+)
+"inline.ml" 12 337 341 "inline.ml" 12 337 396
+type(
+  (string * (Knorm.name list * Knorm.kexp)) list
+)
+"inline.ml" 13 397 405 "inline.ml" 13 397 408
+type(
+  (string * (Knorm.name list * Knorm.kexp)) list
+)
+ident(
+  int_ref fns "inline.ml" 5 40 59 "inline.ml" 5 40 62
+)
+"inline.ml" 11 296 310 "inline.ml" 13 397 408
+type(
+  (string * (Knorm.name list * Knorm.kexp)) list
+)
+"inline.ml" 15 415 427 "inline.ml" 15 415 429
+type(
+  string
+)
+ident(
+  int_ref fn "inline.ml" 10 261 273 "inline.ml" 10 261 275
+)
+"inline.ml" 15 415 430 "inline.ml" 15 415 433
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  int_ref fdt "inline.ml" 10 261 276 "inline.ml" 10 261 279
+)
+"inline.ml" 15 415 426 "inline.ml" 15 415 434
+type(
+  Knorm.name
+)
+"inline.ml" 15 415 435 "inline.ml" 15 415 437
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "inline.ml" 10 261 281 "inline.ml" 10 261 283
+)
+"inline.ml" 15 415 438 "inline.ml" 15 415 444
+type(
+  Knorm.kexp -> (string * (Knorm.name list * Knorm.kexp)) list -> Knorm.kexp
+)
+ident(
+  int_ref inline "inline.ml" 5 40 48 "inline.ml" 5 40 54
+)
+"inline.ml" 15 415 445 "inline.ml" 15 415 447
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e1 "inline.ml" 10 261 284 "inline.ml" 10 261 286
+)
+"inline.ml" 15 415 448 "inline.ml" 15 415 452
+type(
+  (string * (Knorm.name list * Knorm.kexp)) list
+)
+ident(
+  int_ref tfns "inline.ml" 11 296 303 "inline.ml" 11 296 307
+)
+"inline.ml" 15 415 438 "inline.ml" 15 415 452
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"inline.ml" 15 415 453 "inline.ml" 15 415 459
+type(
+  Knorm.kexp -> (string * (Knorm.name list * Knorm.kexp)) list -> Knorm.kexp
+)
+ident(
+  int_ref inline "inline.ml" 5 40 48 "inline.ml" 5 40 54
+)
+"inline.ml" 15 415 460 "inline.ml" 15 415 462
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref e2 "inline.ml" 10 261 287 "inline.ml" 10 261 289
+)
+"inline.ml" 15 415 463 "inline.ml" 15 415 467
+type(
+  (string * (Knorm.name list * Knorm.kexp)) list
+)
+ident(
+  int_ref tfns "inline.ml" 11 296 303 "inline.ml" 11 296 307
+)
+"inline.ml" 15 415 453 "inline.ml" 15 415 467
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"inline.ml" 15 415 418 "inline.ml" 15 415 468
+type(
+  Knorm.kexp
+)
+"inline.ml" 10 261 294 "inline.ml" 16 469 472
+type(
+  Knorm.kexp
+)
+"inline.ml" 17 473 482 "inline.ml" 17 473 484
+type(
+  string
+)
+ident(
+  def fn "inline.ml" 17 473 497 "inline.ml" 28 806 809
+)
+"inline.ml" 17 473 485 "inline.ml" 17 473 488
+type(
+  Type_checker.ty * Debug.debug_data
+)
+ident(
+  def fdt "inline.ml" 17 473 497 "inline.ml" 28 806 809
+)
+"inline.ml" 17 473 481 "inline.ml" 17 473 489
+type(
+  Knorm.name
+)
+"inline.ml" 17 473 490 "inline.ml" 17 473 492
+type(
+  Knorm.name list
+)
+ident(
+  def vs "inline.ml" 17 473 497 "inline.ml" 28 806 809
+)
+"inline.ml" 17 473 476 "inline.ml" 17 473 493
+type(
+  Knorm.kexp
+)
+"inline.ml" 19 507 516 "inline.ml" 19 507 519
+type(
+  Knorm.name list
+)
+ident(
+  def tvs "inline.ml" 19 507 547 "inline.ml" 25 769 774
+)
+"inline.ml" 19 507 520 "inline.ml" 19 507 522
+type(
+  Knorm.kexp
+)
+ident(
+  def te "inline.ml" 19 507 547 "inline.ml" 25 769 774
+)
+"inline.ml" 19 507 515 "inline.ml" 19 507 523
+type(
+  Knorm.name list * Knorm.kexp
+)
+"inline.ml" 19 507 526 "inline.ml" 19 507 536
+type(
+  string ->
+  (string * (Knorm.name list * Knorm.kexp)) list ->
+  Knorm.name list * Knorm.kexp
+)
+ident(
+  ext_ref List.assoc
+)
+"inline.ml" 19 507 537 "inline.ml" 19 507 539
+type(
+  string
+)
+ident(
+  int_ref fn "inline.ml" 17 473 482 "inline.ml" 17 473 484
+)
+"inline.ml" 19 507 540 "inline.ml" 19 507 543
+type(
+  (string * (Knorm.name list * Knorm.kexp)) list
+)
+ident(
+  int_ref fns "inline.ml" 5 40 59 "inline.ml" 5 40 62
+)
+"inline.ml" 19 507 526 "inline.ml" 19 507 543
+call(
+  stack
+)
+type(
+  Knorm.name list * Knorm.kexp
+)
+"inline.ml" 21 558 564 "inline.ml" 21 558 574
+type(
+  Knorm.kexp -> (string * string) list -> Knorm.kexp
+)
+ident(
+  ext_ref Alpha.alpha_conv
+)
+"inline.ml" 21 558 575 "inline.ml" 21 558 577
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref te "inline.ml" 19 507 520 "inline.ml" 19 507 522
+)
+"inline.ml" 21 558 579 "inline.ml" 21 558 588
+type(
+  (Knorm.name -> Knorm.name -> string * string) ->
+  Knorm.name list -> Knorm.name list -> (string * string) list
+)
+ident(
+  ext_ref List.map2
+)
+"inline.ml" 21 558 595 "inline.ml" 21 558 596
+type(
+  string
+)
+ident(
+  def a "inline.ml" 21 558 603 "inline.ml" 21 558 621
+)
+"inline.ml" 21 558 597 "inline.ml" 21 558 598
+type(
+  Type_checker.ty * Debug.debug_data
+)
+"inline.ml" 21 558 594 "inline.ml" 21 558 599
+type(
+  Knorm.name
+)
+"inline.ml" 21 558 608 "inline.ml" 21 558 609
+type(
+  string
+)
+ident(
+  def b "inline.ml" 21 558 616 "inline.ml" 21 558 621
+)
+"inline.ml" 21 558 610 "inline.ml" 21 558 611
+type(
+  Type_checker.ty * Debug.debug_data
+)
+"inline.ml" 21 558 607 "inline.ml" 21 558 612
+type(
+  Knorm.name
+)
+"inline.ml" 21 558 617 "inline.ml" 21 558 618
+type(
+  string
+)
+ident(
+  int_ref a "inline.ml" 21 558 595 "inline.ml" 21 558 596
+)
+"inline.ml" 21 558 619 "inline.ml" 21 558 620
+type(
+  string
+)
+ident(
+  int_ref b "inline.ml" 21 558 608 "inline.ml" 21 558 609
+)
+"inline.ml" 21 558 616 "inline.ml" 21 558 621
+type(
+  string * string
+)
+"inline.ml" 21 558 603 "inline.ml" 21 558 621
+type(
+  Knorm.name -> string * string
+)
+"inline.ml" 21 558 589 "inline.ml" 21 558 622
+type(
+  Knorm.name -> Knorm.name -> string * string
+)
+"inline.ml" 21 558 623 "inline.ml" 21 558 626
+type(
+  Knorm.name list
+)
+ident(
+  int_ref tvs "inline.ml" 19 507 516 "inline.ml" 19 507 519
+)
+"inline.ml" 21 558 627 "inline.ml" 21 558 629
+type(
+  Knorm.name list
+)
+ident(
+  int_ref vs "inline.ml" 17 473 490 "inline.ml" 17 473 492
+)
+"inline.ml" 21 558 578 "inline.ml" 21 558 630
+call(
+  stack
+)
+type(
+  (string * string) list
+)
+"inline.ml" 21 558 564 "inline.ml" 21 558 630
+call(
+  stack
+)
+type(
+  Knorm.kexp
+)
+"inline.ml" 23 641 665 "inline.ml" 23 641 678
+type(
+  string
+)
+"inline.ml" 23 641 649 "inline.ml" 23 641 678
+type(
+  exn
+)
+"inline.ml" 24 683 690 "inline.ml" 24 683 695
+type(
+  exn -> Knorm.kexp
+)
+ident(
+  ext_ref Pervasives.raise
+)
+"inline.ml" 24 683 706 "inline.ml" 24 683 720
+type(
+  (string -> string, unit, string) format -> string -> string
+)
+ident(
+  ext_ref Printf.sprintf
+)
+"inline.ml" 24 683 721 "inline.ml" 24 683 750
+type(
+  (string -> string, unit, string) format
+)
+"inline.ml" 24 683 752 "inline.ml" 24 683 761
+type(
+  Knorm.kexp -> string
+)
+ident(
+  ext_ref Knorm.knorm2str
+)
+"inline.ml" 24 683 762 "inline.ml" 24 683 765
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "inline.ml" 5 40 55 "inline.ml" 5 40 58
+)
+"inline.ml" 24 683 751 "inline.ml" 24 683 766
+call(
+  stack
+)
+type(
+  string
+)
+"inline.ml" 24 683 705 "inline.ml" 24 683 767
+call(
+  stack
+)
+type(
+  string
+)
+"inline.ml" 24 683 696 "inline.ml" 24 683 768
+type(
+  exn
+)
+"inline.ml" 24 683 690 "inline.ml" 24 683 768
+type(
+  Knorm.kexp
+)
+"inline.ml" 19 507 547 "inline.ml" 25 769 774
+type(
+  Knorm.kexp
+)
+"inline.ml" 19 507 511 "inline.ml" 25 769 774
+type(
+  Knorm.kexp
+)
+"inline.ml" 27 783 789 "inline.ml" 27 783 798
+type(
+  exn
+)
+"inline.ml" 27 783 802 "inline.ml" 27 783 805
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "inline.ml" 5 40 55 "inline.ml" 5 40 58
+)
+"inline.ml" 17 473 497 "inline.ml" 28 806 809
+type(
+  Knorm.kexp
+)
+"inline.ml" 29 810 813 "inline.ml" 29 810 814
+type(
+  Knorm.kexp
+)
+"inline.ml" 29 810 818 "inline.ml" 29 810 821
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "inline.ml" 5 40 55 "inline.ml" 5 40 58
+)
+"inline.ml" 6 66 67 "inline.ml" 29 810 821
+type(
+  Knorm.kexp
+)
+"inline.ml" 31 823 827 "inline.ml" 31 823 834
+type(
+  Knorm.kexp -> Knorm.kexp
+)
+ident(
+  def inliner "inline.ml" 33 863 904 "inline.ml" 1 0 -1
+)
+"inline.ml" 31 823 835 "inline.ml" 31 823 838
+type(
+  Knorm.kexp
+)
+ident(
+  def ast "inline.ml" 32 842 843 "inline.ml" 33 863 904
+)
+"inline.ml" 32 842 843 "inline.ml" 32 842 850
+type(
+  string -> unit
+)
+ident(
+  ext_ref Main_option.ivprint
+)
+"inline.ml" 32 842 851 "inline.ml" 32 842 861
+type(
+  string
+)
+"inline.ml" 32 842 843 "inline.ml" 32 842 861
+call(
+  stack
+)
+type(
+  unit
+)
+"inline.ml" 33 863 867 "inline.ml" 33 863 868
+type(
+  bool ref -> bool
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"inline.ml" 33 863 868 "inline.ml" 33 863 876
+type(
+  bool ref
+)
+ident(
+  ext_ref Main_option.noinline
+)
+"inline.ml" 33 863 867 "inline.ml" 33 863 876
+type(
+  bool
+)
+"inline.ml" 33 863 882 "inline.ml" 33 863 885
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "inline.ml" 31 823 835 "inline.ml" 31 823 838
+)
+"inline.ml" 33 863 891 "inline.ml" 33 863 897
+type(
+  Knorm.kexp -> (string * (Knorm.name list * Knorm.kexp)) list -> Knorm.kexp
+)
+ident(
+  int_ref inline "inline.ml" 5 40 48 "inline.ml" 5 40 54
+)
+"inline.ml" 33 863 898 "inline.ml" 33 863 901
+type(
+  Knorm.kexp
+)
+ident(
+  int_ref ast "inline.ml" 31 823 835 "inline.ml" 31 823 838
+)
+"inline.ml" 33 863 902 "inline.ml" 33 863 904
+type(
+  (string * (Knorm.name list * Knorm.kexp)) list
+)
+"inline.ml" 33 863 891 "inline.ml" 33 863 904
+call(
+  tail
+)
+type(
+  Knorm.kexp
+)
+"inline.ml" 33 863 864 "inline.ml" 33 863 904
+type(
+  Knorm.kexp
+)
+"inline.ml" 32 842 843 "inline.ml" 33 863 904
+type(
+  Knorm.kexp
+)
