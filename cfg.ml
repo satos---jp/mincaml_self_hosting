@@ -64,6 +64,9 @@ class cfg_type =
 		val mutable args = ([] : name list)
 		method setargs x = args <- x
 		method args = args
+
+		val mutable globvars = ([] : string list)
+		method setglobvars x = globvars <- x
 		
 		method dump_cfg () = (
 			Printf.printf "root %d\n" root.idx;
@@ -105,15 +108,17 @@ class cfg_type =
 				Array.iteri (fun p -> fun x -> (* ブロックvの命令p *)
 					(* 各命令について、やっていく。 *)
 					match x with
-					| OpMov((na,_),(nb,_)) when !na <> !nb -> (
-						
+					| OpMov((na,_),(nb,_)) when !na <> !nb && not (match !nb with Var x -> List.mem x globvars | Reg _ -> false) -> (
+						(* globvars内の変数に書き換えようとしない。(正確には、左辺がだめなのだが。) *)
 						
 						(* 引数まわりから入ってくる変数はあきらめる *)
 						let cut_at_root = 
 							let tas = List.map (fun (x,_) -> Var x) args in
 							(List.mem !na tas || List.mem !nb tas)
 						in
-						Printf.printf "idx %d th %d :: %s cutat %d is %s\n" v.idx p (virtop2str x) root.idx (if cut_at_root then "true" else "false");
+						(*
+						Printf.printf "idx %d th %d :: %s cutat %d is %b\n" v.idx p (virtop2str x) root.idx cut_at_root;
+						*)
 						let head_ok = Array.make (List.length vs) true in
 						let tail_ok = Array.make (List.length vs) true in
 						(* 各ブロックの先頭でコピーできうるか *)
@@ -123,7 +128,9 @@ class cfg_type =
 						let rec dfs2 w b =
 							if visited w then () else ( (* 既に訪れている *)
 							(if not b || (cut_at_root && w.idx = root.idx) then ( (* だめという文脈で訪れた *)
+								(*
 								Printf.printf "dame at %d\n" w.idx;
+								*)
 								head_ok.(w.idx) <- false;
 								tail_ok.(w.idx) <- false
 							) else ());
@@ -138,10 +145,13 @@ class cfg_type =
 							Printf.printf "%s\n" (node2str w);
 							*)
 							if not tail_ok.(w.idx) then 
-								w.dst#iter (fun x -> dfs2 x false)
+								w.dst#iter (fun x -> 
+									dfs2 x false;
+									head_ok.(x.idx) <- false
+								)
 							else ())
 						in
-						List.iter (fun w -> if visited w then () else dfs2 w true) vs;
+						List.iter (fun w -> dfs2 w true) vs;
 						
 						(* 置換できそうなものを、上から可能な限り調べていく。 *)
 						List.iter (fun w -> 
@@ -151,7 +161,7 @@ class cfg_type =
 									let gas = get_assigned nop in
 									if List.mem !na gas || List.mem !nb gas then () else
 									(*　実際に、nbをnaで置換できる *)
-									(*  0x0000000237901d1a -> *)
+									(*  0x0000000235195dbb -> 0x000000023285cff3 *)
 									(*
 										Printf.printf "really subst %d : %s \n" q (virtop2str nop);
 									*)
@@ -160,12 +170,15 @@ class cfg_type =
 									List.iter (fun (nc,_) -> 
 										if !nc = !na then (b := true; nc := !nb) else ()
 									) gvn;
+									(*
 									(if !b then Printf.printf "really subst %d : %s \n" q (virtop2str nop) else ());
+									*)
 									loop (q+1))
 								else ()
 							in
-							
+							(*
 							Printf.printf "%s %b %b\n" (node2str w)  head_ok.(w.idx) (v.idx = w.idx);
+							*)
 							if head_ok.(w.idx) then loop 0 else ();
 							if v.idx = w.idx then loop (p+1) else ()
 						) vs;
@@ -181,6 +194,7 @@ class cfg_type =
 				dfs1 root;
 			
 			(* 自明なMovを取り除く *)
+			
 			List.iter (fun v -> 
 				v.ops <- Array.of_list (Array.fold_right (fun x -> fun r -> 
 					match x with
@@ -188,6 +202,9 @@ class cfg_type =
 					| _ -> x :: r
 				) v.ops []) 
 			) vs;
+			
+			Printf.printf "end_copy_anal\n";
+			sl#dump_cfg ();
 		)
 		
 		
@@ -350,10 +367,11 @@ let rec to_cfgs ast tov istail cfg fn head_label addtoroot =
 
 
 
-let cfg_toasms fn ismain args ast = 
+let cfg_toasms fn ismain args ast globvars = 
 	let ncfg = new cfg_type in
 	let head_label = genlabel () in
 	ncfg#setargs args;
+	ncfg#setglobvars globvars;
 	
 	let tov = if ismain then (
 		(ref (Var "@global_ret_val"),(TyInt,default_debug_data))

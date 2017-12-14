@@ -63,14 +63,14 @@ let rec to_virtual (fundefs,globvars,rd) =
 		match def with
 		| ClosFunDef(vs1,vs2,bo) -> (
 			let args = vs1 @ vs2 in
-			let ops = cfg_toasms fn false args bo in
+			let ops = cfg_toasms fn false args bo globvars in
 				{fn = fn; vs = vs1; cvs = vs2; body = {
 					ops = ops;
 					vs = get_var_names_from_ops ops ((List.map fst args) @ globvars @ funnames);
 				};})
 		) fundefs),
 	(let gfn = ("@global_main_func",(TyVar(-1),default_debug_data)) in
-	let ops = cfg_toasms gfn true [] rd in
+	let ops = cfg_toasms gfn true [] rd globvars in
 	{
 		ops = ops;
 		vs = get_var_names_from_ops ops (globvars @ funnames);
