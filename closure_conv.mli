@@ -14,8 +14,13 @@ type cexp =
 	| CLetTuple  of (name list) * name * cexp
 	| CClosure   of name * (name list)
 
-type globdef = ClosFunDef of (name list) * (name list) * cexp
+type globdef = {
+	fn: name;
+	cvs: name list;
+	vs: name list;
+	cbody: cexp; 
+}
 
-val clos2str : (name * globdef) list * (string list) * cexp -> string
-val conv : Knorm.kexp -> (name * globdef) list * (string list) * cexp
+val clos2str : globdef list * (string list) * cexp -> string
+val conv : Knorm.kexp -> globdef list * (string list) * cexp
 

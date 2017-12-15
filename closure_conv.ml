@@ -20,17 +20,20 @@ type cexp =
 	| CLetTuple  of (name list) * name * cexp
 	| CClosure   of name * (name list)
 
-type globdef = ClosFunDef of (name list) * (name list) * cexp
+type globdef = {
+	fn: name;
+	cvs: name list;
+	vs: name list;
+	cbody: cexp; 
+}
 
 (* globalになった関数のリスト *)
-let globals = ref ([] : (name * globdef) list)
+let globals = ref ([] : globdef list)
 
 (* globalな変数のリスト(これはtheなのでクロージャに渡さなくてよくなる) *)
 let globvars = ref ([] : string list)
 
-(*
-program .. cexp,globdef list 
-*)
+
 
 let name2str (na,(ty,_)) = na ^ " : " ^ (type2str ty)
 
@@ -53,14 +56,14 @@ let cexp2str ast =
 	let ss = cexp2str_base ast 0 in
 		(String.concat "\n" (List.map (fun (d,s) -> (String.make (d*2) ' ') ^ s) ss)) ^ "\n"
 
-let def2str def = 
-	match def with
-	| ClosFunDef(vs1,vs2,e) -> "Func " ^ (vs2str vs1) ^ (vs2str vs2) ^ "[\n" ^ (cexp2str e) ^ "]\n"
+let def2str {fn=(fn,_); cvs=cvs; vs=vs; cbody=body} = 
+	fn ^ " : Func " ^ (vs2str cvs) ^ (vs2str vs) ^ "[\n" ^ (cexp2str body) ^ "]\n"
+
 
 let clos2str (gs,globvars,v) = 
 	"globvars:\n" ^ 
 	(String.concat "\n" globvars) ^ "\n" ^
-	(String.concat "" (List.map (fun ((x,_),bo) -> x ^ " : " ^ (def2str bo)) (List.rev gs))) 
+	(String.concat "" (List.map def2str (List.rev gs))) 
 	^ (cexp2str v) ^ "\n" 
 
 
@@ -170,7 +173,7 @@ let rec remove_closure known istoplevel ast =
 				let cn = gencname () in (* 各クロージャで、一時的に作るやつ *)
 				let tknown = (fn,(cn,fun x -> CLet((cn,ft),CClosure((fn,ft),[]),x))) :: known in
 				let te1 = remove_closure tknown false e1 in
-					globals := ((fn,ft),ClosFunDef(fvs,args,te1)) :: !globals;
+					globals := {fn = (fn,ft); cvs = fvs; vs = args; cbody=te1} :: !globals;
 					remove_closure tknown istoplevel e2
 			) else (
 				(* fvsにクロージャのための引数一覧が入っていて、これを規約にやっていく *)
@@ -183,7 +186,7 @@ let rec remove_closure known istoplevel ast =
 					(* Printf.printf "name %s :: type %s\n" fn (type2str ft); *)
 					print_string (String.concat " : " (List.map fst fvs));
 					Printf.printf " :: %s .aka %s\n" global_name fn;
-					globals := ((global_name,ft),ClosFunDef(fvs,args,te1)) :: !globals;
+					globals := {fn = (global_name,ft); cvs=fvs; vs=args; cbody=te1} :: !globals;
 					to_add_closure (reccall e2)
 			)
 		)

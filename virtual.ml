@@ -10,7 +10,7 @@ open Main_option
 
 type funbody = {
 	ops: op list;
-	vs: Closure_conv.name list;
+	vs: name list;
 }
 
 type virtglobdef = {
@@ -48,34 +48,29 @@ let remove_vals vs ws = List.filter (fun (x,_) -> not (List.mem x ws)) vs
 let names2str vs = "[\n" ^ (String.concat ";\n" (List.map name2str vs)) ^ ";\n]\n"
 
 
-
-
-
 (* 命令列から、ローカルスタックに載せるべき引数を選別する *)
 let get_var_names_from_ops ops remove_names = 
 	let vs = List.fold_left (fun r -> fun x -> (get_var_names x) @ r) [] ops in
 	remove_vals (unique_name vs) remove_names
 
+
 let rec to_virtual (fundefs,globvars,rd) = 
-	let funnames = (List.map (fun ((x,_),_) -> x) fundefs) @ (global_funcs ())
+	let globnames = (List.map (fun {fn=(x,_); cbody=_} -> x) fundefs) @ (global_funcs ()) @ globvars
 	in
-	(List.map (fun (fn,def) -> 
-		match def with
-		| ClosFunDef(vs1,vs2,bo) -> (
-			let args = vs1 @ vs2 in
-			let ops = cfg_toasms fn false args bo globvars in
-				{fn = fn; vs = vs1; cvs = vs2; body = {
-					ops = ops;
-					vs = get_var_names_from_ops ops ((List.map fst args) @ globvars @ funnames);
-				};})
-		) fundefs),
+	(List.map (fun {fn=fn; cvs=vs1; vs=vs2; cbody=bo} -> 
+		let args = vs1 @ vs2 in
+		let ops = cfg_toasms fn false args bo globvars in
+			{fn = fn; vs = vs1; cvs = vs2; body = {
+				ops = ops;
+				vs = get_var_names_from_ops ops ((List.map fst args) @ globnames);
+			};}
+	) fundefs),
 	(let gfn = ("@global_main_func",(TyVar(-1),default_debug_data)) in
 	let ops = cfg_toasms gfn true [] rd globvars in
 	{
 		ops = ops;
-		vs = get_var_names_from_ops ops (globvars @ funnames);
+		vs = get_var_names_from_ops ops globnames;
 	}),
-	(* mainで末尾再帰はしなくてよいはず。 *)
 	globvars
 
 

@@ -110,8 +110,6 @@ class cfg_type =
 					(* 各命令について、やっていく。 *)
 					match x with
 					| OpMov((na,_),(nb,_)) when !na <> !nb -> (
-						(* globvars内の変数に書き換えようとしない。(正確には、左辺がだめなのだが。) *)
-						
 						(* 引数まわりから入ってくる変数はあきらめる *)
 						let cut_at_root = 
 							let tas = List.map (fun (x,_) -> Var x) args in

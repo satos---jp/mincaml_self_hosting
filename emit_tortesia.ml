@@ -76,17 +76,14 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	print_string ("On function " ^ fn ^ "\n");
 	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [r2$%d]" s p) on_stack)) ^"\n");
 	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [r4$%d]" s p) on_clos)) ^"\n");
-	let na2pt na = (
-		match !na with
-		| Var x -> (
+	let na2pt x = (
 		try ("r2",List.assoc x on_stack)
 		with | Not_found -> 
 		try ("r4",List.assoc x on_clos)
 		with | Not_found -> 
 		try ("r31",List.assoc x !on_glob_vars) (* 正直ガバなのでどうにかしたい *)
 		with | Not_found -> 
-		("@" ^ x,-1))
-		| Reg x -> raise (Failure "Register allocation for tortesia is not implemented yet")		
+		("@" ^ x,-1)
 	) in
 	let pt2s (a,b) = 
 		if String.get a 0 = '@' then String.sub a 1 ((String.length a)-1) else 
@@ -94,6 +91,11 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	in
 	let na2s x = pt2s (na2pt x) in
 	let nd2ps (na,_) = na2s na in
+	let ls2r ls r (na,_) = (
+		match !na with
+		| Var x -> (Printf.sprintf "\t%s %s,%s\n" ls r (nd2ps x)), r
+		| Reg x -> "",x
+	) in
 	let nd2ds (_,(_,d)) = (debug_data2simple d) in
 	let make_vs_on_heap vs = (
 		let nl = ref 0 in
@@ -121,15 +123,16 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 		"\tjr r6\n"))
 	)
 	in
-	let mova2b nad nbd = 
-			(Printf.sprintf "\tlw r5,%s\n" (nd2ps nbd)) ^
-			(Printf.sprintf "\tsw r5,%s\n" (nd2ps nad)) ^
-			"; " ^ (nd2ds nad) ^ " ::<= " ^ (nd2ds nbd) ^ "\n"
+	let mova2b nr na = 
+		let s1,r1 = ls2r "lw" "r5" na in
+		let s2,r2 = ls2r "sw" "r5" nr in
+		s1 ^ s2 ^
+		"; " ^ (nd2ds nad) ^ " ::<= " ^ (nd2ds nbd) ^ "\n"
 	in
 	let unopr2s nr na s = 
-		(Printf.sprintf "\tlw r5,%s\n" (nd2ps na)) ^
-		s ^ 
-		(Printf.sprintf "\tsw r5,%s\n" (nd2ps nr))
+		let s1,r1 = ls2r "lw" "r5" na in
+		let s2,r2 = ls2r "sw" "r5" nr in
+		s1 ^ (s r1 r2) ^ s2
 	in
 	let biopr2s nr na nb s = 
 		(Printf.sprintf "\tlw r6,%s\n" (nd2ps nb)) ^
@@ -227,7 +230,6 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 				epilogue
 			)
 		| OpMainRet -> (
-				"\tli r5,$0\n" ^
 				epilogue
 			)
 		| OpOpr(nrd,Osemi2,[_;nbd]) -> mova2b nrd nbd
@@ -343,11 +345,6 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 			)
 		| OpOpr(_,x,vs) -> raise (Failure (Printf.sprintf "Operation %s with %d argument in not defined yet" (op2str x) (List.length vs)))
 	) ops))
-(*
- nasm out.s -f elf32 -g -o out.o; gcc -m32 out.o
- nasm out.s -f win32 -g -o out.o; gcc -m32 out.o
-
-*)
 
 
 let read_all_data filename = 
@@ -363,7 +360,7 @@ let read_all_data filename =
 
 let vir2asm (funs,rd,globvars) = 
 	init_globvars globvars;
-	(read_all_data "lib_zatsu_tortesia.s") ^
+	(read_all_data "lib_tortesia.s") ^
 	(String.concat "" (List.map func2asm (List.rev funs))) ^	
 	(func2asm {fn=(main_name,(TyVar(-1),default_debug_data)); vs=[]; cvs=[]; body=rd})
 

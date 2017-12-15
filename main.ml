@@ -72,6 +72,7 @@ if argc <= 1 then (
 		("-noinline",Arg.Set noinline,"stop inlining");
 		("-o",Arg.Set_string output_filename,"output filename");
 		("-asi",Arg.Set asmsin_asmint,"use x86 tirgonal and x86 print_int");
+		("-stack",Arg.Set all_stack,"put allarguments on stack for tortesia");
 	] (fun fn -> files := (!files) @ [fn]) (Printf.sprintf "Usage: %s filename\n" Sys.argv.(0));
 	let ast = Source2ast.s2a (List.hd !files) in
 	files := (
@@ -118,7 +119,10 @@ if argc <= 1 then (
 	print_string "virtualized";  print_newline ();
 	vprint virt2str vrt;
 	let asm = (if !tortesia then 
-		Emit_zatsu_tortesia.vir2asm vrt 
+		if !all_stack then 
+			Emit_zatsu_tortesia.vir2asm vrt 
+		else 
+			Emit_tortesia.vir2asm vrt 
 	else
 		Emit_zatsu_x86.vir2asm vrt)
 	in

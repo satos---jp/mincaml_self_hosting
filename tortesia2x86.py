@@ -331,6 +331,12 @@ def ftoi(v):
 		"mov [%s],eax" % v[0],
 		"add esp,4"
 	]
+	
+def rtof(v):
+	return mov(v)
+
+def ftor(v):
+	return mov(v)
 
 def fld(v):
 	return lw(v)

@@ -5,7 +5,7 @@ SOURCES = debug.ml main_option.ml linux_win_diff.ml genint.ml \
 	remove_tuple.ml \
 	lambda_lift.ml closure_conv.ml \
 	op.ml cfg.ml virtual.ml \
-	emit_zatsu_x86.ml emit_zatsu_tortesia.ml \
+	emit_zatsu_x86.ml emit_zatsu_tortesia.ml emit_tortesia.ml \
 	main.ml 
 RESULT = main
 

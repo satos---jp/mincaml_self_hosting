@@ -9,6 +9,7 @@ cp ../libio_win.s ./
 cp ../libio_linux.s ./
 cp ../lib_tortesia.ml ./
 cp ../lib_tortesia.s ./
+cp ../lib_zatsu_tortesia.s ./
 cp ../lib_tortesia_to_x86.s ./
 cp ../lib_sinint.ml ./
 
@@ -38,7 +39,7 @@ exec_x86(){
 
 exec_tortesia(){
 	#tortesia -> x86 で実行
-	./main -d $1 -noinline -t -asi -o o_tortesia.s > /dev/null
+	./main -d $1 -noinline -t -asi -stack -o o_tortesia.s > /dev/null
 	python ../tortesia2x86.py < o_tortesia.s > o_tortesia2x86.s
 	nasm o_tortesia2x86.s -f elf32 -g -o out.o
 	gcc -m32 -nostdlib out.o -o a.out
