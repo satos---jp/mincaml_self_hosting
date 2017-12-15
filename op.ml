@@ -81,7 +81,25 @@ let get_assigned op =
 	| OpDestTuple(vs,_) -> vs
 	) in
 	List.map (fun (x,_) -> !x) vs
-	
+
+let get_assigner op = 
+	let vs = 
+	(match op with
+	| OpMovi(na,c) -> []
+	| OpMov(na,nb) -> [nb]
+	| OpOpr(na,opr,vs) -> vs
+	| OpJcnd(cmp,na,nb,la) -> [na;nb]
+	| OpJmp(la) -> []
+	| OpLabel(la) -> []
+	| OpApp(b1,b2,na,nb,vs) -> nb :: vs 
+	| OpMakeTuple(na,vs) -> vs
+	| OpDestTuple(vs,na) -> [na]
+	| OpMakeCls(na,nb,vs) -> vs (* globalな関数名は含まない *)
+	| OpRet(na) -> [na]
+	| OpMainRet -> []
+	) in
+	List.map (fun (x,_) -> x) vs
+
 let remove_useless_jump ops = 
 	 (* とりあえず、雑に、隣り合っているやつを消す *)
 	let rec f xs = 

@@ -7,7 +7,7 @@ open Main_option
 
 let genlabel () = Printf.sprintf "@cfg_label_%d" (genint ())
 
-let genvar (_,td) = (ref (Var (Printf.sprintf "@cfg_var_%d" (genint ()))),td)
+let genvar (_,td) = (Printf.sprintf "@cfg_var_%d" (genint ()),td)
 
 class ['a] set = 
 	object 
@@ -97,9 +97,10 @@ class cfg_type =
 		(* コピー解析をする。 *)
 		(* コピー、 p = ∧ pred(p) なので、おそらく最大不動点をとるのがよさそう。 *)
 		method copy_anal () = (
-			
+			(*
 			Printf.printf "start_copy_anal\n";
 			sl#dump_cfg ();
+			*)
 			
 			sl#ungone ();
 			(* 各代入文に対して全探索をする *)
@@ -108,7 +109,7 @@ class cfg_type =
 				Array.iteri (fun p -> fun x -> (* ブロックvの命令p *)
 					(* 各命令について、やっていく。 *)
 					match x with
-					| OpMov((na,_),(nb,_)) when !na <> !nb && not (match !nb with Var x -> List.mem x globvars | Reg _ -> false) -> (
+					| OpMov((na,_),(nb,_)) when !na <> !nb -> (
 						(* globvars内の変数に書き換えようとしない。(正確には、左辺がだめなのだが。) *)
 						
 						(* 引数まわりから入ってくる変数はあきらめる *)
@@ -158,22 +159,25 @@ class cfg_type =
 							let rec loop q = 
 								if q < Array.length w.ops then
 									let nop = w.ops.(q) in
-									let gas = get_assigned nop in
-									if List.mem !na gas || List.mem !nb gas then () else
-									(*　実際に、nbをnaで置換できる *)
-									(*  0x0000000235195dbb -> 0x000000023285cff3 *)
-									(*
-										Printf.printf "really subst %d : %s \n" q (virtop2str nop);
-									*)
-									(let b = ref false in
-									let gvn = get_var_nameregs nop in
-									List.iter (fun (nc,_) -> 
-										if !nc = !na then (b := true; nc := !nb) else ()
-									) gvn;
-									(*
-									(if !b then Printf.printf "really subst %d : %s \n" q (virtop2str nop) else ());
-									*)
-									loop (q+1))
+									if v.idx = w.idx && p = q then () (* 自分自身は置換しない *)
+									else (
+										(*　実際に、nbをnaで置換できる *)
+										(*  0x0000000237901d1a -> 0x0000000231ed9750 *)
+										(* TODO 多分、mov eax,eax的なのをこの時点で除いたほうが置換が進む *)
+										(*
+											Printf.printf "really subst %d : %s \n" q (virtop2str nop);
+										*)
+										let b = ref false in
+										let gan = get_assigner nop in
+										List.iter (fun nc -> 
+											if !nc = !na then (b := true; nc := !nb) else ()
+										) gan;
+										(*
+										(if !b then Printf.printf "really subst %d : %s \n" q (virtop2str nop) else ());
+										*)
+										let gas = get_assigned nop in
+										if List.mem !na gas || List.mem !nb gas then () else loop (q+1)
+									)
 								else ()
 							in
 							(*
@@ -203,11 +207,15 @@ class cfg_type =
 				) v.ops []) 
 			) vs;
 			
+			(*
 			Printf.printf "end_copy_anal\n";
 			sl#dump_cfg ();
+			*)
 		)
 		
-		
+		method regalloc () = (
+			
+		)
 		
 		method contract () = (
 			vs <- List.fold_left (fun r -> fun v -> 
@@ -287,15 +295,14 @@ let rec to_cfgs ast tov istail cfg fn head_label addtoroot =
 		to_cfgs x tov istail cfg fn head_label addtoroot
 	in
 	match ast with
-	| CConst(x) -> sres (OpMovi(tov,x))
+	| CConst(x) -> sres (OpMovi(cna2na tov,x))
 	| COp(x,vs) -> (
 			match x,vs with
 			| Syntax.Osemi1,[_] -> mres [] (* 虚無でよい *)
-			| Syntax.Osemi2,[_;na] -> sres (OpMov(tov,cna2na na))
-			| _ -> sres (OpOpr(tov,x,cvs2vs vs))
+			| Syntax.Osemi2,[_;na] -> sres (OpMov(cna2na tov,cna2na na))
+			| _ -> sres (OpOpr(cna2na tov,x,cvs2vs vs))
 		)
 	| CLet(na,e1,e2) -> (
-			let na = cna2na na in
 			let ch1,cts1 = (to_cfgs e1 na false cfg fn head_label addtoroot) in
 			let ch2,cts2 = (reccall e2) in
 			List.iter (fun x -> 
@@ -304,14 +311,12 @@ let rec to_cfgs ast tov istail cfg fn head_label addtoroot =
 			(ch1,cts2)
 		)
 	| CIf(cmpty,a,b,e1,e2) -> (
-			let a = cna2na a in
-			let b = cna2na b in
 			let ch1,cts1 = (reccall e1) in
 			let ch2,cts2 = (reccall e2) in
 			(* とりあえず、両方共Jmpにしておいて、flattenの後の最適化で消してもらう *)
 			let lc1 = genlabel () in
 			let lc2 = genlabel () in
-			let chd = singleton (OpJcnd(cmpty,a,b,lc2)) in
+			let chd = singleton (OpJcnd(cmpty,cna2na a,cna2na b,lc2)) in
 			chd.ops <- addtail chd.ops (OpJmp(lc1));
 			ch1.ops <- addhead (OpLabel(lc1)) ch1.ops;
 			ch2.ops <- addhead (OpLabel(lc2)) ch2.ops;
@@ -323,23 +328,18 @@ let rec to_cfgs ast tov istail cfg fn head_label addtoroot =
 			if List.mem (fst x) (global_funcs ()) then 
 				reccall (CClosure(x,[]))
 			else
-				let x = cna2na x in
-				sres (OpMov(tov,x))
+				sres (OpMov(cna2na tov,cna2na x))
 		)
 	| CApp(a,b) -> (
-			let a = cna2na a in
-			let b = cvs2vs b in
-				sres (OpApp((if istail then Tail else NonTail),InDirApp,tov,a,b))
+			sres (OpApp((if istail then Tail else NonTail),InDirApp,cna2na tov,cna2na a,cvs2vs b))
 		)
 	| CDirApp(a,b) -> (
-			let a = cna2na a in
-			let b = cvs2vs b in
-			if istail && !(fst a) = (Var fn) then ( 
+			if istail && (fst a) = fn then ( 
 				(* 実際に末尾再帰させる*)
 				let tvs = List.map genvar cfg#args in
 				let v = multiton (
-					(List.map2 (fun x -> fun y -> OpMov(x,y)) tvs b) @
-					(List.map2 (fun x -> fun y -> OpMov(x,y)) (cvs2vs cfg#args) tvs) @
+					(List.map2 (fun x -> fun y -> OpMov(cna2na x,cna2na y)) tvs b) @
+					(List.map2 (fun x -> fun y -> OpMov(cna2na x,cna2na y)) cfg#args tvs) @
 					[OpJmp(head_label)]
 				) in
 				addtoroot := v :: !addtoroot; 
@@ -347,22 +347,18 @@ let rec to_cfgs ast tov istail cfg fn head_label addtoroot =
 				(* この場合、この後にretは付けなくてよい。 *)
 			)
 			else
-				sres (OpApp((if istail then Tail else NonTail),DirApp,tov,a,b))
+				sres (OpApp((if istail then Tail else NonTail),DirApp,cna2na tov,cna2na a,cvs2vs b))
 		)
 	| CTuple(vs) -> (
-			let vs = cvs2vs vs in
-			sres (OpMakeTuple(tov,vs))
+			sres (OpMakeTuple(cna2na tov,cvs2vs vs))
 		)
 	| CLetTuple(vs,ta,e1) -> (
-			let vs = cvs2vs vs in
-			let ta = cna2na ta in
 			let ch1,cts1 = (reccall e1) in
-			ch1.ops <- addhead (OpDestTuple(vs,ta)) ch1.ops;
+			ch1.ops <- addhead (OpDestTuple(cvs2vs vs,cna2na ta)) ch1.ops;
 			(ch1,cts1)
 		)
 	| CClosure(na,vs) -> (
-			let vs = cvs2vs vs in
-			sres (OpMakeCls(tov,na,vs))
+			sres (OpMakeCls(cna2na tov,na,cvs2vs vs))
 		)
 
 
@@ -374,10 +370,10 @@ let cfg_toasms fn ismain args ast globvars =
 	ncfg#setglobvars globvars;
 	
 	let tov = if ismain then (
-		(ref (Var "@global_ret_val"),(TyInt,default_debug_data))
+		("@global_ret_val",(TyInt,default_debug_data))
 	) else (
 		let rd = snd (snd fn) in
-		let rv = ref (Var ("@ret_val_" ^ (fst fn))) in
+		let rv = ("@ret_val_" ^ (fst fn)) in
 		let rt = 
 			match fst (snd fn) with
 			| TyFun(_,x) -> x
@@ -386,7 +382,8 @@ let cfg_toasms fn ismain args ast globvars =
 		(rv,(rt,rd))
 	)
 	in
-	let retop = if ismain then [OpMainRet] else [OpRet(tov)] in
+	(* opret、実体ごとに作らないといけないはず。 *)
+	let retop = (fun () -> if ismain then [OpMainRet] else [OpRet(cna2na tov)]) in
 	
 	let addtoroot = ref [] in
 	let rt,gls = to_cfgs ast tov true ncfg (fst fn) head_label addtoroot in
@@ -398,7 +395,7 @@ let cfg_toasms fn ismain args ast globvars =
 	) !addtoroot;
 	ncfg#contract ();
 	List.iter (fun v -> 
-		 v.ops <- Array.append v.ops (Array.of_list retop)
+		 v.ops <- Array.append v.ops (Array.of_list (retop ()))
 	) gls;
 	(*
 	*)

@@ -12,18 +12,6 @@ let gen_const () = Printf.sprintf "@const_%d" (genint ())
 
 let genlabel () = Printf.sprintf "@emit_label_%d" (genint ())
 
-let vs2stacks vs = 
-	let rec f (ar,sl) vs = 
-		match vs with
-		| [] -> (ar,sl)
-		| (na,ty) :: xs -> 
-			let nl = 4
-				(* 関数は(クロージャへのポインタ,関数へのポインタ)で持ち、それ以外は1つで 
-					 と思ったが、あまりにも面倒なので、ヒープに持ちます *)
-			in
-				f ((na,sl) :: ar,nl+sl) xs
-	in
-		f ([],0) vs
 
 (*
 [ebp-0x4] 以降 .. ローカル変数
@@ -31,16 +19,6 @@ let vs2stacks vs =
 [ebp+0x4] .. retaddr
 [ebp+0x8] 以下 .. 引数
 で。
-
-とりあえず、ediにクロージャポインタは持っておいて、
-call時にpushしたりする
-あと、esiにヒープへのポインタでも持っておきますか
-
-
-返り値は、ふつう、eaxに。関数の場合は、eax,ebxで。
-
-全体のglobalな値への参照をどないしよう
-全体を let rec g () = ... in g () とすればよさそう？(雑)
 
 
 とりあえず、
@@ -50,9 +28,16 @@ r2 :: ebp
 r3 :: esi (ヒープポインタ)
 r4 :: edi (クロージャへのポインタ)
 
+r31 :: グローバルヒープへのポインタ
 とします。
+
+関数引数 r30 ... r10, f31 .. f10 をそれぞれこの順に。余ればスタックに。
+一時変数 r5 ... r7, f1,f2 。
+その他は全て、とりあえずcallee save でやっていく。
+
 *)
 
+(* globalな変数のヒープ上の初期化をしておく *)
 let on_glob_vars = ref []
 let heap_diff = ref 0
 let init_globvars gvs = 
@@ -62,6 +47,18 @@ let init_globvars gvs =
 	) [] gvs
 
 let main_name = "main"
+
+let vs2stacks vs = 
+	let rec f (ar,sl) vs = 
+		match vs with
+		| [] -> (ar,sl)
+		| (na,ty) :: xs -> 
+			let nl = 4
+			in
+				f ((na,sl) :: ar,nl+sl) xs
+	in
+		f ([],0) vs
+
 
 
 let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} = 
@@ -112,9 +109,6 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	let prologue = 
 		"\tmflr r7\n" ^ 
 		"\tpush r7\n" ^ 
-		(* canary 
-		(Printf.sprintf "\tli r30,$%d\n" canary) ^ 
-		"\tpush r30\n" ^ *) 
 		
 		(if fn = main_name then Printf.sprintf "\tmov r31,r3\n\taddi r3,r3,$%d\n" !heap_diff else "") ^
 		(Printf.sprintf "\tpush r2\n\tmov r2,r1\n\tsubi r1,r1,$%d\n" (snd lvs_st))
@@ -122,12 +116,6 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	let epilogue = (
 		(if fn = main_name then "\thlt\n" else 
 		((Printf.sprintf "\taddi r1,r1,$%d\n\tpop r2\n" (snd lvs_st)) ^
-		(* canary 
-		(Printf.sprintf "\tli r30,$%d\n" canary) ^ 
-		"\tpop r29\n" ^
-		"\txor r30,r30,r29\n" ^ 
-		"\tcheck r30\n" ^
-		*)
 		
  		"\tpop r6\n" ^ 
 		"\tjr r6\n"))
@@ -244,18 +232,6 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 			)
 		| OpOpr(nrd,Osemi2,[_;nbd]) -> mova2b nrd nbd
 		| OpOpr(nrd,Osemi1,[nad]) -> mova2b nrd nad
-(*
-		| OpOpr(nrd,op,[nad]) -> (
-				let os = op2str op in
-				(unopr2s nrd nad (
-					match op with
-					| Ominus -> "\tneg eax\n"
-					| Onot   -> "\ttest eax,eax\n\tsete al\n\tand eax,1\n"
-					| _ -> raise (Failure (Printf.sprintf "Operation %s is not unary operation" os))
-			 	)) ^
-				"; " ^ (nd2ds nrd) ^ " ::= " ^ os ^ " " ^ (nd2ds nad) ^ "\n"
-			)
-*)
 		| OpOpr(nrd,op,[nad]) -> (
 				let rec tomul a = 
 					(if a <= 0 then "" else (tomul (a/2))) ^
