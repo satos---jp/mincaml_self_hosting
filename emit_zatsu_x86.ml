@@ -76,14 +76,18 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	let na2pt na = (
 		match !na with
 		| Var x -> (
-		try ("ebp",List.assoc x on_stack)
-		with | Not_found -> 
-		try ("edi",List.assoc x on_clos)
-		with | Not_found -> 
-		try ("global_heap",List.assoc x !on_glob_vars)
-		with | Not_found -> 
-		("@" ^ x,-1))
-		| Reg x -> raise (Failure "Register allocation for x86 is not implemented yet")
+			try ("ebp",List.assoc x on_stack)
+			with | Not_found -> 
+			try ("edi",List.assoc x on_clos)
+			with | Not_found -> 
+			raise (Failure "var should be on the stack or closure")
+		)
+		| GVar x -> (
+			try ("global_heap",List.assoc x !on_glob_vars)
+			with | Not_found -> 
+			("@" ^ x,-1)
+		)
+		| Reg _ -> raise (Failure "Register allocation for x86 is not implemented yet")
 	) in
 	let pt2s (a,b) = 
 		if String.get a 0 = '@' then String.sub a 1 ((String.length a)-1) else 
@@ -236,9 +240,11 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 			)
 		| OpApp(istail,isdir,nad,((fn,_) as fnd),vs) -> (
 				let rfn = (na2s fn) in
+				(*
+				Printf.printf "funname %s -> %s\n" (namereg2str fnd) rfn;
+				*)
 				let isglobal = List.mem rfn (global_funcs ()) in
 				(* x86のtail化はやめておく *)
-				let istail = false in
 				let isdir = match isdir with DirApp -> true | InDirApp -> false in
 				let ln = ref 0 in
 				let s = 
@@ -259,7 +265,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 				"\tpop edi\n"
 				^
 				"; " ^ (nd2ds nad) ^ " " ^ (nd2ds fnd) ^ "\n" ^ 
-				"; " ^ (Printf.sprintf "%s : %s" (if isdir then "dir" else "indir") (if istail then "tail" else "nontail")) ^ "\n"
+				"; " ^ (Printf.sprintf "%s : %s" (if isdir then "dir" else "indir") (if false then "tail" else "nontail")) ^ "\n"
 			)
 		| OpRet((na,nt)) -> (
 				(let (p,l) = na2pt na in

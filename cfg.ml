@@ -65,9 +65,6 @@ class cfg_type =
 		method setargs x = args <- x
 		method args = args
 
-		val mutable globvars = ([] : string list)
-		method setglobvars x = globvars <- x
-		
 		method dump_cfg () = (
 			Printf.printf "root %d\n" root.idx;
 			List.iter (fun x -> 
@@ -262,6 +259,15 @@ let connect_cfg csrc cdst =
 	cdst.src#add csrc;
 	csrc.ops <- addtail csrc.ops (OpJmp(la));
 	cdst.ops <- addhead (OpLabel(la)) cdst.ops
+	
+
+let globs = ref []
+
+let cna2na (na,td) = 
+	if List.mem na !globs then (ref (GVar na),td)
+		else (ref (Var na),td)
+
+let cvs2vs vs = List.map cna2na vs
 
 (* cfgの入り口,[出口になりうるもののリスト]、を組でかえす *)
 let rec to_cfgs ast tov istail cfg fn head_label addtoroot = 
@@ -361,11 +367,11 @@ let rec to_cfgs ast tov istail cfg fn head_label addtoroot =
 
 
 
-let cfg_toasms fn ismain args ast globvars = 
+let cfg_toasms fn ismain args ast funnames heapvars = 
+	globs := (funnames @ heapvars);
 	let ncfg = new cfg_type in
 	let head_label = genlabel () in
 	ncfg#setargs args;
-	ncfg#setglobvars globvars;
 	
 	let tov = if ismain then (
 		("@global_ret_val",(TyInt,default_debug_data))

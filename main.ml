@@ -118,12 +118,15 @@ if argc <= 1 then (
 	let vrt = Virtual.to_virtual cls in
 	print_string "virtualized";  print_newline ();
 	vprint virt2str vrt;
-	let asm = (if !tortesia then 
+	let asm = (if !tortesia then (
 		if !all_stack then 
 			Emit_zatsu_tortesia.vir2asm vrt 
 		else 
 			Emit_tortesia.vir2asm vrt 
-	else
+(*
+			Emit_zatsu_tortesia.vir2asm vrt 
+*)
+	) else
 		Emit_zatsu_x86.vir2asm vrt)
 	in
 	vprint (fun x -> x) asm;

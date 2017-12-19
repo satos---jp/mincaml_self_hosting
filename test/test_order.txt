@@ -4,9 +4,9 @@ var_func.ml
 simple_recursion.ml
 print_int.ml
 io.ml io_i.txt
+global_array_rw.ml
 array_rw.ml array_rw_i.txt
 fib.ml
-global_array_rw.ml
 make_dest_tuple.ml
 closure_buggy.ml
 ftoi_itof.ml

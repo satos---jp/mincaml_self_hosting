@@ -4,7 +4,8 @@ open Debug
 
 
 
-type namestr = Var of string | Reg of string
+(* グローバル変数と関数ラベル名 | ローカル変数 | レジスタ名 *)
+type namestr = GVar of string | Var of string | Reg of string
 type namereg = (namestr ref) * (ty * debug_data)
 
 val namereg2str : namereg -> string
@@ -12,9 +13,6 @@ val vs2str : namereg list -> string
 
 type name = string * (ty * debug_data)
 
-
-val cna2na : name -> namereg
-val cvs2vs : name list -> namereg list
 
 type label = string
 type istailcall = Tail | NonTail

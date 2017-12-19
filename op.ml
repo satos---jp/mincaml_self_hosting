@@ -2,7 +2,7 @@ open Syntax
 open Type_checker
 open Debug
 
-type namestr = Var of string | Reg of string
+type namestr = GVar of string | Var of string | Reg of string
 type namereg = (namestr ref) * (ty * debug_data)
 
 type name = string * (ty * debug_data)
@@ -10,14 +10,11 @@ let name2str (na,(ty,_)) = na
 
 let namereg2str (na,(ty,_)) = 
 	match !na with
+	| GVar x -> "GlobalVar_" ^ x 
 	| Var x -> "Var_" ^ x 
 	| Reg x -> "Reg_" ^ x 
 
 let vs2str vs = "(" ^ (String.concat " , " (List.map namereg2str vs)) ^ ")"
-
-let cna2na (na,td) = (ref (Var na),td) 
-let cvs2vs vs = List.map cna2na vs
-
 
 type label = string
 type istailcall = Tail | NonTail

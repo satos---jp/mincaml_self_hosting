@@ -79,14 +79,18 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	let na2pt na = (
 		match !na with
 		| Var x -> (
-		try ("r2",List.assoc x on_stack)
-		with | Not_found -> 
-		try ("r4",List.assoc x on_clos)
-		with | Not_found -> 
-		try ("r31",List.assoc x !on_glob_vars) (* 正直ガバなのでどうにかしたい *)
-		with | Not_found -> 
-		("@" ^ x,-1))
-		| Reg x -> raise (Failure "Register allocation for tortesia is not implemented yet")		
+			try ("r2",List.assoc x on_stack)
+			with | Not_found -> 
+			try ("r4",List.assoc x on_clos)
+			with | Not_found -> 
+			raise (Failure "var should be on the stack or closure")
+		)
+		| GVar x -> (
+			try ("r31",List.assoc x !on_glob_vars)
+			with | Not_found -> 
+			("@" ^ x,-1)
+		)
+		| Reg _ -> raise (Failure "Register allocation for tortesia is not implemented yet")		
 	) in
 	let pt2s (a,b) = 
 		if String.get a 0 = '@' then String.sub a 1 ((String.length a)-1) else 
