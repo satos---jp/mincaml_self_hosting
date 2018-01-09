@@ -190,7 +190,32 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 		(Printf.sprintf "\tmov ecx,%s\n" (nd2ps nc)) ^
 		(biopr2s nr na nb s)
 	in
-	
+	let print_errstr s = 
+		let ls = String.length s in
+		let tag = gen_const () in
+		constfs := (!constfs) ^ (Printf.sprintf "%s:\n\tdb \"%s\"\n" tag s);
+		(Printf.sprintf "\tmov eax,%d\n\tpush eax\n" ls) ^ 
+		(Printf.sprintf "\tmov eax,%s\n\tpush eax\n" tag) ^ 
+		"\tcall puts_err\n\tadd esp,8\n"
+	in
+	let abort d = 
+		(print_errstr ("Abort " ^ (debug_data2str d) ^ " ")) ^
+		"\tint 0x3\n"	
+	in
+	let check_boundary d = 
+		let la = genlabel () in
+		let lb = genlabel () in
+		"\tcmp ebx,0\n" ^
+		(Printf.sprintf "\tjl %s\n" la) ^
+		"\tcmp ebx,dword [eax]\n" ^
+		(Printf.sprintf "\tjl %s\n" lb) ^
+		(* チェック失敗 *)
+		(Printf.sprintf "%s:\n" la) ^ 
+		(abort d) ^
+		(* チェック成功 *)
+		(Printf.sprintf "%s:\n" lb) ^ 
+		"\tadd eax,4\n"
+	in
 	fn ^ ":\n" ^ prologue ^ 
 	(String.concat "" (List.map (fun op -> 
 		match op with
@@ -292,11 +317,11 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 			 	)) ^
 				"; " ^ (nd2ds nrd) ^ " ::= " ^ os ^ " " ^ (nd2ds nad) ^ "\n"
 			)
-		| OpOpr(nrd,op,[nad;nbd]) -> (
-				let os = op2str op in
-				(if List.mem op [Ofadd;Ofsub;Ofmul;Ofdiv] then (
+		| OpOpr(nrd,opr,[nad;nbd]) -> (
+				let os = op2str opr in
+				(if List.mem opr [Ofadd;Ofsub;Ofmul;Ofdiv] then (
 					fbiopr2s nrd nad nbd (
-						match op with
+						match opr with
 						| Ofadd -> "\tfaddp\n"
 						| Ofsub -> "\tfsubp\n"
 						| Ofmul -> "\tfmulp\n"
@@ -305,14 +330,14 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 					) 
 				) else (
 					(* 多相性のため。もっと型チェックを入れてもいいかもしれん *)
-					match op with 
+					match opr with 
 					| Oeq | Oneq | Olt | Oleq | Ogt | Ogeq -> (
 						let isf = ((fst (snd nad)) = TyFloat) in
 						(if isf then fcmpopr2s else biopr2s) nrd nad nbd (
 							"\txor ecx,ecx\n" ^
 							(if isf then "\tfcomip\n" else "\tcmp eax,ebx\n") ^ 
 							(if isf then (
-								match op with
+								match opr with
 								| Oeq  -> "\tsete cl\n"
 								| Oneq -> "\tsetne cl\n"
 								| Olt  -> "\tseta cl\n"
@@ -321,7 +346,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 								| Ogeq -> "\tsetbe cl\n"
 								| _ -> raise (Failure (Printf.sprintf "ocmp swith shouldn't reach here"))
 							) else (
-								match op with
+								match opr with
 								| Oeq  -> "\tsete cl\n"
 								| Oneq -> "\tsetne cl\n"
 								| Olt  -> "\tsetl cl\n"
@@ -336,7 +361,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 					) 
 					| _ -> (
 						biopr2s nrd nad nbd ( 
-							match op with
+							match opr with
 							| Oadd -> "\tadd eax,ebx\n"
 							| Osub -> "\tsub eax,ebx\n"
 							| Omul -> "\tmul ebx\n"
@@ -345,6 +370,10 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 									let la = genlabel () in
 									let lb = genlabel () in
 									"\tmov ecx,esi\n" ^
+									(if !check_array_boundary then (
+										"\tmov dword [esi],eax\n" ^ 
+										"\tadd esi,4\n"
+									) else "") ^
 									"\ttest eax,eax\n" ^
 									(Printf.sprintf "\tje %s\n" lb) ^
 									(Printf.sprintf "%s:\n" la) ^ 
@@ -355,18 +384,26 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 									(Printf.sprintf "%s:\n" lb) ^ 
 									"\tmov eax,ecx\n"
 						 		)
-						 	| OArrRead -> "\tmov eax,dword [eax+4*ebx]\n"
+						 	| OArrRead -> (
+						 			let (_,(_,d)) = nrd in
+						 			(if !check_array_boundary then check_boundary d else "") ^ 
+						 			"\tmov eax,dword [eax+4*ebx]\n"
+						 		)
 						 	| _ -> raise (Failure (Printf.sprintf "Operation %s is not unfloat binary operation" os))
 						) 
 					) 
 				)) ^
 				"; " ^ (nd2ds nrd) ^ " ::= " ^ os ^ " " ^ (nd2ds nad) ^ " " ^ (nd2ds nbd) ^ "\n"
 			)
-		| OpOpr(nrd,op,[nad;nbd;ncd]) -> (
-				let os = op2str op in
+		| OpOpr(nrd,opr,[nad;nbd;ncd]) -> (
+				let os = op2str opr in
 				(triopr2s nrd nad nbd ncd (
-					match op with
-					| OArrWrite -> "\tmov dword [eax+4*ebx],ecx\n"
+					match opr with
+					| OArrWrite -> (
+							let (_,(_,d)) = nrd in
+						 	(if !check_array_boundary then check_boundary d else "") ^ 
+						 	"\tmov dword [eax+4*ebx],ecx\n"
+						)
 					| _ -> raise (Failure (Printf.sprintf "Operation %s is not trinary operation" os))
 				)) ^
 				"; " ^ (nd2ds nrd) ^ " ::= " ^ os ^ " " ^ (nd2ds nad) ^ " " ^ (nd2ds nbd) ^ " " ^ (nd2ds ncd) ^ "\n"

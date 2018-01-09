@@ -62,18 +62,7 @@ if argc <= 1 then (
 	Printf.printf "Usage: %s filename\n" Sys.argv.(0)
 ) else (
 	let files = (ref [] : string list ref) in
-	Arg.parse [
-		("-nolib",Arg.Set nolib,"stop including lib.ml");
-		("-v",Arg.Set verbose,"verbose debug info");
-		("-t",Arg.Set tortesia,"compile for tortesia");
-		("-w",Arg.Set windows,"compile for windows x86");
-		("-d",Arg.Set debugmode,"debug inscount on");
-		("-noopt",Arg.Set nooptimization,"stop optimization");
-		("-noinline",Arg.Set noinline,"stop inlining");
-		("-o",Arg.Set_string output_filename,"output filename");
-		("-asi",Arg.Set asmsin_asmint,"use x86 tirgonal and x86 print_int");
-		("-stack",Arg.Set all_stack,"put allarguments on stack for tortesia");
-	] (fun fn -> files := (!files) @ [fn]) (Printf.sprintf "Usage: %s filename\n" Sys.argv.(0));
+	argparse files;
 	let ast = Source2ast.s2a (List.hd !files) in
 	files := (
 		if !nolib then []

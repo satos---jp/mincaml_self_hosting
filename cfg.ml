@@ -64,7 +64,7 @@ class cfg_type =
 		val mutable args = ([] : name list)
 		method setargs x = args <- x
 		method args = args
-
+		
 		method dump_cfg () = (
 			Printf.printf "root %d\n" root.idx;
 			List.iter (fun x -> 
@@ -207,6 +207,23 @@ class cfg_type =
 			sl#dump_cfg ();
 			*)
 		)
+		
+		(*
+		method collect_names () = (
+			let res = ref [] in
+			sl#idfs (fun v -> 
+				res := @ !res
+			);
+			!res
+		)
+		
+		
+		method liveanal () = (
+			(* かっせー、かいせきー。アルファ変換されてるので覚えるのは名前だけでいいはず。 *)
+			sl#ungone ();
+			let rec dfs1 v = 
+		)
+		*)
 		
 		method regalloc () = (
 			
@@ -364,7 +381,6 @@ let rec to_cfgs ast tov istail cfg fn head_label addtoroot =
 	| CClosure(na,vs) -> (
 			sres (OpMakeCls(cna2na tov,na,cvs2vs vs))
 		)
-
 
 
 let cfg_toasms fn ismain args ast funnames heapvars = 

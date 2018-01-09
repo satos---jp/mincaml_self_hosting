@@ -28,3 +28,11 @@ print_char_err:
 	int 0x80
 	ret
 
+puts_err:
+	mov edx,dword [esp+0x8]
+	mov ecx,dword [esp+0x4]
+	mov ebx,2
+	mov eax,4
+	int 0x80
+	ret
+
