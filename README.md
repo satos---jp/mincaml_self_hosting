@@ -13,12 +13,13 @@ Min-Camlのソースコードをnasm向けのアセンブリにコンパイル�
 
 # 使い方
 例えばlinuxの場合、
+```
 $ make
 $ ./main [ソースコード名]
 $ nasm out.s -o -f elf32 -o out.o
 $ gcc -m32 -nostdlib out.o -o a.out
 $ ./a.out
-
+```
 とするとコンパイル → 実行ができます。
 windowsの場合、 -w オプションをつけてコンパイルして、 elf32 を win32 にすればよいです。 
 
