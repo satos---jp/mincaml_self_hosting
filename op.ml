@@ -8,11 +8,13 @@ type namereg = (namestr ref) * (ty * debug_data)
 type name = string * (ty * debug_data)
 let name2str (na,(ty,_)) = na 
 
-let namereg2str (na,(ty,_)) = 
-	match !na with
+let namestr2str na = 
+	match na with
 	| GVar x -> "GlobalVar_" ^ x 
 	| Var x -> "Var_" ^ x 
 	| Reg x -> "Reg_" ^ x 
+	
+let namereg2str (na,(ty,_)) = namestr2str !na
 
 let vs2str vs = "(" ^ (String.concat " , " (List.map namereg2str vs)) ^ ")"
 
@@ -63,12 +65,6 @@ let get_var_nameregs op =
 	| OpMakeCls(na,nb,vs) -> na :: vs (* globalな関数名は含まない *)
 	| OpRet(na) -> [na]
 	| OpMainRet -> []
-
-
-let get_var_names op = 
-	List.fold_left (fun r -> fun x -> 
-		match !(fst x) with Var a -> (a,snd x) :: r | _ -> r
-	) [] (get_var_nameregs op)
 
 let get_assigned op = 
 	let vs = 

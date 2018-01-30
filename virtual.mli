@@ -3,13 +3,14 @@ open Op
 
 type funbody = {
 	ops: op list;
-	vs: name list;
+	vs: namereg list;
 }
 
 type virtglobdef = {
 	fn: name;
-	vs: name list;
-	cvs: name list;
+	vs: namereg list;
+	cvs: namereg list;
+	regs: string list;
 	body: funbody;
 }
 

@@ -8,6 +8,7 @@ open Debug
 type namestr = GVar of string | Var of string | Reg of string
 type namereg = (namestr ref) * (ty * debug_data)
 
+val namestr2str : namestr -> string 
 val namereg2str : namereg -> string
 val vs2str : namereg list -> string
 
@@ -35,7 +36,6 @@ type op =
 val virtop2str : op -> string
 
 val get_var_nameregs : op -> namereg list
-val get_var_names : op -> Closure_conv.name list
 val get_assigned : op -> namestr list
 val get_assigner : op -> (namestr ref) list
 

@@ -37,10 +37,23 @@ exec_x86(){
 	fi	
 }
 
+exec_tortesia_zatsu(){
+	#tortesia -> x86 で実行
+	./main -d $1 -noinline -t -asi -stack -o o_tortesia.s > /dev/null
+	python ../tortesia2x86.py < o_tortesia.s > o_tortesia2x86.s
+	nasm o_tortesia2x86.s -f elf32 -g -o out.o
+	gcc -m32 -nostdlib out.o -o a.out
+	if [ -z $3 ]; then 
+		./a.out > $2
+	else
+		./a.out < $3 > $2
+	fi
+}
+
 exec_tortesia(){
 	#tortesia -> x86 で実行
 	./main -d $1 -noinline -t -asi -o o_tortesia.s > /dev/null
-	python ../tortesia2x86.py < o_tortesia.s > o_tortesia2x86.s
+	python ../tortesia2x86.py -r < o_tortesia.s > o_tortesia2x86.s
 	nasm o_tortesia2x86.s -f elf32 -g -o out.o
 	gcc -m32 -nostdlib out.o -o a.out
 	if [ -z $3 ]; then 
@@ -52,6 +65,7 @@ exec_tortesia(){
 
 cat test_order.txt | while read file input
 do
+	rm tmp.ml a.out oo.txt oa.txt o_tortesia.s o_x86.s o_tortesia2x86.s
 	if [ -z $file ]; then 
 		break
 	fi
@@ -60,6 +74,7 @@ do
 	
 	#exec_ocaml $file oa.txt $input
 	exec_x86 $file oo.txt $input 
+	#exec_tortesia_zatsu $file oa.txt $input
 	exec_tortesia $file oa.txt $input
 	
 	#比較
@@ -71,5 +86,4 @@ do
 		break
 	fi
 	#break
-	rm tmp.ml a.out oo.txt oa.txt o_tortesia.s o_x86.s o_tortesia2x86.s
 done

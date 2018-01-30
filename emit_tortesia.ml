@@ -5,6 +5,7 @@ open Debug
 open Genint
 open Op
 open Str
+open Main_option
 (* とりあえず、雑に tortesia コードを生成する *)
 
 let constfs = ref ""
@@ -38,6 +39,28 @@ r31 :: グローバルヒープへのポインタ
 
 *)
 
+(* 引数のnamereg配列をレジスタ名にしていく *)
+let args2regs vs rf ff otherfunc =
+	let rec recf nas i nrs nfs = 
+		match nas with
+		| [] -> []
+		| ((_,(t,_)) as x) :: xs -> (
+			match t,nrs,nfs with
+			| TyFloat,_,f :: fs -> (ff f x) :: (recf xs (i+1) nrs fs)
+			| TyFloat,_,[] -> (otherfunc i x) :: (recf xs (i+1) nrs nfs)
+			| _,r :: rs,_ -> (rf r x) :: (recf xs (i+1) rs nfs)
+			| _ -> (otherfunc i x) :: (recf xs (i+1) nrs nfs)
+		)
+	in
+		let rec range a b = if a < b then a :: (range (a+1) b) else [] 
+		in
+		recf vs 0 
+			(List.map (fun x -> Printf.sprintf "r%d" x) (range 10 20)) 
+			(List.map (fun x -> Printf.sprintf "f%d" x) (range 10 20))
+
+		
+
+
 (* globalな変数のヒープ上の初期化をしておく *)
 let on_heap_vars = ref []
 let heap_diff = ref 0
@@ -54,11 +77,15 @@ let vs2stacks vs =
 		match vs with
 		| [] -> (ar,sl)
 		| (na,ty) :: xs -> 
-			let nl = 4
-			in
-				f ((na,sl) :: ar,nl+sl) xs
+			let nl = 4 in
+			match !na with
+			| Var tna -> f ((tna,sl) :: ar,nl+sl) xs
+			| Reg _ | GVar _ -> f (ar,nl+sl) xs
 	in
 		f ([],0) vs
+
+
+
 
 (*
 名前には 5 種類あり、
@@ -79,35 +106,40 @@ let vs2stacks vs =
 レジスタ割り当てされるのは、ローカル変数のみ。
 *)
 
-let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} = 
+
+let mapi f vs = 
+	let rec g i =
+		function
+		| [] -> []
+		| x :: xs -> (f i x) :: (g (i+1) xs)
+	in g 0 vs
+
+let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} = 
 	(*
 	Printf.printf "%s%s%s" (Closure_conv.vs2str vs1) (Closure_conv.vs2str vs2) (Closure_conv.vs2str localvs);
 	*)
 	let lvs_st = vs2stacks localvs in
-	let vs1_st = vs2stacks vs1 in
-	let vs2_st = vs2stacks vs2 in
+	let vs_st = vs2stacks vs in
+	let cvs_st = vs2stacks cvs in
 	
 	let on_stack = 
 		(List.map (fun (x,p) -> (x,p-(snd lvs_st))) (fst lvs_st)) @
-		(List.map (fun (x,p) -> (x,p+8)) (fst vs2_st)) in
-	let on_clos = fst vs1_st in
+		(List.map (fun (x,p) -> (x,p+8)) (fst vs_st)) in
+	
+	let on_clos = fst cvs_st in
 	print_string ("On function " ^ fn ^ "\n");
 	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [r2$%d]" s p) on_stack)) ^"\n");
 	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [r4$%d]" s p) on_clos)) ^"\n");
-	let na2pt x = (
-		try ("r2",List.assoc x on_stack)
+
+	let na2s x = 
+		try Printf.sprintf "r2,$%d" (List.assoc x on_stack)
 		with | Not_found -> 
-		try ("r4",List.assoc x on_clos)
+		try Printf.sprintf "r4,$%d" (List.assoc x on_clos)
 		with | Not_found -> 
-		try ("r31",List.assoc x !on_heap_vars) (* 正直ガバなのでどうにかしたい *)
+		try Printf.sprintf "r31,$%d" (List.assoc x !on_heap_vars) (* 正直ガバなのでどうにかしたい *)
 		with | Not_found -> 
-		("@" ^ x,-1)
-	) in
-	let pt2s (a,b) = 
-		if String.get a 0 = '@' then String.sub a 1 ((String.length a)-1) else 
-			Printf.sprintf "%s,$%d" a b 
+		x
 	in
-	let na2s x = pt2s (na2pt x) in
 	let ls2r ls r (na,_) = (
 		let res,rg = 
 		match !na with
@@ -117,6 +149,22 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 		res,rg
 	) in
 	let nd2ds (_,(_,d)) = (debug_data2simple d) in
+	let mova2b nr na = 
+		(match !(fst nr),!(fst na) with
+		| Var r,Var a | Var r,GVar a | GVar r,Var a | GVar r,GVar a -> (fst (ls2r "lw" "r5" na)) ^ (fst (ls2r "sw" "r5" nr))
+		| Reg r,Var a | Reg r,GVar a -> Printf.sprintf "\tlw %s,%s\n" r (na2s a)
+		| Var r,Reg a | GVar r,Reg a -> Printf.sprintf "\tsw %s,%s\n" a (na2s r)
+		| Reg r,Reg a -> Printf.sprintf "\tmov %s,%s\n" r a
+		) ^		"; " ^ (nd2ds na) ^ " ::<= " ^ (nd2ds nr) ^ "\n"
+	in
+	let v2reg tr na = 
+		let s,r = ls2r "lw" tr na in
+		if tr = r then s else (Printf.sprintf "\tmov %s,%s\n" tr r)
+	in
+	let reg2v na tr = 
+		let s,r = ls2r "sw" tr na in
+		if tr = r then s else (Printf.sprintf "\tmov %s,%s\n" r tr)		
+	in
 	let make_vs_on_heap vs = (
 		let nl = ref 0 in
 		let cs = 
@@ -128,29 +176,49 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 			) vs)) in
 		cs ^ (Printf.sprintf "\taddi r3,r3,$%d\n" !nl)
 	) in
-	(* let canary = genint () in *)
+	(* callee save することにする *)
+	(* r5は、返り値なので抜いておく *)
 	let prologue = 
 		"\tmflr r7\n" ^ 
 		"\tpush r7\n" ^ 
-		
 		(if fn = main_name then Printf.sprintf "\tmov r31,r3\n\taddi r3,r3,$%d\n" !heap_diff else "") ^
-		(Printf.sprintf "\tpush r2\n\tmov r2,r1\n\tsubi r1,r1,$%d\n" (snd lvs_st))
+		(Printf.sprintf "\tpush r2\n\tmov r2,r1\n\tsubi r1,r1,$%d\n" (snd lvs_st)) ^
+		
+		(String.concat "" (List.map (fun x -> if x = "r5" then "" else Printf.sprintf "\tpush %s\n" x) regs)) ^
+		
+		(ivprint (Printf.sprintf "vs length %d\n" (List.length vs));
+		(* 引数を、必要ならば指定のレジスタに割り当てておく *)
+		let f r ((x,_) as na) = 
+			match !x with
+			| Reg tr -> Printf.sprintf "\tmov %s,%s\n" tr r
+			| _ -> (
+				ivprint (Printf.sprintf "arg %s is not register" (namestr2str !x));
+				reg2v na r
+			)
+		in
+		(String.concat "" (args2regs vs
+			f
+			f
+			(fun _ _ -> "")
+		))) ^
+		(* クロージャ引数を、必要ならば指定のレジスタに割り当てておく *)
+		(String.concat "" (mapi (fun i (x,_) -> 
+			match !x with
+			| Reg r -> (
+				Printf.sprintf "\tlw %s,r4,$%d\n" r (i*4)
+			)
+			| _ -> ""
+		) cvs))
 	in
+	ivprint (Printf.sprintf "Plorogue:\n %s" prologue);
 	let epilogue = (
 		(if fn = main_name then "\thlt\n" else 
-		((Printf.sprintf "\taddi r1,r1,$%d\n\tpop r2\n" (snd lvs_st)) ^
+		(String.concat "" (List.map (fun x -> if x = "r5" then "" else Printf.sprintf "\tpop %s\n" x) (List.rev regs))) ^
 		
+		((Printf.sprintf "\taddi r1,r1,$%d\n\tpop r2\n" (snd lvs_st)) ^	
  		"\tpop r6\n" ^ 
 		"\tjr r6\n"))
 	)
-	in
-	let mova2b nr na = 
-		(match !(fst nr),!(fst na) with
-		| Var r,Var a | Var r,GVar a | GVar r,Var a | GVar r,GVar a -> (fst (ls2r "lw" "r5" na)) ^ (fst (ls2r "sw" "r5" nr))
-		| Reg r,Var a | Reg r,GVar a -> Printf.sprintf "\tlw %s,%s\n" r (na2s a)
-		| Var r,Reg a | GVar r,Reg a -> Printf.sprintf "\tsw %s,%s\n" (na2s r) a
-		| Reg r,Reg a -> Printf.sprintf "\tmov %s,%s\n" r a
-		) ^		"; " ^ (nd2ds na) ^ " ::<= " ^ (nd2ds nr) ^ "\n"
 	in
 	(* この辺、かっこよくしたい *)
 	let myprint0 s r = 
@@ -194,14 +262,6 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 		let s4,r4 = ls2r "lw" "r7" nc in
 		let s2,r2 = ls2r "sw" "r5" nr in
 		s1 ^ s3 ^ s4 ^ (myprint3 s r2 r1 r3 r4) ^ s2
-	in
-	let v2reg tr na = 
-		let s,r = ls2r "lw" tr na in
-		if tr = r then s else (Printf.sprintf "mov %s,%s" tr r)
-	in
-	let reg2v na tr = 
-		let s,r = ls2r "sw" tr na in
-		if tr = r then s else (Printf.sprintf "mov %s,%s" r tr)		
 	in
 	fn ^ ":\n" ^ prologue ^ 
 	(String.concat "" (List.map (fun op -> 
@@ -249,7 +309,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 		| OpMakeCls(nr,((fn,_) as fnd),vs) -> (
 			(* closureは、[プログラムへのポインタ,引数] のこの順での組。 *)
 				"\tmov r6,r3\n" ^ 
-				(make_vs_on_heap vs) ^
+				(make_vs_on_heap vs) ^ 
 				"\tsw r6,r3,$4\n" ^ 
 				(Printf.sprintf "\tli r5,%s\n" fn) ^ 
 				"\tsw r5,r3,$0\n" ^ 
@@ -257,16 +317,25 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 				"\taddi r3,r3,$8\n" ^
 				"; " ^ (nd2ds nr) ^ " "^ (nd2ds fnd) ^ "\n"
 			)
-		| OpApp(istail,isdir,nr,((fn,_) as fnd),vs) -> (
-				let nl = ref 0 in
+		| OpApp(istail,isdir,((_,(t,_)) as nr),((fn,_) as fnd),vs) -> (
+				let nl = 4 * (List.length vs) in (* これ、もう割り当てておくことにする *)
 				let s = 
 				"\tpush r4\n" ^
-				(String.concat "" (List.map (fun na -> 
-					nl := !nl + 4;
-					let s,r = ls2r "lw" "r5" na in
-					s ^ 
-					(Printf.sprintf "\tpush %s\n" r)
-				) (List.rev vs))) ^ (* 逆にpushする *)
+				(* とりあえず引いておく。(これがないと、子で割り当てられないときにつむ) *)
+				(Printf.sprintf "\tsubi r1,r1,$%d\n" nl) ^
+				(* 引数をレジスタにする *)
+				(String.concat "" (args2regs vs 
+					(fun r x -> mova2b (ref (Reg r),snd x) x)
+					(fun f x -> mova2b (ref (Reg f),snd x) x)
+					(fun i ((na,(t,_)) as x) -> 
+						let r = (match !na,t with Reg tr,_ -> tr | _,TyFloat -> "f5" | _,_ -> "r5") in
+						let s,r = ls2r "lw" r x in
+						s ^ 
+						(Printf.sprintf "\tsw %s,r1,$%d\n" r (i*4))
+					)
+				)) ^ 
+				
+				(* call *)
 				(if (match !fn with GVar x when List.mem x (global_funcs ()) -> true | _ -> false) || isdir = DirApp then (
 					match !fn with
 					| GVar x -> Printf.sprintf "\tjal %s\n" x
@@ -282,15 +351,18 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 					(Printf.sprintf "\tlw %s,%s,$0\n" r r) ^ 
 					(Printf.sprintf "\tjalr %s\n" r)
 				)) ^ 
-				(reg2v nr "r5")
+				(match t with
+				 | TyFloat -> (reg2v nr "f5")
+				 | _ -> (reg2v nr "r5")
+				)
 				in (* こうしないと、nlがアップデートされない *)
 				s ^ 
-				(Printf.sprintf "\taddi r1,r1,$%d\n" !nl) ^
+				(Printf.sprintf "\taddi r1,r1,$%d\n" nl) ^
 				"\tpop r4\n" ^
 				"; " ^ (nd2ds nr) ^ " " ^ (nd2ds fnd) ^ "\n"
 			)
-		| OpRet(na) -> (
-				(v2reg "r5" na) ^
+		| OpRet((_,(t,_)) as na) -> (
+				(v2reg (match t with TyFloat -> "f5" | _ -> "r5") na) ^
 				epilogue
 			)
 		| OpMainRet -> (
@@ -426,7 +498,7 @@ let vir2asm (funs,rd,heapvars) =
 	init_heapvars heapvars;
 	(read_all_data "lib_tortesia.s") ^
 	(String.concat "" (List.map func2asm (List.rev funs))) ^	
-	(func2asm {fn=(main_name,(TyVar(-1),default_debug_data)); vs=[]; cvs=[]; body=rd})
+	(func2asm {fn=(main_name,(TyVar(-1),default_debug_data)); vs=[]; regs=[]; cvs=[]; body=rd})
 
 
 

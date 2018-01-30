@@ -179,6 +179,9 @@ let rec remove_closure known istoplevel ast =
 				(* fvsにクロージャのための引数一覧が入っていて、これを規約にやっていく *)
 				let global_name = gencname () in (* globalでの名前 *)
 				(* これの内側で呼ばれる関数には、とりあえず全てこの処理を施しておく(関数が出現しないものには無駄だが) *)
+				
+				(* TODO alpha変換をさせておきたい(cfgの際に名前が同じだと困る) *)
+				(* とりあえず、cfgのほうでどうにかする *)
 				let to_add_closure = fun x -> CLet((fn,ft),CClosure((global_name,ft),fvs),x) in
 				(* t1を変換する *)
 				let te1 = to_add_closure (reccall e1) in

@@ -10,10 +10,34 @@ fib.ml
 make_dest_tuple.ml
 closure_buggy.ml
 ftoi_itof.ml
-mandelblot_edit.ml
-external_library.ml
-plot_trigon.ml plot_trigon_i.txt 
+operator.ml operator_i.txt
 fcomp.ml fcomp_i.txt
 floor_check.ml
-operator.ml operator_i.txt
+plot_trigon.ml plot_trigon_i.txt 
+external_library.ml
+mandelblot_edit.ml
 
+
+/*
+
+
+float_of_int:
+	lw r5,r1,$0
+	rtof f2,r5
+	itof f5,f2
+	ret
+
+int_of_float:
+	fld f1,r1,$0
+	ftoi f2,f1
+	ftor r5,f2
+	ret
+
+sqrt:
+	fld f1,r1,$0
+	fsqrt f2,f1
+	fst f2,r1,$-4
+	lw f5,r1,$-4
+	ret
+
+*/

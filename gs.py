@@ -32,16 +32,19 @@ class State:
 		print(cs)
 		print(sl.ipc)
 		print(sl.regs)
+		print('r1 aka stack')
 		print(sl.stack)
+		print('r3 aka heap')
 		print(sl.heap)
 	
 	def __init__(sl):
 		sl.code = int(gdb.execute('i r esi',to_string=True).split()[1][2:],16)
 		sl.ipc  = gdb.execute('x/2xw &inst_counter_up',to_string=True)
-		sl.regs = gdb.execute('x/40xw &_lr',to_string=True)
+		sl.regs = gdb.execute('x/60xw &_lr',to_string=True)
 		sl.stack = gdb.execute('x/20xw _r1',to_string=True)
 		sl.heap = gdb.execute('x/20xw _r3',to_string=True)
 
+#gdb.execute('r < contest.sld')
 gdb.execute('r')
 
 sts = []
@@ -50,6 +53,7 @@ def shell():
 	i = 0
 	bs = ""
 	while 1:
+		print('step %d' % i)
 		sts[i].print_state()
 		s = input('>> ')
 		if s=='':
@@ -60,6 +64,10 @@ def shell():
 			i -= 1
 		elif s=='f' and i < len(sts)-1:
 			i += 1
+		elif s=='tl':
+			i = len(sts)-1
+		elif s=='hd':
+			i = 0
 		bs = s
 
 
@@ -76,7 +84,7 @@ while 1:
 	#print(s)
 	t += 1
 	
-	if t > 1000 or not ("SIGTRAP" in s):
+	if not ("SIGTRAP" in s):
 		shell()
 		
 		

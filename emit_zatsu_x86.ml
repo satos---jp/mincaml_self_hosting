@@ -26,7 +26,13 @@ let vs2stacks vs =
 				(* 関数は(クロージャへのポインタ,関数へのポインタ)で持ち、それ以外は1つで 
 					 と思ったが、あまりにも面倒なので、ヒープに持ちます *)
 			in
-				f ((na,sl) :: ar,nl+sl) xs
+			let tna = ( 
+				match !na with
+				| Var x | GVar x -> x
+				| Reg _ -> raise (Failure "register allocation is not supported int x86") 
+			)
+			in
+				f ((tna,sl) :: ar,nl+sl) xs
 	in
 		f ([],0) vs
 
@@ -56,8 +62,6 @@ let init_globvars gvs =
 		(x,!heap_diff-4) :: r
 	) [] gvs
 
-
-
 let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} = 
 	(*
 	Printf.printf "%s%s%s" (names2str vs1) (names2str vs2) (names2str localvs);
@@ -68,8 +72,8 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	
 	let on_stack = 
 		(List.map (fun (x,p) -> (x,p-(snd lvs_st))) (fst lvs_st)) @
-		(List.map (fun (x,p) -> (x,p+8)) (fst vs2_st)) in
-	let on_clos = fst vs1_st in
+		(List.map (fun (x,p) -> (x,p+8)) (fst vs1_st)) in
+	let on_clos = fst vs2_st in
 	ivprint ("On function " ^ fn ^ "\n");
 	ivprint ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [ebp%+d]" s p) on_stack)) ^"\n");
 	ivprint ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [edi%+d]" s p) on_clos)) ^"\n");
@@ -437,7 +441,7 @@ let vir2asm (funs,rd,globvars) =
 		init_globvars globvars;
 		let f s = if !debugmode then add_inscount s else s in
 		(String.concat "" (List.map (fun x -> f (func2asm x)) (List.rev funs))) ^
-		(f (func2asm {fn=(main_name (),(TyVar(-1),default_debug_data)); vs=[]; cvs=[]; body=rd}))
+		(f (func2asm {fn=(main_name (),(TyVar(-1),default_debug_data)); vs=[]; regs=[]; cvs=[]; body=rd}))
 	)
 
 

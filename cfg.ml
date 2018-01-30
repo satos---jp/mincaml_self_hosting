@@ -50,6 +50,89 @@ let node2str { ops=ops; src=src; dst=dst; idx=idx; gone=gone; } =
 	"dst = [" ^ (String.concat " , " (List.map (fun x -> (Printf.sprintf "%d" x.idx)) dst#vs)) ^ "]\n"
 
 
+let rec unique nvs = 
+	match nvs with
+	| [] -> []
+	| x :: xs -> (
+		let txs = unique xs in
+		if List.mem x txs then txs else (x :: txs)
+	)
+	
+
+(* レジスタ割り当てにグラフ彩色を用いるためのもの *)
+class graph = 
+	object (sl)
+		val mutable n2i = ([] : ((namestr ref) * int) list) 
+		method n2i = n2i
+		
+		val mutable vs = []
+		val mutable ls = 0
+		method na2idx x = (
+			try
+				List.assoc x n2i
+			with
+				| Not_found -> (
+					n2i <- (x,ls) :: n2i;
+					vs <- (ref []) :: vs;
+					ls <- ls + 1;
+					(ls-1)
+				)
+		)
+		
+		method idx2na i = (
+			let res = fst (List.nth n2i (ls-i-1)) in
+			(*
+			ivprint (Printf.sprintf "name at %d is %s" i (namestr2str !res));
+			*)
+			res
+		)
+		
+		method adde a b = ( (* a -> b *)
+			let v = List.nth vs (ls-a-1) in
+			if List.mem b !v then () else (
+				(*
+				ivprint (Printf.sprintf "adde %d -> %d" a b);
+				*)
+				v := b :: !v;
+			)
+		)
+		
+		method adden an bn = (
+			sl#adde (sl#na2idx an) (sl#na2idx bn)
+		)
+		
+		method get_invalid na = (
+			
+			ivprint (Printf.sprintf "check from %d .aka %s" (sl#na2idx na) (namestr2str !na));
+			
+			let v = !(List.nth vs (ls-(sl#na2idx na)-1)) in
+			ivprint (Printf.sprintf "len %d" (List.length v));
+			let res = ref [] in
+			List.iter (fun i -> 
+				let tn = sl#idx2na i in
+				
+				ivprint (Printf.sprintf "node at %d is %s" i (namestr2str !tn));
+				
+				match !tn with
+				| Reg a -> res := a :: (!res)
+				| _ -> ()
+			) v;
+			unique !res
+		)
+		
+		method get_valid regs na = (
+			let iv = sl#get_invalid na in
+			
+			ivprint ("invallid of " ^ (namestr2str !na) ^ " are " ^ (String.concat " " iv));
+			
+			List.filter (fun x -> not (List.mem x iv)) regs
+		)
+		
+		method v_iter f = List.iter f n2i 
+	end
+
+
+			
 let defaultname = "@defaultname"
 
 class cfg_type = 
@@ -57,7 +140,7 @@ class cfg_type =
 		val mutable vs = []
 		method addv x = vs <- x :: vs
 		method vs = vs
-
+		
 		val mutable root = newnode ()
 		method setroot x = root <- x
 		
@@ -208,25 +291,172 @@ class cfg_type =
 			*)
 		)
 		
-		(*
-		method collect_names () = (
-			let res = ref [] in
-			sl#idfs (fun v -> 
-				res := @ !res
-			);
-			!res
-		)
-		
+		method get_all_names () = (
+				let ns = List.map (fun v -> List.flatten (
+					Array.to_list (Array.map (fun op -> get_var_nameregs op) v.ops)
+				)) vs in
+				unique (List.flatten ns)
+	)
 		
 		method liveanal () = (
 			(* かっせー、かいせきー。アルファ変換されてるので覚えるのは名前だけでいいはず。 *)
-			sl#ungone ();
-			let rec dfs1 v = 
-		)
-		*)
-		
-		method regalloc () = (
+			(* 各時点でぶつかる変数名の組を返す *)
+			(* 下から、上にたどり着くまで伝搬させる *)
 			
+			(* 各opに対応して名前listがある *)
+			let name_list = Array.map (fun v -> (Array.map (fun _ -> []) v.ops)) (Array.of_list vs) in
+			
+			let (names : namereg list) = sl#get_all_names () in
+			
+			(* 各変数についてやる。 *)
+			List.iter (fun na -> 
+				(* globvarはunifyしない *)
+				match !na with
+				| GVar x -> ()
+				| _ -> (
+					sl#ungone ();
+					let rec idfs v iscont = (
+						let nc = ref iscont in
+						let ls = Array.length v.ops in
+						(* 各命令を下から上にやっていく。 *)
+						let _ = Array.fold_right (fun op i -> 
+							(if !nc then 
+								name_list.(v.idx).(i) <- na :: name_list.(v.idx).(i) 
+							else ());
+							nc := (
+								if List.mem na (get_assigner op) then true
+								else if List.mem (!na) (get_assigned op) then false
+								else !nc
+							);
+							i-1
+						) v.ops (ls-1) in
+					
+						(* 前のブロックに飛ぶ。 *)
+						if (!nc) then (
+							v.src#iter (fun x -> 
+								if x.gone then () else (	
+									x.gone <- true;
+									idfs x (!nc)
+								)
+							)
+						) else ()
+					) in
+				
+					List.iter (fun v -> idfs v false) vs
+				)
+			) (List.map fst names);
+			
+			let nls = (Array.to_list name_list) in
+			
+			Printf.printf "root %d\n" root.idx;
+			List.iter2 (fun x y -> 
+				Printf.printf "%s\n" (node2str x);
+				Array.iteri (fun i a -> 
+					Printf.printf "live after %s is %s\n" 
+						(virtop2str x.ops.(i)) 
+						(String.concat " " (List.map (fun x -> namestr2str !x) a))
+				) y
+			) vs nls;
+			Array.concat nls
+		)
+		
+		method regalloc argreg retreg rreg freg = (
+			let live_list = sl#liveanal () in
+			
+			(* (変数名,レジスタ名) の組list。 *)
+			(* 関数呼び出し由来の制約 *)
+			let constrs = (
+				let c = ref [] in
+				List.iter (fun v -> Array.iter (fun op -> 
+					match op with
+					| OpApp(_,_,(rn,_),_,vs) -> (
+							let rec f nvs nrs = 
+								match nvs,nrs with
+								| [],_ | _,[] -> !c
+								| (x,_) :: xs, y :: ys -> (x,y) :: (f xs ys)
+							in
+							c := (rn,retreg) :: (f vs argreg)
+						)
+					| _ -> ()
+				) v.ops) vs;
+				(* ここで、引数由来の制約をやっておく(伏線)(後できれいにしたい)*)
+				let (names : (namestr ref) list) = List.map fst (sl#get_all_names ()) in
+				(*
+				let rec f nas nrs =
+					match nas,nrs with
+					| [],_ | _,[] -> ()
+					| (x,_) :: xs, y :: ys -> (
+						let fn = List.find (fun a -> match !a with Var t -> x = t | _ -> false) names in
+						c := (fn,y) :: (!c);
+						(f xs ys)
+					)
+				in 
+				f args argreg;
+				*)
+				!c
+			) in
+			
+			(* 制約をグラフにする *)
+			
+			let gr = new graph in
+			Array.iter (fun v -> 
+				ivprint ("collision " ^ (String.concat " " (List.map (fun x -> namestr2str !x) v)));
+				List.iter (fun a -> 
+					List.iter (fun b -> 
+						if a = b then () else (
+							gr#adden a b
+						)
+					) v
+				) v
+			) live_list;
+			
+			let res = ref [] in (* 使ったレジスタをかえす。 *)
+			
+			(* ここからはポリシーによる。 *)
+			(* たとえば、まず、関数呼び出し由来のレジスタ制約をできるかぎり解決する。 *)
+			(* これ、一旦やめておく。 *)
+			List.iter (fun (x,r) -> 
+				let ok = ref false in
+				(match !x with
+				| _ -> ()
+				| Var _ -> (
+					if List.mem r (gr#get_invalid x) then () else (
+						ivprint (Printf.sprintf "Unify %s with %s from funccall" (namestr2str !x) r);
+						x := Reg r;
+						res := r :: !res;
+						ok := true
+					)
+				)
+				);
+				if not (!ok) then 
+					ivprint (Printf.sprintf "Register Unify failed %s with %s" (namestr2str !x) r)
+				else ()
+			) constrs;
+			
+			
+			(* その後、各変数をgreedyにUnifyしていく。 *)
+			List.iter (fun (na,(t,_)) -> 
+				match !na with
+				| Var _ -> (
+					let v = gr#get_valid (match t with TyFloat -> freg | _ -> rreg) na in
+					match v with
+					| r :: _ -> (
+						ivprint (Printf.sprintf "Unify %s with %s from greedy" (namestr2str !na) r);
+						na := Reg r;
+						res := r :: !res
+						(*
+						ivprint (Printf.sprintf "! %s %s\n" 
+							(namestr2str !na) 
+							(namestr2str !(fst (List.nth gr#n2i 0))));
+						*)
+					)
+					| _ -> (
+						ivprint (Printf.sprintf "Register Unify failed %s with registerless" (namestr2str !na))
+					)
+				)
+				| _ -> ()
+			) (sl#get_all_names ());
+			unique !res
 		)
 		
 		method contract () = (
@@ -280,9 +510,25 @@ let connect_cfg csrc cdst =
 
 let globs = ref []
 
-let cna2na (na,td) = 
-	if List.mem na !globs then (ref (GVar na),td)
-		else (ref (Var na),td)
+(* ここで、同じ名前なら、同じポインタを指してほしい。 *)
+let cna2na,cna2na_init =
+	(let ns = ref [] in
+	(fun (na,td) -> (
+		try 
+			List.assoc na !ns
+		with
+			| Not_found -> (
+				let tna = (
+					if List.mem na !globs then (ref (GVar na),td)
+					else (ref (Var na),td)
+				) in
+					ns := (na,tna) :: !ns;
+					tna
+			)
+	)),
+	(fun () -> ns := [])
+	)
+
 
 let cvs2vs vs = List.map cna2na vs
 
@@ -384,6 +630,7 @@ let rec to_cfgs ast tov istail cfg fn head_label addtoroot =
 
 
 let cfg_toasms fn ismain args ast funnames heapvars = 
+	cna2na_init ();
 	globs := (funnames @ heapvars);
 	let ncfg = new cfg_type in
 	let head_label = genlabel () in
@@ -419,17 +666,29 @@ let cfg_toasms fn ismain args ast funnames heapvars =
 	) gls;
 	(*
 	*)
-	if !tortesia then
-		ncfg#copy_anal
-		()
-	else ();
+	
+	let used_regs = ref [] in
+	if !tortesia && (not !all_stack) then (
+		(*
+		ncfg#copy_anal ();
+		*)
+		
+		let rec range a b =  
+			if a >= b then [] else a :: (range (a+1) b)
+		in
+		let rrs = List.map (fun x -> Printf.sprintf "r%d" x) (range 20 30) in
+		let frs = List.map (fun x -> Printf.sprintf "f%d" x) (range 20 30) in
+		let argrs = List.map (fun x -> Printf.sprintf "r%d" x) (range 10 20) in
+		used_regs := ncfg#regalloc argrs "r5" rrs frs
+		
+	) else ();
 	
 	let res = ncfg#flatten_to_vlist () in
 	(*
 	print_string (String.concat "\n" (List.map virtop2str res));
 	print_newline ();
 	*)
-	res
+	(res,!used_regs,(List.map cna2na))
 	
 
 	

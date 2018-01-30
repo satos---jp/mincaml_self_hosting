@@ -55,7 +55,13 @@ let vs2stacks vs =
 		| (na,ty) :: xs -> 
 			let nl = 4
 			in
-				f ((na,sl) :: ar,nl+sl) xs
+			let tna = ( 
+				match !na with
+				| Var x | GVar x -> x
+				| Reg _ -> raise (Failure "register allocation is not supported in tortesia_zatsu") 
+			)
+			in
+				f ((tna,sl) :: ar,nl+sl) xs
 	in
 		f ([],0) vs
 
@@ -71,8 +77,8 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	
 	let on_stack = 
 		(List.map (fun (x,p) -> (x,p-(snd lvs_st))) (fst lvs_st)) @
-		(List.map (fun (x,p) -> (x,p+8)) (fst vs2_st)) in
-	let on_clos = fst vs1_st in
+		(List.map (fun (x,p) -> (x,p+8)) (fst vs1_st)) in
+	let on_clos = fst vs2_st in
 	print_string ("On function " ^ fn ^ "\n");
 	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [r2$%d]" s p) on_stack)) ^"\n");
 	print_string ((String.concat "\n" (List.map (fun (s,p) -> Printf.sprintf "%s :: [r4$%d]" s p) on_clos)) ^"\n");
@@ -369,7 +375,7 @@ let vir2asm (funs,rd,globvars) =
 	init_globvars globvars;
 	(read_all_data "lib_zatsu_tortesia.s") ^
 	(String.concat "" (List.map func2asm (List.rev funs))) ^	
-	(func2asm {fn=(main_name,(TyVar(-1),default_debug_data)); vs=[]; cvs=[]; body=rd})
+	(func2asm {fn=(main_name,(TyVar(-1),default_debug_data)); vs=[]; regs=[]; cvs=[]; body=rd})
 
 
 

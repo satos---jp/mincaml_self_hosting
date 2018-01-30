@@ -3,6 +3,10 @@
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-w", "--windows", help="for windows",action="store_true")
+parser.add_argument("-r", "--register", help="register allocation",action="store_true")
+parser.add_argument("-nc", "--nocount", help="don't count instr num",action="store_true")
+parser.add_argument("-d", "--debug", help="add int 0x3 before instruction",action="store_true")
+
 args = parser.parse_args()
 
 main_name = "_main" if args.windows else "_start"
@@ -35,7 +39,7 @@ for i in xrange(32):
 
 for i in xrange(32):
 	head += [
-		"f%d:" % i,
+		"_f%d:" % i,
 		"\tdd 0.0" 
 	]
 
@@ -83,17 +87,38 @@ libfuncs = [
 
 #呼び出し規約のトランポリン
 for fn,i in libfuncs:
-	text += [
-		'_' + fn + ':',
-		"\tmov eax,[_r1]"
-	]
-	for k in range(i)[::-1]:
-		text += ['\tpush dword [eax%+d]' % (k*4) ]
+	text += ['_' + fn + ':']
+
+	if args.register:
+		#1引数しかないのでアドホックにいく。
+		if fn in ['sin','cos','atan']:
+			text += [
+				"\tmov eax,[_f10]",
+				'\tpush dword eax'
+			]
+		else:
+			for k in range(i):
+				text += [
+					"\tmov eax,[_r%d]" % (k+10),
+					'\tpush dword eax'
+				]
+	else:
+		text += [
+			"\tmov eax,[_r1]"
+		]
+		for k in range(i)[::-1]:
+			text += ['\tpush dword [eax%+d]' % (k*4) ]
 	
-	text += [
-		"\tcall %s" % fn,
-		"\tmov [_r5],eax",
-	]
+	if args.register and fn in ['read_float','sin','cos','atan']:
+		text += [
+			"\tcall %s" % fn,
+			"\tmov [_f5],eax",
+		]
+	else:
+		text += [
+			"\tcall %s" % fn,
+			"\tmov [_r5],eax",
+		]
 	
 	if fn not in ['print_int']:
 		text += ["\tadd esp,%d" % (i*4)]
@@ -447,7 +472,7 @@ import sys
 import re
 
 def name_conv(x):
-	if re.compile('^r\d\d?$').match(x):
+	if re.compile('^[rf]\d\d?$').match(x):
 		return '_' + x
 	else:
 		return x 
@@ -492,16 +517,18 @@ for i,s in enumerate(sys.stdin.readlines()):
 		ns += ["mov dword [_r0],0"]
 		#if i in range(40,181):
 		#if i==39:
-		#ns = ["\tmov esi,%d" % i,"\tint 0x3"] + ns
+		if args.debug:
+			ns = ["\tmov esi,%d" % i,"\tint 0x3"] + ns
 		
-		ns = [
-			"\tmov edx,[inst_counter]", 
-			"\tadd edx,1",
-			"\tmov [inst_counter],edx",
-			"\tsetb dl", 
-			"\tand edx,1",
-			"\tadd dword [inst_counter_up],edx"
-		] + ns
+		if not args.nocount:
+			ns = [
+				"\tmov edx,[inst_counter]", 
+				"\tadd edx,1",
+				"\tmov [inst_counter],edx",
+				"\tsetb dl", 
+				"\tand edx,1",
+				"\tadd dword [inst_counter_up],edx"
+			] + ns
 		
 		
 		
