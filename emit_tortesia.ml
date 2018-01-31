@@ -49,7 +49,7 @@ let args2regs vs rf ff otherfunc =
 			| TyFloat,_,f :: fs -> (ff f x) :: (recf xs (i+1) nrs fs)
 			| TyFloat,_,[] -> (otherfunc i x) :: (recf xs (i+1) nrs nfs)
 			| _,r :: rs,_ -> (rf r x) :: (recf xs (i+1) rs nfs)
-			| _ -> (otherfunc i x) :: (recf xs (i+1) nrs nfs)
+			| _ ,[],_-> (otherfunc i x) :: (recf xs (i+1) nrs nfs)
 		)
 	in
 		let rec range a b = if a < b then a :: (range (a+1) b) else [] 
@@ -199,7 +199,11 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 		(String.concat "" (args2regs vs
 			f
 			f
-			(fun _ _ -> "")
+			(fun i ((x,_) as na) -> 
+				match !x with
+				| Reg tr ->  Printf.sprintf "\tlw %s,r2,$%d\n" tr (8+i*4) (* loadする必要あり *)
+				| _ -> ""
+			)
 		))) ^
 		(* クロージャ引数を、必要ならば指定のレジスタに割り当てておく *)
 		(String.concat "" (mapi (fun i (x,_) -> 
@@ -292,9 +296,11 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 		| OpDestTuple(vs,na) -> (
 				let nl = ref (-4) in
 				let s1,r1 = ls2r "lw" "r5" na in
+				(* このr1を使うと破壊してしまう可能性がある *)
+				let s1,r1 = (if r1 <> "r5" then s1 ^ (Printf.sprintf "\tmov r5,%s\n" r1) else s1),"r5" in
 				s1 ^ 
 				(String.concat "" (List.map (fun nb -> 
-					let s2,r2 = ls2r "sw" "r6" na in
+					let s2,r2 = ls2r "sw" "r6" nb in
 					nl := !nl + 4;
 					(Printf.sprintf "\tlw %s,%s,$%d\n" r2 r1 !nl) ^
 					s2 
@@ -302,8 +308,9 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 				"; " ^ (nd2ds na) ^ "\n"
 			)
 		| OpMakeTuple(nr,vs) -> (
-				(reg2v nr "r3") ^
+				"\tmov r6,r3\n" ^ 
 				(make_vs_on_heap vs) ^ 
+				(reg2v nr "r6") ^ (* 伏線回収 *)
 				"; " ^ (nd2ds nr) ^ "\n"
 			)
 		| OpMakeCls(nr,((fn,_) as fnd),vs) -> (

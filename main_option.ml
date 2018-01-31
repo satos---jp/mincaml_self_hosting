@@ -31,3 +31,6 @@ let vprint f s =
 let ivprint s = 
 	if !verbose then (print_string s; print_newline ()) else () 
 
+let fvprint f = 
+	if !verbose then (f (); print_newline ()) else () 
+

@@ -89,9 +89,11 @@ if argc <= 1 then (
 	let kn = Alpha.alpha_conv (Knorm.knorm ast2) [] in
 	print_string "k-normalized and alphad";  print_newline ();
 	vprint knorm2str kn;
+	
 	let dkn = Lettuple2dest.lettupledest kn in
 	print_string "tuple destructed";  print_newline ();
 	vprint knorm2str dkn;
+	
 	let tkn = reduce dkn in
 	print_string "reduced";  print_newline ();
 	vprint knorm2str tkn;

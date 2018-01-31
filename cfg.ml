@@ -320,7 +320,7 @@ class cfg_type =
 						let ls = Array.length v.ops in
 						(* 各命令を下から上にやっていく。 *)
 						let _ = Array.fold_right (fun op i -> 
-							(if !nc then 
+							(if !nc || List.mem (!na) (get_assigned op) then (* Tupleの場合つらいので、こーゆーことをやってる *)
 								name_list.(v.idx).(i) <- na :: name_list.(v.idx).(i) 
 							else ());
 							nc := (
@@ -348,6 +348,7 @@ class cfg_type =
 			
 			let nls = (Array.to_list name_list) in
 			
+			fvprint (fun _ -> 
 			Printf.printf "root %d\n" root.idx;
 			List.iter2 (fun x y -> 
 				Printf.printf "%s\n" (node2str x);
@@ -356,7 +357,7 @@ class cfg_type =
 						(virtop2str x.ops.(i)) 
 						(String.concat " " (List.map (fun x -> namestr2str !x) a))
 				) y
-			) vs nls;
+			) vs nls);
 			Array.concat nls
 		)
 		
@@ -680,7 +681,6 @@ let cfg_toasms fn ismain args ast funnames heapvars =
 		let frs = List.map (fun x -> Printf.sprintf "f%d" x) (range 20 30) in
 		let argrs = List.map (fun x -> Printf.sprintf "r%d" x) (range 10 20) in
 		used_regs := ncfg#regalloc argrs "r5" rrs frs
-		
 	) else ();
 	
 	let res = ncfg#flatten_to_vlist () in
