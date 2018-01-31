@@ -101,6 +101,11 @@ class graph =
 			sl#adde (sl#na2idx an) (sl#na2idx bn)
 		)
 		
+		method get_deg na = (
+			let v = !(List.nth vs (ls-(sl#na2idx na)-1)) in
+			List.length v
+		)
+		
 		method get_invalid na = (
 			
 			ivprint (Printf.sprintf "check from %d .aka %s" (sl#na2idx na) (namestr2str !na));
@@ -346,7 +351,6 @@ class cfg_type =
 						let _ = Array.fold_right (fun op i -> 
 							(if !nc || (List.mem na (get_assigner op)) || 
 								(* Tupleの場合つらいので、こーゆーことをやってる *)
-								(* OpAppでやってないと壊れるっぽい(謎) *)
 								(match op with OpDestTuple _ -> List.mem (!na) (get_assigned op) | _ -> false)
 							then ( 
 								name_list.(v.idx).(i) <- na :: name_list.(v.idx).(i);
@@ -394,7 +398,7 @@ class cfg_type =
 			(Array.concat nls),live_at_funccall
 		)
 		
-		method regalloc rreg freg = (
+		method regalloc rreg freg func_rreg func_freg = (
 			let live_list,live_at_func = sl#liveanal () in
 			
 			let retn2constr (rn,(t,_)) = (rn,(match t with TyFloat -> "f5" | _ -> "r5")) in
@@ -440,13 +444,15 @@ class cfg_type =
 			
 			let res = ref [] in (* 使ったレジスタをかえす。 *)
 			
+			let live_at_func x = (try List.assoc x live_at_func with Not_found -> true) in
+			
 			(* ここからはポリシーによる。 *)
 			(* たとえば、まず、関数呼び出し由来のレジスタ制約をできるかぎり解決する。 *)
 			List.iter (fun (x,r) -> 
 				let ok = ref false in
 				(match !x with
 				| Var _ -> (
-					if (try List.assoc x live_at_func with Not_found -> true) || (List.mem r (gr#get_invalid x)) then () else (
+					if (live_at_func x) || (List.mem r (gr#get_invalid x)) then () else (
 						ivprint (Printf.sprintf "Unify %s with %s from funccall" (namestr2str !x) r);
 						x := Reg r;
 						res := r :: !res;
@@ -461,28 +467,35 @@ class cfg_type =
 			) funccall_constrs;
 			
 			
-			(* その後、各変数をgreedyにUnifyしていく。 *)
+			let names = (sl#get_all_names ()) in
+			(* greedyにUnifyする際の変数の割り当て方を決める *)
+			(* 次数の多い頂点からUnifyする *)
+			let sorted_names = (
+				let nv = List.map (fun ((na,_) as x) -> (gr#get_deg na,x)) names in
+				let ts = List.sort (fun (b,_) (a,_) -> if a < b then (-1) else if a > b then 1 else 0) nv in
+				List.map snd ts
+			)
+			in
 			List.iter (fun (na,(t,_)) -> 
 				match !na with
 				| Var _ -> (
-					let v = gr#get_valid (match t with TyFloat -> freg | _ -> rreg) na in
+					let ok_reg = 
+						(if (live_at_func na) then [] else (match t with TyFloat -> func_freg | _ -> func_rreg)) @
+						(match t with TyFloat -> freg | _ -> rreg)
+					in
+					let v = gr#get_valid ok_reg na in
 					match v with
 					| r :: _ -> (
 						ivprint (Printf.sprintf "Unify %s with %s from greedy" (namestr2str !na) r);
 						na := Reg r;
 						res := r :: !res
-						(*
-						ivprint (Printf.sprintf "! %s %s\n" 
-							(namestr2str !na) 
-							(namestr2str !(fst (List.nth gr#n2i 0))));
-						*)
 					)
 					| _ -> (
 						ivprint (Printf.sprintf "Register Unify failed %s with registerless" (namestr2str !na))
 					)
 				)
 				| _ -> ()
-			) (sl#get_all_names ());
+			) sorted_names;
 			unique !res
 		)
 		
@@ -704,7 +717,9 @@ let cfg_toasms fn ismain vs cvs ast funnames heapvars =
 		in
 		let rrs = List.map (fun x -> Printf.sprintf "r%d" x) (range 20 30) in
 		let frs = List.map (fun x -> Printf.sprintf "f%d" x) (range 20 30) in
-		used_regs := List.filter (fun x -> List.mem x (rrs @ frs)) (ncfg#regalloc rrs frs)
+		let frrs = List.map (fun x -> Printf.sprintf "r%d" x) (range 10 20) in
+		let ffrs = List.map (fun x -> Printf.sprintf "f%d" x) (range 10 20) in
+		used_regs := List.filter (fun x -> List.mem x (rrs @ frs)) (ncfg#regalloc rrs frs frrs ffrs)
 	) else ();
 	
 	let res = ncfg#flatten_to_vlist () in
