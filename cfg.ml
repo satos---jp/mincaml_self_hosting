@@ -131,6 +131,24 @@ class graph =
 		method v_iter f = List.iter f n2i 
 	end
 
+(* 引数のnamereg配列をレジスタ名にしていく *)
+let args2regs vs rf ff otherfunc =
+	let rec recf nas i nrs nfs = 
+		match nas with
+		| [] -> []
+		| ((_,(t,_)) as x) :: xs -> (
+			match t,nrs,nfs with
+			| TyFloat,_,f :: fs -> (ff f x) :: (recf xs (i+1) nrs fs)
+			| TyFloat,_,[] -> (otherfunc i x) :: (recf xs (i+1) nrs nfs)
+			| _,r :: rs,_ -> (rf r x) :: (recf xs (i+1) rs nfs)
+			| _ ,[],_-> (otherfunc i x) :: (recf xs (i+1) nrs nfs)
+		)
+	in
+		let rec range a b = if a < b then a :: (range (a+1) b) else [] 
+		in
+		recf vs 0 
+			(List.map (fun x -> Printf.sprintf "r%d" x) (range 10 20)) 
+			(List.map (fun x -> Printf.sprintf "f%d" x) (range 10 20))
 
 			
 let defaultname = "@defaultname"
@@ -144,10 +162,15 @@ class cfg_type =
 		val mutable root = newnode ()
 		method setroot x = root <- x
 		
-		val mutable args = ([] : name list)
-		method setargs x = args <- x
-		method args = args
-		
+		val mutable argvs = ([] : namereg list)
+		val mutable argcvs = ([] : namereg list)
+		method setargs avs acvs = (
+			argvs <- avs;
+			argcvs <- acvs
+		)
+
+		method vscvs = argvs @ argcvs
+	
 		method dump_cfg () = (
 			Printf.printf "root %d\n" root.idx;
 			List.iter (fun x -> 
@@ -192,7 +215,7 @@ class cfg_type =
 					| OpMov((na,_),(nb,_)) when !na <> !nb -> (
 						(* 引数まわりから入ってくる変数はあきらめる *)
 						let cut_at_root = 
-							let tas = List.map (fun (x,_) -> Var x) args in
+							let tas = List.map (fun (x,_) -> !x) (argvs @ argcvs) in
 							(List.mem !na tas || List.mem !nb tas)
 						in
 						(*
@@ -309,9 +332,10 @@ class cfg_type =
 			let (names : namereg list) = sl#get_all_names () in
 			
 			(* 各変数についてやる。 *)
-			List.iter (fun na -> 
+			let live_at_funccall = List.map (fun na -> 
+				let at_funccall = ref false in
 				(* globvarはunifyしない *)
-				match !na with
+				(match !na with
 				| GVar x -> ()
 				| _ -> (
 					sl#ungone ();
@@ -320,9 +344,16 @@ class cfg_type =
 						let ls = Array.length v.ops in
 						(* 各命令を下から上にやっていく。 *)
 						let _ = Array.fold_right (fun op i -> 
-							(if !nc || List.mem (!na) (get_assigned op) then (* Tupleの場合つらいので、こーゆーことをやってる *)
-								name_list.(v.idx).(i) <- na :: name_list.(v.idx).(i) 
-							else ());
+							(if !nc || (List.mem na (get_assigner op)) || 
+								(* Tupleの場合つらいので、こーゆーことをやってる *)
+								(* OpAppでやってないと壊れるっぽい(謎) *)
+								(match op with OpDestTuple _ -> List.mem (!na) (get_assigned op) | _ -> false)
+							then ( 
+								name_list.(v.idx).(i) <- na :: name_list.(v.idx).(i);
+								match op with
+								| OpApp _ -> at_funccall := true
+								| _ -> ()
+							) else ());
 							nc := (
 								if List.mem na (get_assigner op) then true
 								else if List.mem (!na) (get_assigned op) then false
@@ -343,8 +374,10 @@ class cfg_type =
 					) in
 				
 					List.iter (fun v -> idfs v false) vs
-				)
-			) (List.map fst names);
+				));
+				ivprint (Printf.sprintf "%s colides with funccall ? %b" (namestr2str !na) !at_funccall);
+				(na,!at_funccall)
+			) (List.map fst names) in
 			
 			let nls = (Array.to_list name_list) in
 			
@@ -358,42 +391,36 @@ class cfg_type =
 						(String.concat " " (List.map (fun x -> namestr2str !x) a))
 				) y
 			) vs nls);
-			Array.concat nls
+			(Array.concat nls),live_at_funccall
 		)
 		
-		method regalloc argreg retreg rreg freg = (
-			let live_list = sl#liveanal () in
+		method regalloc rreg freg = (
+			let live_list,live_at_func = sl#liveanal () in
+			
+			let retn2constr (rn,(t,_)) = (rn,(match t with TyFloat -> "f5" | _ -> "r5")) in
 			
 			(* (変数名,レジスタ名) の組list。 *)
 			(* 関数呼び出し由来の制約 *)
-			let constrs = (
+			let funccall_constrs = (
 				let c = ref [] in
 				List.iter (fun v -> Array.iter (fun op -> 
 					match op with
-					| OpApp(_,_,(rn,_),_,vs) -> (
-							let rec f nvs nrs = 
-								match nvs,nrs with
-								| [],_ | _,[] -> !c
-								| (x,_) :: xs, y :: ys -> (x,y) :: (f xs ys)
-							in
-							c := (rn,retreg) :: (f vs argreg)
+					| OpApp(_,_,rn,_,vs) -> (
+							let _ = args2regs vs 
+								(fun r (x,_) -> c := (x,r) :: !c)
+								(fun r (x,_) -> c := (x,r) :: !c)
+								(fun _ _ -> ()) in
+							c := (retn2constr rn) :: !c
 						)
+					| OpRet(rn) -> c := (retn2constr rn) :: !c
 					| _ -> ()
 				) v.ops) vs;
-				(* ここで、引数由来の制約をやっておく(伏線)(後できれいにしたい)*)
-				let (names : (namestr ref) list) = List.map fst (sl#get_all_names ()) in
-				(*
-				let rec f nas nrs =
-					match nas,nrs with
-					| [],_ | _,[] -> ()
-					| (x,_) :: xs, y :: ys -> (
-						let fn = List.find (fun a -> match !a with Var t -> x = t | _ -> false) names in
-						c := (fn,y) :: (!c);
-						(f xs ys)
-					)
-				in 
-				f args argreg;
-				*)
+				(* 引数由来の制約 *)
+				let _ = args2regs argvs 
+					(fun r (x,_) -> c := (x,r) :: !c)
+					(fun r (x,_) -> c := (x,r) :: !c)
+					(fun _ _ -> ()) in
+				
 				!c
 			) in
 			
@@ -415,24 +442,23 @@ class cfg_type =
 			
 			(* ここからはポリシーによる。 *)
 			(* たとえば、まず、関数呼び出し由来のレジスタ制約をできるかぎり解決する。 *)
-			(* これ、一旦やめておく。 *)
 			List.iter (fun (x,r) -> 
 				let ok = ref false in
 				(match !x with
-				| _ -> ()
 				| Var _ -> (
-					if List.mem r (gr#get_invalid x) then () else (
+					if (try List.assoc x live_at_func with Not_found -> true) || (List.mem r (gr#get_invalid x)) then () else (
 						ivprint (Printf.sprintf "Unify %s with %s from funccall" (namestr2str !x) r);
 						x := Reg r;
 						res := r :: !res;
 						ok := true
 					)
 				)
+				| _ -> ()
 				);
 				if not (!ok) then 
 					ivprint (Printf.sprintf "Register Unify failed %s with %s" (namestr2str !x) r)
 				else ()
-			) constrs;
+			) funccall_constrs;
 			
 			
 			(* その後、各変数をgreedyにUnifyしていく。 *)
@@ -604,10 +630,10 @@ let rec to_cfgs ast tov istail cfg fn head_label addtoroot =
 	| CDirApp(a,b) -> (
 			if istail && (fst a) = fn then ( 
 				(* 実際に末尾再帰させる*)
-				let tvs = List.map genvar cfg#args in
+				let tvs = List.map genvar cfg#vscvs in
 				let v = multiton (
 					(List.map2 (fun x -> fun y -> OpMov(cna2na x,cna2na y)) tvs b) @
-					(List.map2 (fun x -> fun y -> OpMov(cna2na x,cna2na y)) cfg#args tvs) @
+					(List.map2 (fun x -> fun y -> OpMov(x,cna2na y)) cfg#vscvs tvs) @
 					[OpJmp(head_label)]
 				) in
 				addtoroot := v :: !addtoroot; 
@@ -630,12 +656,13 @@ let rec to_cfgs ast tov istail cfg fn head_label addtoroot =
 		)
 
 
-let cfg_toasms fn ismain args ast funnames heapvars = 
+
+let cfg_toasms fn ismain vs cvs ast funnames heapvars = 
 	cna2na_init ();
 	globs := (funnames @ heapvars);
 	let ncfg = new cfg_type in
 	let head_label = genlabel () in
-	ncfg#setargs args;
+	ncfg#setargs (cvs2vs vs) (cvs2vs cvs);
 	
 	let tov = if ismain then (
 		("@global_ret_val",(TyInt,default_debug_data))
@@ -665,8 +692,6 @@ let cfg_toasms fn ismain args ast funnames heapvars =
 	List.iter (fun v -> 
 		 v.ops <- Array.append v.ops (Array.of_list (retop ()))
 	) gls;
-	(*
-	*)
 	
 	let used_regs = ref [] in
 	if !tortesia && (not !all_stack) then (
@@ -679,8 +704,7 @@ let cfg_toasms fn ismain args ast funnames heapvars =
 		in
 		let rrs = List.map (fun x -> Printf.sprintf "r%d" x) (range 20 30) in
 		let frs = List.map (fun x -> Printf.sprintf "f%d" x) (range 20 30) in
-		let argrs = List.map (fun x -> Printf.sprintf "r%d" x) (range 10 20) in
-		used_regs := ncfg#regalloc argrs "r5" rrs frs
+		used_regs := List.filter (fun x -> List.mem x (rrs @ frs)) (ncfg#regalloc rrs frs)
 	) else ();
 	
 	let res = ncfg#flatten_to_vlist () in

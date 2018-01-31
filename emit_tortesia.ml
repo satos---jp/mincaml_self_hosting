@@ -4,6 +4,7 @@ open Type_checker
 open Debug
 open Genint
 open Op
+open Cfg
 open Str
 open Main_option
 (* とりあえず、雑に tortesia コードを生成する *)
@@ -38,28 +39,6 @@ r31 :: グローバルヒープへのポインタ
 その他は全て、とりあえずcallee save でやっていく。
 
 *)
-
-(* 引数のnamereg配列をレジスタ名にしていく *)
-let args2regs vs rf ff otherfunc =
-	let rec recf nas i nrs nfs = 
-		match nas with
-		| [] -> []
-		| ((_,(t,_)) as x) :: xs -> (
-			match t,nrs,nfs with
-			| TyFloat,_,f :: fs -> (ff f x) :: (recf xs (i+1) nrs fs)
-			| TyFloat,_,[] -> (otherfunc i x) :: (recf xs (i+1) nrs nfs)
-			| _,r :: rs,_ -> (rf r x) :: (recf xs (i+1) rs nfs)
-			| _ ,[],_-> (otherfunc i x) :: (recf xs (i+1) nrs nfs)
-		)
-	in
-		let rec range a b = if a < b then a :: (range (a+1) b) else [] 
-		in
-		recf vs 0 
-			(List.map (fun x -> Printf.sprintf "r%d" x) (range 10 20)) 
-			(List.map (fun x -> Printf.sprintf "f%d" x) (range 10 20))
-
-		
-
 
 (* globalな変数のヒープ上の初期化をしておく *)
 let on_heap_vars = ref []
@@ -178,13 +157,14 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 	) in
 	(* callee save することにする *)
 	(* r5は、返り値なので抜いておく *)
+	
 	let prologue = 
 		"\tmflr r7\n" ^ 
 		"\tpush r7\n" ^ 
 		(if fn = main_name then Printf.sprintf "\tmov r31,r3\n\taddi r3,r3,$%d\n" !heap_diff else "") ^
 		(Printf.sprintf "\tpush r2\n\tmov r2,r1\n\tsubi r1,r1,$%d\n" (snd lvs_st)) ^
 		
-		(String.concat "" (List.map (fun x -> if x = "r5" then "" else Printf.sprintf "\tpush %s\n" x) regs)) ^
+		(String.concat "" (List.map (Printf.sprintf "\tpush %s\n") regs)) ^
 		
 		(ivprint (Printf.sprintf "vs length %d\n" (List.length vs));
 		(* 引数を、必要ならば指定のレジスタに割り当てておく *)
@@ -199,7 +179,7 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 		(String.concat "" (args2regs vs
 			f
 			f
-			(fun i ((x,_) as na) -> 
+			(fun i (x,_) -> 
 				match !x with
 				| Reg tr ->  Printf.sprintf "\tlw %s,r2,$%d\n" tr (8+i*4) (* loadする必要あり *)
 				| _ -> ""
@@ -217,7 +197,7 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 	ivprint (Printf.sprintf "Plorogue:\n %s" prologue);
 	let epilogue = (
 		(if fn = main_name then "\thlt\n" else 
-		(String.concat "" (List.map (fun x -> if x = "r5" then "" else Printf.sprintf "\tpop %s\n" x) (List.rev regs))) ^
+		(String.concat "" (List.map (Printf.sprintf "\tpop %s\n") (List.rev regs))) ^
 		
 		((Printf.sprintf "\taddi r1,r1,$%d\n\tpop r2\n" (snd lvs_st)) ^	
  		"\tpop r6\n" ^ 
@@ -297,6 +277,7 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 				let nl = ref (-4) in
 				let s1,r1 = ls2r "lw" "r5" na in
 				(* このr1を使うと破壊してしまう可能性がある *)
+				(* 実は、min-rt 時にこれ使わないようだな *)
 				let s1,r1 = (if r1 <> "r5" then s1 ^ (Printf.sprintf "\tmov r5,%s\n" r1) else s1),"r5" in
 				s1 ^ 
 				(String.concat "" (List.map (fun nb -> 

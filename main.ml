@@ -114,9 +114,6 @@ if argc <= 1 then (
 			Emit_zatsu_tortesia.vir2asm vrt 
 		else 
 			Emit_tortesia.vir2asm vrt 
-(*
-			Emit_zatsu_tortesia.vir2asm vrt 
-*)
 	) else
 		Emit_zatsu_x86.vir2asm vrt)
 	in

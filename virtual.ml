@@ -58,16 +58,15 @@ let get_var_names_from_ops ops remove_names =
 let rec to_virtual (fundefs,heapvars,rd) = 
 	let funnames = (List.map (fun {fn=(x,_); cbody=_} -> x) fundefs) @ (global_funcs ())
 	in
-	(List.map (fun {fn=fn; vs=vs1; cvs=vs2; cbody=bo} -> 
-		let args = vs1 @ vs2 in
-		let ops,regs,cvs2vs = cfg_toasms fn false args bo funnames heapvars in
-			{fn = fn; vs = (cvs2vs vs1); regs = regs; cvs = (cvs2vs vs2); body = {
+	(List.map (fun {fn=fn; vs=vs; cvs=cvs; cbody=bo} -> 
+		let ops,regs,cvs2vs = cfg_toasms fn false vs cvs bo funnames heapvars in
+			{fn = fn; vs = (cvs2vs vs); regs = regs; cvs = (cvs2vs cvs); body = {
 				ops = ops;
-				vs = get_var_names_from_ops ops (List.map fst (cvs2vs args));
+				vs = get_var_names_from_ops ops (List.map fst (cvs2vs (vs @ cvs)));
 			};}
 	) fundefs),
 	(let gfn = ("@global_main_func",(TyVar(-1),default_debug_data)) in
-	let ops,_,_ = cfg_toasms gfn true [] rd funnames heapvars in
+	let ops,_,_ = cfg_toasms gfn true [] [] rd funnames heapvars in
 	{
 		ops = ops;
 		vs = get_var_names_from_ops ops [];
