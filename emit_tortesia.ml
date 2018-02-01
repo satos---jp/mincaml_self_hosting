@@ -7,6 +7,8 @@ open Op
 open Cfg
 open Str
 open Main_option
+open Tortesia_register_convention
+
 (* とりあえず、雑に tortesia コードを生成する *)
 
 let constfs = ref ""
@@ -176,7 +178,7 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 				reg2v na r
 			)
 		in
-		(String.concat "" (args2regs vs
+		(String.concat "" (tortesia_register_convention.args2regs vs
 			f
 			f
 			(fun i (x,_) -> 
@@ -319,11 +321,11 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 				(* とりあえず引いておく。(これがないと、子で割り当てられないときにつむ) *)
 				(Printf.sprintf "\tsubi r1,r1,$%d\n" nl) ^
 				(* 引数をレジスタにする *)
-				(String.concat "" (args2regs vs 
+				(String.concat "" (tortesia_register_convention.args2regs vs 
 					(fun r x -> mova2b (ref (Reg r),snd x) x)
 					(fun f x -> mova2b (ref (Reg f),snd x) x)
 					(fun i ((na,(t,_)) as x) -> 
-						let r = (match !na,t with Reg tr,_ -> tr | _,TyFloat -> "f5" | _,_ -> "r5") in
+						let r = (match !na with Reg tr -> tr | _ -> tortesia_register_convention.ty2retreg t) in
 						let s,r = ls2r "lw" r x in
 						s ^ 
 						(Printf.sprintf "\tsw %s,r1,$%d\n" r (i*4))
@@ -346,10 +348,7 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 					(Printf.sprintf "\tlw %s,%s,$0\n" r r) ^ 
 					(Printf.sprintf "\tjalr %s\n" r)
 				)) ^ 
-				(match t with
-				 | TyFloat -> (reg2v nr "f5")
-				 | _ -> (reg2v nr "r5")
-				)
+				(reg2v nr (tortesia_register_convention.ty2retreg t))
 				in (* こうしないと、nlがアップデートされない *)
 				s ^ 
 				(Printf.sprintf "\taddi r1,r1,$%d\n" nl) ^
@@ -357,7 +356,7 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 				"; " ^ (nd2ds nr) ^ " " ^ (nd2ds fnd) ^ "\n"
 			)
 		| OpRet((_,(t,_)) as na) -> (
-				(v2reg (match t with TyFloat -> "f5" | _ -> "r5") na) ^
+				(v2reg (tortesia_register_convention.ty2retreg t) na) ^
 				epilogue
 			)
 		| OpMainRet -> (

@@ -4,6 +4,7 @@ open Closure_conv
 open Op
 open Debug
 open Main_option
+open Tortesia_register_convention
 
 let genlabel () = Printf.sprintf "@cfg_label_%d" (genint ())
 
@@ -136,26 +137,7 @@ class graph =
 		method v_iter f = List.iter f n2i 
 	end
 
-(* 引数のnamereg配列をレジスタ名にしていく *)
-let args2regs vs rf ff otherfunc =
-	let rec recf nas i nrs nfs = 
-		match nas with
-		| [] -> []
-		| ((_,(t,_)) as x) :: xs -> (
-			match t,nrs,nfs with
-			| TyFloat,_,f :: fs -> (ff f x) :: (recf xs (i+1) nrs fs)
-			| TyFloat,_,[] -> (otherfunc i x) :: (recf xs (i+1) nrs nfs)
-			| _,r :: rs,_ -> (rf r x) :: (recf xs (i+1) rs nfs)
-			| _ ,[],_-> (otherfunc i x) :: (recf xs (i+1) nrs nfs)
-		)
-	in
-		let rec range a b = if a < b then a :: (range (a+1) b) else [] 
-		in
-		recf vs 0 
-			(List.map (fun x -> Printf.sprintf "r%d" x) (range 10 20)) 
-			(List.map (fun x -> Printf.sprintf "f%d" x) (range 10 20))
 
-			
 let defaultname = "@defaultname"
 
 class cfg_type = 
@@ -400,10 +382,10 @@ class cfg_type =
 			(Array.concat nls),live_at_funccall
 		)
 		
-		method regalloc rreg freg func_rreg func_freg = (
+		method regalloc convention = (
 			let live_list,live_at_func = sl#liveanal () in
 			
-			let retn2constr (rn,(t,_)) = (rn,(match t with TyFloat -> "f5" | _ -> "r5")) in
+			let retn2constr (rn,(t,_)) = (rn,convention.ty2retreg t) in
 			
 			(* (変数名,レジスタ名) の組list。 *)
 			(* 関数呼び出し由来の制約 *)
@@ -412,7 +394,7 @@ class cfg_type =
 				List.iter (fun v -> Array.iter (fun op -> 
 					match op with
 					| OpApp(_,_,rn,_,vs) -> (
-							let _ = args2regs vs 
+							let _ = convention.args2regs vs 
 								(fun r (x,_) -> c := (x,r) :: !c)
 								(fun r (x,_) -> c := (x,r) :: !c)
 								(fun _ _ -> ()) in
@@ -422,7 +404,7 @@ class cfg_type =
 					| _ -> ()
 				) v.ops) vs;
 				(* 引数由来の制約 *)
-				let _ = args2regs argvs 
+				let _ = convention.args2regs argvs 
 					(fun r (x,_) -> c := (x,r) :: !c)
 					(fun r (x,_) -> c := (x,r) :: !c)
 					(fun _ _ -> ()) in
@@ -482,8 +464,8 @@ class cfg_type =
 				match !na with
 				| Var _ -> (
 					let ok_reg = 
-						(if (live_at_func na) then [] else (match t with TyFloat -> func_freg | _ -> func_rreg)) @
-						(match t with TyFloat -> freg | _ -> rreg)
+						(if (live_at_func na) then [] else (convention.ty2argreg t)) @
+						(convention.ty2savereg t)
 					in
 					let v = gr#get_valid ok_reg na in
 					match v with
@@ -672,6 +654,7 @@ let rec to_cfgs ast tov istail cfg fn head_label addtoroot =
 
 
 
+
 let cfg_toasms fn ismain vs cvs ast funnames heapvars = 
 	cna2na_init ();
 	globs := (funnames @ heapvars);
@@ -713,24 +696,13 @@ let cfg_toasms fn ismain vs cvs ast funnames heapvars =
 		(*
 		ncfg#copy_anal ();
 		*)
-		
-		let rec range a b =  
-			if a >= b then [] else a :: (range (a+1) b)
-		in
-		let rrs = List.map (fun x -> Printf.sprintf "r%d" x) (range 20 30) in
-		let frs = List.map (fun x -> Printf.sprintf "f%d" x) (range 20 30) in
-		let frrs = List.map (fun x -> Printf.sprintf "r%d" x) (range 10 20) in
-		let ffrs = List.map (fun x -> Printf.sprintf "f%d" x) (range 10 20) in
-		used_regs := List.filter (fun x -> List.mem x (rrs @ frs)) (ncfg#regalloc rrs frs frrs ffrs)
+
+		used_regs := List.filter (fun x -> List.mem x (tortesia_register_convention.savereg)) (ncfg#regalloc tortesia_register_convention)
 	) else ();
 	
 	let res = ncfg#flatten_to_vlist () in
-	(*
-	print_string (String.concat "\n" (List.map virtop2str res));
-	print_newline ();
-	*)
+
 	(res,!used_regs,(List.map cna2na))
 	
 
-	
 

@@ -9,10 +9,4 @@ val cfg_toasms :
 	(string list) -> (string list) -> 
 	((op list) * (string list) * (name list -> namereg list))
 
-val args2regs :
-	(namereg list) ->
-	(string -> namereg -> 'a) -> 
-	(string -> namereg -> 'a) -> 	
-	(int -> namereg -> 'a) -> 
-	('a list)
 
