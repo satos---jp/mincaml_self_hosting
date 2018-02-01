@@ -315,8 +315,11 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 					| Ominus -> "\tneg eax\n"
 					| Onot   -> "\ttest eax,eax\n\tsete al\n\tand eax,1\n"
 					| OGetTuple(i) -> (Printf.sprintf "\tadd eax,%d\n\tmov eax,[eax]\n" (i*4))
+					| Oiadd(x) -> (Printf.sprintf "\tadd eax,%d\n" x)
+					| Oibysub(x) -> (Printf.sprintf "\tsub eax,%d\n" x)
 					| Oimul(x) -> (Printf.sprintf "\tmov edx,%d\n\tmul edx\n" x)
 					| Oibydiv(x) -> (Printf.sprintf "\txor edx,edx\n\tmov ebx,%d\n\tdiv ebx\n" x)
+					| OiArrRead(x) -> Printf.sprintf "\tmov eax,dword [eax+%d]\n" (x*4)
 					| _ -> raise (Failure (Printf.sprintf "Operation %s is not unary operation" os))
 			 	)) ^
 				"; " ^ (nd2ds nrd) ^ " ::= " ^ os ^ " " ^ (nd2ds nad) ^ "\n"
@@ -393,6 +396,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 						 			(if !check_array_boundary then check_boundary d else "") ^ 
 						 			"\tmov eax,dword [eax+4*ebx]\n"
 						 		)
+							| OiArrWrite(x) -> Printf.sprintf "\tmov dword [eax+%d],ebx\n" (x*4)
 						 	| _ -> raise (Failure (Printf.sprintf "Operation %s is not unfloat binary operation" os))
 						) 
 					) 

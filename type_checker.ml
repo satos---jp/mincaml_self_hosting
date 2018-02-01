@@ -155,7 +155,7 @@ let rec type_infer astdeb env =
 			let tds = List.map (fun (_,_,_,x) -> x) tects in 
 			
 			let tyf = (match op with
-			| Onot | Ominus | Oimul _ | Oibydiv _ -> (fun () -> ([TyInt],TyInt))
+			| Onot | Ominus | Oiadd _ | Oibysub _ | Oimul _ | Oibydiv _ -> (fun () -> ([TyInt],TyInt))
 			| Oadd | Osub | Omul | Odiv -> (fun () -> ([TyInt;TyInt],TyInt))
 			| Ofadd | Ofsub | Ofmul | Ofdiv -> (fun () -> ([TyFloat;TyFloat],TyFloat))
 			
@@ -171,6 +171,8 @@ let rec type_infer astdeb env =
 			| OArrCrt -> (fun () -> let x = gentype () in ([TyInt;x],TyArr(x)))
 			| OArrRead -> (fun () -> let x = gentype () in ([TyArr(x);TyInt],x))
 			| OArrWrite -> (fun () -> let x = gentype () in ([TyArr(x);TyInt;x],TyTuple([])))
+			| OiArrRead _ -> (fun () -> let x = gentype () in ([TyArr(x)],x))
+			| OiArrWrite _ -> (fun () -> let x = gentype () in ([TyArr(x);x],TyTuple([])))
 			
 			| OSubTuple _ | OGetTuple _ -> raise (Failure (Printf.sprintf "%s shouldn't appear in parsed syntax" (op2str op)))
 			) in

@@ -264,20 +264,24 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 			)
 		| OpMov(((na,(t1,d1)) as nrd),((nb,(t2,d2)) as nad)) -> assert (t1=t2); (mova2b nrd nad) 
 		| OpLabel x -> x ^ ":\n"
-		| OpJcnd(ct,na,nb,la) -> (
+		| OpJcnd(ct,((_,(t,_)) as na),nb,la) -> (
 					let s1,r1 = ls2r "lw" "r5" na in
 					let s2,r2 = ls2r "lw" "r6" nb in
 					s1 ^ s2 ^ 
-				(Printf.sprintf "\t%s %s,%s,%s\n" (match ct with 
-					| CmpEq -> "bne"
-					| CmpLt -> raise (Failure "unimplemented emit CmpLt at virtual.ml")) r1 r2 la)
+					(match ct with
+					| CmpEq -> Printf.sprintf "\tbne %s,%s,%s\n" r1 r2 la
+					| CmpLt -> (
+						match t with
+						| TyFloat -> Printf.sprintf "\tflt %s,%s\n\tbft %s\n" r1 r2 la
+						| _ -> Printf.sprintf "\tslt r5,%s,%s\n\tbne r0,r5,%s\n" r1 r2 la
+					)
+					)
 			)
 		| OpJmp(la) -> Printf.sprintf "\tj %s\n" la
 		| OpDestTuple(vs,na) -> (
 				let nl = ref (-4) in
 				let s1,r1 = ls2r "lw" "r5" na in
 				(* このr1を使うと破壊してしまう可能性がある *)
-				(* 実は、min-rt 時にこれ使わないようだな *)
 				let s1,r1 = (if r1 <> "r5" then s1 ^ (Printf.sprintf "\tmov r5,%s\n" r1) else s1),"r5" in
 				s1 ^ 
 				(String.concat "" (List.map (fun nb -> 
@@ -289,9 +293,12 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 				"; " ^ (nd2ds na) ^ "\n"
 			)
 		| OpMakeTuple(nr,vs) -> (
-				"\tmov r6,r3\n" ^ 
-				(make_vs_on_heap vs) ^ 
-				(reg2v nr "r6") ^ (* 伏線回収 *)
+				(* 長さ0のタプルについては、何もしなくてよい。 *)
+				(if vs = [] then "" else (
+					"\tmov r6,r3\n" ^ 
+					(make_vs_on_heap vs) ^ 
+					(reg2v nr "r6") (* 伏線回収 *)
+				)) ^ 
 				"; " ^ (nd2ds nr) ^ "\n"
 			)
 		| OpMakeCls(nr,((fn,_) as fnd),vs) -> (
@@ -369,22 +376,25 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 					| Ominus -> "\tsub {0},r0,{1}\n"
 					| Onot -> "\tslti r6,{1},$0\n\tslti r7,{1},$1\n\tsub {0},r7,r6\n"
 					| OGetTuple(i) -> Printf.sprintf "\tlw {0},{1},$%d\n" (i*4)
+					| Oiadd(i) -> Printf.sprintf "\taddi {0},{1},$%d\n" i
+					| Oibysub(i) -> Printf.sprintf "\tsubi {0},{1},$%d\n" i
 					| Oimul(x) -> (
 							"\tli r6,$0\n" ^ (tomul x) ^ "\tmov {0},r6\n"
 						)
 					| Oibydiv(x) -> (
-						match x with
-						| 2 -> "\tslti r6,{1},$0\n\tadd {0},{1},r6\n\tsra {0},{0},$1\n"
-						(* from https://stackoverflow.com/questions/5558492/divide-by-10-using-bit-shifts *)
-						| 10 -> (
-								"\tli r6,$0\n" ^ (tomul 205) ^ "\tsra {0},r6,$11\n"
-							)
-							(*
-								"\tli r6,$0\n" ^ (tomul 205) ^ "\tsra r5,r6,$11\n"
-								"\tli r6,$0\n" ^ (tomul 0x1999999) ^ "\tmov r5,r6\n"
-							*)
-						| _ -> raise (Failure (Printf.sprintf "divide by %d is not supported" x))
+							match x with
+							| 2 -> "\tslti r6,{1},$0\n\tadd {0},{1},r6\n\tsra {0},{0},$1\n"
+							(* from https://stackoverflow.com/questions/5558492/divide-by-10-using-bit-shifts *)
+							| 10 -> (
+									"\tli r6,$0\n" ^ (tomul 205) ^ "\tsra {0},r6,$11\n"
+								)
+								(*
+									"\tli r6,$0\n" ^ (tomul 205) ^ "\tsra r5,r6,$11\n"
+									"\tli r6,$0\n" ^ (tomul 0x1999999) ^ "\tmov r5,r6\n"
+								*)
+							| _ -> raise (Failure (Printf.sprintf "divide by %d is not supported" x))
 						)
+					| OiArrRead(a) -> Printf.sprintf "\tlw {0},{1},$%d\n" (a*4)
 					| _ -> raise (Failure (Printf.sprintf "Operation %s is not unary operation" (op2str op)))
 				) ^
 				"; " ^ (nd2ds nrd) ^ " ::= " ^ (op2str op) ^ " " ^ (nd2ds nad) ^ "\n"
@@ -453,6 +463,7 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 								"\tmov {0},r7\n"
 					 		)
 					 	| OArrRead -> "\tsll r6,{2},$2\n\tadd {0},{1},r6\n\tlw {0},{0},$0\n"
+					 	| OiArrWrite(a) -> Printf.sprintf "\tsw {2},{1},$%d\n" (a*4)
 					 	| _ -> raise (Failure (Printf.sprintf "Operation %s from %s is not int binary operation" os (debug_data2str (snd (snd nrd)))))
 					)
 				)) ^

@@ -27,8 +27,9 @@ type optype =
 	| OArrCrt | OArrRead | OArrWrite
 	| OSubTuple of int * int
 	| OGetTuple of int
-	| Oimul of int
-	| Oibydiv of int
+	| Oiadd of int | Oibysub of int
+	| Oimul of int | Oibydiv of int
+	| OiArrRead of int | OiArrWrite of int
 
 let op2str o = 
 	match o with
@@ -37,6 +38,8 @@ let op2str o =
 	| Osub -> "Osub"
 	| Omul -> "Omul"
 	| Odiv -> "Odiv"
+	| Oiadd(a) -> Printf.sprintf "Oiadd[%d]"  a
+	| Oibysub(a) -> Printf.sprintf "Oibysub[%d]"  a
 	| Oimul(a) -> Printf.sprintf "Oimul[%d]"  a
 	| Oibydiv(a) -> Printf.sprintf "Oibydiv[%d]"  a
 	| Ofadd -> "Ofadd"
@@ -55,6 +58,8 @@ let op2str o =
 	| OArrCrt -> "OArrCrt"
 	| OArrRead -> "OArrRead"
 	| OArrWrite -> "OArrWrite"
+	| OiArrRead(a) -> Printf.sprintf "OiArrRead[%d]"  a
+	| OiArrWrite(a) -> Printf.sprintf "OiArrWrite[%d]"  a
 	| OSubTuple(a,b) -> Printf.sprintf "OSubTuple[%d,%d]" a b
 	| OGetTuple(a) -> Printf.sprintf "OGetTuple[%d]" a
 

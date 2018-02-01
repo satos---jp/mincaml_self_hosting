@@ -27,6 +27,9 @@ let type_flatten t =
 let rec remove_tuple ast = 
 	let reccall = remove_tuple in
 	match ast with
+(*
+	関数引数の展開はしないほうが(明らかに)よい。
+	15億命令ほど減った。
 	| KLetRec((fn,(ft,fd)),vs,e1,e2) -> (
 			let tft = type_flatten ft in
 			let tvs,te1 = List.fold_right (fun ((na,(nt,nd)) as natd) -> fun (rvs,re1) -> 
@@ -39,11 +42,6 @@ let rec remove_tuple ast =
 			) vs ([],e1) in
 			KLetRec((fn,(tft,fd)),tvs,remove_tuple te1,remove_tuple e2)
 		)
-	| KLetTuple(vs,tn,e1) -> (
-			let te1,_ = List.fold_left (fun (r,i) -> fun na -> 
-				(KLet(na,KOp(OGetTuple(i),[tn]),r),i+1)
-			) (remove_tuple e1,0) vs in te1
-		)
 	| KApp((fn,(ft,fd)),vs) -> (
 			let tvs,tfs = List.fold_right (fun ((na,(nt,nd)) as natd) -> fun (rvs,rf) -> 
 				match nt with
@@ -55,6 +53,12 @@ let rec remove_tuple ast =
 			) vs ([],fun x -> x)
 			in
 				tfs (KApp((fn,(type_flatten ft,fd)),tvs))
+		)
+*)
+	| KLetTuple(vs,tn,e1) -> (
+			let te1,_ = List.fold_left (fun (r,i) -> fun na -> 
+				(KLet(na,KOp(OGetTuple(i),[tn]),r),i+1)
+			) (remove_tuple e1,0) vs in te1
 		)
 	| _ -> kexp_recconv reccall ast
 

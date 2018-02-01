@@ -106,16 +106,26 @@ let rec knorm (ast,nt) =
 			List.fold_right (fun ((ne,net),nv) -> fun r -> KLet((nv,net),knorm (ne,net),r))
 			vxs (KOp(s,List.map (fun ((_,t),v) -> (v,t)) vxs)) 
 		)
-	| TIf((TOp(Oeq,[e1;e2]),opt),e3,e4) -> (
-			let t1 = snd e1 in
-			let t2 = snd e2 in
-			let v1 = genvar () in
-			let v2 = genvar () in
+	| TIf((TOp(op,[e1;e2]),opt),e3,e4) 
+		when List.mem op [Oeq; Oneq; Olt; Oleq; Ogt; Ogeq] -> (
+			let vt1 = (genvar ()),(snd e1) in
+			let vt2 = (genvar ()),(snd e2) in
 			let k3 = knorm e3 in
 			let k4 = knorm e4 in
-			KLet((v1,t1),knorm e1,
-				KLet((v2,t2),knorm e2,
-					KIf(CmpEq,(v1,t1),(v2,t2),k3,k4)))
+			KLet(vt1,knorm e1,
+				KLet(vt2,knorm e2,
+					(match op with
+					| Oeq  -> KIf(CmpEq,vt1,vt2,k3,k4)
+					| Oneq -> KIf(CmpEq,vt1,vt2,k4,k3)
+					
+					| Ogeq -> KIf(CmpLt,vt1,vt2,k3,k4)
+					| Oleq -> KIf(CmpLt,vt2,vt1,k3,k4)
+					| Ogt -> KIf(CmpLt,vt2,vt1,k4,k3)
+					| Olt -> KIf(CmpLt,vt1,vt2,k4,k3)
+					| _ -> raise (Failure "shouldn't reach here")
+					)
+				)
+			)
 		)
 	| TIf(e1,e2,e3) -> (
 			let (_,(_,d)) = e1 in

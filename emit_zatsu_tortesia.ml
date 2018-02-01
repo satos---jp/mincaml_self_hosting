@@ -178,7 +178,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 				(Printf.sprintf "\tlw r5,%s\n\tlw r6,%s\n" (na2s na) (na2s nb)) ^ 
 				(Printf.sprintf "\t%s r5,r6,%s\n" (match ct with 
 					| CmpEq -> "bne"
-					| CmpLt -> raise (Failure "unimplemented emit CmpLt at virtual.ml")) la)
+					| CmpLt -> raise (Failure "unimplemented emit CmpLt at emit_zatsu_tortesia.ml")) la)
 			)
 		| OpJmp(la) -> Printf.sprintf "\tj %s\n" la
 		| OpDestTuple(vs,nad) -> (
@@ -253,6 +253,8 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 					| Ominus -> "\tsub r5,r0,r5\n"
 					| Onot -> "\tslti r6,r5,$0\n\tslti r7,r5,$1\n\tsub r5,r7,r6\n"
 					| OGetTuple(i) -> (Printf.sprintf "\tlw r5,r5,$%d\n" (i*4))
+					| Oiadd(x) -> Printf.sprintf "\taddi r5,r5,$%d\n" x
+					| Oibysub(x) -> Printf.sprintf "\tsubi r5,r5,$%d\n" x
 					| Oimul(x) -> (
 							"\tli r6,$0\n" ^ (tomul x) ^ "\tmov r5,r6\n"
 						)

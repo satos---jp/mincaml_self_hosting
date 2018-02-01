@@ -3,14 +3,14 @@ open Knorm
 let rec remove_tuple env ast = 
 	let reccall = remove_tuple env in
 	match ast with
-	| KLetTuple(vs,(na,_),e1) -> (
+	| KLetTuple(vs,((na,_) as nd),e1) -> (
 		let te1 = reccall e1 in
 		try 
 			let nvs = List.assoc na env in
 				List.fold_left2 (fun r -> fun a -> fun b -> 
 					KLet(a,KVar(b),r)) te1 vs nvs
 		with
-			| Not_found -> ast
+			| Not_found -> KLetTuple(vs,nd,te1)
 		)
 	| KLet((na,_) as a,e1,e2) -> (
 			let te1 = reccall e1 in

@@ -73,9 +73,9 @@ do
 	cat $file
 	
 	#exec_ocaml $file oa.txt $input
-	exec_x86 $file oo.txt $input 
+	exec_x86 $file oa.txt $input 
 	#exec_tortesia_zatsu $file oa.txt $input
-	exec_tortesia $file oa.txt $input
+	exec_tortesia $file oo.txt $input
 	
 	#比較
 	if diff oo.txt oa.txt; then

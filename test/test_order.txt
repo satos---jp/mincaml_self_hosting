@@ -9,6 +9,7 @@ global_array_rw.ml
 array_rw.ml array_rw_i.txt
 fib.ml
 make_dest_tuple.ml
+check_const_arr_rw.ml
 closure_buggy.ml
 ftoi_itof.ml
 operator.ml operator_i.txt

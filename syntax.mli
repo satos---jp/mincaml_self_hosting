@@ -19,8 +19,9 @@ type optype =
 	| OArrCrt | OArrRead | OArrWrite
 	| OSubTuple of int * int
 	| OGetTuple of int
-	| Oimul of int
-	| Oibydiv of int
+	| Oiadd of int | Oibysub of int
+	| Oimul of int | Oibydiv of int
+	| OiArrRead of int | OiArrWrite of int
 
 val op2str : optype -> string
 

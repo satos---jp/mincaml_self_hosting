@@ -351,7 +351,9 @@ class cfg_type =
 						let _ = Array.fold_right (fun op i -> 
 							(if !nc || (List.mem na (get_assigner op)) || 
 								(* Tupleの場合つらいので、こーゆーことをやってる *)
-								(match op with OpDestTuple _ -> List.mem (!na) (get_assigned op) | _ -> false)
+								(* (match op with OpDestTuple_ -> List.mem (!na) (get_assigned op) | _ -> false) *)
+								(* 一般的に、未使用変数があっても辛くなるので、いったんは全部にする *)
+								(List.mem (!na) (get_assigned op))
 							then ( 
 								name_list.(v.idx).(i) <- na :: name_list.(v.idx).(i);
 								match op with

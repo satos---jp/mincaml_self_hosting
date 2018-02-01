@@ -30,15 +30,32 @@ let rec const_fold tupleenv cenv ast =
 					| _ -> raise Not_found) x y))
 				| [Left(CInt x);Right(nad)] -> (
 						match op with
+						| Oadd -> KOp(Oiadd(x),[nad])
 						| Omul -> KOp(Oimul(x),[nad])
 						| _ -> raise Not_found
 					)
 				| [Right(nad);Left(CInt x)] -> (
 						match op with
+						| Oadd -> KOp(Oiadd(x),[nad])
 						| Omul -> KOp(Oimul(x),[nad])
+						| Osub -> KOp(Oibysub(x),[nad])
 						| Odiv -> KOp(Oibydiv(x),[nad])
+						| OArrRead -> KOp(OiArrRead(x),[nad])
 						| _ -> raise Not_found
 					)
+				(* 定数配列読み書きを入れて、51億命令 -> 38億命令になった *)
+				| [Right(nad);Left(CInt x);Right(ncd)] -> (
+						match op with
+						| OArrWrite -> KOp(OiArrWrite(x),[nad;ncd])
+						| _ -> raise Not_found
+					)
+				(*
+				| [Right(nad);Left(CInt x);Left(ncd)] -> (
+						match op with
+						| OArrWrite -> KOp(OiArrWrite(x),[nad;ncd])
+						| _ -> raise Not_found
+					)
+				*)
 				| [Left(CFloat x);Left(CFloat y)] -> KConst(CFloat(
 					(match op with
 					| Ofadd -> (+.)
@@ -65,6 +82,7 @@ let rec const_fold tupleenv cenv ast =
 	| KOp(Osemi2,[_;nb]) -> (
 			KVar(nb)
 		)
+	| KOp(op,vs) -> op_fold op vs
 	| KLet((na,_) as natd,e1,e2) -> (
 			let te1 = reccall e1 in
 			KLet(natd,te1,(
@@ -73,7 +91,6 @@ let rec const_fold tupleenv cenv ast =
 				| KConst c -> const_fold tupleenv ((na,c) :: cenv) e2
 				| _ -> reccall e2))
 		)
-	| KOp(op,vs) -> op_fold op vs
 	| _ -> kexp_recconv reccall ast
 
 let folder ast = const_fold [] [] ast
