@@ -67,7 +67,7 @@ if argc <= 1 then (
 	files := (
 		if !nolib then []
 		else if !tortesia then (
-			if !asmsin_asmint then ["lib_tortesia.ml"] 
+			if !asmsin_asmint && (not !in_out_assembler) then ["lib_tortesia.ml"] 
 			else ["lib_tortesia.ml"; "lib_sinint.ml"]
 		) 
 		else ["lib.ml"]

@@ -9,6 +9,7 @@ let nooptimization = ref false
 let asmsin_asmint = ref false
 let all_stack = ref false
 let check_array_boundary = ref false
+let in_out_assembler = ref false
 
 let argparse files = 
 	Arg.parse [
@@ -23,6 +24,7 @@ let argparse files =
 		("-asi",Arg.Set asmsin_asmint,"use x86 tirgonal and x86 print_int");
 		("-stack",Arg.Set all_stack,"put allarguments on stack for tortesia");
 		("-cab",Arg.Set check_array_boundary,"check boundary of array for x86");
+		("-inout",Arg.Set in_out_assembler,"make in and out to assembler");
 	] (fun fn -> files := (!files) @ [fn]) (Printf.sprintf "Usage: %s filename\n" Sys.argv.(0))
 
 let vprint f s = 

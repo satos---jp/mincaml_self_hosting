@@ -12,6 +12,7 @@ cp ../lib_tortesia.s ./
 cp ../lib_zatsu_tortesia.s ./
 cp ../lib_tortesia_to_x86.s ./
 cp ../lib_sinint.ml ./
+cp ../lib_tortesia_in_out.s ./
 
 
 exec_ocaml(){
@@ -52,7 +53,7 @@ exec_tortesia_zatsu(){
 
 exec_tortesia(){
 	#tortesia -> x86 で実行
-	./main -d $1 -noinline -t -asi -o o_tortesia.s -v > o.txt
+	./main -d $1 -noinline -t -asi -o o_tortesia.s -inout -v > o.txt
 	python ../tortesia2x86.py -r < o_tortesia.s > o_tortesia2x86.s
 	nasm o_tortesia2x86.s -f elf32 -g -o out.o
 	gcc -m32 -nostdlib out.o -o a.out

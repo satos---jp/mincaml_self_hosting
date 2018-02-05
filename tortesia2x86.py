@@ -73,17 +73,27 @@ ic 00000003a6d3ec70
 580メガバイト
 """
 
-libfuncs = [
-	('print_char',1),
-	('read_char',1),
-	('read_int',1),
-	('read_float',1),
+if args.register:
+	libfuncs = [
+		('read_char',1),
+		
+		('print_int',1),
+		('sin',1),
+		('cos',1),
+		('atan',1),
+	]
+else:
+	libfuncs = [
+		('print_char',1),
+		('read_char',1),
+		('read_int',1),
+		('read_float',1),
 	
-	('print_int',1),
-	('sin',1),
-	('cos',1),
-	('atan',1),
-]
+		('print_int',1),
+		('sin',1),
+		('cos',1),
+		('atan',1),
+	]
 
 #呼び出し規約のトランポリン
 for fn,i in libfuncs:
@@ -466,6 +476,29 @@ def check(v):
 		 "mov eax,[%s]" % v[0]
 	]
 
+def ini(v):
+	return [
+		"push ebx",
+		"call read_int",
+		"pop ebx",
+		"mov [%s],eax" % v[0] 
+	]
+
+def inf(v):
+	return [
+		"push ebx",
+		"call read_float",
+		"pop ebx",
+		"mov [%s],eax" % v[0] 
+	]
+
+def out(v):
+	return [
+		"mov eax,[%s]" % v[0],
+		"push eax",
+		"call print_char",
+		"pop eax"
+	]
 
 
 import sys

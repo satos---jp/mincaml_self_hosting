@@ -15,7 +15,7 @@ ftoi_itof.ml
 operator.ml operator_i.txt
 fcomp.ml fcomp_i.txt
 floor_check.ml
-plot_trigon.ml plot_trigon_i.txt 
 external_library.ml
 mandelblot_edit.ml
+plot_trigon.ml plot_trigon_i.txt 
 

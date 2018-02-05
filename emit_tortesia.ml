@@ -495,6 +495,7 @@ let read_all_data filename =
 let vir2asm (funs,rd,heapvars) = 
 	init_heapvars heapvars;
 	(read_all_data "lib_tortesia.s") ^
+	(if !in_out_assembler then (read_all_data "lib_tortesia_in_out.s") else "") ^
 	(String.concat "" (List.map func2asm (List.rev funs))) ^	
 	(func2asm {fn=(main_name,(TyVar(-1),default_debug_data)); vs=[]; regs=[]; cvs=[]; body=rd})
 
