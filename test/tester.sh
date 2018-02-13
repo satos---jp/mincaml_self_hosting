@@ -13,7 +13,7 @@ cp ../lib_zatsu_tortesia.s ./
 cp ../lib_tortesia_to_x86.s ./
 cp ../lib_sinint.ml ./
 cp ../lib_tortesia_in_out.s ./
-
+cp ../converter.py ./
 
 exec_ocaml(){
 	#Ocamlで実行
@@ -64,6 +64,17 @@ exec_tortesia(){
 	fi
 }
 
+exec_kai(){
+	#tortesia -> x86 で実行
+	./main -d $1 -noinline -t -inout -o t.s -v > o.txt
+	python converter.py < t.s > o_tortesia.s
+	if [ -z $3 ]; then 
+		../../kai_sim/a.out o_tortesia.s > $2
+	else
+		../../kai_sim/a.out o_tortesia.s < $3 > $2
+	fi
+}
+
 cat test_order.txt | while read file input
 do
 	rm tmp.ml a.out oo.txt oa.txt o_tortesia.s o_x86.s o_tortesia2x86.s
@@ -76,7 +87,8 @@ do
 	#exec_ocaml $file oa.txt $input
 	exec_x86 $file oa.txt $input 
 	#exec_tortesia_zatsu $file oa.txt $input
-	exec_tortesia $file oo.txt $input
+	#exec_tortesia $file oo.txt $input
+	exec_kai $file oo.txt $input
 	
 	#比較
 	if diff oo.txt oa.txt; then
