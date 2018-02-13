@@ -82,7 +82,6 @@ if argc <= 1 then (
 			) globasts east 
 		)
 	| _ -> raise (Failure "inputfile is not value")  in
-	(* (expr2str tast); *)
 	print_string "parsed"; print_newline ();
 	let ast2 = Type_checker.check tast in
 	print_string "typed";  print_newline ();

@@ -696,8 +696,9 @@ let cfg_toasms fn ismain vs cvs ast funnames heapvars =
 		(*
 		ncfg#copy_anal ();
 		*)
-
+		
 		used_regs := List.filter (fun x -> List.mem x (tortesia_register_convention.savereg)) (ncfg#regalloc tortesia_register_convention)
+		
 	) else ();
 	
 	let res = ncfg#flatten_to_vlist () in

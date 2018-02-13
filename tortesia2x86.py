@@ -73,7 +73,7 @@ ic 00000003a6d3ec70
 580メガバイト
 """
 
-if args.register:
+if args.register and False:
 	libfuncs = [
 		('read_char',1),
 		
@@ -388,6 +388,12 @@ def fmovi(v):
 	]
 	return [
 		"mov eax,[%s]" % tag,
+		"mov [%s],eax" % v[0]
+	]
+
+def fmov(v):
+	return [
+		"mov eax,[%s]" % v[1],
 		"mov [%s],eax" % v[0]
 	]
 

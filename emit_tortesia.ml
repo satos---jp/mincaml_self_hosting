@@ -130,21 +130,33 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 		res,rg
 	) in
 	let nd2ds (_,(_,d)) = (debug_data2simple d) in
-	let mova2b nr na = 
-		(match !(fst nr),!(fst na) with
-		| Var r,Var a | Var r,GVar a | GVar r,Var a | GVar r,GVar a -> (fst (ls2r "lw" "r5" na)) ^ (fst (ls2r "sw" "r5" nr))
-		| Reg r,Var a | Reg r,GVar a -> Printf.sprintf "\tlw %s,%s\n" r (na2s a)
-		| Var r,Reg a | GVar r,Reg a -> Printf.sprintf "\tsw %s,%s\n" a (na2s r)
-		| Reg r,Reg a -> Printf.sprintf "\tmov %s,%s\n" r a
-		) ^		"; " ^ (nd2ds na) ^ " ::<= " ^ (nd2ds nr) ^ "\n"
+	let mova2b ((nr,(t,_)) as nrd) ((na,_) as nad) = 
+		(if t = TyFloat then (
+			match !nr,!na with
+			| Var r,Var a | Var r,GVar a | GVar r,Var a | GVar r,GVar a -> (fst (ls2r "fld" "f5" nad)) ^ (fst (ls2r "fst" "f5" nrd))
+			| Reg r,Var a | Reg r,GVar a -> Printf.sprintf "\tfld %s,%s\n" r (na2s a)
+			| Var r,Reg a | GVar r,Reg a -> Printf.sprintf "\tfst %s,%s\n" a (na2s r)
+			| Reg r,Reg a -> Printf.sprintf "\tfmov %s,%s\n" r a
+		) else (
+			match !nr,!na with
+			| Var r,Var a | Var r,GVar a | GVar r,Var a | GVar r,GVar a -> (fst (ls2r "lw" "r5" nad)) ^ (fst (ls2r "sw" "r5" nrd))
+			| Reg r,Var a | Reg r,GVar a -> Printf.sprintf "\tlw %s,%s\n" r (na2s a)
+			| Var r,Reg a | GVar r,Reg a -> Printf.sprintf "\tsw %s,%s\n" a (na2s r)
+			| Reg r,Reg a -> Printf.sprintf "\tmov %s,%s\n" r a
+		)) ^		"; " ^ (nd2ds nad) ^ " ::<= " ^ (nd2ds nrd) ^ "\n"
 	in
-	let v2reg tr na = 
+	let movs tr r t = 
+		match t with
+		| TyFloat -> (Printf.sprintf "\tfmov %s,%s\n" tr r)
+		| _ -> (Printf.sprintf "\tmov %s,%s\n" tr r)
+	in
+	let v2reg tr ((_,(t,_)) as na) = 
 		let s,r = ls2r "lw" tr na in
-		if tr = r then s else (Printf.sprintf "\tmov %s,%s\n" tr r)
+		if tr = r then s else movs tr r t
 	in
-	let reg2v na tr = 
-		let s,r = ls2r "sw" tr na in
-		if tr = r then s else (Printf.sprintf "\tmov %s,%s\n" r tr)		
+	let reg2v ((_,(t,_)) as na) fr = 
+		let s,r = ls2r "sw" fr na in
+		if fr = r then s else movs r fr t	
 	in
 	let make_vs_on_heap vs = (
 		let nl = ref 0 in
@@ -162,17 +174,18 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 	
 	let prologue = 
 		"\tmflr r7\n" ^ 
-		"\tpush r7\n" ^ 
+		"\tsubi r1,r1,$4\n\tsw r7,r1,$0\n" ^ 
 		(if fn = main_name then Printf.sprintf "\tmov r31,r3\n\taddi r3,r3,$%d\n" !heap_diff else "") ^
-		(Printf.sprintf "\tpush r2\n\tmov r2,r1\n\tsubi r1,r1,$%d\n" (snd lvs_st)) ^
+		(Printf.sprintf "\tsubi r1,r1,$4\n\tsw r2,r1,$0\n\tmov r2,r1\n\tsubi r1,r1,$%d\n" (snd lvs_st)) ^
 		
-		(String.concat "" (List.map (Printf.sprintf "\tpush %s\n") regs)) ^
+		(String.concat "" (List.map (Printf.sprintf "\tsubi r1,r1,$4\n\tsw %s,r1,$0\n") regs)) ^
 		
 		(ivprint (Printf.sprintf "vs length %d\n" (List.length vs));
 		(* 引数を、必要ならば指定のレジスタに割り当てておく *)
-		let f r ((x,_) as na) = 
-			match !x with
-			| Reg tr -> Printf.sprintf "\tmov %s,%s\n" tr r
+		let f r ((x,(t,_)) as na) = 
+			match !x,t with
+			| Reg tr,TyFloat -> Printf.sprintf "\tfmov %s,%s\n" tr r
+			| Reg tr,_ -> Printf.sprintf "\tmov %s,%s\n" tr r
 			| _ -> (
 				ivprint (Printf.sprintf "arg %s is not register" (namestr2str !x));
 				reg2v na r
@@ -199,10 +212,10 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 	ivprint (Printf.sprintf "Plorogue:\n %s" prologue);
 	let epilogue = (
 		(if fn = main_name then "\thlt\n" else 
-		(String.concat "" (List.map (Printf.sprintf "\tpop %s\n") (List.rev regs))) ^
+		(String.concat "" (List.map (Printf.sprintf "\tlw %s,r1,$0\n\taddi r1,r1,$4\n") (List.rev regs))) ^
 		
-		((Printf.sprintf "\taddi r1,r1,$%d\n\tpop r2\n" (snd lvs_st)) ^	
- 		"\tpop r6\n" ^ 
+		((Printf.sprintf "\taddi r1,r1,$%d\n\tlw r2,r1,$0\n\taddi r1,r1,$4\n" (snd lvs_st)) ^	
+ 		"\tlw r6,r1,$0\n\taddi r1,r1,$4\n" ^ 
 		"\tjr r6\n"))
 	)
 	in
@@ -317,7 +330,7 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 		| OpApp(istail,isdir,((_,(t,_)) as nr),((fn,_) as fnd),vs) -> (
 				let nl = 4 * (List.length vs) in (* これ、もう割り当てておくことにする *)
 				let s = 
-				"\tpush r4\n" ^
+				"\tsubi r1,r1,$4\n\tsw r4,r1,$0\n" ^
 				(* とりあえず引いておく。(これがないと、子で割り当てられないときにつむ) *)
 				(Printf.sprintf "\tsubi r1,r1,$%d\n" nl) ^
 				(* 引数をレジスタにする *)
@@ -352,7 +365,7 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 				in (* こうしないと、nlがアップデートされない *)
 				s ^ 
 				(Printf.sprintf "\taddi r1,r1,$%d\n" nl) ^
-				"\tpop r4\n" ^
+				"\tlw r4,r1,$0\n\taddi r1,r1,$4\n" ^
 				"; " ^ (nd2ds nr) ^ " " ^ (nd2ds fnd) ^ "\n"
 			)
 		| OpRet((_,(t,_)) as na) -> (
@@ -461,7 +474,7 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 								(Printf.sprintf "%s:\n" lb) ^ 
 								"\tmov {0},r7\n"
 					 		)
-					 	| OArrRead -> "\tsll r6,{2},$2\n\tadd {0},{1},r6\n\tlw {0},{0},$0\n"
+					 	| OArrRead -> "\tsll r6,{2},$2\n\tadd r5,{1},r6\n\tlw {0},r5,$0\n"
 					 	| OiArrWrite(a) -> Printf.sprintf "\tsw {2},{1},$%d\n" (a*4)
 					 	| _ -> raise (Failure (Printf.sprintf "Operation %s from %s is not int binary operation" os (debug_data2str (snd (snd nrd)))))
 					)
