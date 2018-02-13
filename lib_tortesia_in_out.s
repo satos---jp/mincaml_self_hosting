@@ -1,25 +1,25 @@
 read_int:
-	in r5
-	in r6
+	ini r5
+	ini r6
 	sll r6,r6,$8
 	or r5,r5,r6
-	in r6
+	ini r6
 	sll r6,r6,$16
 	or r5,r5,r6
-	in r6
+	ini r6
 	sll r6,r6,$24
 	or r5,r5,r6
 	ret
 
 read_float:
-	in r5
-	in r6
+	inf r5
+	inf r6
 	sll r6,r6,$8
 	or r5,r5,r6
-	in r6
+	inf r6
 	sll r6,r6,$16
 	or r5,r5,r6
-	in r6
+	inf r6
 	sll r6,r6,$24
 	or r5,r5,r6
 	rtof f5,r5
