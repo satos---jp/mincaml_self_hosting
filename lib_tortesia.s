@@ -5,7 +5,7 @@ float_of_int:
 
 int_of_float:
 	ftoi f1,f10
-	ftor r5,f1
+	ftor r9,f1
 	ret
 
 sqrt:

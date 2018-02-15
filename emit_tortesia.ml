@@ -131,7 +131,8 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 	) in
 	let nd2ds (_,(_,d)) = (debug_data2simple d) in
 	let mova2b ((nr,(t,_)) as nrd) ((na,_) as nad) = 
-		(if t = TyFloat then (
+		if !nr = !na then "" else  
+		((if t = TyFloat then (
 			match !nr,!na with
 			| Var r,Var a | Var r,GVar a | GVar r,Var a | GVar r,GVar a -> (fst (ls2r "fld" "f5" nad)) ^ (fst (ls2r "fst" "f5" nrd))
 			| Reg r,Var a | Reg r,GVar a -> Printf.sprintf "\tfld %s,%s\n" r (na2s a)
@@ -143,9 +144,10 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 			| Reg r,Var a | Reg r,GVar a -> Printf.sprintf "\tlw %s,%s\n" r (na2s a)
 			| Var r,Reg a | GVar r,Reg a -> Printf.sprintf "\tsw %s,%s\n" a (na2s r)
 			| Reg r,Reg a -> Printf.sprintf "\tmov %s,%s\n" r a
-		)) ^		"; " ^ (nd2ds nad) ^ " ::<= " ^ (nd2ds nrd) ^ "\n"
+		))) ^		"; " ^ (nd2ds nad) ^ " ::<= " ^ (nd2ds nrd) ^ "\n"
 	in
 	let movs tr r t = 
+		if r = tr then "" else 
 		match t with
 		| TyFloat -> (Printf.sprintf "\tfmov %s,%s\n" tr r)
 		| _ -> (Printf.sprintf "\tmov %s,%s\n" tr r)
@@ -173,12 +175,14 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 	(* r5は、返り値なので抜いておく *)
 	
 	let prologue = 
-		"\tmflr r7\n" ^ 
-		"\tsubi r1,r1,$4\n\tsw r7,r1,$0\n" ^ 
 		(if fn = main_name then Printf.sprintf "\tmov r31,r3\n\taddi r3,r3,$%d\n" !heap_diff else "") ^
+		
+		"\tmflr r6\n" ^ 
 		(Printf.sprintf "\tsubi r1,r1,$4\n\tsw r2,r1,$0\n\tmov r2,r1\n\tsubi r1,r1,$%d\n" (snd lvs_st)) ^
 		
-		(String.concat "" (List.map (Printf.sprintf "\tsubi r1,r1,$4\n\tsw %s,r1,$0\n") regs)) ^
+		(* レジスタ退避 *)
+		((Printf.sprintf "\tsubi r1,r1,$%d\n") ((List.length regs) * 4 + 4)) ^
+		(String.concat "" (List.mapi (fun i r -> Printf.sprintf "\tsw %s,r1,$%d\n" r (i*4)) ("r6" :: regs))) ^
 		
 		(ivprint (Printf.sprintf "vs length %d\n" (List.length vs));
 		(* 引数を、必要ならば指定のレジスタに割り当てておく *)
@@ -212,10 +216,11 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 	ivprint (Printf.sprintf "Plorogue:\n %s" prologue);
 	let epilogue = (
 		(if fn = main_name then "\thlt\n" else 
-		(String.concat "" (List.map (Printf.sprintf "\tlw %s,r1,$0\n\taddi r1,r1,$4\n") (List.rev regs))) ^
+		(* レジスタ復帰 *)
+		(String.concat "" (List.mapi (fun i r -> Printf.sprintf "\tlw %s,r1,$%d\n" r (i*4)) ("r6" :: regs))) ^
+		((Printf.sprintf "\taddi r1,r1,$%d\n") ((List.length regs) * 4 + 4)) ^
 		
 		((Printf.sprintf "\taddi r1,r1,$%d\n\tlw r2,r1,$0\n\taddi r1,r1,$4\n" (snd lvs_st)) ^	
- 		"\tlw r6,r1,$0\n\taddi r1,r1,$4\n" ^ 
 		"\tjr r6\n"))
 	)
 	in

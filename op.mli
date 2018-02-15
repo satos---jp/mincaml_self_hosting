@@ -38,6 +38,7 @@ val virtop2str : op -> string
 val get_var_nameregs : op -> namereg list
 val get_assigned : op -> namestr list
 val get_assigner : op -> (namestr ref) list
+val subst_assigner : op -> (namereg -> namereg) -> op
 
 val remove_useless_jump : op list -> op list
 

@@ -5,7 +5,7 @@ open Knorm
 
 let rec effect ast = 
 	match ast with
-	| KOp(OArrCrt,_) | KOp(OArrRead,_) | KOp(OArrWrite,_) | KApp _ -> true
+	| KOp(OArrCrt,_) | KOp(OArrRead,_) | KOp(OArrWrite,_) | KOp(OiArrRead(_),_) | KOp(OiArrWrite(_),_) | KApp _ -> true
 	| KConst _ | KOp _ | KVar _ | KTuple _ -> false
 	| KIf(_,_,_,e1,e2) | KLet(_,e1,e2) -> (effect e1) || (effect e2)
 	| KLetRec(_,_,_,e1) | KLetTuple(_,_,e1) -> effect e1

@@ -53,7 +53,7 @@ exec_tortesia_zatsu(){
 
 exec_tortesia(){
 	#tortesia -> x86 で実行
-	./main -d $1 -noinline -t -asi -o o_tortesia.s -v > o.txt
+	./main -d $1 -t -asi -o o_tortesia.s -v -noinline > o.txt
 	python ../tortesia2x86.py -r < o_tortesia.s > o_tortesia2x86.s
 	nasm o_tortesia2x86.s -f elf32 -g -o out.o
 	gcc -m32 -nostdlib out.o -o a.out
@@ -87,8 +87,8 @@ do
 	#exec_ocaml $file oa.txt $input
 	exec_x86 $file oa.txt $input 
 	#exec_tortesia_zatsu $file oa.txt $input
-	#exec_tortesia $file oo.txt $input
-	exec_kai $file oo.txt $input
+	exec_tortesia $file oo.txt $input
+	#exec_kai $file oo.txt $input
 	
 	#比較
 	if diff oo.txt oa.txt; then

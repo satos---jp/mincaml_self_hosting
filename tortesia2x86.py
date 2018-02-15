@@ -127,7 +127,7 @@ for fn,i in libfuncs:
 	else:
 		text += [
 			"\tcall %s" % fn,
-			"\tmov [_r5],eax",
+			"\tmov [_r9],eax",
 		]
 	
 	if fn not in ['print_int']:

@@ -92,6 +92,21 @@ let get_assigner op =
 	| OpMainRet -> []
 	) in
 	List.map (fun (x,_) -> x) vs
+	
+
+let subst_assigner op f = 
+	match op with
+	| OpMovi _ | OpJmp _ | OpLabel _ | OpMainRet -> op
+	| OpMov(na,nb) -> OpMov(na,f nb)
+	| OpOpr(na,opr,vs) -> OpOpr(na,opr,List.map f vs)
+	| OpJcnd(cmp,na,nb,la) -> OpJcnd(cmp,f na,f nb,la)
+	| OpApp(b1,b2,na,nb,vs) -> OpApp(b1,b2,na,f nb,List.map f vs)
+	| OpMakeTuple(na,vs) -> OpMakeTuple(na,List.map f vs)
+	| OpDestTuple(vs,na) -> OpDestTuple(vs,f na)
+	| OpMakeCls(na,nb,vs) -> OpMakeCls(na,nb,List.map f vs) (* globalな関数名は含まない *)
+	| OpRet(na) -> OpRet(f na)
+
+
 
 let remove_useless_jump ops = 
 	 (* とりあえず、雑に、隣り合っているやつを消す *)

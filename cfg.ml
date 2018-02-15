@@ -256,10 +256,18 @@ class cfg_type =
 											Printf.printf "really subst %d : %s \n" q (virtop2str nop);
 										*)
 										let b = ref false in
-										let gan = get_assigner nop in
+										(* let gan = get_assigner nop in
 										List.iter (fun nc -> 
 											if !nc = !na then (b := true; nc := !nb) else ()
 										) gan;
+										*)
+										(* ここで、参照を同一にしないと、レジスタ渡しでつらくなる *)
+										let toop = 
+											subst_assigner nop (fun (nc,td) -> 
+												if !nc = !na then (b := true; (nb,td)) else (nc,td)
+											)
+										in
+										w.ops.(q) <- toop;
 										(*
 										(if !b then Printf.printf "really subst %d : %s \n" q (virtop2str nop) else ());
 										*)
@@ -693,9 +701,8 @@ let cfg_toasms fn ismain vs cvs ast funnames heapvars =
 	
 	let used_regs = ref [] in
 	if !tortesia && (not !all_stack) then (
-		(*
+		
 		ncfg#copy_anal ();
-		*)
 		
 		used_regs := List.filter (fun x -> List.mem x (tortesia_register_convention.savereg)) (ncfg#regalloc tortesia_register_convention)
 		

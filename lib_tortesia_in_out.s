@@ -8,7 +8,7 @@ read_int:
 	or r5,r5,r6
 	ini r6
 	sll r6,r6,$24
-	or r5,r5,r6
+	or r9,r5,r6
 	ret
 
 read_float:

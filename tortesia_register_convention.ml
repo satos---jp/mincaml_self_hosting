@@ -18,7 +18,7 @@ type register_convention = {
 	('a list)
 }
 
-let rreg = List.map (fun x -> Printf.sprintf "r%d" x) ([8;9]  @ (range 20 31))
+let rreg = List.map (fun x -> Printf.sprintf "r%d" x) ([8]  @ (range 20 31))
 let freg = List.map (fun x -> Printf.sprintf "f%d" x) ([4] @ (range 6 10) @ (range 20 32)) 
 let func_rreg = List.map (fun x -> Printf.sprintf "r%d" x) (range 10 20) 
 let func_freg = List.map (fun x -> Printf.sprintf "f%d" x) (range 10 20) 
@@ -28,7 +28,7 @@ let tortesia_register_convention =
 	{
 		ty2savereg = (fun t -> match t with TyFloat -> freg | _ -> rreg);
 		ty2argreg = (fun t -> match t with TyFloat -> func_freg | _ -> func_rreg);
-		ty2retreg = (fun t -> match t with TyFloat -> "f5" | _ -> "r5");
+		ty2retreg = (fun t -> match t with TyFloat -> "f5" | _ -> "r9");
 		savereg = rreg @ freg;
 		
 		(* 引数のnamereg配列をレジスタ名にしていく *)
