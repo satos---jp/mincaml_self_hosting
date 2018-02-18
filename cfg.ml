@@ -140,6 +140,8 @@ class graph =
 
 let defaultname = "@defaultname"
 
+let globs = ref []
+
 class cfg_type = 
 	object (sl)
 		val mutable vs = []
@@ -159,10 +161,10 @@ class cfg_type =
 		method vscvs = argvs @ argcvs
 	
 		method dump_cfg () = (
-			Printf.printf "root %d\n" root.idx;
-			List.iter (fun x -> 
-				Printf.printf "%s\n" (node2str x)
-			) vs
+			(Printf.sprintf "root %d\n" root.idx) ^
+			(vs 
+			|> (List.map (fun x -> Printf.sprintf "%s\n" (node2str x)))
+			|> (String.concat ""))
 		) 
 		
 		method ungone () = (
@@ -302,6 +304,26 @@ class cfg_type =
 					| _ -> x :: r
 				) v.ops []) 
 			) vs;
+			
+			(* 雑不要定数式除去をやる *)
+			
+			let assigners =  
+				List.map (fun v -> !v) (
+					vs |> (List.map (fun v -> v.ops |> Array.to_list |> (List.map get_assigner))) 
+					|> List.flatten |> List.flatten |> unique
+				) @ (List.map (fun s -> Var s) !globs)
+			in
+			
+			List.iter (fun v -> 
+				v.ops <- Array.of_list (Array.fold_right (fun x -> fun r -> 
+					match x with
+					| OpMov((na,_),_) when (not (List.mem !na assigners)) -> (
+							ivprint (Printf.sprintf "remove %s" (virtop2str x));
+							r
+						)
+					| _ -> x :: r
+				) v.ops []) 
+			) vs
 			
 			(*
 			Printf.printf "end_copy_anal\n";
@@ -540,7 +562,7 @@ let connect_cfg csrc cdst =
 	cdst.ops <- addhead (OpLabel(la)) cdst.ops
 	
 
-let globs = ref []
+
 
 (* ここで、同じ名前なら、同じポインタを指してほしい。 *)
 let cna2na,cna2na_init =
@@ -621,7 +643,7 @@ let rec to_cfgs ast tov istail cfg fn head_label addtoroot =
 			ch2.ops <- addhead (OpLabel(lc2)) ch2.ops;
 			connect_cfg chd ch1;
 			connect_cfg chd ch2;
-			(chd,cts1 @ cts2)
+			(chd,cts2 @ cts1)
 		)
 	| CVar(x) -> (
 			if List.mem (fst x) (global_funcs ()) then 
@@ -702,7 +724,10 @@ let cfg_toasms fn ismain vs cvs ast funnames heapvars =
 	let used_regs = ref [] in
 	if !tortesia && (not !all_stack) then (
 		
+		vprint ncfg#dump_cfg ();
+		
 		ncfg#copy_anal ();
+		
 		
 		used_regs := List.filter (fun x -> List.mem x (tortesia_register_convention.savereg)) (ncfg#regalloc tortesia_register_convention)
 		

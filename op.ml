@@ -109,16 +109,28 @@ let subst_assigner op f =
 
 
 let remove_useless_jump ops = 
-	 (* とりあえず、雑に、隣り合っているやつを消す *)
-	let rec f xs = 
-		match xs with
-		| _ :: [] | [] -> xs
-		| a :: b :: ys -> (
-				match a,b with
-				| OpJmp(x),OpLabel(y) when x = y -> f ys
-				| _ -> a :: (f (b :: ys))
+	(* 連続しているJmpは、最初以外を無視してよい。 *)
+ 	(* Jmp直後の連続しているラベルのうちに、Jmp先のラベルがあると、Jmpが消える。 *)
+ 	
+ 	(* Some(la) labels は、直前が Jmp la; labels である状況。*)
+ 	
+	let rec f lastjmp labels ops = 
+		match lastjmp,labels,ops with
+		| None,_,[] -> labels
+		| Some la,_,[] -> OpJmp(la) :: labels
+		
+		(* 連続しているJmpは、最初以外を無視してよい。 *)
+		| None,[],OpJmp(la) :: xs | Some la,[],OpJmp(_) :: xs -> f (Some(la)) [] xs
+		
+		(* Jmp直後の連続しているラベルのうちに、Jmp先のラベルがあると、Jmpが消える。 *)
+		| Some la,_,OpLabel(lb) :: xs -> (
+				if la = lb then f None labels xs
+				else f (Some(la)) (OpLabel(lb) :: labels) xs
 			)
+		| None,_,x :: xs -> labels @ [x] @ (f None [] xs)
+		| Some la,_,x :: xs -> OpJmp(la) :: labels @ [x] @ (f None [] xs)
 	in
-		f ops
+		f None [] ops
+
 
 
