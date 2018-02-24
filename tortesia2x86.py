@@ -13,9 +13,9 @@ main_name = "_main" if args.windows else "_start"
 
 head = [
 	"BITS 32",
-	("%include \"libio_" + ("win" if args.windows else "linux") + ".s\""),
-	"%include \"lib.s\"",
-	"%include \"lib_tortesia_to_x86.s\"",
+	("%include \"lib/libio_" + ("win" if args.windows else "linux") + ".s\""),
+	"%include \"lib/lib.s\"",
+	"%include \"lib/lib_tortesia_to_x86.s\"",
 	"section .bss",
 	"\tresb 0x100000",
 	"global_stack:",

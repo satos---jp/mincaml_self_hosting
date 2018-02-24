@@ -375,7 +375,7 @@ let read_all_data filename =
 
 let vir2asm (funs,rd,globvars) = 
 	init_globvars globvars;
-	(read_all_data "lib_zatsu_tortesia.s") ^
+	(read_all_data "lib/lib_zatsu_tortesia.s") ^
 	(String.concat "" (List.map func2asm (List.rev funs))) ^	
 	(func2asm {fn=(main_name,(TyVar(-1),default_debug_data)); vs=[]; regs=[]; cvs=[]; body=rd})
 

@@ -67,10 +67,10 @@ if argc <= 1 then (
 	files := (
 		if !nolib then []
 		else if !tortesia then (
-			if !asmsin_asmint && (not !in_out_assembler) then ["lib_tortesia.ml"] 
-			else ["lib_tortesia.ml"; "lib_sinint.ml"]
+			if !asmsin_asmint && (not !in_out_assembler) then ["lib/lib_tortesia.ml"] 
+			else ["lib/lib_tortesia.ml"; "lib/lib_sinint.ml"]
 		) 
-		else ["lib.ml"]
+		else ["lib/lib.ml"]
 	) @ (List.tl !files);
 	let globasts = List.map Source2ast.s2a (!files) in
 	let tast = match ast with

@@ -421,15 +421,13 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 (*
  nasm out.s -f elf32 -g -o out.o; gcc -m32 out.o
  nasm out.s -f win32 -g -o out.o; gcc -m32 out.o
-
 *)
-
 
 
 let vir2asm (funs,rd,globvars) = 
 	"BITS 32\n" ^
 	"%include \"" ^ (io_lib_name ()) ^ "\"\n" ^
-	"%include \"lib.s\"\n" ^
+	"%include \"lib/lib.s\"\n" ^
 	"section .data\n" ^
 	!constfs ^
 	"inst_counter:\n" ^ 

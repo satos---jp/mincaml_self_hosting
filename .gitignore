@@ -4,10 +4,6 @@
 *.cma
 ._bcdi/*
 ._d/*
-parser.output
-parser.mli
-parser.ml
-lexer.ml
 main
 *.exe
 *.out
@@ -21,13 +17,6 @@ test/*.s
 *.ppm
 !*interesting_toron/*.ppm
 *.png
-min-rt.ml
-a
 o.png
-tes.py
-tes.c
+test/lib
 t.s
-tt.s
-tes.ml
-make_quine.py
-o_tortesia.s

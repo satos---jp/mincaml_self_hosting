@@ -1,19 +1,10 @@
-if ! (cd ..; make > /dev/null); then
+if ! (cd ../src; make > /dev/null); then
 	echo "make failed"
 	exit 1
 fi
-cp ../main ./
-cp ../lib.ml ./
-cp ../lib.s ./
-cp ../libio_win.s ./
-cp ../libio_linux.s ./
-cp ../lib_tortesia.ml ./
-cp ../lib_tortesia.s ./
-cp ../lib_zatsu_tortesia.s ./
-cp ../lib_tortesia_to_x86.s ./
-cp ../lib_sinint.ml ./
-cp ../lib_tortesia_in_out.s ./
-cp ../converter.py ./
+
+cp ../src/main ./
+cp ../lib/ ./ -r
 
 exec_ocaml(){
 	#Ocamlで実行
