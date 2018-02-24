@@ -35,45 +35,12 @@ float_of_int: ; int -> float
 ; OCaml .. 0に近い方に切り捨て
 ; fistp .. 符号を見ずに四捨五入して、符号を戻す
 ; ので、0.5引いて(負なら足して)、fistpして、戻せばよさそう。
+
+; これ、OCamlと乖離させる。
 int_of_float: ; float -> int
-	push ebp
-	mov ebp,esp
-	sub esp,0x4
-	mov eax,dword [ebp+0x8]
-	mov dword [ebp-0x4],eax
-	
-	push dword [ebp+0x8]
-	call fiszero
-	add esp,0x4
-	test eax,eax
-	jne int_of_float_exact_zero
-	
-	push dword [ebp+0x8]
-	call fisneg
-	add esp,0x4
-	test eax,eax
-	jne int_of_float_neg
-
-; int_of_float_pos
-	fld dword [ebp-0x4]
-	fld dword [half_to_int]
-	fsubp
-	fstp dword [ebp-0x4]
-	jmp int_of_float_exact_zero
-	
-int_of_float_neg:
-	fld dword [ebp-0x4]
-	fld dword [half_to_int]
-	faddp
-	fstp dword [ebp-0x4]
-
-int_of_float_exact_zero:
-	fld dword [ebp-0x4]
-	fistp dword [esp-0x4]
-	mov eax,[esp-0x4]
-	
-	add esp,0x4
-	pop ebp
+	fld dword [esp+0x4]
+	fistp dword [esp+0x4]
+	mov eax,dword [esp+0x4]
 	ret
 
 fless:
@@ -182,63 +149,16 @@ fabs:
 	ret
 
 
-; float_of_int は、 
-; 
-;とりあえず、壊れたままで
-	push dword [esp+0x4]
-	call int_of_float
-	add esp,4
-	push eax
-	call float_of_int
-	add esp,4
-	ret
 
+; これもOcamlと乖離させる。
 floor:
-
-	push dword [esp+0x4]
-	call fisneg
-	add esp,4
-	test eax,eax
-	jne floor_neg
-	push dword [esp+0x4]
-	call int_of_float
-	add esp,4
-	push eax
-	call float_of_int
-	add esp,4
-	ret
-floor_neg:
-	push dword [esp+0x4]
-	call fneg
-	add esp,4
-	push eax
-	call floor
-	add esp,4
-	
-	mov [esp-0x4],eax
 	fld dword [esp+0x4]
-	fld dword [esp-0x4]
-	faddp
-	fstp dword [esp-0x4]
-	sub esp,4
-	call fiszero
-	add esp,4
-	test eax,eax
-	jne floor_not_addone
-floor_addone:
-	fld dword [esp+0x4]
-	fld1
+	fld dword [half]
 	fsubp
-	fstp dword [esp+0x4]
-
-floor_not_addone:
+	fistp dword [esp+0x4]
 	push dword [esp+0x4]
-	call fneg
-	mov [esp],eax
-	call floor
-	mov [esp],eax
-	call fneg
-	add esp,4
+	call float_of_int
+	add esp,0x4
 	ret
 
 

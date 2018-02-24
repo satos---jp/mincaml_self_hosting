@@ -8,7 +8,7 @@ let rec fisneg x = (x < 0.0)
 
 let rec fispos x = (x > 0.0)
 
-let rec floor x = float_of_int (int_of_float (if x < 0.0 then (x -. 1.0) else x))
+let rec floor x = float_of_int (int_of_float (x -. 0.5))
 
 let rec fabs x = if x > 0.0 then x else (-1.0 *. x)
 

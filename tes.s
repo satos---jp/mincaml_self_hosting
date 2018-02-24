@@ -24,6 +24,7 @@ section .text
 	
 global _start
 _start:
+	fistp dword [piyo]
 	fld dword [one]
 	fld dword [two]
 	xor ecx,ecx
