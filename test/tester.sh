@@ -32,7 +32,7 @@ exec_x86(){
 exec_tortesia_zatsu(){
 	#tortesia -> x86 で実行
 	./main -d $1 -noinline -t -asi -stack -o o_tortesia.s > /dev/null
-	python ../tortesia2x86.py < o_tortesia.s > o_tortesia2x86.s
+	python ../scripts/tortesia2x86.py < o_tortesia.s > o_tortesia2x86.s
 	nasm o_tortesia2x86.s -f elf32 -g -o out.o
 	gcc -m32 -nostdlib out.o -o a.out
 	if [ -z $3 ]; then 
@@ -45,7 +45,7 @@ exec_tortesia_zatsu(){
 exec_tortesia(){
 	#tortesia -> x86 で実行
 	./main -d $1 -t -asi -o o_tortesia.s -v -noinline > o.txt
-	python ../tortesia2x86.py -r < o_tortesia.s > o_tortesia2x86.s
+	python ../scripts/tortesia2x86.py -r < o_tortesia.s > o_tortesia2x86.s
 	nasm o_tortesia2x86.s -f elf32 -g -o out.o
 	gcc -m32 -nostdlib out.o -o a.out
 	if [ -z $3 ]; then 
@@ -91,3 +91,6 @@ do
 	fi
 	#break
 done
+
+
+rm -r lib

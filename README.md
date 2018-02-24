@@ -9,16 +9,13 @@ Min-Camlのソースコードをnasm向けのアセンブリにコンパイル�
 - tortesia
 
 です。 tortesia というのはCPU実験での自班のアーキテクチャです。
-[tortesia2x86.py](https://github.com/satos---jp/cpuex_compiler/blob/master/tortesia2x86.py) をかますとnasm用のx86アセンブリになります。
+[tortesia2x86.py](https://github.com/satos---jp/cpuex_compiler/blob/master/scripts/tortesia2x86.py) をかますとnasm用のx86アセンブリになります。
 
 # 使い方
 例えばlinuxの場合、
 ```
-$ make
-$ ./main [ソースコード名]
-$ nasm out.s -o -f elf32 -o out.o
-$ gcc -m32 -nostdlib out.o -o a.out
-$ ./a.out
+$ (cd src; make)
+$ ./scripts/compile_exec.sh ../tes.ml [ソースコード名]
 ```
 とするとコンパイル → 実行ができます。
 windowsの場合、 -w オプションをつけてコンパイルして、 elf32 を win32 にすればよいです。 

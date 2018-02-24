@@ -1,22 +1,36 @@
+# for gedit tmp file
 *~
+
+# for OCaml make
 *.cmi
 *.cmo
 *.cma
-._bcdi/*
-._d/*
+._bcdi/
+._d/
+lexer.ml
+parser.ml
+parser.mli
+parser.output
 main
+
+# for Windows compile
 *.exe
+
+# for linux compile
 *.out
 *.o
-out.s
-*.txt
-!test/*_i.txt
+
+# for gdb & peda
 *peda-session*.txt
 .gdb_history
-test/*.s
-*.ppm
-!*interesting_toron/*.ppm
-*.png
+
+
+# for scripts generatings
+o.ppm
+o.txt
 o.png
+o_tortesia.s
+out.s
+
+# for test
 test/lib
-t.s
