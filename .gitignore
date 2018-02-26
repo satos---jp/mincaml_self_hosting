@@ -34,3 +34,6 @@ out.s
 
 # for test
 test/lib
+test/*.s
+test/*.txt
+!test/*_i.txt
