@@ -400,7 +400,7 @@ let func2asm {fn=(fn,_); vs=vs; regs=regs; cvs=cvs; body={ops=ops; vs=localvs}} 
 						)
 					| Oibydiv(x) -> (
 							match x with
-							| 2 -> "\tslti r6,{1},$0\n\tadd {0},{1},r6\n\tsra {0},{0},$1\n"
+							| 2 -> "\tsra {0},{0},$1\n"
 							(* from https://stackoverflow.com/questions/5558492/divide-by-10-using-bit-shifts *)
 							| 10 -> (
 									"\tli r6,$0\n" ^ (tomul 205) ^ "\tsra {0},r6,$11\n"
