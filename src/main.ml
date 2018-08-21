@@ -63,7 +63,6 @@ if argc <= 1 then (
 ) else (
 	let files = (ref [] : string list ref) in
 	argparse files;
-	let ast = Source2ast.s2a (List.hd !files) in
 	files := (
 		if !nolib then []
 		else if !tortesia then (
@@ -71,17 +70,11 @@ if argc <= 1 then (
 			else ["lib/lib_tortesia.ml"; "lib/lib_sinint.ml"]
 		) 
 		else ["lib/lib.ml"]
-	) @ (List.tl !files);
-	let globasts = List.map Source2ast.s2a (!files) in
-	let tast = match ast with
-	| DExpr east -> (
-		List.fold_right (fun gast -> fun gr -> 
-				match gast with
-				| DDecl xs -> (List.fold_right (fun f -> fun r -> (f r)) xs gr)
-				| _ -> raise (Failure "globs is not decl")
-			) globasts east 
-		)
-	| _ -> raise (Failure "inputfile is not value")  in
+	) @ !files;
+	let tast = List.flatten (List.map Source2ast.s2a (!files)) in
+
+	print_string (top2str tast);
+	
 	print_string "parsed"; print_newline ();
 	let ast2 = Type_checker.check tast in
 	print_string "typed";  print_newline ();

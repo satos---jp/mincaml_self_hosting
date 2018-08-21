@@ -21,11 +21,15 @@
 %token REC
 %token ALLCREATE
 %token DOT COMMA SEMI EOF
+%token SEMISEMI TYPE BAR OF
+%token <string> VARIANT_ID
 
+/* 下のほうが強い */
+/* left とか right とかは演算子のみに効果があるっぽいな？？？ */
 %left IN
 %right SEMI
 %nonassoc LET
-%nonassoc lambda_assoc
+%right RARROW
 %right if_assoc
 %right arrow_assoc
 %nonassoc tuple_assoc
@@ -39,24 +43,64 @@
 %nonassoc unary_minus
 
 %start toplevel 
-%type <Syntax.decl> toplevel
+%type <Syntax.top> toplevel
 %% 
 
 toplevel:
-  | expr EOF { DExpr($1) }
-/* global.ml をパースするためのもの */ 
-	| decls
-		{ DDecl($1) }
+  | expr decl_exprs { FExpr($1) :: $2 }
+	| decl decl_exprs { FDecl($1) :: $2 }
 ;
 
-decls:
+decl_exprs:
 	| EOF { [] }
-	| LET var EQ expr decls
-		{ let dd = get_debug_data () in (fun x -> (ELet($2,$4,x),dd)) :: $5 }
-	| LET REC rec_vars EQ expr decls
-		{ let dd = get_debug_data () in (fun x -> (ELetRec(List.hd $3,List.tl $3,$5,x),dd)) :: $6 }
+	| SEMISEMI expr decl_exprs { FExpr($2) :: $3 }
+	| decl decl_exprs { FDecl($1) :: $2 }
 ;
 
+decl:
+	| LET var EQ expr           { DLet($2,$4) }
+	/* これ多分parse時点で let rec f x1 x2 ... =  を let f = (let rec f x1 x2 ... in f) にしたほうが楽*/
+	| LET REC rec_vars EQ expr { 
+			(* DLetRec(List.hd $3,List.tl $3,$5) *) 
+			let na = List.hd $3 in
+			let vs = List.tl $3 in
+			DLet(na,debug (ELetRec(na,vs,$5,(debug (EVar(na))))))
+		}
+	| TYPE var EQ type_expr    { DTypeRename($2,$4) }
+	| TYPE var EQ variant_defs { DVariant($2,$4) }
+;
+
+variant_defs:
+	| variant_def                      { [$1] }
+	|     variant_def BAR variant_defs { $1 :: $3 }
+	| BAR variant_def BAR variant_defs { $2 :: $4 }
+;
+
+variant_def:
+	| variant_name OF type_expr { ($1,$3) }
+;
+
+variant_name:
+	| VARIANT_ID { $1 }
+;
+
+tuple_type_exprs:
+	| tuple_type_exprs TIMES type_expr 
+		%prec tuple_assoc    
+		{ $1 @ [$3] }
+	| type_expr TIMES type_expr	
+		%prec tuple_assoc    
+		{ [$1; $3] }
+;
+
+type_expr:
+	| INT                         { ETInt   }
+	| FLOAT                       { ETFloat   }
+	| tuple_type_exprs
+		%prec tuple_assoc            
+		{ ETTuple($1) }
+	| type_expr RARROW type_expr  { ETyFun($1,$3) }
+	| LPAR type_expr RPAR { $2 }
 
 /* simple_expr のみが、関数適用に使える。 */
 
@@ -153,7 +197,6 @@ Error: This expression has type float but an expression was expected of type
 		{ debug (EOp(OArrWrite,[$1;$4;$7])) }  
 		
 	| FUN rec_vars RARROW expr
-		%prec lambda_assoc
 		{ let fn = gen_fun_name () in
 			debug (ELetRec(fn,$2,$4,debug (EVar(fn)))) }
 	| error
@@ -161,7 +204,7 @@ Error: This expression has type float but an expression was expected of type
 ;
 
 tuple_exprs:
-	| tuple_exprs COMMA expr{ $1 @ [$3] }
+	| tuple_exprs COMMA expr { $1 @ [$3] }
 	| expr COMMA expr { [$1; $3] }
 ;
 

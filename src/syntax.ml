@@ -63,6 +63,12 @@ let op2str o =
 	| OSubTuple(a,b) -> Printf.sprintf "OSubTuple[%d,%d]" a b
 	| OGetTuple(a) -> Printf.sprintf "OGetTuple[%d]" a
 
+type variant_tag = string
+
+type pattern = 
+	| PVar     of name
+	| PVariant of name * (pattern list)
+
 type expr = expr_base * Debug.debug_data
 and expr_base =
   | EConst of const
@@ -74,10 +80,26 @@ and expr_base =
   | EApp       of expr * (expr list)
   | ETuple     of (expr list)
   | ELetTuple  of (name list) * expr * expr
+  | EMatch     of expr * ((pattern * expr) list)
+
+type type_expr = 
+	| ETInt
+	| ETFloat
+	| ETTuple   of type_expr list
+	| ETyFun    of type_expr * type_expr
 
 type decl = 
-  | DDecl      of (expr -> expr) list
-  | DExpr      of expr
+  | DLet        of name * expr
+  | DLetRec     of name * (name list) * expr
+  | DTypeRename of name * type_expr
+  | DVariant    of name * ((variant_tag * type_expr) list)
+
+type decl_expr = 
+	| FExpr of expr
+	| FDecl of decl
+
+type top = decl_expr list
+
 
 let print_name = print_string 
 
@@ -96,9 +118,32 @@ let rec expr2str_base astdeb d =
 	| EApp(e1,es) -> (d,"App ") :: (expr2str_base e1 (d+1)) @ List.concat (List.map (fun x -> (expr2str_base x (d+2))) es)
 	| ETuple(es) -> (d,"( ") :: List.concat (List.map (fun x -> (expr2str_base x (d+1))) es) @ [(d," )")]
 	| ELetTuple(vs,e1,e2) -> (d,"Let " ^ (String.concat " , " vs) ^ " = ") :: (expr2str_base e1 (d+1)) @ [(d,"In")] @ (expr2str_base e2 (d+1))
+	| EMatch _ -> [(d,"match")]
 
 let expr2str ast = 
 	let ss = expr2str_base ast 0 in
 		String.concat "\n" (List.map (fun (d,s) -> (String.make (d*2) ' ') ^ s) ss) ^ "\n"
+
+
+
+let decl2str de = 
+	let d = 0 in
+	match de with
+	| DLet(na,e) -> (d,"DLet " ^ na ^ " =") :: (expr2str_base e (d+1))
+	| DLetRec(na,vs,e) -> (d,"DLetRec " ^ na ^ " =") :: (expr2str_base e (d+1))
+	| _ -> [(0,"hoka")] 
+
+let decl_expr2str ast = 
+	match ast with
+	| FExpr e -> (0,"[\n") :: (expr2str_base e 2) @ [(0,"\n]\n")]
+	| FDecl d -> decl2str d
+
+let top2str asts =
+	let ss = List.concat (List.map decl_expr2str asts) in
+		String.concat "\n" (List.map (fun (d,s) -> (String.make (d*2) ' ') ^ s) ss) ^ "\n"
+
+
+
+
 
 

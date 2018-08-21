@@ -30,5 +30,6 @@ and texp_base =
 
 val global_funcs : unit -> string list
 
-val check : expr -> texp
+(* 型情報は消していいので、これ以降はtexpのままでいいはず。 *)
+val check : top -> texp
 

@@ -3,7 +3,7 @@ if ! (cd ../src; make > /dev/null); then
 	exit 1
 fi
 
-cp ../src/main ./
+cp ../main ./
 cp ../lib/ ./ -r
 
 exec_ocaml(){
@@ -68,21 +68,22 @@ exec_kai(){
 
 cat test_order.txt | while read file input
 do
-	rm tmp.ml a.out oo.txt oa.txt o_tortesia.s o_x86.s o_tortesia2x86.s
+	rm -f tmp.ml a.out o_tortesia.s o_x86.s o_tortesia2x86.s x86.out
 	if [ -z $file ]; then 
 		break
 	fi
 	echo "---------------" $file "----------------"
 	cat $file
 	
-	#exec_ocaml $file oa.txt $input
-	exec_x86 $file oa.txt $input 
+	rm -f o_ocaml.txt o_mincaml.txt
+	exec_ocaml $file o_ocaml.txt $input
+	exec_x86 $file o_mincaml.txt $input 
 	#exec_tortesia_zatsu $file oa.txt $input
-	exec_tortesia $file oo.txt $input
+	#exec_tortesia $file oo.txt $input
 	#exec_kai $file oo.txt $input
 	
 	#比較
-	if diff oo.txt oa.txt; then
+	if diff o_ocaml.txt o_mincaml.txt; then
 		#cat oo.txt
 		echo "ok"
 	else
@@ -94,3 +95,4 @@ done
 
 
 rm -r lib
+rm -f tmp.ml

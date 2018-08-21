@@ -1,0 +1,77 @@
+# self hostingするために必要な拡張
+## Variant型
+http://caml.inria.fr/pub/docs/manual-ocaml/typedecl.html からとってくる
+とりあえず、目標は
+type-definition	::=	"type" typedef  { "and" typedef }  
+	typedef	::=	typeconstr-name  type-information
+		typeconstr-name	::=	lowercase-ident
+		type-information	::=	[type-equation]  [type-representation]
+			type-equation	::=	= typexpr  
+			type-representation	::=	"=" ["|"] constr-decl  { "|" constr-decl }  
+				constr-decl	::=	(constr-name ∣  [] ∣  (::)) [ of constr-args ] 
+					constr-name	::=	capitalized-ident
+					constr-args	::=	typexpr  { * typexpr }  
+くらいで。(record型はまだいいきがする...)
+
+ところで、typexprは
+
+typexpr	::=	' ident  
+ 	∣	 ( typexpr )  
+ 	∣	 typexpr ->  typexpr  
+ 	∣	 typexpr  { * typexpr }+  
+ 	∣	 typeconstr  
+ 	∣	 typexpr  typeconstr  
+
+ 
+poly-typexpr	::=	typexpr  
+ 	∣	 { ' ident }+ .  typexpr  
+ 
+method-type	::=	method-name :  poly-typexpr
+
+の部分集合をとりそう。(まだ未定)
+
+# type ('x,'y) c = H of ('x list) * ('y list);;
+type ('x, 'y) c = H of 'x list * 'y list
+# type d = (int,int) c;;
+type d = (int, int) c
+
+こんなんあるけどまだいらんよね。
+
+
+ところで、プログラム全体は
+unit-implementation	::=	 [ module-items ]  (from 7.12  Compilation units)
+
+module-items	::=	{;;} ( definition ∣  expr )  { {;;} ( definition ∣  ;; expr) }  {;;}  (from 7.11  Module expressions (module implementations))
+
+なので、 これに全体が従いそう。
+
+definition	::=	let [rec] let-binding  { and let-binding }  
+ 	∣	 type-definition  
+ 	∣	 open module-path  
+ 	
+さらにこれ。(openの実装はまだ先)
+
+
+
+
+match は、
+	 match expr with  pattern-matching  
+であり、さらに
+pattern-matching	::=	[ | ] pattern  [when expr] ->  expr  { | pattern  [when expr] ->  expr }  
+(whenはまだ先)
+
+pattern	::=	value-name  
+ 	∣	 _  
+ 	∣	 pattern as  value-name  
+ 	∣	 ( pattern )  
+ 	∣	 pattern "|"  pattern  
+ 	∣	 constr  pattern  
+ 	∣	 pattern  { , pattern }+  
+ 	∣	 pattern ::  pattern  
+
+は、これくらい。( as はまだ先(か実装しないか)ぽい)
+ 
+
+
+
+

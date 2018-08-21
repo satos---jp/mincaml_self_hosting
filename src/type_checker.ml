@@ -13,7 +13,6 @@ type ty =
 	| TyArr of ty
 	| TyFun of (ty list) * ty
 	| TyTuple of ty list
-	
 
 exception TypeError of ty * ty * Debug.debug_data
 
@@ -385,18 +384,51 @@ let rec fix_partial_apply (ast,(t,deb)) =
 		(tast,(t,deb))
 
 
+(*
+型推論ができたなら、
+単に全部 let in で結んでよいはず。
+exprのみのやつは、 let _ = expr in にして。
+*)
+
 
 let check ast = 
 	try (
-		let tast,tc,rt,_ = type_infer ast (genv ()) in
-		(* print_type rt;
-		print_constrs tc; *)
-		Printf.printf "constr collect"; print_newline ();
-		let subs = unify (tc @ !addglobalcs) in
-		(* print_subs subs; *)
-		Printf.printf "unified"; print_newline ();
-		let rast = ast_subst subs tast in
-		fix_partial_apply rast
+		let sv = (
+			(
+				(fun x -> x)
+			), (genv ())
+		) in
+		let astzero = (TConst(CInt(0)),(TyInt,default_debug_data)) in
+		let tast,env = List.fold_left (fun (f,env) ast ->
+			addglobalcs := [];
+			match ast with
+			| FExpr e -> ((
+					let tast,tc,rt,_ = type_infer e env in
+					(* print_type rt;
+					print_constrs tc; *)
+					let subs = unify (tc @ !addglobalcs) in
+					(* print_subs subs; *)
+					let rast = ast_subst subs tast in
+					let sast = fix_partial_apply rast in
+					(fun y -> f (TLet(("_",(rt,default_debug_data)),sast,y),(snd y)))
+				),env)
+			| FDecl de -> (
+					match de with
+					| DLet(na,e) -> (
+							let tast,tc,rt,_ = type_infer e env in
+							let subs = unify (tc @ !addglobalcs) in
+							let rast = ast_subst subs tast in
+							let trt = ty_subst subs rt in
+							let sast = fix_partial_apply rast in
+							(
+								(fun y -> f (TLet((na,(trt,default_debug_data)),sast,y),(snd y))),
+								((na,trt) :: env)
+							)
+						)
+					| _ -> raise (Failure("Unimplemented"))
+				)
+		) sv ast
+		in tast astzero 
 	) with
 		| TypeError(t1,t2,deb) -> 
 			raise (Failure(Printf.sprintf 	

@@ -37,3 +37,12 @@ test/lib
 test/*.s
 test/*.txt
 !test/*_i.txt
+
+
+
+# after try_self_hosting
+
+tes.ml
+p.ml
+x.ml
+run.sh

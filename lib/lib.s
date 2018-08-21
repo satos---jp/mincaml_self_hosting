@@ -8,7 +8,7 @@ half:
 
 ; あまりにも嘘っぽいが
 half_to_int:
-	dd 0.4999998
+	dd 0.4990998
 
 
 ;read_int と read_floatのための。
@@ -37,12 +37,47 @@ float_of_int: ; int -> float
 ; ので、0.5引いて(負なら足して)、fistpして、戻せばよさそう。
 
 ; これ、OCamlと乖離させる。
+; またOCamlに合わせ直す
 int_of_float: ; float -> int
-	fld dword [esp+0x4]
-	fistp dword [esp+0x4]
-	mov eax,dword [esp+0x4]
-	ret
+	push ebp
+	mov ebp,esp
+	sub esp,0x4
+	mov eax,dword [ebp+0x8]
+	mov dword [ebp-0x4],eax
+	
+	push dword [ebp+0x8]
+	call fiszero
+	add esp,0x4
+	test eax,eax
+	jne int_of_float_exact_zero
+	
+	push dword [ebp+0x8]
+	call fisneg
+	add esp,0x4
+	test eax,eax
+	jne int_of_float_neg
 
+; int_of_float_pos
+	fld dword [ebp-0x4]
+	fld dword [half]
+	fsubp
+	fstp dword [ebp-0x4]
+	jmp int_of_float_exact_zero
+	
+int_of_float_neg:
+	fld dword [ebp-0x4]
+	fld dword [half]
+	faddp
+	fstp dword [ebp-0x4]
+
+int_of_float_exact_zero:
+	fld dword [ebp-0x4]
+	fistp dword [esp-0x4]
+	mov eax,[esp-0x4]
+	
+	add esp,0x4
+	pop ebp
+ret
 fless:
 	xor eax,eax
 	fld dword [esp+0x8]
@@ -151,15 +186,53 @@ fabs:
 
 
 ; これもOcamlと乖離させる。
+; OCamlに戻します
+
 floor:
-	fld dword [esp+0x4]
-	fld dword [half]
-	fsubp
-	fistp dword [esp+0x4]
 	push dword [esp+0x4]
+	call fisneg
+	add esp,4
+	test eax,eax
+	jne floor_neg
+	push dword [esp+0x4]
+	call int_of_float
+	add esp,4
+	push eax
 	call float_of_int
-	add esp,0x4
+	add esp,4
 	ret
+floor_neg:
+	push dword [esp+0x4]
+	call fneg
+	mov [esp],eax
+	call floor
+	add esp,4
+	
+	mov [esp-0x4],eax
+	fld dword [esp+0x4]
+	fld dword [esp-0x4]
+	faddp
+	fstp dword [esp-0x4]
+	sub esp,4
+	call fiszero
+	add esp,4
+	test eax,eax
+	jne floor_not_addone
+floor_addone:
+	fld dword [esp+0x4]
+	fld1
+	fsubp
+	fstp dword [esp+0x4]
+	
+floor_not_addone:
+	push dword [esp+0x4]
+	call fneg
+	mov [esp],eax
+	call floor
+	mov [esp],eax
+	call fneg
+	add esp,4
+ret
 
 
 

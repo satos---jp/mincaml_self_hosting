@@ -38,6 +38,7 @@ let true = 1 とかがあるのでエラーになる。
 | "->"         { Parser.RARROW }
 | "."          { Parser.DOT  }
 | ","          { Parser.COMMA  }
+| ";;"         { Parser.SEMISEMI }
 | ";"          { Parser.SEMI }
 | "+."          { Parser.FPLUS }
 | "-."          { Parser.FMINUS }
