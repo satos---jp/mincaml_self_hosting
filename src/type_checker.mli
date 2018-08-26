@@ -3,14 +3,17 @@ open Debug
 
 type tyvar = int
 
+type type_name = string
+
 type ty =
 	| TyInt
 	| TyFloat
-	| TyNum
+	| TyNum  (* int も float もこれの部分型 *)
 	| TyVar of tyvar
 	| TyArr of ty
 	| TyFun of (ty list) * ty
 	| TyTuple of ty list
+	| TyUserDef of type_name
 
 val type2str : ty -> string
 

@@ -223,7 +223,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	fn ^ ":\n" ^ prologue ^ 
 	(String.concat "" (List.map (fun op -> 
 		match op with
-		| OpMovi((na,(t,d)),CInt(v)) -> assert (t=TyInt); 
+		| OpMovi((na,(t,d)),CInt(v)) -> assert (match t with TyInt | TyUserDef _ -> true | _ -> false); 
 			(Printf.sprintf "\tmov %s,%d\n" (na2s na) v) ^ "; " ^ (debug_data2simple d) ^ "\n"
 		| OpMovi((na,(t,d)),CFloat(v)) -> assert (t=TyFloat); (
 				let tag = gen_const () in

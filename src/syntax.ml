@@ -1,6 +1,7 @@
 open Debug
+open Type_checker
 
-type name = string 
+type variant_tag = string
 
 type const = 
 	| CInt of int
@@ -63,11 +64,13 @@ let op2str o =
 	| OSubTuple(a,b) -> Printf.sprintf "OSubTuple[%d,%d]" a b
 	| OGetTuple(a) -> Printf.sprintf "OGetTuple[%d]" a
 
-type variant_tag = string
+type name = string
 
 type pattern = 
 	| PVar     of name
-	| PVariant of name * (pattern list)
+	| PVariant    of name
+	| PVariantApp of name * pattern
+	| PTuple   of (pattern list)
 
 type expr = expr_base * Debug.debug_data
 and expr_base =
@@ -81,18 +84,20 @@ and expr_base =
   | ETuple     of (expr list)
   | ELetTuple  of (name list) * expr * expr
   | EMatch     of expr * ((pattern * expr) list)
+  | EVariant   of variant_tag * expr list
 
 type type_expr = 
 	| ETInt
 	| ETFloat
+	| ETVar     of name
 	| ETTuple   of type_expr list
-	| ETyFun    of type_expr * type_expr
+	| ETTyFun    of type_expr * type_expr
 
 type decl = 
   | DLet        of name * expr
   | DLetRec     of name * (name list) * expr
   | DTypeRename of name * type_expr
-  | DVariant    of name * ((variant_tag * type_expr) list)
+  | DVariant    of name * ((variant_tag * (type_expr list)) list)
 
 type decl_expr = 
 	| FExpr of expr
@@ -102,6 +107,14 @@ type top = decl_expr list
 
 
 let print_name = print_string 
+
+
+let rec pat2str_base pat d = 
+	match pat with
+	| PVar na -> [(d,"PVar " ^ na)]
+	| PVariant    na -> [(d,"PVariant " ^ na)]
+	| PVariantApp(na,pa) -> (d,"PVariantApp " ^ na) :: pat2str_base pa (d+2)
+	| PTuple(ps) -> (d,"(") :: List.concat (List.map (fun x -> pat2str_base x (d+2)) ps) @ [(d,")")]
 
 let rec expr2str_base astdeb d = 
 	let ast,_ = astdeb in
@@ -118,8 +131,11 @@ let rec expr2str_base astdeb d =
 	| EApp(e1,es) -> (d,"App ") :: (expr2str_base e1 (d+1)) @ List.concat (List.map (fun x -> (expr2str_base x (d+2))) es)
 	| ETuple(es) -> (d,"( ") :: List.concat (List.map (fun x -> (expr2str_base x (d+1))) es) @ [(d," )")]
 	| ELetTuple(vs,e1,e2) -> (d,"Let " ^ (String.concat " , " vs) ^ " = ") :: (expr2str_base e1 (d+1)) @ [(d,"In")] @ (expr2str_base e2 (d+1))
-	| EMatch _ -> [(d,"match")]
-
+	| EMatch(e,pes) -> (d,"match") :: (expr2str_base e (d+2)) @ [(d,"with")] @ (
+			List.concat (List.map (fun x -> (d+1,"|") :: (pat2str_base (fst x) (d+2))) pes)
+		)
+	| EVariant(tag,es) -> (d,Printf.sprintf "Variant %s" tag) :: List.concat (List.map (fun x -> (expr2str_base x (d+2))) es)
+ 
 let expr2str ast = 
 	let ss = expr2str_base ast 0 in
 		String.concat "\n" (List.map (fun (d,s) -> (String.make (d*2) ' ') ^ s) ss) ^ "\n"
@@ -131,7 +147,11 @@ let decl2str de =
 	match de with
 	| DLet(na,e) -> (d,"DLet " ^ na ^ " =") :: (expr2str_base e (d+1))
 	| DLetRec(na,vs,e) -> (d,"DLetRec " ^ na ^ " =") :: (expr2str_base e (d+1))
-	| _ -> [(0,"hoka")] 
+	| DVariant(na,tts) -> (d,"DVariant " ^ na ^ " =") :: (
+			List.concat (List.map (fun (tag,ts) -> (d+1,"| " ^ tag ^ " of ") :: (
+				[(d+2,Printf.sprintf "len of %d" (List.length ts))]
+			)) tts)
+		)
 
 let decl_expr2str ast = 
 	match ast with

@@ -21,7 +21,7 @@
 %token REC
 %token ALLCREATE
 %token DOT COMMA SEMI EOF
-%token SEMISEMI TYPE BAR OF
+%token SEMISEMI TYPE BAR OF MATCH WITH
 %token <string> VARIANT_ID
 
 /* 下のほうが強い */
@@ -33,11 +33,15 @@
 %right if_assoc
 %right arrow_assoc
 %nonassoc tuple_assoc
+%nonassoc variant_tuple_assoc
+%nonassoc variant_apply_pattern
 %left COMMA
-%left EQ LT LEQ GT GEQ NEQ
+%left EQ LT LEQ GT GEQ NEQ BAR
 %left PLUS MINUS FPLUS FMINUS
 %left TIMES DIV FTIMES FDIV
+%nonassoc variant_def_tuple_type_exprs_assoc /* TIMESより強くないといけない */
 %left app_assoc  /* appの結合の強さはこれくらいで、の指示 */
+%nonassoc variant_app_assoc
 %nonassoc NOT
 %left DOT
 %nonassoc unary_minus
@@ -72,12 +76,24 @@ decl:
 
 variant_defs:
 	| variant_def                      { [$1] }
+	| BAR variant_def                  { [$2] }
 	|     variant_def BAR variant_defs { $1 :: $3 }
 	| BAR variant_def BAR variant_defs { $2 :: $4 }
 ;
 
+
+constr_args:
+	| type_expr
+		%prec variant_def_tuple_type_exprs_assoc
+		{ [$1] }
+	| constr_args TIMES type_expr
+		%prec variant_def_tuple_type_exprs_assoc
+		{ $1 @ [$3] }
+;
+
 variant_def:
-	| variant_name OF type_expr { ($1,$3) }
+	| variant_name              { ($1,[]) }
+	| variant_name OF constr_args { ($1,$3) }
 ;
 
 variant_name:
@@ -86,7 +102,7 @@ variant_name:
 
 tuple_type_exprs:
 	| tuple_type_exprs TIMES type_expr 
-		%prec tuple_assoc    
+		%prec tuple_assoc
 		{ $1 @ [$3] }
 	| type_expr TIMES type_expr	
 		%prec tuple_assoc    
@@ -94,14 +110,13 @@ tuple_type_exprs:
 ;
 
 type_expr:
-	| INT                         { ETInt   }
-	| FLOAT                       { ETFloat   }
+ 	| var                         { ETVar($1) }
 	| tuple_type_exprs
-		%prec tuple_assoc            
+		%prec tuple_assoc
 		{ ETTuple($1) }
-	| type_expr RARROW type_expr  { ETyFun($1,$3) }
+	| type_expr RARROW type_expr  { ETTyFun($1,$3) }
 	| LPAR type_expr RPAR { $2 }
-
+	
 /* simple_expr のみが、関数適用に使える。 */
 
 simple_expr:
@@ -117,7 +132,27 @@ simple_expr:
 		{ debug (EVar($1)) }
 	| simple_expr DOT LPAR expr RPAR
 		{ debug (EOp(OArrRead,[$1;$4])) }
+	| variant_name
+		{ debug (EVariant($1,[])) }
 ;
+
+/*
+# type a = H of int;;
+type a = H of int
+# let x = H;;
+Error: The constructor H expects 1 argument(s),
+       but is applied here to 0 argument(s)
+
+こんな感じなので、 variant_name  は(あれば)適用と合わせてsimpl_expr に入れる必要がありそう。
+
+というか、 EConstではなくて EVariant あたりで 適用状態でパースされるべきっぽい。
+
+# f H(3);;
+Error: The constructor H expects 1 argument(s),
+       but is applied here to 0 argument(s)
+
+フムー
+*/
 
 expr:
 	| simple_expr
@@ -185,7 +220,7 @@ Error: This expression has type float but an expression was expected of type
 	| simple_expr app_exprs
 		%prec app_assoc
 		{ debug (EApp($1,$2)) }
-	| tuple_exprs                 
+	| tuple_exprs   
 		%prec tuple_assoc
 		{ debug (ETuple($1))  }
 	| LET LPAR tuple_vars EQ expr IN expr 
@@ -195,12 +230,100 @@ Error: This expression has type float but an expression was expected of type
 	| simple_expr DOT LPAR expr RPAR LARROW expr 
 		%prec arrow_assoc
 		{ debug (EOp(OArrWrite,[$1;$4;$7])) }  
-		
 	| FUN rec_vars RARROW expr
 		{ let fn = gen_fun_name () in
 			debug (ELetRec(fn,$2,$4,debug (EVar(fn)))) }
+	| MATCH expr WITH cases
+		{ debug (EMatch($2,$4)) }
+	| variant_expr 
+		{ debug $1 }
 	| error
 		{ failwith ("parse failure at " ^ debug_data2str (get_debug_data ())) }
+;
+
+
+/*
+	variant_name LPAR expr COMMA expr RPAR　が 
+	variant_name LPAR tuple_expr RPAR　なのか
+	variant_name simple_expr なのか(上にしてほしーが)
+	
+	さすがにそろそろ動かしたい
+*/
+
+
+variant_expr:
+	/* TODO このconflictどうにかして解消する */
+/*
+	| variant_name             { EVariant($1,[]) }
+	これはsimpl_expr 側に入る
+*/
+	| variant_name simple_expr
+		%prec variant_app_assoc
+		{ EVariant($1,[$2]) }
+	| variant_name LPAR tuple_exprs RPAR 
+		%prec variant_tuple_assoc
+		{ EVariant($1,$3) }
+;
+
+cases:
+	|     pattern RARROW expr { [($1,$3)] }
+	| BAR pattern RARROW expr { [($2,$4)] }
+	|     pattern RARROW expr BAR cases { ($1,$3) :: $5 }
+	| BAR pattern RARROW expr BAR cases { ($2,$4) :: $6 }
+;
+
+/* TODO { as , _ , list , 複数match } に対応 */
+
+tuple_patterns:
+	| tuple_patterns COMMA pattern { $1 @ [$3] }
+	| pattern COMMA pattern { [$1; $3] }
+;
+
+/*
+# type a = H of int * int;;
+type a = H of int * int
+# fun x -> match x with H p,q -> p+q;;
+Error: The constructor H expects 2 argument(s),
+       but is applied here to 1 argument(s)
+こんなん。
+
+こーいうのもあるよなぁ...?
+
+
+
+# type a = H of int * int;;
+type a = H of int * int
+# fun x -> match x with H(a,b) -> a + b;;
+- : a -> int = <fun>
+# fun x -> match x with H((a,b)) -> a + b;;
+- : a -> int = <fun>
+# H((1,2));;
+- : a = H (1, 2)
+# let y = 3,4;;
+val y : int * int = (3, 4)
+# H(y)::
+  ;;
+Error: Syntax error
+# H(y);;
+Error: The constructor H expects 2 argument(s),
+       but is applied here to 1 argument(s)
+# H y;;
+Error: The constructor H expects 2 argument(s),
+       but is applied here to 1 argument(s)
+
+ま！？つってる
+*/
+
+pattern:
+	| var                  { PVar($1) }
+	| LPAR pattern RPAR    { $2 }
+	| variant_name         { PVariant($1) }
+	| variant_name pattern
+		%prec variant_apply_pattern
+		{ PVariantApp($1,$2) }
+	| tuple_patterns
+		%prec tuple_assoc
+		{ PTuple($1) }
 ;
 
 tuple_exprs:
@@ -208,12 +331,9 @@ tuple_exprs:
 	| expr COMMA expr { [$1; $3] }
 ;
 
-
 app_exprs:
-	| simple_expr app_exprs
-		{ $1 :: $2 }
-	| simple_expr 
-		{ [$1] }
+	| simple_expr app_exprs { $1 :: $2 }
+	| simple_expr { [$1] }
 ;
 
 

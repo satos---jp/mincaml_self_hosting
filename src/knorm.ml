@@ -106,6 +106,11 @@ let rec knorm (ast,nt) =
 			List.fold_right (fun ((ne,net),nv) -> fun r -> KLet((nv,net),knorm (ne,net),r))
 			vxs (KOp(s,List.map (fun ((_,t),v) -> (v,t)) vxs)) 
 		)
+	(* matchで生じる true,falseの畳み込み(だいぶアドホックだが)
+	| TIf((TConst(CInt(v)),_),e3,e4)  -> (
+			if v == 0 then knorm e4 else knorm e3
+		)
+	*)
 	| TIf((TOp(op,[e1;e2]),opt),e3,e4) 
 		when List.mem op [Oeq; Oneq; Olt; Oleq; Ogt; Ogeq] -> (
 			let vt1 = (genvar ()),(snd e1) in

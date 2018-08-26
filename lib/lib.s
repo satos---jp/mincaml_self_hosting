@@ -559,7 +559,39 @@ read_float_finish:
 	ret
 
 
+estr:
+	db "match failure", 10, 0
+	
+print_string_err:
+	push ebp
+	mov ebp,esp
+	sub esp,8
+	
+	mov eax,[ebp+0x8]
+	mov [ebp-0x4],eax
+	xor ecx,ecx
+print_string_err_loop:
+	mov eax,[ebp-0x4]
+	mov cl,[eax]
+	inc eax
+	mov [ebp-0x4],eax
+	mov [ebp-0x8],ecx
+	push ecx
+	call print_char_err
+	add esp,4
+	mov ecx,[ebp-0x8]
+	cmp ecx,0
+	jne print_string_err_loop
+	
+	mov esp,ebp
+	pop ebp
+	ret
 
+raise_match_failure:
+	push estr
+	call print_string_err
+	add esp,4
+	int 0x3
 
 
 

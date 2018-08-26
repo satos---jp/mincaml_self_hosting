@@ -91,6 +91,30 @@ let rec const_fold tupleenv cenv ast =
 				| KConst c -> const_fold tupleenv ((na,c) :: cenv) e2
 				| _ -> reccall e2))
 		)
+	(* matchで生じる true,falseの畳み込み(だいぶアドホックだが)*)
+	(* TODO CmpLt とかも畳み込む *)
+	| KIf(CmpEq,((na,_) as nda),((nb,_) as ndb),e3,e4)  -> (
+			let te3 = reccall e3 in
+			let te4 = reccall e4 in
+			try 
+				let v = List.assoc na cenv in
+				let w = List.assoc nb cenv in
+				(*
+				Printf.printf "folding %s := %s Cmpeq %s := %s with %b\n" na (const2str v) nb (const2str w) (v == w);
+				*)
+				match v,w with
+				| CInt(x),CInt(y) -> if x == y then te3 else te4
+				| _ -> KIf(CmpEq,nda,ndb,te3,te4)
+			with
+				| Not_found -> (
+						(*
+						Printf.sprintf "not found %s or %s" na nb;
+						*)
+						KIf(CmpEq,nda,ndb,te3,te4)
+					)
+		)
 	| _ -> kexp_recconv reccall ast
 
-let folder ast = const_fold [] [] ast
+let folder ast =
+	const_fold [] [] ast
+

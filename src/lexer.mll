@@ -9,7 +9,10 @@
 let digit = ['0'-'9']
 let space = ' ' | '\t' | '\r'
 let alpha = ['a'-'z' 'A'-'Z' '_' ] 
-let ident = alpha (alpha | digit)* 
+let smallalpha = ['a'-'z' '_' ] 
+let bigalpha = ['A'-'Z'] 
+let ident = smallalpha (alpha | digit)* 
+let variant_ident = bigalpha (alpha | digit)* 
 
 rule main = parse
 | "\n" { Lexing.new_line lexbuf; main lexbuf }
@@ -52,13 +55,17 @@ let true = 1 とかがあるのでエラーになる。
 | "<>"         { Parser.NEQ }
 | "<="         { Parser.LEQ }
 | "<"          { Parser.LT }
-| ">="
-	{ Parser.GEQ }
-| ">"
-	{ Parser.GT }
+| ">="         { Parser.GEQ }
+| ">"          { Parser.GT }
+| "|"          { Parser.BAR }
+| "type"       { Parser.TYPE }
+| "match"      { Parser.MATCH }
+| "with"       { Parser.WITH }
+| "of"         { Parser.OF }
 | digit+ "." digit*(['E''e']['+''-']?digit+)? as f { Parser.FLOAT(float_of_string f) }
 | digit+ as n  { Parser.INT (int_of_string n) }
 | ident  as id { Parser.ID id }
+| variant_ident as id { Parser.VARIANT_ID id }
 | eof
 	{ Parser.EOF }
 | _            { failwith ("Unknown Token: " ^ Lexing.lexeme lexbuf)}

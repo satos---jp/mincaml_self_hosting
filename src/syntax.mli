@@ -1,4 +1,4 @@
-type name = string 
+type variant_tag = string
 
 type const = 
 	| CInt of int
@@ -25,11 +25,13 @@ type optype =
 
 val op2str : optype -> string
 
-type variant_tag = string
+type name = string 
 
 type pattern = 
 	| PVar     of name
-	| PVariant of name * (pattern list)
+	| PVariant    of variant_tag
+	| PVariantApp of variant_tag * pattern
+	| PTuple   of (pattern list)
 
 type expr = expr_base * Debug.debug_data
 and expr_base =
@@ -43,20 +45,20 @@ and expr_base =
   | ETuple     of (expr list)
   | ELetTuple  of (name list) * expr * expr
   | EMatch     of expr * ((pattern * expr) list)
-  
-val expr2str : expr -> string
+  | EVariant   of variant_tag * expr list
 
 type type_expr = 
 	| ETInt
 	| ETFloat
+	| ETVar     of name
 	| ETTuple   of type_expr list
-	| ETyFun    of type_expr * type_expr
+	| ETTyFun    of type_expr * type_expr
 
 type decl = 
   | DLet        of name * expr
   | DLetRec     of name * (name list) * expr
   | DTypeRename of name * type_expr
-  | DVariant    of name * ((variant_tag * type_expr) list)
+  | DVariant    of name * ((variant_tag * (type_expr list)) list) 
 
 type decl_expr = 
 	| FExpr of expr
