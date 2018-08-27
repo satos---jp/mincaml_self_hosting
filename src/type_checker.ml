@@ -15,7 +15,7 @@ type ty =
 	| TyArr of ty
 	| TyFun of (ty list) * ty
 	| TyTuple of ty list
-	| TyUserDef of type_name
+	| TyUserDef of type_name * (ty list)
 
 
 exception TypeError of ty * ty * Debug.debug_data
@@ -45,7 +45,7 @@ and type2str t =
 			| x :: xs -> 
 				"(" ^ (List.fold_left (fun r -> fun t -> r ^ " * " ^ (type2str_with_pa t)) (type2str_with_pa x) xs) ^ ")"
 		)
-	| TyUserDef(s) -> "UsrDef(" ^ s ^ ")"
+	| TyUserDef(s,ts) -> "UsrDef(" ^ s ^ "," ^ (String.concat " * " (List.map type2str_with_pa ts)) ^ ")"
 
 let print_type t = print_string ((type2str t) ^ "\n")
 
@@ -216,7 +216,7 @@ let rec pattern2env env venv pat pna =
 	| PVariant(tag) -> (
 			let tagn,tagty,tagarg = (
 				try
-					List.assoc tag venv
+					(List.assoc tag venv) ()
 				with
 					| Not_found -> raise (Failure("Undefined variant tag " ^ tag ^ " at " ^ (debug_data2str deb)))
 			) in
@@ -233,7 +233,7 @@ let rec pattern2env env venv pat pna =
 	| PVariantApp(tag,ps) -> (
 			let tagn,tagty,tagarg = (
 				try
-					List.assoc tag venv 
+					(List.assoc tag venv) ()
 				with
 					| Not_found -> raise (Failure("Undefined variant tag " ^ tag ^ " at " ^ (debug_data2str deb)))
 			) in
@@ -401,7 +401,7 @@ let rec type_infer venv astdeb env =
 	| EVariant(tag,es) -> (
 			let tagn,tagty,args = (
 				try
-					List.assoc tag venv
+					(List.assoc tag venv) ()
 				with
 					| Not_found -> raise (Failure("Undefined variant tag " ^ tag ^ " at " ^ (debug_data2str deb)))
 			) in
@@ -478,15 +478,15 @@ let print_subs subs =
 
 let rec ty_var_appear t v =
         match t with
-        | TyInt | TyFloat | TyNum | TyUserDef _ -> false
+        | TyInt | TyFloat | TyNum -> false
         | TyFun (t1s, t2) -> List.exists (fun x -> ty_var_appear x v) (t2 :: t1s)
         | TyVar x -> x = v
         | TyArr t -> (ty_var_appear t v)
-        | TyTuple ts -> List.fold_left (fun r -> fun t -> r || (ty_var_appear t v)) false ts
+        | TyTuple ts | TyUserDef(_,ts) -> List.fold_left (fun r -> fun t -> r || (ty_var_appear t v)) false ts
 
 let rec ty_subst subs t = 
 	match t with
-	| TyInt | TyFloat | TyNum | TyUserDef _ -> t
+	| TyInt | TyFloat | TyNum -> t
 	| TyVar(nb) -> (
 		try 
 			let tt = (List.assoc nb subs) in 
@@ -498,6 +498,7 @@ let rec ty_subst subs t =
 	| TyArr x -> TyArr(ty_subst subs x )
 	| TyFun(ps,q) -> TyFun(List.map (fun p -> ty_subst subs p) ps,ty_subst subs q)
 	| TyTuple ps -> TyTuple(List.map (fun x -> ty_subst subs x) ps)
+	| TyUserDef(na,ts) -> TyUserDef(na,List.map (fun x -> ty_subst subs x) ts)
 
 let rec constrs_subst s cs =
         match cs with
@@ -536,8 +537,8 @@ let rec unify tyenv cs =
 			| TyTuple ps,TyTuple qs -> self ((List.map2 (fun a b -> (a,b,deb)) ps qs) @ xs)
 			(* 多相性のために追加する *)
 			| TyNum,TyInt | TyInt,TyNum | TyNum,TyFloat | TyFloat,TyNum -> self xs
-			| TyUserDef(a),TyUserDef(b) when a = b -> self xs
-			| TyUserDef(a),b | b,TyUserDef(a) when List.mem_assoc a tyenv -> (
+			| TyUserDef(a,ps),TyUserDef(b,qs) when a = b -> self ((List.map2 (fun p q -> (p,q,deb)) ps qs) @ xs)
+			| TyUserDef(a,[]),b | b,TyUserDef(a,[]) when List.mem_assoc a tyenv -> (
 					self ((List.assoc a tyenv,b,deb) :: xs)
 				)
 			| _ -> raise (TypeError(t1,t2,deb))
@@ -649,22 +650,30 @@ type type_def =
 	| TDVariant of ((variant_tag * (ty list)) list)
 	| TDNull
 
-let variantenv () = []
+let variantenv () = [
+	("@Nil",(fun x -> let t = gentype x in (0,TyUserDef("list",[t]),[])));
+	("@Cons",(fun x -> let t = gentype x in (1,TyUserDef("list",[t]),[t;TyUserDef("list",[t])])))
+]
 
 let user_defined_type_env () = [
 	("int",TyInt);
 	("float",TyFloat)
 ]
 
+let defined_types () = [
+	("list",1)
+] @ List.map (fun (t,_) -> (t,0)) (user_defined_type_env ())
 
 
-let rec eval_variant defined_types te = 
-	let f = eval_variant defined_types in
+
+let rec eval_variant uts te = 
+	let f = eval_variant uts in
 	match te with
 	| ETInt -> TyInt
 	| ETFloat -> TyFloat
 	| ETVar na -> (
-			if List.mem na defined_types then (TyUserDef na)
+			(* TODO このへんガバ *)
+			if List.assoc na uts = 0 then TyUserDef(na,[])
 				else raise (Failure(Printf.sprintf "undefined type name %s" na))
 		)
 	| ETTuple ts -> TyTuple(List.map f ts)
@@ -682,10 +691,10 @@ let check ast =
 			(genv ()),
 			(variantenv ()),
 			(user_defined_type_env ()),
-			List.map fst (user_defined_type_env ())
+			(defined_types ())
 		) in
 		let astzero = (TConst(CInt(0)),(TyInt,default_debug_data)) in
-		let tast,_,_,_,_ = List.fold_left (fun (f,env,venv,tyenv,defined_types) ast ->
+		let tast,_,_,_,_ = List.fold_left (fun (f,env,venv,tyenv,uts) ast ->
 			addglobalcs := [];
 			match ast with
 			| FExpr e -> ((
@@ -697,7 +706,7 @@ let check ast =
 					let rast = ast_subst subs tast in
 					let sast = fix_partial_apply rast in
 					(fun y -> f (TLet(("_",(rt,default_debug_data)),sast,y),(snd y)))
-				),env,venv,tyenv,defined_types)
+				),env,venv,tyenv,uts)
 			| FDecl de -> (
 					match de with
 					| DLet(na,e) -> (
@@ -710,21 +719,21 @@ let check ast =
 							(
 								(fun y -> f (TLet((na,(trt,default_debug_data)),sast,y),(snd y))),
 								((na,trt) :: env),
-								venv,tyenv,defined_types
+								venv,tyenv,uts
 							)
 						)
 						
 					| DVariant(na,ts) -> (
-							let tts = List.map (fun (tg,te) -> (tg,List.map (fun x -> eval_variant (na :: defined_types) x) te)) ts in
+							let tts = List.map (fun (tg,te) -> (tg,List.map (fun x -> eval_variant ((na,0) :: uts) x) te)) ts in
 							let ttts = List.mapi (fun i (tg,tes) -> 
-								(tg,(i,TyUserDef(na),tes))
+								(tg,(fun _ -> (i,TyUserDef(na,[]),tes)))
 							) tts
 							in
 							(
 								f,env,
 								ttts @ venv,
 								tyenv,
-								na :: defined_types
+								(na,0) :: uts
 							)
 						)
 					| _ -> raise (Failure("Unimplemented"))

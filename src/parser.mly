@@ -23,6 +23,7 @@
 %token DOT COMMA SEMI EOF
 %token SEMISEMI TYPE BAR OF MATCH WITH
 %token <string> VARIANT_ID
+%token CONS NIL
 
 /* 下のほうが強い */
 /* left とか right とかは演算子のみに効果があるっぽいな？？？ */
@@ -37,6 +38,7 @@
 %nonassoc variant_apply_pattern
 %left COMMA
 %left EQ LT LEQ GT GEQ NEQ BAR
+%right CONS
 %left PLUS MINUS FPLUS FMINUS
 %left TIMES DIV FTIMES FDIV
 %nonassoc variant_def_tuple_type_exprs_assoc /* TIMESより強くないといけない */
@@ -237,6 +239,10 @@ Error: This expression has type float but an expression was expected of type
 		{ debug (EMatch($2,$4)) }
 	| variant_expr 
 		{ debug $1 }
+	| expr CONS expr
+		{ debug (EVariant("@Cons",[$1;$3])) }
+	| NIL 
+		{ debug (EVariant("@Nil",[])) }
 	| error
 		{ failwith ("parse failure at " ^ debug_data2str (get_debug_data ())) }
 ;
@@ -324,6 +330,8 @@ pattern:
 	| tuple_patterns
 		%prec tuple_assoc
 		{ PTuple($1) }
+	| pattern CONS pattern { PVariantApp("@Cons",PTuple([$1;$3])) }
+	| NIL { PVariant("@Nil") }
 ;
 
 tuple_exprs:

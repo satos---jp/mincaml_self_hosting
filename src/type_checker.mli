@@ -13,7 +13,7 @@ type ty =
 	| TyArr of ty
 	| TyFun of (ty list) * ty
 	| TyTuple of ty list
-	| TyUserDef of type_name
+	| TyUserDef of type_name * (ty list)
 
 val type2str : ty -> string
 

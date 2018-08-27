@@ -62,6 +62,8 @@ let true = 1 とかがあるのでエラーになる。
 | "match"      { Parser.MATCH }
 | "with"       { Parser.WITH }
 | "of"         { Parser.OF }
+| "::"         { Parser.CONS }
+| "[]"         { Parser.NIL }
 | digit+ "." digit*(['E''e']['+''-']?digit+)? as f { Parser.FLOAT(float_of_string f) }
 | digit+ as n  { Parser.INT (int_of_string n) }
 | ident  as id { Parser.ID id }

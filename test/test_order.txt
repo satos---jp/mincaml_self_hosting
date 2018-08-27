@@ -14,6 +14,7 @@ closure_buggy.ml
 operator_int.ml operator_int_i.txt
 variant.ml
 recursive_variant.ml
+check_list.ml
 
 ; floatまわりが合わないのでこれは一旦無視する
 ftoi_itof.ml
