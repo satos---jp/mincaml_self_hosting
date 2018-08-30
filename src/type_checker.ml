@@ -2,6 +2,8 @@ open Syntax
 open Debug
 open Main_option
 open Genint
+open Source2ast
+open Spec
 
 type tyvar = int
 
@@ -677,6 +679,7 @@ let rec eval_variant uts te =
 				else raise (Failure(Printf.sprintf "undefined type name %s" na))
 		)
 	| ETTuple ts -> TyTuple(List.map f ts)
+	| ETTyFun(t1,t2) -> TyFun([f t1],f t2)
 
 (* 型定義に無限ループは存在しないはず 
 # type a = b and b = a;;
@@ -684,17 +687,50 @@ Error: The type abbreviation a is cyclic
 とか。
 *)
 
-let check ast = 
+
+let rec check_rec ast sv = 
 	try (
-		let sv = (
-			(fun x -> x),
-			(genv ()),
-			(variantenv ()),
-			(user_defined_type_env ()),
-			(defined_types ())
-		) in
-		let astzero = (TConst(CInt(0)),(TyInt,default_debug_data)) in
-		let tast,_,_,_,_ = List.fold_left (fun (f,env,venv,tyenv,uts) ast ->
+		(* 
+			f :: プログラム全体, 
+			env :: 型環境, 
+			venv :: tag から 型へのやつ, 
+			tyenv :: 型のrenameデータ, 
+			uts :: 定義済みの型集合
+		*)
+		
+		List.fold_left (fun (f,env,venv,tyenv,uts) ast ->
+			let update_by_variant na ts = 
+				let tts = List.map (fun (tg,te) -> (tg,List.map (fun x -> eval_variant ((na,0) :: uts) x) te)) ts in
+				let ttts = List.mapi (fun i (tg,tes) -> 
+					(tg,(fun _ -> (i,TyUserDef(na,[]),tes)))
+				) tts
+				in
+				(
+					f,env,
+					ttts @ venv,
+					tyenv,
+					(na,0) :: uts
+				)
+			in
+			let rec update_by_open na = 
+				let specs = open2spec na in
+				(*
+				List.fold_left (fun (f,env,venv,tyenv,uts) spec ->
+					match spec with
+					| SValtype(na,te) -> (
+							(f,
+								(na,eval_variant uts te) :: env
+							,venv,tyenv,uts)
+						)
+					| _ -> raise (Failure("Unimplemented"))
+				) (f,env,venv,tyenv,uts) specs
+				面倒なのでそのままつなげてしまう
+				TODO ダイヤモンド問題どうにかする
+				*)
+				
+				let hast = Source2ast.s2a (String.lowercase na ^ ".ml") in
+				check_rec hast (f,env,venv,tyenv,uts)
+			in
 			addglobalcs := [];
 			match ast with
 			| FExpr e -> ((
@@ -722,25 +758,27 @@ let check ast =
 								venv,tyenv,uts
 							)
 						)
-						
-					| DVariant(na,ts) -> (
-							let tts = List.map (fun (tg,te) -> (tg,List.map (fun x -> eval_variant ((na,0) :: uts) x) te)) ts in
-							let ttts = List.mapi (fun i (tg,tes) -> 
-								(tg,(fun _ -> (i,TyUserDef(na,[]),tes)))
-							) tts
-							in
-							(
-								f,env,
-								ttts @ venv,
-								tyenv,
-								(na,0) :: uts
-							)
-						)
+					| DVariant(na,ts) -> update_by_variant na ts
+					| DOpen(na) -> update_by_open na
 					| _ -> raise (Failure("Unimplemented"))
 				)
 		) sv ast
-		in tast astzero 
 	) with
 		| TypeError(t1,t2,deb) -> 
 			raise (Failure(Printf.sprintf 	
 				"Type Unify Failed:\n %s \n with type %s and %s" (Debug.debug_data2str deb) (type2str t1) (type2str t2)))
+
+
+let check ast = 
+	let sv = (
+		(fun x -> x),
+		(genv ()),
+		(variantenv ()),
+		(user_defined_type_env ()),
+		(defined_types ())
+	) in
+	let astzero = (TConst(CInt(0)),(TyInt,default_debug_data)) in
+	let tast,_,_,_,_ = check_rec ast sv in
+		tast astzero
+
+

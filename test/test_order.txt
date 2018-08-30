@@ -15,6 +15,10 @@ operator_int.ml operator_int_i.txt
 variant.ml
 recursive_variant.ml
 check_list.ml
+open_test open_test_include option
+
+; テストできないので諦めてる
+
 
 ; floatまわりが合わないのでこれは一旦無視する
 ftoi_itof.ml

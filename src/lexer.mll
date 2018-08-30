@@ -17,7 +17,6 @@ let variant_ident = bigalpha (alpha | digit)*
 rule main = parse
 | "\n" { Lexing.new_line lexbuf; main lexbuf }
 | space+       { main lexbuf }
-| "open"[^'\n']*"\n" { (* open文は飛ばす *) Lexing.new_line lexbuf; main lexbuf }
 | "(*"         { comment lexbuf }
 | "let"        { Parser.LET }
 | "rec"        { Parser.REC }
@@ -64,6 +63,9 @@ let true = 1 とかがあるのでエラーになる。
 | "of"         { Parser.OF }
 | "::"         { Parser.CONS }
 | "[]"         { Parser.NIL }
+| "val"        { Parser.VAL }
+| ":"          { Parser.COLON }
+| "open"       { Parser.OPEN }
 | digit+ "." digit*(['E''e']['+''-']?digit+)? as f { Parser.FLOAT(float_of_string f) }
 | digit+ as n  { Parser.INT (int_of_string n) }
 | ident  as id { Parser.ID id }

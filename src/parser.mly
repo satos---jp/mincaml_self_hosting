@@ -2,6 +2,7 @@
 	open Syntax
 	open Debug
 	open Genint
+	open Spec
 	
 	let debug expr = (expr , (get_debug_data ()))
 	let gen_fun_name () = Printf.sprintf "@lam_%d" (genint ())
@@ -24,6 +25,7 @@
 %token SEMISEMI TYPE BAR OF MATCH WITH
 %token <string> VARIANT_ID
 %token CONS NIL
+%token VAL COLON OPEN
 
 /* 下のほうが強い */
 /* left とか right とかは演算子のみに効果があるっぽいな？？？ */
@@ -48,8 +50,13 @@
 %left DOT
 %nonassoc unary_minus
 
+
 %start toplevel 
 %type <Syntax.top> toplevel
+
+%start specification_list
+%type <Spec.top> specification_list
+
 %% 
 
 toplevel:
@@ -74,7 +81,22 @@ decl:
 		}
 	| TYPE var EQ type_expr    { DTypeRename($2,$4) }
 	| TYPE var EQ variant_defs { DVariant($2,$4) }
+	| OPEN variant_name        { DOpen($2) }
 ;
+
+
+specification_list:
+	| specification  specification_list { $1 :: $2 }
+	| EOF    { [] }
+;
+
+specification:
+	| VAL var COLON type_expr  { SValtype($2,$4)    }
+	| TYPE var EQ type_expr    { STypeRename($2,$4) }
+	| TYPE var EQ variant_defs { SVariant($2,$4) }
+	| OPEN variant_name        { SOpen($2)       }
+;
+
 
 variant_defs:
 	| variant_def                      { [$1] }

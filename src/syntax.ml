@@ -98,6 +98,7 @@ type decl =
   | DLetRec     of name * (name list) * expr
   | DTypeRename of name * type_expr
   | DVariant    of name * ((variant_tag * (type_expr list)) list)
+  | DOpen       of name
 
 type decl_expr = 
 	| FExpr of expr
@@ -152,6 +153,7 @@ let decl2str de =
 				[(d+2,Printf.sprintf "len of %d" (List.length ts))]
 			)) tts)
 		)
+	| DOpen(na) -> [(d,"Open " ^ na)]
 
 let decl_expr2str ast = 
 	match ast with

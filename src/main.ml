@@ -6,7 +6,6 @@ open Closure_conv
 open Virtual
 open Emit_zatsu_x86
 open Debug
-open Emit_zatsu_tortesia
 open Inline
 open Common_sube_elim
 open Linux_win_diff
@@ -72,7 +71,7 @@ if argc <= 1 then (
 		else ["lib/lib.ml"]
 	) @ !files;
 	let tast = List.flatten (List.map Source2ast.s2a (!files)) in
-
+	
 	print_string (top2str tast);
 	
 	print_string "parsed"; print_newline ();
@@ -101,14 +100,7 @@ if argc <= 1 then (
 	let vrt = Virtual.to_virtual cls in
 	print_string "virtualized";  print_newline ();
 	vprint virt2str vrt;
-	let asm = (if !tortesia then (
-		if !all_stack then 
-			Emit_zatsu_tortesia.vir2asm vrt 
-		else 
-			Emit_tortesia.vir2asm vrt 
-	) else
-		Emit_zatsu_x86.vir2asm vrt)
-	in
+	let asm = Emit_zatsu_x86.vir2asm vrt in
 	vprint (fun x -> x) asm;
 	let oc = open_out !output_filename in
 	output_string oc asm;

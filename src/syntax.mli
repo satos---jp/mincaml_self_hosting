@@ -59,6 +59,7 @@ type decl =
   | DLetRec     of name * (name list) * expr
   | DTypeRename of name * type_expr
   | DVariant    of name * ((variant_tag * (type_expr list)) list) 
+  | DOpen       of name
 
 type decl_expr = 
 	| FExpr of expr

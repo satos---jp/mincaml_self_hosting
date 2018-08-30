@@ -70,7 +70,19 @@ pattern	::=	value-name
  	∣	 pattern ::  pattern  
 
 は、これくらい。( as はまだ先(か実装しないか)ぽい)
- 
+
+
+
+# mliについて
+
+specification	::=	
+  |	 val value-name :  typexpr  
+  	∣	 type-definition  
+ 	∣	 open module-path  
+
+くらい。
+
+ 	
 
 
 
