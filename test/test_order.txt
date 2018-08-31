@@ -4,28 +4,26 @@ var_func.ml
 simple_recursion.ml
 print_int.ml
 func_arg.ml
-io.ml io_i.txt
+io.ml -i io_i.txt
 global_array_rw.ml
-array_rw.ml array_rw_i.txt
+array_rw.ml -i array_rw_i.txt
 fib.ml
 make_dest_tuple.ml
 check_const_arr_rw.ml
 closure_buggy.ml
-operator_int.ml operator_int_i.txt
+operator_int.ml -i operator_int_i.txt
 variant.ml
 recursive_variant.ml
 check_list.ml
-open_test open_test_include option
-
-; テストできないので諦めてる
+open_test_include.ml open_test.ml
 
 
 ; floatまわりが合わないのでこれは一旦無視する
 ftoi_itof.ml
-operator_float.ml operator_float_i.txt
-fcomp.ml fcomp_i.txt
+operator_float.ml -i operator_float_i.txt
+fcomp.ml -i fcomp_i.txt
 external_library.ml
 mandelblot_edit.ml
-plot_trigon.ml plot_trigon_i.txt 
+plot_trigon.ml -i plot_trigon_i.txt 
 floor_check.ml
 

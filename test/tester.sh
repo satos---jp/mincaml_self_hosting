@@ -8,43 +8,69 @@ cp ../lib/ ./ -r
 
 exec_ocaml(){
 	#Ocamlで実行
-	cat test_header.ml > tmp.ml
-	cat $1 >> tmp.ml
-	if [ -z $3 ]; then 
-		ocaml tmp.ml > $2
+	garr=$1
+	output=$2
+	input=$3
+	len=${#garr[@]}
+	if [ ${#garr[@]} -le 1 ]; then
+		cat test_header.ml > tmp.ml
+		cat $1 >> tmp.ml
+		if [ -z $input ]; then 
+			ocaml tmp.ml > $output
+		else
+			ocaml tmp.ml < $input > $output
+		fi
 	else
-		ocaml tmp.ml < $3 > $2
+		for i in `seq 0 $(($len-1))`; do
+			arr[$i]=${garr[$i]}
+		done
+
+		cat test_header.ml > tmp.ml
+		cat ${arr[$len-1]} >> tmp.ml
+		arr[$len-1]="tmp.ml"
+		echo "${arr[@]}"
+		
+		for i in `seq 0 $(($len-1))`; do
+			arr[$i]=`basename ${arr[$i]} .ml`
+		done
+		for f in ${arr[@]}; do
+			if [ -f $f.mli ]; then
+				ocamlc -c $f.mli
+			fi
+		done
+		for f in ${arr[@]}; do
+			ocamlc -c $f.ml
+		done
+		for i in `seq 0 $(($len-1))`; do
+			arr[$i]=${arr[$i]}.cmo
+		done
+		ocamlc "${arr[@]}" -o ocamlout.out
+		if [ -z $input ]; then
+			./ocamlout.out > $output
+		else
+			./ocamlout.out < $input > $output
+		fi
+		rm *.cmi
+		rm *.cmo
 	fi
 }
 
 exec_x86(){
 	#x86で実行
+	arr=$1
+	output=$2
+	input=$3
 	./main -d $1 -noinline -o o_x86.s > /dev/null
 	nasm o_x86.s -f elf32 -g -o out.o
 	gcc -m32 -nostdlib out.o -o x86.out
-	if [ -z $3 ]; then 
-		./x86.out > $2
+	if [ -z $input ]; then 
+		./x86.out > $output
 	else
-		./x86.out < $3 > $2
+		./x86.out < $input > $output
 	fi	
 }
 
-cat test_order.txt | while read file input option
-do
-	rm -f tmp.ml a.out o_tortesia.s o_x86.s o_tortesia2x86.s x86.out
-	if [ -z $file ]; then 
-		break
-	fi
-	echo "---------------" $file "----------------"
-	cat $file
-	
-	rm -f o_ocaml.txt o_mincaml.txt
-	
-	
-	if [ -z $option ]; then
-		exec_ocaml $file o_ocaml.txt $input
-		exec_x86 $file o_mincaml.txt $input 
-	else
+hoge(){
 		dml=".ml"
 		dmli=".mli"
 		dcmo=".cmo"
@@ -57,7 +83,36 @@ do
 		./ocaml.out > o_ocaml.txt
 		
 		exec_x86 $file$dml o_mincaml.txt
+}
+
+cat test_order.txt | while read fs
+do
+	arr=($fs)
+	len=${#arr[@]}
+	#echo $len
+	input=""
+	if [ $len -ge 2 ] && [ ${arr[$len-2]} == "-i" ] ; then
+		input=${arr[$len-1]}
+		arr=(${arr[@]:0:$len-2})
+		len=${#arr[@]}
+	elif [ $len = 0 ]; then 
+		break
 	fi
+	
+	
+	rm -f tmp.ml a.out o_tortesia.s o_x86.s o_tortesia2x86.s x86.out
+	echo "---------------" $fs "----------------"
+	for f in ${arr[@]}; do
+		echo "----------[" $f "]------------"
+		echo ""
+		cat $f
+	done
+	
+	rm -f o_ocaml.txt o_mincaml.txt
+	
+	
+	exec_ocaml $arr o_ocaml.txt $input
+	exec_x86 $arr o_mincaml.txt $input
 	
 	#比較
 	if diff o_ocaml.txt o_mincaml.txt; then

@@ -94,32 +94,7 @@ let texp2str ast =
 		String.concat "\n" (List.map (fun (d,s) -> (String.make (d*2) ' ') ^ s) ss) ^ "\n"
 
 
-let genv () = 
-if !tortesia then ((if !asmsin_asmint then [
-	("print_int",TyFun([TyInt],TyTuple([])));
-
-	("sin",TyFun([TyFloat],TyFloat));
-	("cos",TyFun([TyFloat],TyFloat));
-	("atan",TyFun([TyFloat],TyFloat));
-] else []) @ [
-	(* ハードウェア実装してもらう *)
-	("print_char",TyFun([TyInt],TyTuple([])));
-	
-	("read_char",TyFun([TyTuple([])],TyInt));
-	("read_int",TyFun([TyTuple([])],TyInt));
-	("read_float",TyFun([TyTuple([])],TyFloat));
-(*
-ハードウェアでやってもらうのは、
-入力 は print_int　と print_float
-出力 は print_char のみ、で、
-print_int はコンパイラで実装する。
-*)
-(* アセンブラで実装した *)
-	("float_of_int",TyFun([TyInt],TyFloat));
-	("int_of_float",TyFun([TyFloat],TyInt));
-	("sqrt",TyFun([TyFloat],TyFloat));   (* x -> root x のほう *)
-(* とりあえず、x86のものを流用する *)
-]) else [ (*x86 *)
+let genv () = [ (*x86 *)
 (* アセンブラで実装した*)
 	("fless",TyFun([TyFloat;TyFloat],TyInt));
 	("int_of_float",TyFun([TyFloat],TyInt));
