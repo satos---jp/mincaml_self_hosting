@@ -62,6 +62,20 @@ let init_globvars gvs =
 		(x,!heap_diff-4) :: r
 	) [] gvs
 
+
+let on_exports = ref []
+let on_externs = ref []
+
+let init_exs vs = 
+	fst (
+		List.fold_left (fun (r,d) -> fun x -> 
+			((x,d) :: r,d+4)
+		) ([],0) vs
+	)
+
+let main_name_str = ref ""
+let main_name () = !main_name_str
+
 let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} = 
 	(*
 	Printf.printf "%s%s%s" (names2str vs1) (names2str vs2) (names2str localvs);
@@ -89,12 +103,20 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 		| GVar x -> (
 			try ("global_heap",List.assoc x !on_glob_vars)
 			with | Not_found -> 
-			("@" ^ x,-1)
+			try (
+				(* 高速化っぽいことができるはず *)
+				(* いや、無理で、 let f x = x と let g = f を区別できなそう*)
+				(* ("extern_list",List.assoc x !on_externs) こんなまどろまなくても *)
+				let _ = ("extern_list",List.assoc x !on_externs) in
+				(x,0)
+			)
+			with | Not_found -> 
+			("#" ^ x,-1)
 		)
 		| Reg _ -> raise (Failure "Register allocation for x86 is not implemented yet")
 	) in
 	let pt2s (a,b) = 
-		if String.get a 0 = '@' then String.sub a 1 ((String.length a)-1) else 
+		if String.get a 0 = '#' then String.sub a 1 ((String.length a)-1) else 
 			Printf.sprintf "dword [%s%+d]" a b 
 	in
 	let na2s x = pt2s (na2pt x) in
@@ -117,51 +139,24 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	) in
 	let prologue = 
 		(Printf.sprintf "\tpush ebp\n\tmov ebp,esp\n\tsub esp,%d\n" (snd lvs_st)) ^
-		(if fn = main_name () then Printf.sprintf "\tmov esi,global_heap\n"	else "") ^
-		(if fn = main_name () && !debugmode then (
-			(eprintc 104) ^
-			(eprintc 98) ^
-			(eprintc 32) ^
-			"\tpush esi\n" ^
-			"\tcall print_hex_err\n" ^
-			"\tadd esp,4\n" ^
-			(eprintc 10)
-		) else "") ^
-		(if fn = main_name () then Printf.sprintf "\tadd esi,%d\n" !heap_diff else "")
+		(if fn = main_name () then (
+			(*
+			(String.concat "" (List.map (fun (na,p) -> 
+				(Printf.sprintf "\tmov eax,[%s]\n" na) ^ 
+				(Printf.sprintf "\tmov [extern_list+%d],eax\n" p)
+			) !on_externs)) ^ *)
+			(Printf.sprintf "\tadd esi,%d\n" !heap_diff)  
+		)else "")
 	in
 	let epilogue = 
-		(if fn = main_name () && !debugmode then (
-			(eprintc 104) ^
-			(eprintc 97) ^
-			(eprintc 32) ^
-			"\tpush esi\n" ^
-			"\tcall print_hex_err\n" ^
-			"\tadd esp,4\n" ^
-			(eprintc 10)
-		) else "") ^
-		(Printf.sprintf "\tadd esp,%d\n\tpop ebp\n" (snd lvs_st)) ^
 		(if fn = main_name () then (
-			(let eprintc x = (
-				(Printf.sprintf "\tpush %d\n" x) ^
-				"\tcall print_char_err\n" ^
-				"\tadd esp,4\n"
-			) in
-			if !debugmode then (
-				(eprintc 105) ^
-				(eprintc 99) ^
-				(eprintc 32) ^
-				"\tmov eax,[inst_counter_up]\n" ^ 
-				"\tpush eax\n" ^ 
-				"\tcall print_hex_err\n" ^
-				"\tadd esp,4\n" ^
-				"\tmov eax,[inst_counter]\n" ^ 
-				"\tpush eax\n" ^ 
-				"\tcall print_hex_err\n" ^
-				"\tadd esp,4\n" ^
-				(eprintc 10)
-			) else "") ^
-			(main_epilogue ())
-		) else "\tret\n")
+				(String.concat "" (List.map (fun (_,p) -> 
+					"\tmov ebx,[eax]\n" ^ 
+					(Printf.sprintf "\tmov [export_list+%d],ebx\n" p) ^ 
+					"\tadd eax,4\n"
+				) (List.rev !on_exports)))
+		) else "") ^
+		(Printf.sprintf "\tadd esp,%d\n\tpop ebp\n\tret\n" (snd lvs_st))
 	in
 	
 	let mova2b nad nbd = 
@@ -424,26 +419,40 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 *)
 
 
-let vir2asm (funs,rd,globvars) = 
+let vir2asm (funs,rd,globvars) externs exports = 
+	on_exports := (init_exs exports);
+	on_externs := (init_exs (List.map fst externs));
+	let start_name = !filename ^ "main" in
+	main_name_str := start_name;
 	"BITS 32\n" ^
-	"%include \"" ^ (io_lib_name ()) ^ "\"\n" ^
-	"%include \"lib/lib.s\"\n" ^
+	(String.concat "" (List.map (fun (s,_) -> 
+		"extern " ^ s ^ "\n"
+	) externs)) ^
+	"extern global_heap\n" ^
+	(String.concat "" (List.map (fun s -> 
+		"global " ^ s ^ "\n"
+	) exports)) ^
+	
 	"section .data\n" ^
 	!constfs ^
-	"inst_counter:\n" ^ 
-	"\tdd 0x0\n" ^
-	"inst_counter_up:\n" ^ 
-	"\tdd 0x0\n" ^
+	"export_list:\n" ^
+	(String.concat "" (List.map (fun s -> 
+		(Printf.sprintf "%s:\n" s) ^
+		"\tdd 0\n"
+	) exports)) ^
+	
 	"section .bss\n" ^
-	"global_heap:\n" ^
-	(Printf.sprintf "\tresb %s\n" (main_heap_size ())) ^
+	"extern_list:\n" ^
+	(Printf.sprintf "\tresb %d\n" ((List.length externs) * 4)) ^
+	
 	"section .text\n" ^
-	"global " ^ (main_name ()) ^ "\n" ^ 
+	"global " ^ start_name ^ "\n" ^ 
 	(
 		init_globvars globvars;
 		let f s = if !debugmode then add_inscount s else s in
 		(String.concat "" (List.map (fun x -> f (func2asm x)) (List.rev funs))) ^
-		(f (func2asm {fn=(main_name (),(TyVar(-1),default_debug_data)); vs=[]; regs=[]; cvs=[]; body=rd}))
+		(f (func2asm {fn=(start_name,(TyVar(-1),default_debug_data)); vs=[]; regs=[]; cvs=[]; body=rd}))
 	)
+
 
 

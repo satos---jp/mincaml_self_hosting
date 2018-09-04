@@ -1,4 +1,5 @@
 open Syntax
+open Spec
 open Debug
 
 type tyvar = int
@@ -33,6 +34,9 @@ and texp_base =
 
 val global_funcs : unit -> string list
 
+val get_exports  : unit -> string list
+val get_imports  : unit -> (string * ty) list
+
 (* 型情報は消していいので、これ以降はtexpのままでいいはず。 *)
-val check : top -> texp
+val check : Syntax.top -> Spec.top -> texp
 

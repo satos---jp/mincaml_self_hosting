@@ -706,7 +706,11 @@ let cfg_toasms fn ismain vs cvs ast funnames heapvars =
 	)
 	in
 	(* opret、実体ごとに作らないといけないはず。 *)
+	(*
 	let retop = (fun () -> if ismain then [OpMainRet] else [OpRet(cna2na tov)]) in
+	最後の具合から、 MainRetしないほうがよくなった
+	*)
+	let retop = (fun () -> [OpRet(cna2na tov)]) in
 	
 	let addtoroot = ref [] in
 	let rt,gls = to_cfgs ast tov true ncfg (fst fn) head_label addtoroot in

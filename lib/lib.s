@@ -1,5 +1,28 @@
 BITS 32
 
+global fless
+global int_of_float
+global float_of_int
+global fiszero
+global fispos
+global fisneg
+global fabs
+global floor
+global fsqr
+global fneg
+global fhalf
+global sqrt
+global sin
+global cos
+global atan
+global read_int
+global read_float
+global raise_match_failure
+
+extern print_char
+extern print_char_err
+extern read_char
+
 section .data
 two:
 	dd 2.0

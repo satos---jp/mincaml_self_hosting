@@ -2,7 +2,9 @@ print_char.ml
 int_math_operation.ml
 var_func.ml
 simple_recursion.ml
+open_test_include.ml open_test.ml
 print_int.ml
+
 func_arg.ml
 io.ml -i io_i.txt
 global_array_rw.ml

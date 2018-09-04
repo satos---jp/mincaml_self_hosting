@@ -47,3 +47,7 @@ p.ml
 x.ml
 run.sh
 experiments/*
+a.ml
+a.mli
+objd.txt
+tes.sh

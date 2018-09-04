@@ -1,6 +1,6 @@
 open Main_option
 
-let main_name () = if !windows then "_main" else "_start"
+let start_name () = if !windows then "_main" else "_start"
 let io_lib_name () = if !windows then "lib/libio_win.s" else "lib/libio_linux.s"
 let main_heap_size () = if !windows then "0x40000000" else "0x80000000"
 

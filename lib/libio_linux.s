@@ -1,8 +1,19 @@
 BITS 32
 
+global print_char
+global read_char
+global print_char_err
+global puts_err
+
+section .data
+print_char:
+	dd print_char_p
+print_char_p:
+	dd print_char_
+
 section .text
 
-print_char:
+print_char_:
 	mov edx,1
 	lea ecx,[esp+0x4]
 	mov ebx,1

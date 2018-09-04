@@ -8,11 +8,11 @@ cp ../lib/ ./ -r
 
 exec_ocaml(){
 	#Ocamlで実行
-	garr=$1
+	arr=$1
 	output=$2
 	input=$3
-	len=${#garr[@]}
-	if [ ${#garr[@]} -le 1 ]; then
+	len=${#arr[@]}
+	if [ $len -le 1 ]; then
 		cat test_header.ml > tmp.ml
 		cat $1 >> tmp.ml
 		if [ -z $input ]; then 
@@ -22,29 +22,28 @@ exec_ocaml(){
 		fi
 	else
 		for i in `seq 0 $(($len-1))`; do
-			arr[$i]=${garr[$i]}
+			tarr[$i]=${arr[$i]}
 		done
-
+		
 		cat test_header.ml > tmp.ml
-		cat ${arr[$len-1]} >> tmp.ml
-		arr[$len-1]="tmp.ml"
-		echo "${arr[@]}"
+		cat ${tarr[$len-1]} >> tmp.ml
+		tarr[$len-1]="tmp.ml"
 		
 		for i in `seq 0 $(($len-1))`; do
-			arr[$i]=`basename ${arr[$i]} .ml`
+			tarr[$i]=`basename ${tarr[$i]} .ml`
 		done
-		for f in ${arr[@]}; do
+		for f in ${tarr[@]}; do
 			if [ -f $f.mli ]; then
 				ocamlc -c $f.mli
 			fi
 		done
-		for f in ${arr[@]}; do
+		for f in ${tarr[@]}; do
 			ocamlc -c $f.ml
 		done
 		for i in `seq 0 $(($len-1))`; do
-			arr[$i]=${arr[$i]}.cmo
+			tarr[$i]=${tarr[$i]}.cmo
 		done
-		ocamlc "${arr[@]}" -o ocamlout.out
+		ocamlc "${tarr[@]}" -o ocamlout.out
 		if [ -z $input ]; then
 			./ocamlout.out > $output
 		else
@@ -60,29 +59,12 @@ exec_x86(){
 	arr=$1
 	output=$2
 	input=$3
-	./main -d $1 -noinline -o o_x86.s > /dev/null
-	nasm o_x86.s -f elf32 -g -o out.o
-	gcc -m32 -nostdlib out.o -o x86.out
+	./main "${arr[@]}" -noinline -o x86.out -asi > /dev/null
 	if [ -z $input ]; then 
 		./x86.out > $output
 	else
 		./x86.out < $input > $output
-	fi	
-}
-
-hoge(){
-		dml=".ml"
-		dmli=".mli"
-		dcmo=".cmo"
-		cat test_header.ml > tmp.ml
-		cat $file$dml >> tmp.ml
-		ocamlc -c $input$dmli
-		ocamlc -c $input$dml
-		ocamlc -c tmp.ml
-		ocamlc -o ocaml.out $input$dcmo tmp.cmo
-		./ocaml.out > o_ocaml.txt
-		
-		exec_x86 $file$dml o_mincaml.txt
+	fi
 }
 
 cat test_order.txt | while read fs
@@ -99,8 +81,7 @@ do
 		break
 	fi
 	
-	
-	rm -f tmp.ml a.out o_tortesia.s o_x86.s o_tortesia2x86.s x86.out
+	rm -f tmp.ml a.out o_tortesia.s x86.out
 	echo "---------------" $fs "----------------"
 	for f in ${arr[@]}; do
 		echo "----------[" $f "]------------"
@@ -110,9 +91,9 @@ do
 	
 	rm -f o_ocaml.txt o_mincaml.txt
 	
-	
 	exec_ocaml $arr o_ocaml.txt $input
 	exec_x86 $arr o_mincaml.txt $input
+	
 	
 	#比較
 	if diff o_ocaml.txt o_mincaml.txt; then
@@ -122,9 +103,11 @@ do
 		echo "test failed"
 		break
 	fi
+	rm -f *.o
+	rm -f *.s
 	#break
 done
 
 
-rm -r lib
+#rm -r lib
 rm -f tmp.ml

@@ -3,7 +3,7 @@ let nolib = ref false
 let verbose = ref false
 let debugmode = ref false
 let noinline = ref false
-let output_filename = ref "out.s"
+let output_filename = ref "a.out"
 let nooptimization = ref false
 let asmsin_asmint = ref false
 let check_array_boundary = ref false
@@ -14,7 +14,7 @@ let all_stack = ref false
 let in_out_assembler = ref false
 
 
-let is_objectfile = ref false
+let output_assembler = ref false
 
 let argparse files = 
 	Arg.parse [
@@ -28,8 +28,8 @@ let argparse files =
 		("-asi",Arg.Set asmsin_asmint,"use x86 tirgonal and x86 print_int");
 		("-cab",Arg.Set check_array_boundary,"check boundary of array for x86");
 		
-		("-c",Arg.Set is_objectfile,"output .o file");
-		
+		("-s",Arg.Set output_assembler,"output .s file");
+				
 	] (fun fn -> files := (!files) @ [fn]) (Printf.sprintf "Usage: %s filename\n" Sys.argv.(0))
 
 let vprint f s = 

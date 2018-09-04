@@ -94,7 +94,16 @@ let texp2str ast =
 		String.concat "\n" (List.map (fun (d,s) -> (String.make (d*2) ' ') ^ s) ss) ^ "\n"
 
 
-let genv () = [ (*x86 *)
+let externs = ref []
+
+let genv () = (if !asmsin_asmint then [
+        ("print_int",TyFun([TyInt],TyTuple([])));
+
+        ("sin",TyFun([TyFloat],TyFloat));
+        ("cos",TyFun([TyFloat],TyFloat));
+        ("atan",TyFun([TyFloat],TyFloat));
+] else []) @ [ 
+(*x86 *)
 (* アセンブラで実装した*)
 	("fless",TyFun([TyFloat;TyFloat],TyInt));
 	("int_of_float",TyFun([TyFloat],TyInt));
@@ -120,9 +129,9 @@ let genv () = [ (*x86 *)
 
 (* れいず!! *)
 	("raise_match_failure",TyFun([TyTuple([])],TyTuple([])));
-]
+] @ (!externs)
 
-let global_funcs () = List.map fst (genv ())
+let get_imports () = genv ()
 
 let zip2 = List.map2 (fun a -> fun b -> (a,b))
 let zip3 vs ws = List.map2 (fun (a,b) -> fun c -> (a,b,c)) (zip2 vs ws)
@@ -663,7 +672,8 @@ Error: The type abbreviation a is cyclic
 *)
 
 
-let rec check_rec ast sv = 
+
+let check_ast ast sv = 
 	try (
 		(* 
 			f :: プログラム全体, 
@@ -687,24 +697,22 @@ let rec check_rec ast sv =
 					(na,0) :: uts
 				)
 			in
-			let rec update_by_open na = 
-				let specs = open2spec na in
-				(*
+			let rec update_by_open filena = 
+				let specs = open2spec filena in
 				List.fold_left (fun (f,env,venv,tyenv,uts) spec ->
 					match spec with
 					| SValtype(na,te) -> (
-							(f,
-								(na,eval_variant uts te) :: env
+							let rena = filena ^ "@" ^ na in
+							let t = eval_variant uts te in
+							externs := (rena,t) :: (!externs);
+							let td = (t,default_debug_data) in
+							(
+								(fun y -> f (TLet((na,td),(TVar((rena,td)),td),y),(snd y))),
+								(na,t) :: env
 							,venv,tyenv,uts)
 						)
 					| _ -> raise (Failure("Unimplemented"))
 				) (f,env,venv,tyenv,uts) specs
-				面倒なのでそのままつなげてしまう
-				TODO ダイヤモンド問題どうにかする
-				*)
-				
-				let hast = Source2ast.s2a (String.lowercase na ^ ".ml") in
-				check_rec hast (f,env,venv,tyenv,uts)
 			in
 			addglobalcs := [];
 			match ast with
@@ -744,7 +752,32 @@ let rec check_rec ast sv =
 				"Type Unify Failed:\n %s \n with type %s and %s" (Debug.debug_data2str deb) (type2str t1) (type2str t2)))
 
 
-let check ast = 
+
+let check_spec uts specs = 
+	let fn = !filename in
+	let ls = String.length fn in
+	let hn = (String.sub fn 0 (ls-3)) in
+	let prefix = (String.capitalize hn) ^ "@" in
+	
+	List.fold_left (fun exports spec ->
+		match spec with
+		| SValtype(na,te) -> (
+				(*TODO verify type*)
+				let rena = prefix ^ na in
+				let t = eval_variant uts te in 
+				(na,rena,t) :: exports
+			)
+		| _ -> raise (Failure("Unimplemented in check_spec"))
+	) [] specs
+
+let exports_list = ref []
+
+let get_exports () = !exports_list
+
+let global_funcs () = (get_exports ()) @ (List.map fst (get_imports ()))
+
+let check ast specs = 
+	externs := [];
 	let sv = (
 		(fun x -> x),
 		(genv ()),
@@ -752,8 +785,26 @@ let check ast =
 		(user_defined_type_env ()),
 		(defined_types ())
 	) in
-	let astzero = (TConst(CInt(0)),(TyInt,default_debug_data)) in
-	let tast,_,_,_,_ = check_rec ast sv in
-		tast astzero
+	let tast,_,_,_,_ = check_ast ast sv in
+	let exports = check_spec (defined_types ()) specs in
+	
+	exports_list := List.map (fun (_,rena,t) -> rena) exports;
+	
+	let te = TTuple(List.map (fun (_,rena,t) -> 
+		let td = (t,default_debug_data) in
+		TVar((rena,td)),td
+	) exports) in
+	let tt = TyTuple(List.map (fun (_,rena,t) -> t) exports) in
+	let base = (te,(tt,default_debug_data)) in
+	
+	let tf = List.fold_left (fun ast (na,rena,t) ->
+		let td = (t,default_debug_data) in
+		TLet(
+			(rena,td),
+			(TVar((na,td)),td),
+			ast
+		),td
+	) base exports in
+		(tast tf)
 
 
