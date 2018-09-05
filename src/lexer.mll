@@ -14,10 +14,13 @@ let bigalpha = ['A'-'Z']
 let ident = smallalpha (alpha | digit)* 
 let variant_ident = bigalpha (alpha | digit)* 
 
+let string_chars = (digit|alpha|' ')
+
 rule main = parse
 | "\n" { Lexing.new_line lexbuf; main lexbuf }
 | space+       { main lexbuf }
 | "(*"         { comment lexbuf }
+| '"' (string_chars* as str) '"' { Parser.STRING str }
 | "let"        { Parser.LET }
 | "rec"        { Parser.REC }
 | "in"         { Parser.IN }
@@ -70,12 +73,12 @@ let true = 1 とかがあるのでエラーになる。
 | digit+ as n  { Parser.INT (int_of_string n) }
 | ident  as id { Parser.ID id }
 | variant_ident as id { Parser.VARIANT_ID id }
-| eof
-	{ Parser.EOF }
+| eof          { Parser.EOF }
 | _            { failwith ("Unknown Token: " ^ Lexing.lexeme lexbuf)}
 
 and comment = parse
 | "\n" { Lexing.new_line lexbuf; comment lexbuf }
 | "*)"       { main lexbuf }
 | _          { comment lexbuf }
+
 

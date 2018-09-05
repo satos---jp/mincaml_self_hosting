@@ -127,7 +127,7 @@ let output_stub files =
 			else if hasext fn ".s" then changext fn ".s" ".ml"
 			else raise (Failure (Printf.sprintf "%s is not .ml nor .s file" fn))
 		) in
-		ts ^ "main"
+		(basename ts) ^ "main"
 	) files 
 	in
 	let asm = (
@@ -142,10 +142,12 @@ let output_stub files =
 		"section .bss\n" ^
 		"global_heap:\n" ^
 		"\tresb 1000\n" ^ 
+		"heap:\n" ^
+		"\tresb 10000\n" ^ 
 		"section .data\n" ^
 		"section .text\n" ^
 		"_start:\n" ^
-		"\tmov esi,global_heap\n"
+		"\tmov esi,heap\n"
 	) ^ (
 		String.concat "" (List.map (fun s -> 
 			"\tcall " ^ s ^ "\n"
@@ -173,8 +175,10 @@ let _ =
 		if !output_assembler then (
 			let _ = List.map compile_to_sfile !files in ()
 		) else (
+					
+			files := "lib/ml/pervasive.ml" :: !files;
 			output_stub !files;
-			files := !files @ ["lib/lib.s"; "lib/libio_linux.s"; "stub.s"];
+			files := !files @ ["lib/asm/lib.s"; "lib/asm/libio_linux.s"; "stub.s"];
 			
 			let ofs = List.map (fun fn -> 
 				let sfn = (

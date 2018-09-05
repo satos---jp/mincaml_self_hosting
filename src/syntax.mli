@@ -3,6 +3,7 @@ type variant_tag = string
 type const = 
 	| CInt of int
 	| CFloat of float
+	| CString of string
 
 val const2str : const -> string
 

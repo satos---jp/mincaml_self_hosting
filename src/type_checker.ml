@@ -12,6 +12,7 @@ type type_name = string
 type ty =
 	| TyInt
 	| TyFloat
+	| TyString
 	| TyNum  (* int も float もこれの部分型 *)
 	| TyVar of tyvar
 	| TyArr of ty
@@ -26,13 +27,14 @@ let tyvar2str v = Printf.sprintf "'a%d" v
 
 let rec type2str_with_pa t =
         match t with
-        | TyInt | TyFloat | TyVar _ | TyTuple _ | TyNum | TyUserDef _ -> type2str t
+        | TyInt | TyFloat | TyString | TyVar _ | TyTuple _ | TyNum | TyUserDef _ -> type2str t
         | TyFun _ | TyArr _ -> "(" ^ (type2str t) ^ ")"
 
 and type2str t =
 	match t with
 	| TyInt -> "int"
 	| TyFloat -> "float"
+	| TyString -> "string"
 	| TyNum -> "number"
 	| TyVar v -> tyvar2str v
 	| TyFun (t1, t2) -> (
@@ -96,14 +98,7 @@ let texp2str ast =
 
 let externs = ref []
 
-let genv () = (if !asmsin_asmint then [
-        ("print_int",TyFun([TyInt],TyTuple([])));
-
-        ("sin",TyFun([TyFloat],TyFloat));
-        ("cos",TyFun([TyFloat],TyFloat));
-        ("atan",TyFun([TyFloat],TyFloat));
-] else []) @ [ 
-(*x86 *)
+let genv () = [ (* x86 *)
 (* アセンブラで実装した*)
 	("fless",TyFun([TyFloat;TyFloat],TyInt));
 	("int_of_float",TyFun([TyFloat],TyInt));
@@ -295,6 +290,7 @@ let rec type_infer venv astdeb env =
 	match ast with
 	| EConst(CFloat x) -> (TConst(CFloat x),[],TyFloat)
 	| EConst(CInt x) -> (TConst(CInt x),[],TyInt)
+	| EConst(CString x) -> (TConst(CString x),[],TyString)
 	| EVar(x) -> (
 			try (
 				let tt = List.assoc x env in
@@ -464,7 +460,7 @@ let print_subs subs =
 
 let rec ty_var_appear t v =
         match t with
-        | TyInt | TyFloat | TyNum -> false
+        | TyInt | TyFloat | TyNum | TyString -> false
         | TyFun (t1s, t2) -> List.exists (fun x -> ty_var_appear x v) (t2 :: t1s)
         | TyVar x -> x = v
         | TyArr t -> (ty_var_appear t v)
@@ -472,7 +468,7 @@ let rec ty_var_appear t v =
 
 let rec ty_subst subs t = 
 	match t with
-	| TyInt | TyFloat | TyNum -> t
+	| TyInt | TyFloat | TyNum | TyString-> t
 	| TyVar(nb) -> (
 		try 
 			let tt = (List.assoc nb subs) in 
@@ -643,7 +639,8 @@ let variantenv () = [
 
 let user_defined_type_env () = [
 	("int",TyInt);
-	("float",TyFloat)
+	("float",TyFloat);
+	("unit",TyTuple([]))
 ]
 
 let defined_types () = [
@@ -702,7 +699,7 @@ let check_ast ast sv =
 				List.fold_left (fun (f,env,venv,tyenv,uts) spec ->
 					match spec with
 					| SValtype(na,te) -> (
-							let rena = filena ^ "@" ^ na in
+							let rena = (String.lowercase (basename filena)) ^ "@" ^ na in
 							let t = eval_variant uts te in
 							externs := (rena,t) :: (!externs);
 							let td = (t,default_debug_data) in
@@ -757,7 +754,7 @@ let check_spec uts specs =
 	let fn = !filename in
 	let ls = String.length fn in
 	let hn = (String.sub fn 0 (ls-3)) in
-	let prefix = (String.capitalize hn) ^ "@" in
+	let prefix = hn ^ "@" in
 	
 	List.fold_left (fun exports spec ->
 		match spec with

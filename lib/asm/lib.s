@@ -19,11 +19,83 @@ global read_int
 global read_float
 global raise_match_failure
 
-extern print_char
 extern print_char_err
 extern read_char
 
 section .data
+fless:
+	dd fless_p
+fless_p:
+	dd fless_
+int_of_float:
+	dd int_of_float_p
+int_of_float_p:
+	dd int_of_float_
+float_of_int:
+	dd float_of_int_p
+float_of_int_p:
+	dd float_of_int_
+fiszero:
+	dd fiszero_p
+fiszero_p:
+	dd fiszero_
+fispos:
+	dd fispos_p
+fispos_p:
+	dd fispos_
+fisneg:
+	dd fisneg_p
+fisneg_p:
+	dd fisneg_
+fabs:
+	dd fabs_p
+fabs_p:
+	dd fabs_
+floor:
+	dd floor_p
+floor_p:
+	dd floor_
+fsqr:
+	dd fsqr_p
+fsqr_p:
+	dd fsqr_
+fneg:
+	dd fneg_p
+fneg_p:
+	dd fneg_
+fhalf:
+	dd fhalf_p
+fhalf_p:
+	dd fhalf_
+sqrt:
+	dd sqrt_p
+sqrt_p:
+	dd sqrt_
+sin:
+	dd sin_p
+sin_p:
+	dd sin_
+cos:
+	dd cos_p
+cos_p:
+	dd cos_
+atan:
+	dd atan_p
+atan_p:
+	dd atan_
+read_int:
+	dd read_int_p
+read_int_p:
+	dd read_int_
+read_float:
+	dd read_float_p
+read_float_p:
+	dd read_float_
+raise_match_failure:
+	dd raise_match_failure_p
+raise_match_failure_p:
+	dd raise_match_failure_
+
 two:
 	dd 2.0
 half:
@@ -48,7 +120,7 @@ minusone:
 
 section .text
 
-float_of_int: ; int -> float
+float_of_int_: ; int -> float
 	fild dword [esp+0x4]
 	fstp dword [esp-0x4]
 	mov eax,[esp-0x4]
@@ -61,7 +133,7 @@ float_of_int: ; int -> float
 
 ; これ、OCamlと乖離させる。
 ; またOCamlに合わせ直す
-int_of_float: ; float -> int
+int_of_float_: ; float -> int
 	push ebp
 	mov ebp,esp
 	sub esp,0x4
@@ -69,13 +141,13 @@ int_of_float: ; float -> int
 	mov dword [ebp-0x4],eax
 	
 	push dword [ebp+0x8]
-	call fiszero
+	call fiszero_
 	add esp,0x4
 	test eax,eax
 	jne int_of_float_exact_zero
 	
 	push dword [ebp+0x8]
-	call fisneg
+	call fisneg_
 	add esp,0x4
 	test eax,eax
 	jne int_of_float_neg
@@ -100,8 +172,8 @@ int_of_float_exact_zero:
 	
 	add esp,0x4
 	pop ebp
-ret
-fless:
+	ret
+fless_:
 	xor eax,eax
 	fld dword [esp+0x8]
 	fld dword [esp+0x4]
@@ -112,7 +184,7 @@ fless:
 	and eax,1
 	ret
 
-fiszero:
+fiszero_:
 	xor eax,eax
 	fld dword [esp+0x4]
 	ftst
@@ -122,7 +194,7 @@ fiszero:
 	and eax,1
 	ret
 
-fisneg:
+fisneg_:
 	xor eax,eax
 	fld dword [esp+0x4]
 	ftst
@@ -132,7 +204,7 @@ fisneg:
 	and eax,1
 	ret
 
-fhalf:
+fhalf_:
 	fld dword [esp+0x4]
 	fld dword [half]
 	fmulp
@@ -140,7 +212,7 @@ fhalf:
 	mov eax,[esp-0x4]
 	ret	
 
-fispos:
+fispos_:
 	xor eax,eax
 	fld dword [esp+0x4]
 	ftst
@@ -155,14 +227,14 @@ fispos:
 	ret
 
 
-fneg:
+fneg_:
 	fld dword [esp+0x4]
 	fchs
 	fstp dword [esp-0x4]
 	mov eax,[esp-0x4]
 	ret
 
-fsqr:
+fsqr_:
 	fld dword [esp+0x4]
 	fld dword [esp+0x4]
 	fmulp
@@ -170,28 +242,28 @@ fsqr:
 	mov eax,[esp-0x4]
 	ret
 
-sqrt:
+sqrt_:
 	fld dword [esp+0x4]
 	fsqrt
 	fstp dword [esp-0x4]
 	mov eax,[esp-0x4]
 	ret
 
-cos:
+cos_:
 	fld dword [esp+0x4]
 	fcos
 	fstp dword [esp-0x4]
 	mov eax,[esp-0x4]
 	ret
 
-sin:
+sin_:
 	fld dword [esp+0x4]
 	fsin
 	fstp dword [esp-0x4]
 	mov eax,[esp-0x4]
 	ret
 
-atan:
+atan_:
 	fld dword [esp+0x4]
 	fld1
 	fpatan
@@ -199,7 +271,7 @@ atan:
 	mov eax,[esp-0x4]
 	ret
 
-fabs:
+fabs_:
 	fld dword [esp+0x4]
 	fabs
 	fstp dword [esp-0x4]
@@ -211,7 +283,7 @@ fabs:
 ; これもOcamlと乖離させる。
 ; OCamlに戻します
 
-floor:
+floor_:
 	push dword [esp+0x4]
 	call fisneg
 	add esp,4
@@ -302,7 +374,8 @@ loop:
 	mov ebp,esp
 	sub esp,60
 	push edi
-	call read_char
+	mov edx,[read_char]
+	call [edx]
 	mov dword [ebp-20],eax
 	add esp,0
 	pop edi
@@ -378,12 +451,13 @@ loop:
 	add esp,60
 	pop ebp
 	ret
-read_int:
+read_int_:
 	push ebp
 	mov ebp,esp
 	sub esp,60
 	push edi
-	call read_char
+	mov edx,[read_char]
+	call [edx]
 	mov dword [ebp-12],eax
 	add esp,0
 	pop edi
@@ -461,7 +535,7 @@ read_int:
 	jmp @virtual_label_1000000318
 @virtual_label_1000000317:
 	push edi
-	call read_int
+	call read_int_
 	mov dword [ebp-60],eax
 	add esp,0
 	pop edi
@@ -491,7 +565,8 @@ isnum:
 	ret
 
 get_until_num:
-	call read_char
+	mov edx,[read_char]
+	call [edx]
 	cmp eax,0x2d
 	je ok_get_until_num
 	cmp eax,0x2e
@@ -509,7 +584,7 @@ retry_get_until_num:
 	ret
 
 
-read_float:
+read_float_:
 	finit
 	sub esp,0x4
 	call get_until_num
@@ -517,7 +592,8 @@ read_float:
 	jne isplus
 ismunis:
 	fld dword [minusone]
-	call read_char
+	mov edx,[read_char]
+	call [edx]
 	jmp read_body_float
 isplus:
 	fld dword [one]
@@ -541,7 +617,8 @@ read_body_loop:
 	pop eax
 	faddp
 	; top += readc
-	call read_char
+	mov edx,[read_char]
+	call [edx]
 	jmp read_body_loop
 read_dot:
 	cmp eax,0x2e
@@ -550,7 +627,8 @@ read_dot:
 	push dword [one]
 	fld dword [zero]
 read_tenika_loop:
-	call read_char
+	mov edx,[read_char]
+	call [edx]
 	push eax
 	call isnum
 	mov ebx,eax
@@ -610,7 +688,7 @@ print_string_err_loop:
 	pop ebp
 	ret
 
-raise_match_failure:
+raise_match_failure_:
 	push estr
 	call print_string_err
 	add esp,4

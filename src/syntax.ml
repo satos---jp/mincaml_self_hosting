@@ -1,16 +1,18 @@
 open Debug
-open Type_checker
+
 
 type variant_tag = string
 
 type const = 
 	| CInt of int
 	| CFloat of float
+	| CString of string
 
 let const2str c = 
 	match c with
 	| CInt x -> Printf.sprintf "CInt %d" x
 	| CFloat x -> Printf.sprintf "CFloat %f" x
+	| CString x -> Printf.sprintf "CString \"%s\"" x
 
 type comptype = 
 	| CmpEq
@@ -154,6 +156,8 @@ let decl2str de =
 			)) tts)
 		)
 	| DOpen(na) -> [(d,"Open " ^ na)]
+	| DTypeRename (na,te) -> [(d,"DTypeRename " ^ na ^ " =" ^ " hogemitainayatu")]
+
 
 let decl_expr2str ast = 
 	match ast with

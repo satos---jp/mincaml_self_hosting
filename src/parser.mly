@@ -12,6 +12,7 @@
 %token <bool>   BOOL 
 %token <string> ID
 %token <float>  FLOAT
+%token <string> STRING
 %token LET IN				  
 %token PLUS TIMES MINUS DIV
 %token FPLUS FTIMES FMINUS FDIV
@@ -152,6 +153,8 @@ simple_expr:
 		{ debug (EConst(CInt $1)) }
 	| FLOAT
 		{ debug (EConst(CFloat $1)) }
+	| STRING
+		{ debug (EConst(CString $1)) }
 	| var
 		{ debug (EVar($1)) }
 	| simple_expr DOT LPAR expr RPAR

@@ -51,3 +51,6 @@ a.ml
 a.mli
 objd.txt
 tes.sh
+*.s
+!lib/asm/*.s
+syntax_modoki.ml

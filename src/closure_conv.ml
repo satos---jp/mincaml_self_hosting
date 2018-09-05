@@ -213,6 +213,8 @@ let rec remove_closure known istoplevel ast =
 		)
 
 let conv ast = 
+	globals := [];
+	globvars := [];
 	let ta = remove_closure [] true ast in (!globals,!globvars,ta)
 
 
