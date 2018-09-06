@@ -124,6 +124,8 @@ let genv () = [ (* x86 *)
 
 (* れいず!! *)
 	("raise_match_failure",TyFun([TyTuple([])],TyTuple([])));
+	
+	("print_string",TyFun([TyString],TyTuple([]))); (* とりまアセンブラで *)
 ] @ (!externs)
 
 let get_imports () = genv ()

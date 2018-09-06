@@ -17,7 +17,7 @@ let src2ast fname =
 	let ast = Parser.toplevel Lexer.main (Lexing.from_channel ic) in
 	if !filename = "pervasive.ml"
 		then ast 
-		else FDecl(DOpen("lib/pervasive")) ::  ast 
+		else FDecl(DOpen("lib/ml/pervasive")) ::  ast 
 
 let open2spec fname = 
 	let tfn = String.lowercase fname ^ ".mli" in

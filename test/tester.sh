@@ -109,5 +109,5 @@ do
 done
 
 
-#rm -r lib
+rm -r lib
 rm -f tmp.ml

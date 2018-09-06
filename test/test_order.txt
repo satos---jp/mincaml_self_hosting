@@ -17,6 +17,7 @@ variant.ml
 recursive_variant.ml
 check_list.ml
 open_test_include.ml open_test.ml
+print_string.ml
 
 
 ; floatまわりが合わないのでこれは一旦無視する

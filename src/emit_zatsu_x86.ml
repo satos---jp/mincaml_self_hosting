@@ -9,7 +9,7 @@ open Genint
 open Op
 (* とりあえず、雑にx86コードを生成する *)
 
-let constfs = ref ""
+let consts = ref ""
 
 let gen_const () = Printf.sprintf "@const_%d" (genint ())
 
@@ -192,7 +192,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	let print_errstr s = 
 		let ls = String.length s in
 		let tag = gen_const () in
-		constfs := (!constfs) ^ (Printf.sprintf "%s:\n\tdb \"%s\"\n" tag s);
+		consts := (!consts) ^ (Printf.sprintf "%s:\n\tdb \"%s\"\n" tag s);
 		(Printf.sprintf "\tmov eax,%d\n\tpush eax\n" ls) ^ 
 		(Printf.sprintf "\tmov eax,%s\n\tpush eax\n" tag) ^ 
 		"\tcall puts_err\n\tadd esp,8\n"
@@ -222,8 +222,13 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 			(Printf.sprintf "\tmov %s,%d\n" (na2s na) v) ^ "; " ^ (debug_data2simple d) ^ "\n"
 		| OpMovi((na,(t,d)),CFloat(v)) -> assert (t=TyFloat); (
 				let tag = gen_const () in
-					constfs := (!constfs) ^ (Printf.sprintf "%s:\n\tdd %f\n" tag v);
+					consts := (!consts) ^ (Printf.sprintf "%s:\n\tdd %f\n" tag v);
 					Printf.sprintf "\tmov eax,[%s]\n\tmov %s,eax\n" tag (na2s na)
+			)
+		| OpMovi((na,(t,d)),CString(v)) -> assert (t=TyString); (
+				let tag = gen_const () in
+					consts := (!consts) ^ (Printf.sprintf "%s:\n\tdd %d\n\tdb \"%s\"\n" tag (String.length v) v);
+					Printf.sprintf "\tmov eax,%s\n\tmov %s,eax\n" tag (na2s na)
 			)
 		| OpMov(((n1,(t1,d1)) as nrd),((n2,(t2,d2)) as nad)) -> (
 				if t1 <> t2 then raise (Failure (Printf.sprintf 
@@ -434,7 +439,7 @@ let vir2asm (funs,rd,globvars) externs exports =
 	) exports)) ^
 	
 	"section .data\n" ^
-	!constfs ^
+	!consts ^
 	"export_list:\n" ^
 	(String.concat "" (List.map (fun s -> 
 		(Printf.sprintf "%s:\n" s) ^

@@ -4,6 +4,7 @@ global print_char
 global read_char
 global print_char_err
 global puts_err
+global print_string
 
 section .data
 print_char:
@@ -26,6 +27,10 @@ puts_err:
 puts_err_p:
 	dd puts_err_
 
+print_string:
+	dd print_string_p
+print_string_p:
+	dd print_string_
 
 section .text
 
@@ -59,6 +64,17 @@ puts_err_:
 	mov edx,dword [esp+0x8]
 	mov ecx,dword [esp+0x4]
 	mov ebx,2
+	mov eax,4
+	int 0x80
+	ret
+
+
+print_string_:
+	mov eax,dword [esp+0x4]
+	mov edx,dword [eax]
+	mov ecx,eax
+	add ecx,4
+	mov ebx,1
 	mov eax,4
 	int 0x80
 	ret
