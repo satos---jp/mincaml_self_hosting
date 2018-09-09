@@ -10,7 +10,7 @@ SOURCES = debug.ml main_option.ml linux_win_diff.ml genint.ml \
 	cfg.ml virtual.ml \
 	emit_zatsu_x86.ml \
 	main.ml 
-RESULT = ../main
+RESULT = ../../main
 
 YFLAGS = -v
 OCAMLFLAGS = 

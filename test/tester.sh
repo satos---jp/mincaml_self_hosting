@@ -1,4 +1,4 @@
-if ! (cd ../src; make > /dev/null); then
+if ! (cd ../src/compiler; make > /dev/null); then
 	echo "make failed"
 	exit 1
 fi

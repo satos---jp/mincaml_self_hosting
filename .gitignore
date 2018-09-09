@@ -54,3 +54,7 @@ tes.sh
 *.s
 !lib/asm/*.s
 syntax_modoki.ml
+functional_week5_ext0/*
+my_yacc
+my_lex
+lexer_sample.mll
