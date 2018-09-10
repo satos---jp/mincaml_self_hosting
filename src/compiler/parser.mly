@@ -26,11 +26,12 @@
 %token SEMISEMI TYPE BAR OF MATCH WITH
 %token <string> VARIANT_ID
 %token CONS NIL
-%token VAL COLON OPEN
+%token VAL COLON OPEN QUOTE
 
 /* 下のほうが強い */
 /* left とか right とかは演算子のみに効果があるっぽいな？？？ */
 %left IN
+%nonassoc fun_assoc
 %right SEMI
 %nonassoc LET
 %right RARROW
@@ -48,8 +49,12 @@
 %left app_assoc  /* appの結合の強さはこれくらいで、の指示 */
 %nonassoc variant_app_assoc
 %nonassoc NOT
+/*
 %left DOT
+*/
+%nonassoc array_assoc
 %nonassoc unary_minus
+%nonassoc path_name_prec
 
 
 %start toplevel 
@@ -108,10 +113,10 @@ variant_defs:
 
 
 constr_args:
-	| type_expr
+	| tyapp_expr
 		%prec variant_def_tuple_type_exprs_assoc
 		{ [$1] }
-	| constr_args TIMES type_expr
+	| constr_args TIMES tyapp_expr
 		%prec variant_def_tuple_type_exprs_assoc
 		{ $1 @ [$3] }
 ;
@@ -125,23 +130,64 @@ variant_name:
 	| VARIANT_ID { $1 }
 ;
 
-tuple_type_exprs:
-	| tuple_type_exprs TIMES type_expr 
-		%prec tuple_assoc
-		{ $1 @ [$3] }
-	| type_expr TIMES type_expr	
-		%prec tuple_assoc    
-		{ [$1; $3] }
+/*
+	int list * int list -> int list は
+	((int list) * (int list)) -> int list
+	みたいになる。
+	
+	tyfun_expr
+	tytuple_expr
+	tyapp_expr
+	tybase_expr
+	
+	で。
+*/
+
+tybase_expr:
+ 	| var                         { ETVar($1) }
+ 	| QUOTE var                   { ETTyParam($2) }
+	| LPAR type_expr RPAR { $2 }
 ;
 
+
+/*
+reduce/reduce は
+(int) list のとられかたについて。
+*/
+
+tyarg_expr:
+	| tybase_expr            { [$1] }
+	| tyarg_expr COMMA tybase_expr { $1 @ [$3] }
+
+tyapp_expr:
+	| tybase_expr        { $1 }
+	| tybase_expr var { ETTyApp([$1],$2) }
+	| LPAR tyarg_expr RPAR var { ETTyApp($2,$4) }
+
+tytuple_comma_expr:
+	| tytuple_comma_expr TIMES tyapp_expr 	{ $1 @ [$3] }
+	| tyapp_expr TIMES tyapp_expr	    { [$1; $3] }
+;
+
+tytuple_expr:
+	| tyapp_expr        { $1 }
+	| tytuple_comma_expr { ETTuple($1) }
+
+/* 部分的用できないので、ここがクリティカルに効いてきてしまう */
+tyfun_args:
+	| tytuple_expr { [$1] }
+	| tyfun_args RARROW tytuple_expr { $1 @ [$3] }
+;
+
+tyfun_expr:
+	| tytuple_expr { $1 }
+	| tyfun_args RARROW tytuple_expr { ETTyFun($1,$3) }
+
 type_expr:
- 	| var                         { ETVar($1) }
-	| tuple_type_exprs
-		%prec tuple_assoc
-		{ ETTuple($1) }
-	| type_expr RARROW type_expr  { ETTyFun($1,$3) }
-	| LPAR type_expr RPAR { $2 }
-	
+	| tyfun_expr 
+		{ $1 }
+
+
 /* simple_expr のみが、関数適用に使える。 */
 
 simple_expr:
@@ -158,6 +204,7 @@ simple_expr:
 	| var
 		{ debug (EVar($1)) }
 	| simple_expr DOT LPAR expr RPAR
+		%prec array_assoc
 		{ debug (EOp(OArrRead,[$1;$4])) }
 	| variant_name
 		{ debug (EVariant($1,[])) }
@@ -258,6 +305,7 @@ Error: This expression has type float but an expression was expected of type
 		%prec arrow_assoc
 		{ debug (EOp(OArrWrite,[$1;$4;$7])) }  
 	| FUN rec_vars RARROW expr
+		%prec fun_assoc
 		{ let fn = gen_fun_name () in
 			debug (ELetRec(fn,$2,$4,debug (EVar(fn)))) }
 	| MATCH expr WITH cases
@@ -383,4 +431,8 @@ rec_vars:
 
 var:
   | ID { $1 }
+  | variant_name DOT ID 
+  	%prec path_name_prec
+  	{ $1 ^ "@" ^ $3 (* とりあえずこんな処理で(capitalizeされてるので) *) } 
 ;
+

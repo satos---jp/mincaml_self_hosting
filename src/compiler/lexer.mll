@@ -69,6 +69,7 @@ let true = 1 とかがあるのでエラーになる。
 | "val"        { Parser.VAL }
 | ":"          { Parser.COLON }
 | "open"       { Parser.OPEN }
+| "'"          { Parser.QUOTE }
 | digit+ "." digit*(['E''e']['+''-']?digit+)? as f { Parser.FLOAT(float_of_string f) }
 | digit+ as n  { Parser.INT (int_of_string n) }
 | ident  as id { Parser.ID id }

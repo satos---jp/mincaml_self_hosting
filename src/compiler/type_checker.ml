@@ -100,12 +100,26 @@ let externs = ref []
 
 let genv () = [ (* x86 *)
 (* アセンブラで実装した*)
-	("fless",TyFun([TyFloat;TyFloat],TyInt));
 	("int_of_float",TyFun([TyFloat],TyInt));
 	("float_of_int",TyFun([TyInt],TyFloat));
 	("print_char",TyFun([TyInt],TyTuple([])));
 	("print_char_err",TyFun([TyInt],TyTuple([])));
 	("read_char",TyFun([TyTuple([])],TyInt));
+
+(* それぞれ、専用の入力命令があるため、アセンブラにした *)
+	("read_int",TyFun([TyTuple([])],TyInt));
+	("read_float",TyFun([TyTuple([])],TyFloat));
+
+(* れいず!! *)
+	("raise_match_failure",TyFun([TyTuple([])],TyTuple([])));
+	
+	("print_string",TyFun([TyString],TyTuple([]))); (* とりまアセンブラで *)
+] @ (!externs)
+
+
+(*
+float系はいったんよける
+	("fless",TyFun([TyFloat;TyFloat],TyInt));
 	("fiszero",TyFun([TyFloat],TyInt));
 	("fispos",TyFun([TyFloat],TyInt));
 	("fisneg",TyFun([TyFloat],TyInt));
@@ -118,16 +132,8 @@ let genv () = [ (* x86 *)
 	("sin",TyFun([TyFloat],TyFloat));
 	("cos",TyFun([TyFloat],TyFloat));
 	("atan",TyFun([TyFloat],TyFloat));
-(* それぞれ、専用の入力命令があるため、アセンブラにした *)
-	("read_int",TyFun([TyTuple([])],TyInt));
-	("read_float",TyFun([TyTuple([])],TyFloat));
-
-(* れいず!! *)
-	("raise_match_failure",TyFun([TyTuple([])],TyTuple([])));
+*)
 	
-	("print_string",TyFun([TyString],TyTuple([]))); (* とりまアセンブラで *)
-] @ (!externs)
-
 let get_imports () = genv ()
 
 let zip2 = List.map2 (fun a -> fun b -> (a,b))
@@ -650,19 +656,36 @@ let defined_types () = [
 ] @ List.map (fun (t,_) -> (t,0)) (user_defined_type_env ())
 
 
+(* 型パラメータ一はとりあえず新たな変数にしておく *)
+(* TODO 型パラメータ一付きのヴァリアントが定義できるようにする *)
 
-let rec eval_variant uts te = 
-	let f = eval_variant uts in
-	match te with
-	| ETInt -> TyInt
-	| ETFloat -> TyFloat
-	| ETVar na -> (
-			(* TODO このへんガバ *)
-			if List.assoc na uts = 0 then TyUserDef(na,[])
-				else raise (Failure(Printf.sprintf "undefined type name %s" na))
+let eval_variant uts te = 
+	let cs = ref [] in
+	let na2t na = 
+		try List.assoc na !cs
+		with | Not_found -> (
+			let t = gentype () in
+			cs := (na,t) :: !cs;
+			t
 		)
-	| ETTuple ts -> TyTuple(List.map f ts)
-	| ETTyFun(t1,t2) -> TyFun([f t1],f t2)
+	in
+	let rec eval_variant_ uts te = 
+		let f = eval_variant_ uts in
+		match te with
+		| ETInt -> TyInt
+		| ETFloat -> TyFloat
+		| ETVar na -> (
+				(* TODO このへんガバ *)
+				if List.assoc na uts = 0 then TyUserDef(na,[])
+					else raise (Failure(Printf.sprintf "undefined type name %s" na))
+			)
+		| ETTyParam na -> na2t na
+		| ETTuple ts -> TyTuple(List.map f ts)
+		| ETTyFun(t1,t2) -> TyFun(List.map f t1,f t2)
+		(* TODO ここ数があってるかチェックする *)
+		| ETTyApp(ts,constr) -> TyUserDef(constr,(List.map f ts))
+	in
+		eval_variant_ uts te
 
 (* 型定義に無限ループは存在しないはず 
 # type a = b and b = a;;
@@ -701,14 +724,22 @@ let check_ast ast sv =
 				List.fold_left (fun (f,env,venv,tyenv,uts) spec ->
 					match spec with
 					| SValtype(na,te) -> (
-							let rena = (String.lowercase (basename filena)) ^ "@" ^ na in
+							let rena = (String.capitalize (basename filena)) ^ "@" ^ na in
 							let t = eval_variant uts te in
 							externs := (rena,t) :: (!externs);
 							let td = (t,default_debug_data) in
-							(
-								(fun y -> f (TLet((na,td),(TVar((rena,td)),td),y),(snd y))),
-								(na,t) :: env
-							,venv,tyenv,uts)
+							
+							(* TODO さすがにもっとかっこよく、正しく *)
+							if filena = "lib/ml/list" then
+								(
+									f,
+									(rena,t) :: (na,t) :: env
+								,venv,tyenv,uts)
+							else
+								(
+									(fun y -> f (TLet((na,td),(TVar((rena,td)),td),y),(snd y))),
+									(na,t) :: env
+								,venv,tyenv,uts)
 						)
 					| _ -> raise (Failure("Unimplemented"))
 				) (f,env,venv,tyenv,uts) specs
@@ -729,6 +760,7 @@ let check_ast ast sv =
 					match de with
 					| DLet(na,e) -> (
 							let tast,tc,rt,_ = type_infer venv e env in
+							print_string (Printf.sprintf "FDecl %s\n" na);
 							print_string (texp2str tast);
 							let subs = unify tyenv (tc @ !addglobalcs) in
 							let rast = ast_subst subs tast in
@@ -756,7 +788,7 @@ let check_spec uts specs =
 	let fn = !filename in
 	let ls = String.length fn in
 	let hn = (String.sub fn 0 (ls-3)) in
-	let prefix = hn ^ "@" in
+	let prefix = (String.capitalize hn) ^ "@" in
 	
 	List.fold_left (fun exports spec ->
 		match spec with

@@ -51,9 +51,12 @@ and expr_base =
 type type_expr = 
 	| ETInt
 	| ETFloat
-	| ETVar     of name
+	| ETVar     of name (* ふつうに、 int とか list とか *)
+	| ETTyParam  of name (* 'a とかの、型多相のためのやつ *)
 	| ETTuple   of type_expr list
-	| ETTyFun    of type_expr * type_expr
+	| ETTyFun   of (type_expr list) * type_expr (* 部分適用できないのでクリティカル *)
+	| ETTyApp   of (type_expr list) * name
+
 
 type decl = 
   | DLet        of name * expr
