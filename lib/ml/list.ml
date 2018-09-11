@@ -11,3 +11,8 @@ let rec iter f v =
 		)
 	| [] -> ()
 
+let rec append v w = 
+	match v with
+	| x :: xs -> x :: (append xs w)
+	| [] -> w
+

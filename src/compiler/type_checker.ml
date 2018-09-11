@@ -98,7 +98,7 @@ let texp2str ast =
 
 let externs = ref []
 
-let genv () = [ (* x86 *)
+let genv () = [ (* lib.s *)
 (* アセンブラで実装した*)
 	("int_of_float",TyFun([TyFloat],TyInt));
 	("float_of_int",TyFun([TyInt],TyFloat));
@@ -114,6 +114,8 @@ let genv () = [ (* x86 *)
 	("raise_match_failure",TyFun([TyTuple([])],TyTuple([])));
 	
 	("print_string",TyFun([TyString],TyTuple([]))); (* とりまアセンブラで *)
+] @ [ (* lib_string.s *)
+	("String@@",TyFun([TyString;TyString],TyString));
 ] @ (!externs)
 
 

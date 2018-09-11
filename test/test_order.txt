@@ -19,6 +19,8 @@ check_list.ml
 open_test_include.ml open_test.ml
 print_string.ml
 list_check.ml
+string_check.ml
+
 
 ; floatまわりが合わないのでこれは一旦無視する
 ftoi_itof.ml

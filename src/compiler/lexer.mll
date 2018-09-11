@@ -65,11 +65,14 @@ let true = 1 とかがあるのでエラーになる。
 | "with"       { Parser.WITH }
 | "of"         { Parser.OF }
 | "::"         { Parser.CONS }
-| "[]"         { Parser.NIL }
 | "val"        { Parser.VAL }
 | ":"          { Parser.COLON }
 | "open"       { Parser.OPEN }
 | "'"          { Parser.QUOTE }
+| "["          { Parser.LBRACKET }
+| "]"          { Parser.RBRACKET }
+| "@"          { Parser.ATMARK }
+| "^"          { Parser.CARET }
 | digit+ "." digit*(['E''e']['+''-']?digit+)? as f { Parser.FLOAT(float_of_string f) }
 | digit+ as n  { Parser.INT (int_of_string n) }
 | ident  as id { Parser.ID id }

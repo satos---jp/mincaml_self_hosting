@@ -25,9 +25,10 @@
 %token DOT COMMA SEMI EOF
 %token SEMISEMI TYPE BAR OF MATCH WITH
 %token <string> VARIANT_ID
-%token CONS NIL
+%token CONS LBRACKET RBRACKET
 %token VAL COLON OPEN QUOTE
-
+%token ATMARK CARET
+ 
 /* 下のほうが強い */
 /* left とか right とかは演算子のみに効果があるっぽいな？？？ */
 %left IN
@@ -37,14 +38,16 @@
 %right RARROW
 %right if_assoc
 %right arrow_assoc
+%nonassoc list_semi_assoc
 %nonassoc tuple_assoc
 %nonassoc variant_tuple_assoc
 %nonassoc variant_apply_pattern
 %left COMMA
 %left EQ LT LEQ GT GEQ NEQ BAR
+%right ATMARK CARET
 %right CONS
 %left PLUS MINUS FPLUS FMINUS
-%left TIMES DIV FTIMES FDIV
+%left TIMES DIV FTIMES FDIV 
 %nonassoc variant_def_tuple_type_exprs_assoc /* TIMESより強くないといけない */
 %left app_assoc  /* appの結合の強さはこれくらいで、の指示 */
 %nonassoc variant_app_assoc
@@ -314,11 +317,27 @@ Error: This expression has type float but an expression was expected of type
 		{ debug $1 }
 	| expr CONS expr
 		{ debug (EVariant("@Cons",[$1;$3])) }
-	| NIL 
+	| LBRACKET RBRACKET 
 		{ debug (EVariant("@Nil",[])) }
+	| expr ATMARK expr
+		{ debug (EApp(debug (EVar("List@append")),[$1;$3])) }
+	| expr CARET expr
+		{ debug (EApp(debug (EVar("String@@")),[$1;$3])) }
+	| LBRACKET list_expr RBRACKET 
+		{ List.fold_left (fun r x -> debug (EVariant("@Cons",[x;r]))) (debug (EVariant("@Nil",[]))) $2 }
 	| error
 		{ failwith ("parse failure at " ^ debug_data2str (get_debug_data ())) }
 ;
+
+list_expr:
+	| expr 
+		%prec list_semi_assoc
+		{ [$1] }
+	| list_expr SEMI expr 
+		%prec list_semi_assoc
+		{ $3 :: $1 }
+;
+
 
 
 /*
@@ -404,7 +423,7 @@ pattern:
 		%prec tuple_assoc
 		{ PTuple($1) }
 	| pattern CONS pattern { PVariantApp("@Cons",PTuple([$1;$3])) }
-	| NIL { PVariant("@Nil") }
+	| LBRACKET RBRACKET { PVariant("@Nil") }
 ;
 
 tuple_exprs:
