@@ -99,23 +99,23 @@ let texp2str ast =
 let externs = ref []
 
 let genv () = [ (* lib.s *)
-(* アセンブラで実装した*)
+
 	("int_of_float",TyFun([TyFloat],TyInt));
 	("float_of_int",TyFun([TyInt],TyFloat));
+	(* れいず!! *)
+	("raise_match_failure",TyFun([TyTuple([])],TyTuple([])));
+
+] @ [ (* lib_string.s *)
+
+	("String@@",TyFun([TyString;TyString],TyString));
+
+] @ [ (* libio_linux.s *)
+
 	("print_char",TyFun([TyInt],TyTuple([])));
 	("print_char_err",TyFun([TyInt],TyTuple([])));
 	("read_char",TyFun([TyTuple([])],TyInt));
-
-(* それぞれ、専用の入力命令があるため、アセンブラにした *)
-	("read_int",TyFun([TyTuple([])],TyInt));
-	("read_float",TyFun([TyTuple([])],TyFloat));
-
-(* れいず!! *)
-	("raise_match_failure",TyFun([TyTuple([])],TyTuple([])));
-	
 	("print_string",TyFun([TyString],TyTuple([]))); (* とりまアセンブラで *)
-] @ [ (* lib_string.s *)
-	("String@@",TyFun([TyString;TyString],TyString));
+
 ] @ (!externs)
 
 
@@ -321,8 +321,12 @@ let rec type_infer venv astdeb env =
 			| Oadd | Osub | Omul | Odiv -> (fun () -> ([TyInt;TyInt],TyInt))
 			| Ofadd | Ofsub | Ofmul | Ofdiv -> (fun () -> ([TyFloat;TyFloat],TyFloat))
 			
+			(* 値をboxingすることにより、 stringも同値性が比較できるようにする(adhocok多相) *)
+			(* 比較不能な奴(ex.関数) は、実行時に(!!)エラーが出るようにする *)
+			| Oeq | Oneq -> (fun () -> let x = gentype () in ([x;x],TyInt))
+			
 			(* 全て、float同士、でもいけるようにする(多相性) *)
-			| Oeq | Oneq | Olt | Oleq | Ogt | Ogeq -> (
+			| Olt | Oleq | Ogt | Ogeq -> (
 				(fun () -> let x = gentype () in  
 					addglobalcs := [(x,TyNum,deb)] @ !addglobalcs;
 					([x;x],TyInt))

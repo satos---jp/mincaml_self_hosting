@@ -337,9 +337,10 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 					) 
 				) else (
 					(* 多相性のため。もっと型チェックを入れてもいいかもしれん *)
+					let isf = ((fst (snd nad)) = TyFloat) in
+					let isi = ((fst (snd nad)) = TyInt) in
 					match opr with 
-					| Oeq | Oneq | Olt | Oleq | Ogt | Ogeq -> (
-						let isf = ((fst (snd nad)) = TyFloat) in
+					| Oeq | Oneq | Olt | Oleq | Ogt | Ogeq when (isi || isf) -> (
 						(if isf then fcmpopr2s else biopr2s) nrd nad nbd (
 							"\txor ecx,ecx\n" ^
 							(if isf then "\tfcomip\n" else "\tcmp eax,ebx\n") ^ 
@@ -365,7 +366,10 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 							 (if isf then "\tpush eax\n\tfstp dword [esp]\n\tpop eax\n\tfcomip\n" else "") ^
 							 "\tmov eax,ecx\n"
 						)
-					) 
+					)
+					| Oeq | Oneq -> (
+							raise (Failure (Printf.sprintf "TODO"))
+						)
 					| _ -> (
 						biopr2s nrd nad nbd ( 
 							match opr with
