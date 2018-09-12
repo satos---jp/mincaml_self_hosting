@@ -55,7 +55,15 @@ set_tag_int:
 
 unset_tag_int:
 	mov eax,[esp+0x4]
-	and eax,0x8fffffff
+	mov edx,0x80000000
+	and edx,eax
+	shr edx,1
+	xor eax,edx
+	xor eax,0x40000000
+	shr edx,1
+	xor eax,edx
+	shr edx,1
+	xor eax,edx
 	ret
 
 set_tag_float:

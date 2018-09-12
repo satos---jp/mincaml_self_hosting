@@ -38,7 +38,7 @@ let genlabel () = Printf.sprintf "@emit_label_%d" (genint ())
 (関数は 0x08049000 にたいてい配置されるので)
 なので、 int, float, string, tuple に関しては、そこにデータを載せる。
 
-floatは載せられんやんけ... -> 下3bitshiftして、精度の下いくらかを用いる!!とよさそう。
+floatは載せられんやんけ... -> 下4bitshiftして、精度の下いくらかを用いる!!とよさそう。
 -> intは負だと全1なのでだめですね...? -> 下1を使う。
 int,float :: x100
 float実際 :: ......... 100
@@ -195,8 +195,18 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 			"; " ^ (nd2ds nad) ^ " ::<= " ^ (nd2ds nbd) ^ "\n"
 	in
 	
+	(* 11.. なら 0011 をかける *)
+	(* 01.. なら 0100 をかける *)
 	let untagi s = 
-		(Printf.sprintf "\tand %s,0x8fffffff\n" s)
+		"\tmov edx,0x80000000\n" ^
+		(Printf.sprintf "\tand edx,%s\n" s) ^
+		"\tshr edx,1\n" ^
+		(Printf.sprintf "\txor %s,edx\n" s) ^
+		(Printf.sprintf "\txor %s,0x40000000\n" s) ^
+		"\tshr edx,1\n" ^
+		(Printf.sprintf "\txor %s,edx\n" s) ^
+		"\tshr edx,1\n" ^
+		(Printf.sprintf "\txor %s,edx\n" s)
 	in
 	let tagi s = 
 		(Printf.sprintf "\tand %s,0x8fffffff\n" s) ^
@@ -205,13 +215,12 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	let untagi_tor ((_,(t,_)) as na) s = 
 		(Printf.sprintf "\tmov %s,%s\n" s (nd2ps na)) ^
 		(if t = TyInt then
-			(Printf.sprintf "\tand %s,0x8fffffff\n" s)
+			(untagi s)
 		else "")
 	in
 	let tagi_frr ((_,(t,_)) as na) s = 
 		(if t = TyInt then
-			(Printf.sprintf "\tand %s,0x8fffffff\n" s) ^
-			(Printf.sprintf "\tor  %s,0x40000000\n" s)
+			(tagi s)
 		else "") ^
 		(Printf.sprintf "\tmov %s,%s\n" (nd2ps na) s)
 	in

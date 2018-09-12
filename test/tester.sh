@@ -103,6 +103,13 @@ do
 		echo "test failed"
 		break
 	fi
+	rm -f ocamlout.out
+	if rm x86.out; then
+		:
+	else
+		echo "maybe compile failed"
+		break
+	fi
 	rm -f *.o
 	rm -f *.s
 	#break
