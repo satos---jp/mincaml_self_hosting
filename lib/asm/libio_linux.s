@@ -50,6 +50,7 @@ read_char_:
 	int 0x80
 	mov eax,[esp-0x4]
 	and eax,0xff
+	or eax,0x40000000
 	ret
 
 print_char_err_:

@@ -651,11 +651,13 @@ let variantenv () = [
 	("@Cons",(fun x -> let t = gentype x in (1,TyUserDef("list",[t]),[t;TyUserDef("list",[t])])))
 ]
 
-let user_defined_type_env () = [
+let user_defined_types = ref [
 	("int",TyInt);
 	("float",TyFloat);
 	("unit",TyTuple([]))
 ]
+
+let user_defined_type_env () = !user_defined_types
 
 let defined_types () = [
 	("list",1)
@@ -665,7 +667,7 @@ let defined_types () = [
 (* 型パラメータ一はとりあえず新たな変数にしておく *)
 (* TODO 型パラメータ一付きのヴァリアントが定義できるようにする *)
 
-let eval_variant uts te = 
+let eval_variant udtenv uts te = 
 	let cs = ref [] in
 	let na2t na = 
 		try List.assoc na !cs
@@ -675,15 +677,22 @@ let eval_variant uts te =
 			t
 		)
 	in
-	let rec eval_variant_ uts te = 
-		let f = eval_variant_ uts in
+	let rec eval_variant_ udtenv te = 
+		let f = eval_variant_ udtenv in
 		match te with
 		| ETInt -> TyInt
 		| ETFloat -> TyFloat
 		| ETVar na -> (
 				(* TODO このへんガバ *)
-				if List.assoc na uts = 0 then TyUserDef(na,[])
-					else raise (Failure(Printf.sprintf "undefined type name %s" na))
+				(* 実行時間はアレだが、ここで展開しないとemit時にintを展開することになる *)
+				try 
+					List.assoc na udtenv
+				with 
+					| Not_found -> 
+				try 
+					let _ = List.assoc na uts in TyUserDef(na,[])
+				with
+					| Not_found -> raise (Failure(Printf.sprintf "undefined type name %s" na))
 			)
 		| ETTyParam na -> na2t na
 		| ETTuple ts -> TyTuple(List.map f ts)
@@ -691,7 +700,7 @@ let eval_variant uts te =
 		(* TODO ここ数があってるかチェックする *)
 		| ETTyApp(ts,constr) -> TyUserDef(constr,(List.map f ts))
 	in
-		eval_variant_ uts te
+		eval_variant_ udtenv te
 
 (* 型定義に無限ループは存在しないはず 
 # type a = b and b = a;;
@@ -712,8 +721,8 @@ let check_ast ast sv =
 		*)
 		
 		List.fold_left (fun (f,env,venv,tyenv,uts) ast ->
-			let update_by_variant na ts = 
-				let tts = List.map (fun (tg,te) -> (tg,List.map (fun x -> eval_variant ((na,0) :: uts) x) te)) ts in
+			let update_by_variant na ts =                                                  (* TODO ここ若干ガバ *)
+				let tts = List.map (fun (tg,te) -> (tg,List.map (fun x -> eval_variant tyenv ((na,0) :: uts) x) te)) ts in
 				let ttts = List.mapi (fun i (tg,tes) -> 
 					(tg,(fun _ -> (i,TyUserDef(na,[]),tes)))
 				) tts
@@ -731,7 +740,7 @@ let check_ast ast sv =
 					match spec with
 					| SValtype(na,te) -> (
 							let rena = (String.capitalize (basename filena)) ^ "@" ^ na in
-							let t = eval_variant uts te in
+							let t = eval_variant tyenv uts te in
 							externs := (rena,t) :: (!externs);
 							let td = (t,default_debug_data) in
 							
@@ -790,7 +799,7 @@ let check_ast ast sv =
 
 
 
-let check_spec uts specs = 
+let check_spec tyenv uts specs = 
 	let fn = !filename in
 	let ls = String.length fn in
 	let hn = (String.sub fn 0 (ls-3)) in
@@ -801,7 +810,7 @@ let check_spec uts specs =
 		| SValtype(na,te) -> (
 				(*TODO verify type*)
 				let rena = prefix ^ na in
-				let t = eval_variant uts te in 
+				let t = eval_variant tyenv uts te in 
 				(na,rena,t) :: exports
 			)
 		| _ -> raise (Failure("Unimplemented in check_spec"))
@@ -823,7 +832,7 @@ let check ast specs =
 		(defined_types ())
 	) in
 	let tast,_,_,_,_ = check_ast ast sv in
-	let exports = check_spec (defined_types ()) specs in
+	let exports = check_spec (user_defined_type_env ()) (defined_types ()) specs in
 	
 	exports_list := List.map (fun (_,rena,t) -> rena) exports;
 	

@@ -45,10 +45,46 @@ minusone:
 
 section .text
 
+;tag系のやつで使うことになる
+
+set_tag_int:
+	mov eax,[esp+0x4]
+	and eax,0x8fffffff
+	or  eax,0x40000000
+	ret
+
+unset_tag_int:
+	mov eax,[esp+0x4]
+	and eax,0x8fffffff
+	ret
+
+set_tag_float:
+	mov eax,[esp+0x4]
+	ror eax,4
+	and eax,0x8fffffff
+	or  eax,0x40000000
+	ret
+
+unset_tag_float:
+	mov eax,[esp+0x4]
+	and eax,0x8fffffff
+	rol eax,4
+	ret
+
 float_of_int_: ; int -> float
+	mov eax,dword [esp+0x4]
+	push eax
+	call unset_tag_int
+	add esp,4
+	mov dword [esp+4], eax
+	
 	fild dword [esp+0x4]
 	fstp dword [esp-0x4]
 	mov eax,[esp-0x4]
+
+	push eax
+	call set_tag_float
+	add esp,4
 	ret
 
 
@@ -63,6 +99,11 @@ int_of_float_: ; float -> int
 	mov ebp,esp
 	sub esp,0x4
 	mov eax,dword [ebp+0x8]
+	
+	push eax
+	call unset_tag_float
+	add esp,0x4
+
 	mov dword [ebp-0x4],eax
 	
 	push dword [ebp+0x8]
@@ -94,6 +135,10 @@ int_of_float_exact_zero:
 	fld dword [ebp-0x4]
 	fistp dword [esp-0x4]
 	mov eax,[esp-0x4]
+	
+	push eax
+	call set_tag_int
+	add esp,0x4
 	
 	add esp,0x4
 	pop ebp

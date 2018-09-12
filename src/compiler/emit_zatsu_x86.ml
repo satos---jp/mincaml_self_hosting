@@ -15,6 +15,36 @@ let gen_const () = Printf.sprintf "@const_%d" (genint ())
 
 let genlabel () = Printf.sprintf "@emit_label_%d" (genint ())
 
+(*
+型多相が問題になるのは、Equalityの比較の際。
+データ型として、type_checker.mli に依ると
+1. int
+2. float
+3. string
+4. Num
+5. var
+6. arr
+7. fun
+8. tuple
+9. UserDef
+
+の9種類がある。
+5. 6. 7. は実行時エラーでよさそう。
+9. は実際はtupleになっている
+1.2.3.4. は型によって比較方法が違う
+8.9. は再帰的に比較したい。(9は諦めるかも？)
+
+アドレスの上位4bitくらいは使えるはず
+(関数は 0x08049000 にたいてい配置されるので)
+なので、 int, float, string, tuple に関しては、そこにデータを載せる。
+
+floatは載せられんやんけ... -> 下3bitshiftして、精度の下いくらかを用いる!!とよさそう。
+-> intは負だと全1なのでだめですね...? -> 下1を使う。
+int,float :: x100
+float実際 :: ......... 100
+string    :: x010
+tuple     :: x001   で、下にはtupleの長さを入れるようにする。
+*)
 
 
 let vs2stacks vs = 
@@ -164,29 +194,70 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 			(Printf.sprintf "\tmov %s,eax\n" (nd2ps nad)) ^
 			"; " ^ (nd2ds nad) ^ " ::<= " ^ (nd2ds nbd) ^ "\n"
 	in
-	let unopr2s nr na s = 
+	
+	let untagi s = 
+		(Printf.sprintf "\tand %s,0x8fffffff\n" s)
+	in
+	let tagi s = 
+		(Printf.sprintf "\tand %s,0x8fffffff\n" s) ^
+		(Printf.sprintf "\tor  %s,0x40000000\n" s)
+	in
+	let untagi_tor ((_,(t,_)) as na) s = 
+		(Printf.sprintf "\tmov %s,%s\n" s (nd2ps na)) ^
+		(if t = TyInt then
+			(Printf.sprintf "\tand %s,0x8fffffff\n" s)
+		else "")
+	in
+	let tagi_frr ((_,(t,_)) as na) s = 
+		(if t = TyInt then
+			(Printf.sprintf "\tand %s,0x8fffffff\n" s) ^
+			(Printf.sprintf "\tor  %s,0x40000000\n" s)
+		else "") ^
+		(Printf.sprintf "\tmov %s,%s\n" (nd2ps na) s)
+	in
+	
+	let untagf_fld na = 
 		(Printf.sprintf "\tmov eax,%s\n" (nd2ps na)) ^
+		(untagi "eax") ^
+		"\trol eax,4\n" ^
+		"\tpush eax\n" ^
+		"\tfld dword [esp]\n" ^
+		"\tpop eax\n"
+	in
+	let tagf s = 
+		(Printf.sprintf "\tror %s,4\n" s) ^
+		(tagi s)
+	in
+	let tagf_fstp na = 
+		(Printf.sprintf "\tfstp %s\n" (nd2ps na)) ^
+		(Printf.sprintf "\tmov eax,%s\n" (nd2ps na)) ^
+		(tagf "eax") ^
+		(Printf.sprintf "\tmov %s,eax\n" (nd2ps na))
+	in
+	
+	let unopr2s nr na s = 
+		(untagi_tor na "eax") ^
 		s ^ 
-		(Printf.sprintf "\tmov %s,eax\n" (nd2ps nr))
+		(tagi_frr nr "eax")
 	in
 	let biopr2s nr na nb s = 
-		(Printf.sprintf "\tmov ebx,%s\n" (nd2ps nb)) ^
+		(untagi_tor nb "ebx") ^
 		(unopr2s nr na s)
 	in
 	let fbiopr2s nr na nb s = 
-		(Printf.sprintf "\tfld %s\n" (nd2ps na)) ^
-		(Printf.sprintf "\tfld %s\n" (nd2ps nb)) ^
+		(untagf_fld na) ^
+		(untagf_fld nb) ^
 		s ^ 
-		(Printf.sprintf "\tfstp %s\n" (nd2ps nr))
+		(tagf_fstp nr)
 	in
 	let fcmpopr2s nr na nb s = 
-		(Printf.sprintf "\tfld %s\n" (nd2ps na)) ^
-		(Printf.sprintf "\tfld %s\n" (nd2ps nb)) ^
+		(untagf_fld na) ^
+		(untagf_fld nb) ^
 		s ^ 
-		(Printf.sprintf "\tmov %s,eax\n" (nd2ps nr))
-	in
+		(tagi_frr nr "eax")
+		in
 	let triopr2s nr na nb nc s = 
-		(Printf.sprintf "\tmov ecx,%s\n" (nd2ps nc)) ^
+		(untagi_tor nc "ecx") ^
 		(biopr2s nr na nb s)
 	in
 	let print_errstr s = 
@@ -218,12 +289,21 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	fn ^ ":\n" ^ prologue ^ 
 	(String.concat "" (List.map (fun op -> 
 		match op with
-		| OpMovi((na,(t,d)),CInt(v)) -> assert (match t with TyInt | TyUserDef _ -> true | _ -> false); 
-			(Printf.sprintf "\tmov %s,%d\n" (na2s na) v) ^ "; " ^ (debug_data2simple d) ^ "\n"
-		| OpMovi((na,(t,d)),CFloat(v)) -> assert (t=TyFloat); (
+		| OpMovi((na,(t,d)),CInt(v)) -> (
+				assert (match t with TyInt -> true | _ -> false);
+				(Printf.sprintf "\tmov eax,%d\n" v) ^ 
+				(tagi "eax") ^
+				(Printf.sprintf "\tmov %s,eax\n" (na2s na)) ^ 
+				"; " ^ (debug_data2simple d) ^ "\n"
+			)
+		| OpMovi(((na,(t,d)) as nad),CFloat(v)) -> assert (t=TyFloat); (
 				let tag = gen_const () in
-					consts := (!consts) ^ (Printf.sprintf "%s:\n\tdd %f\n" tag v);
-					Printf.sprintf "\tmov eax,[%s]\n\tmov %s,eax\n" tag (na2s na)
+				consts := (!consts) ^ (Printf.sprintf "%s:\n\tdd %f\n" tag v);
+				
+				(Printf.sprintf "\tmov eax,[%s]\n" tag) ^
+				(tagf "eax") ^
+				(Printf.sprintf "\tmov %s,eax\n" (na2s na)) ^
+				"; " ^ (debug_data2simple d) ^ "\n"
 			)
 		| OpMovi((na,(t,d)),CString(v)) -> assert (t=TyString); (
 				let tag = gen_const () in
@@ -371,7 +451,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 							raise (Failure (Printf.sprintf "TODO"))
 						)
 					| _ -> (
-						biopr2s nrd nad nbd ( 
+						biopr2s nrd nad nbd (
 							match opr with
 							| Oadd -> "\tadd eax,ebx\n"
 							| Osub -> "\tsub eax,ebx\n"
