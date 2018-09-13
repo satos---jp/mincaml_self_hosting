@@ -1,13 +1,22 @@
 BITS 32
 
 global String@@
+global String@length
+global String@get
 
 section .data
 String@@:
 	dd String@@_p
 String@@_p:
 	dd String@@_
-
+String@length:
+	dd String@length_p
+String@length_p:
+	dd String@length_
+String@get:
+	dd String@get_p
+String@get_p:
+	dd String@get_
 
 section .text
 
@@ -64,8 +73,33 @@ concat_loop_end_2:
 	ret
 
 
+String@length_:
+	mov eax,dword [esp+4]
+	xor eax,0x20000000
+	mov eax,dword [eax]
+	xor eax,0x40000000
+	ret
 
 
+String@get_:
+	mov eax,dword [esp+4]
+	xor eax,0x20000000
+	mov ebx,dword [esp+8]
+	xor ebx,0x40000000
+	mov ecx,dword [eax]
+	test ebx,0x80000000
+	jnz raise_Invalid_argument
+	cmp ebx,ecx
+	jge raise_Invalid_argument
+	add eax,4
+	add eax,ebx
+	mov al,byte [eax]
+	and eax,0xff
+	xor eax,0x40000000
+	ret
+
+raise_Invalid_argument:
+	int 0x3
 
 
 

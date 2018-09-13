@@ -13,6 +13,7 @@ type ty =
 	| TyInt
 	| TyFloat
 	| TyStr
+	| TyChar
 	| TyNum  (* int も float もこれの部分型 *)
 	| TyVar of tyvar
 	| TyArr of ty
@@ -27,7 +28,7 @@ let tyvar2str v = Printf.sprintf "'a%d" v
 
 let rec type2str_with_pa t =
         match t with
-        | TyInt | TyFloat | TyStr | TyVar _ | TyTuple _ | TyNum | TyUserDef _ -> type2str t
+        | TyInt | TyFloat | TyStr | TyChar | TyVar _ | TyTuple _ | TyNum | TyUserDef _ -> type2str t
         | TyFun _ | TyArr _ -> "(" ^ (type2str t) ^ ")"
 
 and type2str t =
@@ -35,6 +36,7 @@ and type2str t =
 	| TyInt -> "int"
 	| TyFloat -> "float"
 	| TyStr -> "string"
+	| TyChar -> "char"
 	| TyNum -> "number"
 	| TyVar v -> tyvar2str v
 	| TyFun (t1, t2) -> (
@@ -108,6 +110,12 @@ let genv () = [ (* lib.s *)
 ] @ [ (* lib_string.s *)
 
 	("String@@",TyFun([TyStr;TyStr],TyStr));
+	("String@length",TyFun([TyStr],TyInt));
+	("String@get",TyFun([TyStr;TyInt],TyChar));
+
+] @ [ (* char.s *)
+
+	("Char@code",TyFun([TyChar],TyInt));
 
 ] @ [ (* libio_linux.s *)
 
@@ -474,7 +482,7 @@ let print_subs subs =
 
 let rec ty_var_appear t v =
         match t with
-        | TyInt | TyFloat | TyNum | TyStr -> false
+        | TyInt | TyFloat | TyNum | TyStr | TyChar -> false
         | TyFun (t1s, t2) -> List.exists (fun x -> ty_var_appear x v) (t2 :: t1s)
         | TyVar x -> x = v
         | TyArr t -> (ty_var_appear t v)
@@ -482,7 +490,7 @@ let rec ty_var_appear t v =
 
 let rec ty_subst subs t = 
 	match t with
-	| TyInt | TyFloat | TyNum | TyStr -> t
+	| TyInt | TyFloat | TyNum | TyStr | TyChar -> t
 	| TyVar(nb) -> (
 		try 
 			let tt = (List.assoc nb subs) in 

@@ -178,7 +178,11 @@ let _ =
 					
 			files := "lib/ml/pervasive.ml" :: "lib/ml/list.ml" :: !files;
 			output_stub !files;
-			files := !files @ ["lib/asm/lib_string.s";  "lib/asm/lib.s"; "lib/asm/libio_linux.s"; "stub.s"];
+			files := !files @ [
+				"lib/asm/char.s"; "lib/asm/lib_string.s";  
+				"lib/asm/lib.s"; "lib/asm/libio_linux.s"; 
+				"stub.s"
+			];
 			
 			let ofs = List.map (fun fn -> 
 				let sfn = (

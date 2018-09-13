@@ -10,6 +10,7 @@ type ty =
 	| TyInt
 	| TyFloat
 	| TyStr
+	| TyChar
 	| TyNum  (* int も float もこれの部分型 *)
 	| TyVar of tyvar
 	| TyArr of ty
