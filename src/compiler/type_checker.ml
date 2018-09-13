@@ -752,8 +752,7 @@ let check_ast ast sv =
 							externs := (rena,t) :: (!externs);
 							let td = (t,default_debug_data) in
 							
-							(* TODO さすがにもっとかっこよく、正しく *)
-							if filena = "lib/ml/list" then
+							if List.mem (filena ^ ".ml") stdlib_list then
 								(
 									f,
 									(rena,t) :: (na,t) :: env

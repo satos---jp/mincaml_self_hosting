@@ -176,7 +176,7 @@ let _ =
 			let _ = List.map compile_to_sfile !files in ()
 		) else (
 					
-			files := "lib/ml/pervasive.ml" :: "lib/ml/list.ml" :: !files;
+			files := "lib/ml/pervasive.ml" :: stdlib_list @ !files;
 			output_stub !files;
 			files := !files @ [
 				"lib/asm/char.s"; "lib/asm/lib_string.s";  

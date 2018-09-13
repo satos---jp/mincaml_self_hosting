@@ -2,7 +2,7 @@ open Syntax
 open Parser
 open Lexer
 
-let src2ast fname = 
+let rec src2ast fname = 
 	let ic = open_in fname in
 	let ast = Parser.toplevel Lexer.main (Lexing.from_channel ic) in
 	ast
