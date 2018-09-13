@@ -14,7 +14,9 @@ section .text
 ; TODO ヒープから取ってくる際に、ちゃんと関数を呼ぶようにする
 String@@_:
 	mov ebx,dword [esp+4]
+	xor ebx,0x20000000
 	mov ecx,dword [esp+8]
+	xor ecx,0x20000000
 	mov eax,dword [ebx]
 	mov edx,dword [ecx]
 	add edx,eax
@@ -28,6 +30,7 @@ String@@_:
 	add eax,4
 	
 	mov ebx,dword [esp+8]
+	xor ebx,0x20000000
 	mov ecx,dword [ebx]
 	add ebx,4
 concat_loop_1:
@@ -42,6 +45,7 @@ concat_loop_1:
 concat_loop_end_1:
 
 	mov ebx,dword [esp+0xc]
+	xor ebx,0x20000000
 	mov ecx,dword [ebx]
 	add ebx,4
 concat_loop_2:
@@ -56,6 +60,7 @@ concat_loop_2:
 concat_loop_end_2:
 
 	pop eax
+	xor eax,0x20000000
 	ret
 
 

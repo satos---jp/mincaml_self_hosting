@@ -4,6 +4,8 @@ global int_of_float
 global float_of_int
 global raise_match_failure
 
+global data_eq
+
 extern print_char_err
 
 section .data
@@ -244,7 +246,8 @@ print_string_err_loop:
 	mov [ebp-0x4],eax
 	mov [ebp-0x8],ecx
 	push ecx
-	call print_char_err
+	mov edx,dword [print_char_err]
+	call [edx]
 	add esp,4
 	mov ecx,[ebp-0x8]
 	cmp ecx,0
@@ -259,6 +262,93 @@ raise_match_failure_:
 	call print_string_err
 	add esp,4
 	int 0x3
+
+
+not_comparable_str:
+	db "UnComparable", 10, 0
+
+data_eq:
+	mov eax,[esp+0x4]
+	mov ebx,[esp+0x8]
+	test eax,0x40000000
+	; int 0x3
+	jz not_int_float
+	cmp eax,ebx
+	sete al
+	and eax,1
+	ret
+not_int_float:
+	test eax,0x20000000
+	; int 0x3
+	jz not_string
+	xor eax,0x20000000
+	xor ebx,0x20000000
+	mov ecx,dword [eax]
+	mov edx,dword [ebx]
+	cmp ecx,edx
+	jne ret_neq
+	add eax,4
+	add ebx,4
+eq_len:
+	test ecx,ecx
+	jz ret_eq
+	push ecx
+	xor ecx,ecx
+	xor edx,edx
+	mov cl,byte [eax]
+	mov dl,byte [ebx]
+	cmp ecx,edx
+	pop ecx
+	jne ret_neq
+	inc eax
+	inc ebx
+	dec ecx
+	jmp eq_len
+not_string:
+	test eax,0x10000000
+	jz not_tuple
+	xor eax,0x10000000
+	xor ebx,0x10000000
+	mov ecx,dword [eax]
+	mov edx,dword [ebx]
+	cmp ecx,edx
+	jne ret_neq
+	add eax,4
+	add ebx,4
+eq_tuple:
+	test ecx,ecx
+	jz ret_eq
+	push eax
+	push ebx
+	push ecx
+	push dword [eax]
+	push dword [ebx]
+	call data_eq
+	add esp,8
+	test eax,eax
+	pop ecx
+	pop ebx
+	pop eax
+	jz ret_neq
+	add eax,4
+	add ebx,4
+	dec ecx
+	jmp eq_tuple
+	
+not_tuple:
+	push not_comparable_str
+	call print_string_err
+	add esp,4
+	int 0x3
+
+ret_eq:
+	mov eax,1
+	ret
+ret_neq:
+	mov eax,0
+	ret
+	
+
 
 
 

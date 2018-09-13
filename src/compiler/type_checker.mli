@@ -9,7 +9,7 @@ type type_name = string
 type ty =
 	| TyInt
 	| TyFloat
-	| TyString
+	| TyStr
 	| TyNum  (* int も float もこれの部分型 *)
 	| TyVar of tyvar
 	| TyArr of ty

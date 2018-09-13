@@ -167,6 +167,12 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 		"\tcall print_char_err\n" ^
 		"\tadd esp,4\n"
 	) in
+	let untagt s = 
+		(Printf.sprintf "\tand %s,0x8fffffff\n" s)
+	in
+	let untags s = 
+		(Printf.sprintf "\tand %s,0x8fffffff\n" s)
+	in
 	let prologue = 
 		(Printf.sprintf "\tpush ebp\n\tmov ebp,esp\n\tsub esp,%d\n" (snd lvs_st)) ^
 		(if fn = main_name () then (
@@ -180,6 +186,8 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	in
 	let epilogue = 
 		(if fn = main_name () then (
+				(untagt "eax") ^
+				("\tadd eax,4\n") ^
 				(String.concat "" (List.map (fun (_,p) -> 
 					"\tmov ebx,[eax]\n" ^ 
 					(Printf.sprintf "\tmov [export_list+%d],ebx\n" p) ^ 
@@ -212,15 +220,29 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 		(Printf.sprintf "\tand %s,0x8fffffff\n" s) ^
 		(Printf.sprintf "\tor  %s,0x40000000\n" s)
 	in
-	let untagi_tor ((_,(t,_)) as na) s = 
+	let tags s = 
+		(Printf.sprintf "\tand %s,0x8fffffff\n" s) ^
+		(Printf.sprintf "\tor  %s,0x20000000\n" s)
+	in
+	let tagt s = 
+		(Printf.sprintf "\tand %s,0x8fffffff\n" s) ^
+		(Printf.sprintf "\tor  %s,0x10000000\n" s)
+	in
+	let untag_tor ((_,(t,_)) as na) s = 
 		(Printf.sprintf "\tmov %s,%s\n" s (nd2ps na)) ^
 		(if t = TyInt then
 			(untagi s)
+		else if (match t with TyStr | TyTuple(_) | TyUserDef(_) -> true | _ -> false)  then
+			(untags s)
 		else "")
 	in
-	let tagi_frr ((_,(t,_)) as na) s = 
+	let tag_frr ((_,(t,_)) as na) s = 
 		(if t = TyInt then
 			(tagi s)
+		else if t = TyStr then
+			(tags s)
+		else if (match t with TyTuple(_) | TyUserDef(_) -> true | _ -> false) then
+			(tagt s)
 		else "") ^
 		(Printf.sprintf "\tmov %s,%s\n" (nd2ps na) s)
 	in
@@ -245,12 +267,12 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	in
 	
 	let unopr2s nr na s = 
-		(untagi_tor na "eax") ^
+		(untag_tor na "eax") ^
 		s ^ 
-		(tagi_frr nr "eax")
+		(tag_frr nr "eax")
 	in
 	let biopr2s nr na nb s = 
-		(untagi_tor nb "ebx") ^
+		(untag_tor nb "ebx") ^
 		(unopr2s nr na s)
 	in
 	let fbiopr2s nr na nb s = 
@@ -263,10 +285,10 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 		(untagf_fld na) ^
 		(untagf_fld nb) ^
 		s ^ 
-		(tagi_frr nr "eax")
+		(tag_frr nr "eax")
 		in
 	let triopr2s nr na nb nc s = 
-		(untagi_tor nc "ecx") ^
+		(untag_tor nc "ecx") ^
 		(biopr2s nr na nb s)
 	in
 	let print_errstr s = 
@@ -295,6 +317,12 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 		(Printf.sprintf "%s:\n" lb) ^ 
 		"\tadd eax,4\n"
 	in
+	let check_data_eq s t =
+		(Printf.sprintf "\tpush %s\n" s) ^ 
+		(Printf.sprintf "\tpush %s\n" t) ^ 
+		"\tcall data_eq\n" ^
+		"\tadd esp,8\n"
+	in
 	fn ^ ":\n" ^ prologue ^ 
 	(String.concat "" (List.map (fun op -> 
 		match op with
@@ -308,16 +336,17 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 		| OpMovi(((na,(t,d)) as nad),CFloat(v)) -> assert (t=TyFloat); (
 				let tag = gen_const () in
 				consts := (!consts) ^ (Printf.sprintf "%s:\n\tdd %f\n" tag v);
-				
 				(Printf.sprintf "\tmov eax,[%s]\n" tag) ^
 				(tagf "eax") ^
 				(Printf.sprintf "\tmov %s,eax\n" (na2s na)) ^
 				"; " ^ (debug_data2simple d) ^ "\n"
 			)
-		| OpMovi((na,(t,d)),CString(v)) -> assert (t=TyString); (
+		| OpMovi((na,(t,d)),CString(v)) -> assert (t=TyStr); (
 				let tag = gen_const () in
 					consts := (!consts) ^ (Printf.sprintf "%s:\n\tdd %d\n\tdb \"%s\"\n" tag (String.length v) v);
-					Printf.sprintf "\tmov eax,%s\n\tmov %s,eax\n" tag (na2s na)
+					(Printf.sprintf "\tmov eax,%s\n" tag) ^
+					(tags "eax") ^
+					Printf.sprintf "\tmov %s,eax\n" (na2s na)
 			)
 		| OpMov(((n1,(t1,d1)) as nrd),((n2,(t2,d2)) as nad)) -> (
 				if t1 <> t2 then raise (Failure (Printf.sprintf 
@@ -329,9 +358,19 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 		| OpLabel x -> x ^ ":\n"
 		| OpJcnd(ct,(na,_),(nb,_),la) -> (
 				(Printf.sprintf "\tmov eax,%s\n\tmov ebx,%s\n" (na2s na) (na2s nb)) ^ 
-				(Printf.sprintf "\tcmp eax,ebx\n\t%s %s\n" (match ct with CmpEq -> "jne" | CmpLt -> "jl") la)
+				(match ct with
+				 | CmpLt -> (Printf.sprintf "\tcmp eax,ebx\n\tjl %s\n" la)
+				 | CmpEq -> (
+				 		(check_data_eq "eax" "ebx") ^
+				 		"\ttest eax,eax\n" ^
+				 		(Printf.sprintf "\tjz %s\n" la)
+				 	)
+				)
 			)
 		| OpJmp(la) -> Printf.sprintf "\tjmp %s\n" la
+	(*
+		これ通らなくなったみたいなんで一旦消しとく
+		TODO タグ外しやる
 		| OpDestTuple(vs,nad) -> (
 				let nl = ref 0 in
 				(Printf.sprintf "\tmov eax,%s\n" (nd2ps nad)) ^ 
@@ -342,9 +381,15 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 					) vs)) ^
 				"; " ^ (nd2ds nad) ^ "\n"
 			)
+	*)
 		| OpMakeTuple(nad,vs) -> (
 				(Printf.sprintf "\tmov %s,esi\n" (nd2ps nad)) ^ 
+				(Printf.sprintf "\tmov dword [esi],%d\n" (List.length vs)) ^ 
+				"\tadd esi,4\n" ^
 				(make_vs_on_heap vs) ^ 
+				(Printf.sprintf "\tmov eax,%s\n" (nd2ps nad)) ^
+				(tagt "eax") ^ 
+				(Printf.sprintf "\tmov %s,eax\n" (nd2ps nad)) ^
 				"; " ^ (nd2ds nad) ^ "\n"
 			)
 		| OpMakeCls(nad,((fn,_) as fnd),vs) -> (
@@ -403,7 +448,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 					match op with
 					| Ominus -> "\tneg eax\n"
 					| Onot   -> "\ttest eax,eax\n\tsete al\n\tand eax,1\n"
-					| OGetTuple(i) -> (Printf.sprintf "\tadd eax,%d\n\tmov eax,[eax]\n" (i*4))
+					| OGetTuple(i) -> (Printf.sprintf "\tadd eax,%d\n\tmov eax,[eax]\n" (i*4+4))
 					| Oiadd(x) -> (Printf.sprintf "\tadd eax,%d\n" x)
 					| Oibysub(x) -> (Printf.sprintf "\tsub eax,%d\n" x)
 					| Oimul(x) -> (Printf.sprintf "\tmov edx,%d\n\tmul edx\n" x)
@@ -429,14 +474,12 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 					let isf = ((fst (snd nad)) = TyFloat) in
 					let isi = ((fst (snd nad)) = TyInt) in
 					match opr with 
-					| Oeq | Oneq | Olt | Oleq | Ogt | Ogeq when (isi || isf) -> (
+					| Olt | Oleq | Ogt | Ogeq when (isi || isf) -> (
 						(if isf then fcmpopr2s else biopr2s) nrd nad nbd (
 							"\txor ecx,ecx\n" ^
 							(if isf then "\tfcomip\n" else "\tcmp eax,ebx\n") ^ 
 							(if isf then (
 								match opr with
-								| Oeq  -> "\tsete cl\n"
-								| Oneq -> "\tsetne cl\n"
 								| Olt  -> "\tseta cl\n"
 								| Oleq -> "\tsetae cl\n"
 								| Ogt  -> "\tsetb cl\n"
@@ -444,8 +487,6 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 								| _ -> raise (Failure (Printf.sprintf "ocmp swith shouldn't reach here"))
 							) else (
 								match opr with
-								| Oeq  -> "\tsete cl\n"
-								| Oneq -> "\tsetne cl\n"
 								| Olt  -> "\tsetl cl\n"
 								| Oleq -> "\tsetle cl\n"
 								| Ogt  -> "\tsetg cl\n"
@@ -456,8 +497,20 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 							 "\tmov eax,ecx\n"
 						)
 					)
-					| Oeq | Oneq -> (
-							raise (Failure (Printf.sprintf "TODO"))
+					| Oeq -> (
+							(Printf.sprintf "\tmov eax,%s\n" (nd2ps nad)) ^
+							(Printf.sprintf "\tmov ebx,%s\n" (nd2ps nbd)) ^
+							(check_data_eq "eax" "ebx") ^
+							(tagi "eax") ^
+							(Printf.sprintf "\tmov %s,eax\n" (nd2ps nrd))
+					)
+					| Oneq -> (
+							(Printf.sprintf "\tmov eax,%s\n" (nd2ps nad)) ^
+							(Printf.sprintf "\tmov ebx,%s\n" (nd2ps nbd)) ^
+							(check_data_eq "eax" "ebx") ^
+							"\txor eax,1\n" ^
+							(tagi "eax") ^
+							(Printf.sprintf "\tmov %s,eax\n" (nd2ps nrd))
 						)
 					| _ -> (
 						biopr2s nrd nad nbd (
@@ -527,6 +580,7 @@ let vir2asm (funs,rd,globvars) externs exports =
 		"extern " ^ s ^ "\n"
 	) externs)) ^
 	"extern global_heap\n" ^
+	"extern data_eq\n" ^
 	(String.concat "" (List.map (fun s -> 
 		"global " ^ s ^ "\n"
 	) exports)) ^

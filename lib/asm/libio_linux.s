@@ -72,6 +72,7 @@ puts_err_:
 
 print_string_:
 	mov eax,dword [esp+0x4]
+	xor eax,0x20000000
 	mov edx,dword [eax]
 	mov ecx,eax
 	add ecx,4
