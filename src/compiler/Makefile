@@ -1,6 +1,6 @@
 SOURCES = debug.ml main_option.ml linux_win_diff.ml genint.ml \
 	syntax.ml lexer.mll parser.mly \
-	spec.ml \
+	spec.ml preprocess.ml \
 	source2ast.ml type_checker.ml \
 	knorm.ml lettuple2dest.ml \
 	alpha.ml beta.ml inline.ml common_sube_elim.ml elim_unused.ml assoc.ml const_fold.ml \

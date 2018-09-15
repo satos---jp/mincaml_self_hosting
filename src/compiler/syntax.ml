@@ -30,6 +30,7 @@ type optype =
 	| OArrCrt | OArrRead | OArrWrite
 	| OSubTuple of int * int
 	| OGetTuple of int
+	| OGetTupleWithLen of int * int
 	| Oiadd of int | Oibysub of int
 	| Oimul of int | Oibydiv of int
 	| OiArrRead of int | OiArrWrite of int
@@ -65,6 +66,7 @@ let op2str o =
 	| OiArrWrite(a) -> Printf.sprintf "OiArrWrite[%d]"  a
 	| OSubTuple(a,b) -> Printf.sprintf "OSubTuple[%d,%d]" a b
 	| OGetTuple(a) -> Printf.sprintf "OGetTuple[%d]" a
+	| OGetTupleWithLen(a,b) -> Printf.sprintf "OGetTupleWithLen[%d,%d]" a b
 
 type name = string
 
@@ -81,7 +83,7 @@ and expr_base =
   | EOp        of optype * (expr list)
   | EIf        of expr * expr * expr
   | ELet       of name * expr * expr
-  | ELetRec    of name * (name list) * expr * expr
+  | ELetRec    of name * (pattern list) * expr * expr
   | EApp       of expr * (expr list)
   | ETuple     of (expr list)
   | ELetTuple  of (name list) * expr * expr

@@ -1,5 +1,6 @@
 open Syntax
 open Source2ast
+open Preprocess
 open Type_checker
 open Knorm
 open Closure_conv
@@ -82,7 +83,8 @@ let compile file =
 		else []
 	) in
 	
-	let ast2 = Type_checker.check tast spec in
+	let astp = Preprocess.preprocess tast in
+	let ast2 = Type_checker.check astp spec in
 	print_string "typed";  print_newline ();
 	let kn = Alpha.alpha_conv (Knorm.knorm ast2) [] in
 	print_string "k-normalized and alphad";  print_newline ();

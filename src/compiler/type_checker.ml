@@ -348,6 +348,10 @@ let rec type_infer venv astdeb env =
 			| OiArrRead _ -> (fun () -> let x = gentype () in ([TyArr(x)],x))
 			| OiArrWrite _ -> (fun () -> let x = gentype () in ([TyArr(x);x],TyTuple([])))
 			
+			| OGetTupleWithLen(ls,i) -> (
+					fun () -> let xs = (let rec f t = if t = 0 then [] else (gentype ()) :: f (t-1) in f ls)
+					in ([TyTuple(xs)],List.nth xs i)
+				)
 			| OSubTuple _ | OGetTuple _ -> raise (Failure (Printf.sprintf "%s shouldn't appear in parsed syntax" (op2str op)))
 			) in
 			let nts,rt = tyf () in
@@ -364,7 +368,8 @@ let rec type_infer venv astdeb env =
 			let te3,c3,tt3,_ = f e3 ((n1,tt2) :: env) in
 			(TLet((n1,(tt2,deb2)),te2,te3),c2 @ c3,tt3)
 		)
-	| ELetRec(f1,ns,e2,e3) -> (
+	| ELetRec(f1,ps,e2,e3) -> (
+			let ns = List.map (fun x -> match x with | PVar v -> v | _ -> raise (Failure "Shouldn't reach here")) ps in
 			(* fの返り値型 *)
 			let fn1rt = gentype () in
 			(* nsのα変換と、 型変数を作ったもの *)

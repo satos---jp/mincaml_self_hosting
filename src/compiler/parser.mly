@@ -80,13 +80,15 @@ decl_exprs:
 ;
 
 decl:
-	| LET var EQ expr           { DLet($2,$4) }
+	| LET ID EQ expr           { DLet($2,$4) }
 	/* これ多分parse時点で let rec f x1 x2 ... =  を let f = (let rec f x1 x2 ... in f) にしたほうが楽*/
-	| LET REC rec_vars EQ expr { 
+	| LET REC ID rec_vars EQ expr { 
 			(* DLetRec(List.hd $3,List.tl $3,$5) *) 
-			let na = List.hd $3 in
-			let vs = List.tl $3 in
-			DLet(na,debug (ELetRec(na,vs,$5,(debug (EVar(na))))))
+			DLet($3,debug (ELetRec($3,$4,$6,(debug (EVar($3))))))
+		}
+	| LET ID rec_vars EQ expr { 
+			(* とりあえず意味は壊れるがやっていく *) 
+			DLet($2,debug (ELetRec($2,$3,$5,(debug (EVar($2))))))
 		}
 	| TYPE var EQ type_expr    { DTypeRename($2,$4) }
 	| TYPE var EQ variant_defs { DVariant($2,$4) }
@@ -204,7 +206,7 @@ simple_expr:
 		{ debug (EConst(CFloat $1)) }
 	| STRING
 		{ debug (EConst(CString $1)) }
-	| var
+	| expr_var
 		{ debug (EVar($1)) }
 	| simple_expr DOT LPAR expr RPAR
 		%prec array_assoc
@@ -289,11 +291,14 @@ Error: This expression has type float but an expression was expected of type
 	| IF expr THEN expr ELSE expr
 		%prec if_assoc
 		{ debug (EIf($2,$4,$6)) }
-	| LET var EQ expr IN expr
+	| LET ID EQ expr IN expr
 		{ debug (ELet($2,$4,$6)) }
-	| LET REC rec_vars EQ expr IN expr 
-		{  debug (ELetRec(List.hd $3,List.tl $3,$5,$7)) }
+	| LET REC ID rec_vars EQ expr IN expr 
+		{  debug (ELetRec($3,$4,$6,$8)) }
 /* カリー化できないらしい!! (まあMinCamlプログラミングがつらくなる) */
+	| LET ID rec_vars EQ expr IN expr 
+		{  debug (ELetRec($2,$3,$5,$7)) }
+/* とりあえず増やす(型推論がガバガバだが) */
 	| simple_expr app_exprs
 		%prec app_assoc
 		{ debug (EApp($1,$2)) }
@@ -439,19 +444,23 @@ app_exprs:
 
 tuple_vars:
 	| RPAR { [] }
-	| var RPAR { [$1] }
-	| var COMMA tuple_vars { $1 :: $3 }
+	| expr_var RPAR { [$1] }
+	| expr_var COMMA tuple_vars { $1 :: $3 }
 ;
 
 rec_vars:
-	| var rec_vars { $1 :: $2 }
-	| var { [$1] } 
+	| rec_vars pattern { $1 @ [$2] }
+	| pattern { [$1] } 
+;
+
+expr_var:
+	| var { $1 }
+ 	| variant_name DOT ID 
+  	%prec path_name_prec
+  	{ $1 ^ "@" ^ $3 (* とりあえずこんな処理で(capitalizeされてるので) *) } 
 ;
 
 var:
   | ID { $1 }
-  | variant_name DOT ID 
-  	%prec path_name_prec
-  	{ $1 ^ "@" ^ $3 (* とりあえずこんな処理で(capitalizeされてるので) *) } 
 ;
 

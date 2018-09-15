@@ -21,6 +21,7 @@ print_string.ml
 list_check.ml
 string_check.ml
 eq_neq.ml
+pattern_argument.ml
 
 
 ; floatまわりが合わないのでこれは一旦無視する

@@ -448,7 +448,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 					match op with
 					| Ominus -> "\tneg eax\n"
 					| Onot   -> "\ttest eax,eax\n\tsete al\n\tand eax,1\n"
-					| OGetTuple(i) -> (Printf.sprintf "\tadd eax,%d\n\tmov eax,[eax]\n" (i*4+4))
+					| OGetTuple(i) | OGetTupleWithLen(_,i) -> (Printf.sprintf "\tadd eax,%d\n\tmov eax,[eax]\n" (i*4+4))
 					| Oiadd(x) -> (Printf.sprintf "\tadd eax,%d\n" x)
 					| Oibysub(x) -> (Printf.sprintf "\tsub eax,%d\n" x)
 					| Oimul(x) -> (Printf.sprintf "\tmov edx,%d\n\tmul edx\n" x)

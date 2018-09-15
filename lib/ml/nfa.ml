@@ -1,5 +1,3 @@
-
-(*
 type state = int list
 
 let rec assoc_opt y xs = 
@@ -19,12 +17,11 @@ let step gr st c =
 		| Some ds -> ds
 		| None -> []
 	) st)
-	
+
 let isaccept x gr = List.mem x (fins gr)
 
 let isnill st = (st = [])
 
 let startstate (s,gr,gs) = s
-*)
 
 let _ = 0
