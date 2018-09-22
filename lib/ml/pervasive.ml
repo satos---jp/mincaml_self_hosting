@@ -1,4 +1,5 @@
 let false = 0
+let true = 1
 let rec mod_ a b = a-(a/b)*b
 let rec print_int_base x = 
 	if x < 10 then (if 0 < x then print_char (x+48) else ()) else
@@ -45,6 +46,4 @@ let rec print_hex_err_base x =
 let rec print_hex_err x = 
 	if x = 0 then print_char_err 48
 	else (if x < 0 then print_char_err 45; print_hex_err_base (0-x) else print_hex_err_base x)
-
-
 

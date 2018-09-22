@@ -661,19 +661,24 @@ type type_def =
 
 let variantenv () = [
 	("@Nil",(fun x -> let t = gentype x in (0,TyUserDef("list",[t]),[])));
-	("@Cons",(fun x -> let t = gentype x in (1,TyUserDef("list",[t]),[t;TyUserDef("list",[t])])))
+	("@Cons",(fun x -> let t = gentype x in (1,TyUserDef("list",[t]),[t;TyUserDef("list",[t])])));
+	("Some",(fun x -> let t = gentype x in (0,TyUserDef("option",[t]),[t])));
+	("None",(fun x -> let t = gentype x in (1,TyUserDef("option",[t]),[])));
 ]
 
 let user_defined_types = ref [
 	("int",TyInt);
 	("float",TyFloat);
-	("unit",TyTuple([]))
+	("unit",TyTuple([]));
+	("bool",TyInt); (*TODO(satos) さすがにいつか直す *)
+	("char",TyInt); (*TODO(satos) さすがにいつか直す *)
 ]
 
 let user_defined_type_env () = !user_defined_types
 
 let defined_types () = [
-	("list",1)
+	("list",1);
+	("option",1);
 ] @ List.map (fun (t,_) -> (t,0)) (user_defined_type_env ())
 
 
@@ -761,14 +766,24 @@ let check_ast ast sv =
 								(
 									f,
 									(rena,t) :: (na,t) :: env
-								,venv,tyenv,uts)
+									,venv,tyenv,uts
+								)
 							else
 								(
 									(fun y -> f (TLet((na,td),(TVar((rena,td)),td),y),(snd y))),
 									(na,t) :: env
-								,venv,tyenv,uts)
+									,venv,tyenv,uts
+								)
 						)
-					| _ -> raise (Failure("Unimplemented"))
+					| STypeRename(na,te) -> (
+							let t = eval_variant tyenv uts te in
+							(
+								f,env,venv,
+								(na,t) :: tyenv,
+								(na,0) :: uts
+							)
+						)
+					| _ -> raise (Failure("Unimplemented in open"))
 				) (f,env,venv,tyenv,uts) specs
 			in
 			addglobalcs := [];
@@ -801,7 +816,15 @@ let check_ast ast sv =
 						)
 					| DVariant(na,ts) -> update_by_variant na ts
 					| DOpen(na) -> update_by_open na
-					| _ -> raise (Failure("Unimplemented"))
+					| DTypeRename(na,te) -> (
+							let t = eval_variant tyenv uts te in
+							(
+								f,env,
+								venv,
+								(na,t) :: tyenv,
+								(na,0) :: uts
+							)
+						)
 				)
 		) sv ast
 	) with
@@ -825,6 +848,10 @@ let check_spec tyenv uts specs =
 				let t = eval_variant tyenv uts te in 
 				(na,rena,t) :: exports
 			)
+		| STypeRename(na,te) -> (
+				(*TODO verify type*)
+				exports
+			)	
 		| _ -> raise (Failure("Unimplemented in check_spec"))
 	) [] specs
 
@@ -843,8 +870,8 @@ let check ast specs =
 		(user_defined_type_env ()),
 		(defined_types ())
 	) in
-	let tast,_,_,_,_ = check_ast ast sv in
-	let exports = check_spec (user_defined_type_env ()) (defined_types ()) specs in
+	let tast,_,_,ttyenv,tuts = check_ast ast sv in
+	let exports = check_spec ttyenv tuts specs in
 	
 	exports_list := List.map (fun (_,rena,t) -> rena) exports;
 	

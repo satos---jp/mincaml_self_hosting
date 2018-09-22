@@ -1,5 +1,7 @@
 type state = int list
 
+type nfa = int
+
 let rec assoc_opt y xs = 
 	match xs with
 	| (t,d) :: xs -> (
@@ -9,14 +11,18 @@ let rec assoc_opt y xs =
 
 let trans  (s,gr,gs) = gr
 let fins   (s,gr,gs) = gs
+
 	
-let step gr st c = 
-	List.concat (List.map (fun s -> 
+let step gr (sts,ops) c = 
+	let tops = List.fold_left (fun r s -> 
 		let v = assoc_opt c ((trans gr) s) in
 		match v with
-		| Some ds -> ds
+		| Set ds -> (
+				
+				ds
+			)
 		| None -> []
-	) st)
+	) ops sts) in
 
 let isaccept x gr = List.mem x (fins gr)
 
