@@ -4,8 +4,31 @@
 *)
 
 
-type state = 'b 
-type nfa = 'a
+(*
+type state = int
+type nfa = int
 
 val step : nfa -> state -> char -> state
+*)
+
+
+type state = (int * (string list)) list
+type node = int
+type edge = int * int list * int list
+type nfa = int * int * int * (char * (node * edge list) list) list
+
+val new_node : nfa -> (nfa * node)
+
+(*
+val nfa2str : nfa -> string
+*)
+
+val gen_nfa : unit -> nfa
+
+val nfa_add_edge : nfa -> node -> node -> char -> nfa
+
+val step : nfa -> state -> char -> state
+val isaccept : nfa -> state -> bool
+val isnill : state -> bool
+val startstate : nfa -> state
 

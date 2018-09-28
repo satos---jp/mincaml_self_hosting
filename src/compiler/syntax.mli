@@ -4,6 +4,7 @@ type const =
 	| CInt of int
 	| CFloat of float
 	| CString of string
+	| CChar of char
 
 val const2str : const -> string
 

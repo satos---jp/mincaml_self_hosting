@@ -13,6 +13,7 @@
 %token <string> ID
 %token <float>  FLOAT
 %token <string> STRING
+%token <char>   CHAR
 %token LET IN				  
 %token PLUS TIMES MINUS DIV
 %token FPLUS FTIMES FMINUS FDIV
@@ -27,7 +28,7 @@
 %token <string> VARIANT_ID
 %token CONS LBRACKET RBRACKET
 %token VAL COLON OPEN QUOTE
-%token ATMARK CARET
+%token ATMARK CARET FLAG
  
 /* 下のほうが強い */
 /* left とか right とかは演算子のみに効果があるっぽいな？？？ */
@@ -45,6 +46,7 @@
 %left COMMA
 %left EQ LT LEQ GT GEQ NEQ BAR
 %right ATMARK CARET
+%left FLAG /* TODO(satos) ちゃんと調べて直す */
 %right CONS
 %left PLUS MINUS FPLUS FMINUS
 %left TIMES DIV FTIMES FDIV 
@@ -206,6 +208,8 @@ simple_expr:
 		{ debug (EConst(CFloat $1)) }
 	| STRING
 		{ debug (EConst(CString $1)) }
+	| CHAR 
+		{ debug (EConst(CChar $1)) }
 	| expr_var
 		{ debug (EVar($1)) }
 	| simple_expr DOT LPAR expr RPAR
@@ -213,6 +217,10 @@ simple_expr:
 		{ debug (EOp(OArrRead,[$1;$4])) }
 	| variant_name
 		{ debug (EVariant($1,[])) }
+	| LBRACKET RBRACKET 
+		{ debug (EVariant("@Nil",[])) }
+	| LBRACKET list_expr RBRACKET 
+		{ List.fold_left (fun r x -> debug (EVariant("@Cons",[x;r]))) (debug (EVariant("@Nil",[]))) $2 }
 ;
 
 /*
@@ -322,14 +330,13 @@ Error: This expression has type float but an expression was expected of type
 		{ debug $1 }
 	| expr CONS expr
 		{ debug (EVariant("@Cons",[$1;$3])) }
-	| LBRACKET RBRACKET 
-		{ debug (EVariant("@Nil",[])) }
+
 	| expr ATMARK expr
 		{ debug (EApp(debug (EVar("List@append")),[$1;$3])) }
 	| expr CARET expr
 		{ debug (EApp(debug (EVar("String@@")),[$1;$3])) }
-	| LBRACKET list_expr RBRACKET 
-		{ List.fold_left (fun r x -> debug (EVariant("@Cons",[x;r]))) (debug (EVariant("@Nil",[]))) $2 }
+	| expr FLAG expr
+		{ debug (EApp($3,[$1])) }
 	| error
 		{ failwith ("parse failure at " ^ debug_data2str (get_debug_data ())) }
 ;
@@ -417,6 +424,16 @@ Error: The constructor H expects 2 argument(s),
 ま！？つってる
 */
 
+
+list_pattern:
+	| pattern
+		%prec list_semi_assoc
+		{ [$1] }
+	| list_pattern SEMI pattern
+		%prec list_semi_assoc
+		{ $3 :: $1 }
+;
+
 pattern:
 	| var                  { PVar($1) }
 	| LPAR pattern RPAR    { $2 }
@@ -429,6 +446,7 @@ pattern:
 		{ PTuple($1) }
 	| pattern CONS pattern { PVariantApp("@Cons",PTuple([$1;$3])) }
 	| LBRACKET RBRACKET { PVariant("@Nil") }
+	| LBRACKET list_pattern RBRACKET { List.fold_left (fun r x -> (PVariantApp("@Cons",PTuple([x;r])))) (PVariant("@Nil")) $2 }
 ;
 
 tuple_exprs:

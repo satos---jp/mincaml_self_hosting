@@ -1,6 +1,6 @@
 type cset =
-	| CChar of string
-	| CRange of string * string
+	| CChar of char
+	| CRange of char * char
 
 type idname = string
 

@@ -58,3 +58,8 @@ functional_week5_ext0/*
 my_yacc
 my_lex
 lexer_sample.mll
+*.txt
+lexer.mli
+main.ml
+tes.mll
+

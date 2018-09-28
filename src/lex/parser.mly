@@ -1,6 +1,9 @@
 %{
 	open Syntax
 	
+	let cstr2char s = 
+		assert (String.length s = 1);
+		String.get s 1
 %}
 
 %token <string> CHAR
@@ -24,8 +27,8 @@ toplevel:
 ;
 
 cset_expr:
-	| CHAR { CChar($1) }
-	| CHAR MINUS CHAR { CRange($1,$3) }
+	| CHAR { CChar(cstr2char $1) }
+	| CHAR MINUS CHAR { CRange(cstr2char $1,cstr2char $3) }
 ;
 	
 cset_exprs:
@@ -34,7 +37,7 @@ cset_exprs:
 ;
 
 simple_regexp:
-	| CHAR { RCset([CChar($1)]) }
+	| CHAR { RCset([CChar(cstr2char $1)]) }
 	| STRING { RStr($1) }
 	| ID     { RId($1) }
 	| LBRA cset_exprs RBRA { RCset($2) }

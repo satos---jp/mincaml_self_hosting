@@ -26,3 +26,21 @@ let rec mem a v =
 	| x :: xs -> if x = a then true else mem a xs
 	| [] -> false
 
+
+let rec fold_left f r v = 
+	match v with
+	| [] -> r
+	| x :: xs -> f (fold_left f r xs) x
+
+let rec mem_assoc x v = 
+	match v with
+	| [] -> false
+	| (t,_) :: xs -> if t = x then true else mem_assoc x xs
+
+let rec mapi f v = 
+	let rec mapi_base i w = 
+		match w with
+		| [] -> []
+		| x :: xs -> (f i x) :: mapi_base (i+1) xs
+	in
+		mapi_base 0 v

@@ -348,6 +348,13 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 					(tags "eax") ^
 					Printf.sprintf "\tmov %s,eax\n" (na2s na)
 			)
+		| OpMovi((na,(t,d)),CChar(v)) -> assert (t=TyChar); (
+				let tag = gen_const () in
+				(Printf.sprintf "\tmov eax,%d\n" (Char.code v)) ^ 
+				(tagi "eax") ^
+				(Printf.sprintf "\tmov %s,eax\n" (na2s na)) ^ 
+				"; " ^ (debug_data2simple d) ^ "\n"
+			)
 		| OpMov(((n1,(t1,d1)) as nrd),((n2,(t2,d2)) as nad)) -> (
 				if t1 <> t2 then raise (Failure (Printf.sprintf 
 					"Type mismatch move to %s (%s) : %s from %s (%s) : %s" 

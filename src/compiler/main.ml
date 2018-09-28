@@ -73,6 +73,7 @@ let changext fn ext1 ext2 =
 
 
 let compile file = 
+	ivprint (Printf.sprintf "compile %s" file);
 	let tast = Source2ast.src2ast file in
 	print_string (top2str tast);
 	print_string "parsed"; print_newline ();
@@ -86,6 +87,7 @@ let compile file =
 	let astp = Preprocess.preprocess tast in
 	let ast2 = Type_checker.check astp spec in
 	print_string "typed";  print_newline ();
+	vprint texp2str ast2;
 	let kn = Alpha.alpha_conv (Knorm.knorm ast2) [] in
 	print_string "k-normalized and alphad";  print_newline ();
 	vprint knorm2str kn;

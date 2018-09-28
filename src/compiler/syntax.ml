@@ -7,12 +7,14 @@ type const =
 	| CInt of int
 	| CFloat of float
 	| CString of string
+	| CChar of char
 
 let const2str c = 
 	match c with
 	| CInt x -> Printf.sprintf "CInt %d" x
 	| CFloat x -> Printf.sprintf "CFloat %f" x
 	| CString x -> Printf.sprintf "CString \"%s\"" x
+	| CChar x -> Printf.sprintf "CChar '%c'" x
 
 type comptype = 
 	| CmpEq

@@ -75,13 +75,13 @@ let rec kexp2str_base ast d =
 	match ast with
 	| KConst x -> [(d,const2str x)]
 	| KOp(op,vs) -> [(d,(op2str op) ^ (vs2str vs))]
-	| KLet(na,e1,e2) -> (d,"Let " ^ (name2str na) ^ " =") :: (kexp2str_base e1 (d+1)) @ [(d,"In")] @ (kexp2str_base e2 (d+1))
+	| KLet(na,e1,e2) -> (d,"Let " ^ (name2str na) ^ " =") :: (kexp2str_base e1 (d+1)) @ [(d,"In")] @ (kexp2str_base e2 d)
 	| KLetRec(fn,vs,e1,e2) -> (d,"Let Rec " ^ (name2str fn) ^ " " ^(vs2str vs) ^ " =") :: (kexp2str_base e1 (d+1)) @ [(d,"In")] @ (kexp2str_base e2 d)
 	| KIf(ty,a,b,e1,e2) -> (d,"If " ^ (name2str a) ^ " " ^ (comptype2str ty) ^ " " ^ (name2str b) ^ " Then") :: (kexp2str_base e1 (d+1)) @ [(d,"Else")] @ (kexp2str_base e2 (d+1))
 	| KVar(x) -> [(d,"Var " ^ (name2str x))]
 	| KApp(fn,vs) -> [(d,"App " ^ (name2str fn) ^ (vs2str vs))]
 	| KTuple(vs) -> [(d,(vs2str vs))]
-	| KLetTuple(vs,tn,e1) -> (d,"Let " ^ (vs2str vs) ^ " = " ^ (name2str tn)) :: [(d,"In")] @ (kexp2str_base e1 (d+1))
+	| KLetTuple(vs,tn,e1) -> (d,"Let " ^ (vs2str vs) ^ " = " ^ (name2str tn)) :: [(d,"In")] @ (kexp2str_base e1 d)
 
 let knorm2str ast = 
 	let ss = kexp2str_base ast 0 in

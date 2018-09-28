@@ -14,13 +14,17 @@ let bigalpha = ['A'-'Z']
 let ident = smallalpha (alpha | digit)* 
 let variant_ident = bigalpha (alpha | digit)* 
 
-let string_chars = (digit|alpha|' ')
+let char_special_chars = ['\\' '+' '=' '.' '<' '(' ')' '[' ']' ';' '^' ':' '%' ' ' ',']
+
+let string_chars = (digit|alpha|char_special_chars|'\'')
+
 
 rule main = parse
 | "\n" { Lexing.new_line lexbuf; main lexbuf }
 | space+       { main lexbuf }
 | "(*"         { comment lexbuf }
 | '"' (string_chars* as str) '"' { Parser.STRING str }
+| '\'' ((char_special_chars | string_chars) as c) '\'' { Parser.CHAR c }
 | "let"        { Parser.LET }
 | "rec"        { Parser.REC }
 | "in"         { Parser.IN }
@@ -59,6 +63,7 @@ let true = 1 とかがあるのでエラーになる。
 | "<"          { Parser.LT }
 | ">="         { Parser.GEQ }
 | ">"          { Parser.GT }
+| "|>"         { Parser.FLAG }
 | "|"          { Parser.BAR }
 | "type"       { Parser.TYPE }
 | "match"      { Parser.MATCH }

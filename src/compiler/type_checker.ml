@@ -87,11 +87,11 @@ let rec texp2str_base astdeb d =
 			(d,"If") :: (texp2str_base e1 (d+1))
 				@ [(d,"Then")] @ (texp2str_base e2 (d+1)) @ [(d,"Else")] @ (texp2str_base e3 (d+1))
 		)
-	| TLet(na,e1,e2) -> (d,"Let " ^ (tdname2str na) ^ " =") :: (texp2str_base e1 (d+1)) @ [(d,"In")] @ (texp2str_base e2 (d+1))
-	| TLetRec(na,vs,e1,e2) -> (d,"LetRec " ^ (tdname2str na) ^ " =") :: (texp2str_base e1 (d+1)) @ [(d,"In")] @ (texp2str_base e2 (d+1))
+	| TLet(na,e1,e2) -> (d,"Let " ^ (tdname2str na) ^ " =") :: (texp2str_base e1 (d+1)) @ [(d,"In")] @ (texp2str_base e2 d)
+	| TLetRec(na,vs,e1,e2) -> (d,"LetRec " ^ (tdname2str na) ^ " || " ^ (String.concat " | " (List.map tdname2str vs)) ^  " =") :: (texp2str_base e1 (d+1)) @ [(d,"In")] @ (texp2str_base e2 d)
 	| TApp(e1,es) -> (d,"App ") :: (texp2str_base e1 (d+1)) @ List.concat (List.map (fun x -> (texp2str_base x (d+2))) es)
 	| TTuple(es) -> (d,"( ") :: List.concat (List.map (fun x -> (texp2str_base x (d+1))) es) @ [(d," )")]
-	| TLetTuple(vs,e1,e2) -> (d,"Let " ^ (String.concat " , " (List.map tdname2str vs)) ^ " = ") :: (texp2str_base e1 (d+1)) @ [(d,"In")] @ (texp2str_base e2 (d+1))
+	| TLetTuple(vs,e1,e2) -> (d,"Let " ^ (String.concat " , " (List.map tdname2str vs)) ^ " = ") :: (texp2str_base e1 (d+1)) @ [(d,"In")] @ (texp2str_base e2 d)
 
 let texp2str ast = 
 	let ss = texp2str_base ast 0 in
@@ -124,6 +124,12 @@ let genv () = [ (* lib.s *)
 	("read_char",TyFun([TyTuple([])],TyInt));
 	("print_string",TyFun([TyStr],TyTuple([]))); (* とりまアセンブラで *)
 
+] @ [ (* printf.s *)
+	(* TODO(satos) format型導入する *)
+	(*
+	("Printf@sprintf",TyFun([TyStr],TyVar(genint ())))
+	ランク1多相導入しないとどうしようもなくなってきたな...???
+	*)
 ] @ (!externs)
 
 
@@ -268,7 +274,7 @@ let rec pattern2env env venv pat pna =
 						)
 					)
 				| _ -> raise (Failure(Printf.sprintf "tag %s needs %d args at %s" tag ls (debug_data2str deb)))
-			)			
+			)
 		)
 	| PTuple(ps) -> (
 			let ((cond, bind, rtenv, cs),ts) = 
@@ -289,6 +295,17 @@ let rec pattern2env env venv pat pna =
 				(cond, bind, rtenv, (TyTuple(List.rev ts),pt,deb) :: cs)
 		)
 
+let rec constrs2str_sub cs =
+	match cs with
+	| [] -> ""
+	| (x,y,_) :: xs -> (
+			(Printf.sprintf "(%s , %s)\n" (type2str x) (type2str y)) ^
+      (constrs2str_sub xs)
+     )
+
+let constrs2str cs =
+	"[\n" ^ (constrs2str_sub  cs) ^ "]\n"
+
 
 (* ここで、型情報をastに載せる必要がある *)
 
@@ -302,13 +319,14 @@ let rec pattern2env env venv pat pna =
 let addglobalcs = ref []
 
 let rec type_infer venv astdeb env = 
-	let f = type_infer venv in
+	let self = type_infer venv in
 	let ast,deb = astdeb in
 	let rast,rc,rt = (
 	match ast with
 	| EConst(CFloat x) -> (TConst(CFloat x),[],TyFloat)
 	| EConst(CInt x) -> (TConst(CInt x),[],TyInt)
 	| EConst(CString x) -> (TConst(CString x),[],TyStr)
+	| EConst(CChar x) -> (TConst(CChar x),[],TyChar)
 	| EVar(x) -> (
 			try (
 				let tt = List.assoc x env in
@@ -318,7 +336,7 @@ let rec type_infer venv astdeb env =
 				| Not_found -> raise (Failure("undefined variable " ^ x ^ " at " ^ (debug_data2str deb)))
 		)
 	| EOp(op,vs) -> (
-			let tects = List.map (fun x -> f x env) vs in
+			let tects = List.map (fun x -> self x env) vs in
 			let tes = List.map (fun (x,_,_,_) -> x) tects in
 			let tcs = List.concat (List.map (fun (_,x,_,_) -> x) tects) in
 			let tts = List.map (fun (_,_,x,_) -> x) tects in 
@@ -358,52 +376,56 @@ let rec type_infer venv astdeb env =
 				(TOp(op,tes),(zip3 nts tts tds) @ tcs,rt)
 		)
 	| EIf(e1,e2,e3) -> (
-			let te1,c1,tt1,deb1 = f e1 env in
-			let te2,c2,tt2,_ = f e2 env in
-			let te3,c3,tt3,deb3 = f e3 env in
+			let te1,c1,tt1,deb1 = self e1 env in
+			let te2,c2,tt2,_ = self e2 env in
+			let te3,c3,tt3,deb3 = self e3 env in
 				(TIf(te1,te2,te3),(tt1,TyInt,deb1) :: (tt2,tt3,deb3) :: c1 @ c2 @ c3,tt2)
 		)
 	| ELet(n1,e2,e3) -> (
-			let te2,c2,tt2,deb2 = f e2 env in
-			let te3,c3,tt3,_ = f e3 ((n1,tt2) :: env) in
+			let te2,c2,tt2,deb2 = self e2 env in
+			let te3,c3,tt3,_ = self e3 ((n1,tt2) :: env) in
 			(TLet((n1,(tt2,deb2)),te2,te3),c2 @ c3,tt3)
 		)
-	| ELetRec(f1,ps,e2,e3) -> (
+	| ELetRec(f,ps,e2,e3) -> (
 			let ns = List.map (fun x -> match x with | PVar v -> v | _ -> raise (Failure "Shouldn't reach here")) ps in
-			(* fの返り値型 *)
-			let fn1rt = gentype () in
-			(* nsのα変換と、 型変数を作ったもの *)
+			
+			let frt = gentype () in
 			let tns = List.map (fun x -> (x,gentype ())) ns in
-			(* fの型 *)
-			let f1t = TyFun(List.map (fun (_,x) -> x) tns,fn1rt) in
-			(* e2についての推論 *) 
-			let te2,c2,tt2,deb2 = f e2 (tns @ [(f1,f1t)] @ env) in
+			let ft = TyFun(List.map (fun (_,x) -> x) tns,frt) in 
+			(* f : tns -> frt *)
+			
+			let te2,c2,tt2,deb2 = self e2 (tns @ [(f,ft)] @ env) in
 			(* これは、関数名より変数名の方が先に調べられるみたい *) 
 			(* e3についての推論 *)
-			let te3,c3,tt3,_ = f e3 ((f1,f1t) :: env) in
-			(TLetRec((f1,(f1t,deb2)),List.map (fun (x,t) -> (x,(t,deb2))) tns,te2,te3),(tt2,fn1rt,deb2) :: c2 @ c3,tt3)
+			let te3,c3,tt3,_ = self e3 ((f,ft) :: env) in
+			(
+				TLetRec((f,(ft,deb2)),List.map (fun (x,t) -> (x,(t,deb2))) tns,te2,te3),
+				(tt2,frt,deb2) :: c2 @ c3,
+				tt3
+			)
 		)
 	| EApp(e1,e2) -> (
 		(* カリー化できないのでがんばる *)
-			let te1,c1,tt1,deb1 = f e1 env in
+			let te1,c1,tt1,deb1 = self e1 env in
 			let rt = gentype () in
-			let tet = List.map (fun x -> f x env) e2 in
+			let tet = List.map (fun x -> self x env) e2 in
+			(* ずっとバグってたみたいですね。 *)
 			let funt = TyFun(List.map (fun (_,_,x,_) -> x) tet,rt) in
 				(TApp(te1,List.map (fun (x,_,_,_) -> x) tet),
-				 (tt1,funt,deb1) :: List.concat (List.map (fun (_,x,_,_) -> x) tet),
+				 (tt1,funt,deb1) :: (List.concat (List.map (fun (_,x,_,_) -> x) tet)) @ c1,
 				 rt)
 		)
 	| ETuple(et) -> (
 		(* 制約集合の和をとるだけにする。 *)
-			let tet = List.map (fun x -> f x env) et in
+			let tet = List.map (fun x -> self x env) et in
 				(TTuple(List.map (fun (x,_,_,_) -> x) tet),
 				 List.concat (List.map (fun (_,x,_,_) -> x) tet),
 				 TyTuple(List.map (fun (_,_,x,_) -> x) tet))
 		)
 	| ELetTuple(ns,e1,e2) -> (
-			let te1,c1,tt1,deb1 = f e1 env in
+			let te1,c1,tt1,deb1 = self e1 env in
 			let tns = List.map (fun x -> (x,gentype ())) ns in
-			let te2,c2,tt2,_ = f e2 (tns @ env) in
+			let te2,c2,tt2,_ = self e2 (tns @ env) in
 				(TLetTuple(List.map (fun (x,t) -> (x,(t,deb1))) tns,te1,te2),
 				(tt1,TyTuple(List.map (fun (_,x) -> x) tns),deb1) :: c1 @ c2,tt2)
 		)
@@ -415,7 +437,7 @@ let rec type_infer venv astdeb env =
 					| Not_found -> raise (Failure("Undefined variant tag " ^ tag ^ " at " ^ (debug_data2str deb)))
 			) in
 			let tagne = TConst(CInt tagn),(TyInt,deb) in
-			let tet = List.map (fun x -> f x env) es in
+			let tet = List.map (fun x -> self x env) es in
 			let tt = TyTuple(List.map (fun (_,_,x,_) -> x) tet) in
 			let tagcs = (
 				try 
@@ -431,14 +453,14 @@ let rec type_infer venv astdeb env =
 		)
 	| EMatch(ep,ps) -> (
 			(* if文に訳する *)
-			let te1,c1,tt1,deb1 = f ep env in
+			let te1,c1,tt1,deb1 = self ep env in
 			let na = genvar (),(tt1,deb1) in
 			let nav = TVar(na),(tt1,deb1) in
 			(* ニュアンスは関数とその適用がめっちゃある感じ *)
 			let tet =  List.map (fun (pat,e) ->  
 				let cond,bind,aenv,cs = pattern2env env venv pat nav in
 				let tenv = aenv @ env in
-				(cond,bind,cs),(f e tenv)
+				(cond,bind,cs),(self e tenv)
 			) ps in  
 			
 			let rt = gentype () in
@@ -464,18 +486,7 @@ let rec type_infer venv astdeb env =
 
 
 
-let rec print_constrs_sub cs =
-        match cs with
-        | [] -> ()
-        | (x,y,_) :: xs -> (
-        	Printf.printf "(%s , %s)\n" 
-                (type2str x) (type2str y);
-                print_constrs_sub xs)
 
-let print_constrs cs =
-        print_string "[\n";
-        print_constrs_sub cs;
-        print_string "]\n"
 
 let print_subs subs =
 	print_string "[\n";
@@ -493,7 +504,7 @@ let rec ty_var_appear t v =
         | TyArr t -> (ty_var_appear t v)
         | TyTuple ts | TyUserDef(_,ts) -> List.fold_left (fun r -> fun t -> r || (ty_var_appear t v)) false ts
 
-let rec ty_subst subs t = 
+let rec ty_subst subs t =
 	match t with
 	| TyInt | TyFloat | TyNum | TyStr | TyChar -> t
 	| TyVar(nb) -> (
@@ -671,7 +682,8 @@ let user_defined_types = ref [
 	("float",TyFloat);
 	("unit",TyTuple([]));
 	("bool",TyInt); (*TODO(satos) さすがにいつか直す *)
-	("char",TyInt); (*TODO(satos) さすがにいつか直す *)
+	("char",TyChar);
+	("string",TyStr);
 ]
 
 let user_defined_type_env () = !user_defined_types
@@ -802,8 +814,11 @@ let check_ast ast sv =
 					match de with
 					| DLet(na,e) -> (
 							let tast,tc,rt,_ = type_infer venv e env in
-							print_string (Printf.sprintf "FDecl %s\n" na);
-							print_string (texp2str tast);
+							ivprint "\ntype infer";
+							ivprint (Printf.sprintf "FDecl DLet %s" na);
+							vprint texp2str tast;
+							ivprint "constrs";
+							vprint constrs2str tc;
 							let subs = unify tyenv (tc @ !addglobalcs) in
 							let rast = ast_subst subs tast in
 							let trt = ty_subst subs rt in
@@ -871,6 +886,8 @@ let check ast specs =
 		(defined_types ())
 	) in
 	let tast,_,_,ttyenv,tuts = check_ast ast sv in
+	ivprint "\ntexp without exports";
+	vprint texp2str (tast (TTuple([]),(TyInt,default_debug_data)));
 	let exports = check_spec ttyenv tuts specs in
 	
 	exports_list := List.map (fun (_,rena,t) -> rena) exports;

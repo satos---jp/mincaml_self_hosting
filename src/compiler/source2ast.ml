@@ -11,7 +11,7 @@ let basename s =
 	with
 		| Not_found -> s
 
-let stdlib_list = ["lib/ml/list.ml"; "lib/ml/nfa.ml"]
+let stdlib_list = ["lib/ml/list.ml"; "lib/ml/nfa.ml"; "lib/ml/lexing.ml"]
 
 let src2ast fname = 
 	let ic = open_in fname in
