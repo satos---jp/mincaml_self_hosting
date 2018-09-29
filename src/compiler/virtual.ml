@@ -1,5 +1,6 @@
 open Closure_conv
 open Syntax
+open Type
 open Type_checker
 open Debug
 open Genint

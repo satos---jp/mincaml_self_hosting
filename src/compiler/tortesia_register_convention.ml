@@ -1,4 +1,4 @@
-open Type_checker
+open Type
 open Op
 
 let rec range a b =  

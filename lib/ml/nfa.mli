@@ -12,7 +12,7 @@ val step : nfa -> state -> char -> state
 *)
 
 
-type state = (int * (string list)) list
+type state = (int * (((string option) * string) list)) list
 type node = int
 type edge = int * int list * int list
 type nfa = int * int * int * (char * (node * edge list) list) list
@@ -30,5 +30,5 @@ val nfa_add_edge : nfa -> node -> node -> char -> nfa
 val step : nfa -> state -> char -> state
 val isaccept : nfa -> state -> bool
 val isnill : state -> bool
-val startstate : nfa -> state
+
 

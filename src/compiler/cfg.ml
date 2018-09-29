@@ -1,4 +1,5 @@
 open Genint
+open Type
 open Type_checker
 open Closure_conv
 open Op

@@ -1,4 +1,4 @@
-open Type_checker
+open Type
 open Op
 
 type register_convention = {

@@ -4,58 +4,9 @@ open Main_option
 open Genint
 open Source2ast
 open Spec
-
-type tyvar = int
-
-type type_name = string
-
-type ty =
-	| TyInt
-	| TyFloat
-	| TyStr
-	| TyChar
-	| TyNum  (* int も float もこれの部分型 *)
-	| TyVar of tyvar
-	| TyArr of ty
-	| TyFun of (ty list) * ty
-	| TyTuple of ty list
-	| TyUserDef of type_name * (ty list)
-
+open Type
 
 exception TypeError of ty * ty * Debug.debug_data
-
-let tyvar2str v = Printf.sprintf "'a%d" v
-
-let rec type2str_with_pa t =
-        match t with
-        | TyInt | TyFloat | TyStr | TyChar | TyVar _ | TyTuple _ | TyNum | TyUserDef _ -> type2str t
-        | TyFun _ | TyArr _ -> "(" ^ (type2str t) ^ ")"
-
-and type2str t =
-	match t with
-	| TyInt -> "int"
-	| TyFloat -> "float"
-	| TyStr -> "string"
-	| TyChar -> "char"
-	| TyNum -> "number"
-	| TyVar v -> tyvar2str v
-	| TyFun (t1, t2) -> (
-		Printf.sprintf "%s -> %s" 
-			(String.concat " -> " (List.map type2str_with_pa t1))
-			(type2str_with_pa t2)
-		)
-	| TyArr t -> Printf.sprintf "Array %s" (type2str_with_pa t)
-	| TyTuple ts -> (
-			match ts with
-			| [] -> "()"
-			| x :: xs -> 
-				"(" ^ (List.fold_left (fun r -> fun t -> r ^ " * " ^ (type2str_with_pa t)) (type2str_with_pa x) xs) ^ ")"
-		)
-	| TyUserDef(s,ts) -> "UsrDef(" ^ s ^ "," ^ (String.concat " * " (List.map type2str_with_pa ts)) ^ ")"
-
-let print_type t = print_string ((type2str t) ^ "\n")
-
-let gentype () = TyVar(genint ())
 
 let genvar () = Printf.sprintf "@tc_%d" (genint ())
 
@@ -851,7 +802,7 @@ let check_ast ast sv =
 
 
 
-let check_spec tyenv uts specs = 
+let check_spec env tyenv uts specs = 
 	let fn = !filename in
 	let ls = String.length fn in
 	let hn = (String.sub fn 0 (ls-3)) in
@@ -863,7 +814,15 @@ let check_spec tyenv uts specs =
 				(*TODO verify type*)
 				let rena = prefix ^ na in
 				let t = eval_variant tyenv uts te in 
-				(na,rena,t) :: exports
+				try 
+					let et = List.assoc na env in
+					if is_subtype t et then
+						(na,rena,t) :: exports
+					else
+						(print_string (Printf.sprintf "variable %s decled with type %s is not subtype of actual type %s in %s.mli\n" na (type2str t) (type2str et) hn);
+						failwith (Printf.sprintf "variable %s decled with type %s is not subtype of actual type %s in %s.mli" na (type2str t) (type2str et) hn))
+				with
+					| Not_found -> failwith (Printf.sprintf "Undefined variable %s in %s.mli" na hn)
 			)
 		| STypeRename(na,te) -> (
 				(*TODO verify type*)
@@ -887,10 +846,10 @@ let check ast specs =
 		(user_defined_type_env ()),
 		(defined_types ())
 	) in
-	let tast,_,_,ttyenv,tuts = check_ast ast sv in
+	let tast,env,_,ttyenv,tuts = check_ast ast sv in
 	ivprint "\ntexp without exports";
 	vprint texp2str (tast (TTuple([]),(TyInt,default_debug_data)));
-	let exports = check_spec ttyenv tuts specs in
+	let exports = check_spec env ttyenv tuts specs in
 	
 	exports_list := List.map (fun (_,rena,t) -> rena) exports;
 	

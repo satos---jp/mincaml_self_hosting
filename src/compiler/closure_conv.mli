@@ -1,4 +1,4 @@
-type name = string * (Type_checker.ty * Debug.debug_data)
+type name = string * (Type.ty * Debug.debug_data)
 val name2str : name -> string
 val vs2str : name list -> string
 

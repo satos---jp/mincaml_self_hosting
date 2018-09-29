@@ -1,5 +1,6 @@
 open Virtual
 open Syntax
+open Type
 open Type_checker
 open Debug
 open Linux_win_diff

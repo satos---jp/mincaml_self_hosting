@@ -1,5 +1,5 @@
 open Syntax
-open Type_checker
+open Type
 open Debug
 
 type namestr = GVar of string | Var of string | Reg of string

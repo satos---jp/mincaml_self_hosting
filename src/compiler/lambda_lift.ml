@@ -1,6 +1,7 @@
 open Knorm
 open Syntax
 open Debug
+open Type
 open Type_checker
 open Elim_unused
 open Alpha

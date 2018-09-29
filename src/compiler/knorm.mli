@@ -1,5 +1,6 @@
 open Syntax
 open Debug
+open Type
 open Type_checker
 
 type name = string * (ty * debug_data)

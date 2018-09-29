@@ -1,7 +1,9 @@
 open Syntax
 open Debug
 open Genint
+open Type
 open Type_checker
+
 
 type name = string * (ty * debug_data)
 

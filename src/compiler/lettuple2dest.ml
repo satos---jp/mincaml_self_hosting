@@ -1,7 +1,8 @@
 open Syntax
 open Knorm
-open Type_checker
+open Type
 open Genint
+
 
 (* 
 ・関数の引数のTupleを分解する 

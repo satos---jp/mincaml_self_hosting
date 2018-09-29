@@ -11,7 +11,7 @@ let lexbuf_stdin _ =
 	print_char 10;
 	print_char c;
 	print_char 10;
-	c
+	Char.chr c
 
 let getc buf = 
 	buf ()

@@ -1,4 +1,4 @@
-type state = (int * (string list)) list
+type state = (int * (((string option) * string) list)) list
 type node = int
 type edge = int * int list * int list
 type nfa = int * int * int * (char * (node * edge list) list) list
@@ -83,7 +83,7 @@ let update_mems c ms =
 	List.map (fun (b,s) -> 
 		match b with
 		| None -> (b,s)
-		| Some ns -> (Some (ns ^ c),s)
+		| Some ns -> (Some (ns ^ (Char.escaped c)),s)
 	) ms
 
 let unset_mems ids ms = 

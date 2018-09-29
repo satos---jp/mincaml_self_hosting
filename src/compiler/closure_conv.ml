@@ -5,6 +5,7 @@ open Genint
 
 let gencname () = Printf.sprintf "@cls_%d" (genint ())
 
+open Type
 open Type_checker
 type name = string * (ty * debug_data)
 
