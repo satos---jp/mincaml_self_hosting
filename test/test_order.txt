@@ -23,7 +23,8 @@ string_check.ml
 eq_neq.ml
 pattern_argument.ml
 syntax_char.ml
-
+match.ml
+char.ml
 
 ; floatまわりが合わないのでこれは一旦無視する
 ftoi_itof.ml

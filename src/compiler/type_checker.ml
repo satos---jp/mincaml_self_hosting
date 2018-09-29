@@ -116,6 +116,8 @@ let genv () = [ (* lib.s *)
 ] @ [ (* char.s *)
 
 	("Char@code",TyFun([TyChar],TyInt));
+	("Char@chr",TyFun([TyInt],TyChar));
+	("Char@escaped",TyFun([TyChar],TyStr));
 
 ] @ [ (* libio_linux.s *)
 
@@ -200,7 +202,7 @@ Error: This pattern matches values of type 'a * 'b
 を返す *)
 (* マッチをif文の連鎖にするので、cond に成功したら (bind e),みたいなかんじで。 *)
 let rec pattern2env env venv pat pna = 
-	let f = pattern2env env venv in
+	let self = pattern2env env venv in
 	let _,td = pna in
 	let pt,deb = td in
 	let true_expr = TConst(CInt(1)),(TyInt,deb) in
@@ -244,36 +246,35 @@ let rec pattern2env env venv pat pna =
 			) in
 			let ls = List.length tagarg in
 			Printf.printf "%s :: %d\n" tag ls; 
-			if ls == 1 then (
-				let nt = List.hd tagarg in
-				let na = (genvar (),(nt,deb)) in
-				let cond, bind, tenv, cs = f ps (TVar(na),(nt,deb)) in
-				(
-					(TIf(cmptag tagn,cond,false_expr),(TyInt,deb)),
-					(fun ((_,ted) as e) -> TLet(na,
-						(TOp(OGetTuple(0),[
-							TOp(OGetTuple(1),[pna]),(nt,deb)
-						]),(TyTuple([nt]),deb))
-					,(bind e)),ted),
-					tenv,
-					(pt,tagty,deb) :: cs
-				)
-			) else (
-				match ps with
-				| PTuple rps when (List.length rps == ls) -> (
-						let nt = TyTuple(tagarg) in
-						let na = (genvar (),(nt,deb)) in
-						let cond, bind, tenv, cs = f ps (TVar(na),(nt,deb)) in
-						(
-							(TIf(cmptag tagn,cond,false_expr),(TyInt,deb)),
-							(fun ((_,ted) as e) -> TLet(na,
-								(TOp(OGetTuple(1),[pna]),(nt,deb))
-							,(bind e)),ted),
-							tenv,
-							(pt,tagty,deb) :: cs
+			
+			let nt,ftbind = (
+				if ls == 1 then (
+					List.hd tagarg,
+					(fun nt -> 
+							(TOp(OGetTuple(0),[
+								TOp(OGetTuple(1),[pna]),(nt,deb)
+							]),(TyTuple([nt]),deb)))
+				) else (
+					match ps with
+					| PTuple rps when (List.length rps == ls) -> (
+							TyTuple(tagarg),
+							(fun nt -> (TOp(OGetTuple(1),[pna]),(nt,deb)))
 						)
-					)
-				| _ -> raise (Failure(Printf.sprintf "tag %s needs %d args at %s" tag ls (debug_data2str deb)))
+					| _ -> raise (Failure(Printf.sprintf "tag %s needs %d args at %s" tag ls (debug_data2str deb)))
+				)
+			) 
+			in
+			let na = (genvar (),(nt,deb)) in
+			let cond, bind, tenv, cs = self ps (TVar(na),(nt,deb)) in
+			let tbind = 
+				(fun ((_,ted) as e) -> TLet(na,(ftbind nt),e),ted)
+			in
+			(
+				(* TODO(satos) ここ多分冗長なので直す(よく分かってない) *)
+				(TIf(cmptag tagn,tbind (bind cond),false_expr),(TyInt,deb)),
+				(fun e -> tbind (bind e)),
+				tenv,
+				(pt,tagty,deb) :: cs
 			)
 		)
 	| PTuple(ps) -> (
@@ -281,7 +282,7 @@ let rec pattern2env env venv pat pna =
 				List.fold_left (fun ((rcond, rbind, rtenv, rcs),ts) (i,pat) -> 
 					let nt = gentype () in
 					let na = (genvar (),(nt,deb)) in
-					let cond, bind, tenv, cs = f pat (TVar(na),(nt,deb)) in
+					let cond, bind, tenv, cs = self pat (TVar(na),(nt,deb)) in
 					((
 						(TIf(rcond,cond,false_expr),(TyInt,deb)),
 						(fun ((_,ted) as e) -> TLet(na,
@@ -461,13 +462,14 @@ let rec type_infer venv astdeb env =
 				let cond,bind,aenv,cs = pattern2env env venv pat nav in
 				let tenv = aenv @ env in
 				(cond,bind,cs),(self e tenv)
-			) ps in  
+			) ps in
 			
 			let rt = gentype () in
 			let ert = TyFun([gentype ()],rt) in
 			let erre : texp = (TApp(
 				(TVar(("raise_match_failure",(ert,deb))),(ert,deb)),
-				[TConst(CInt(0)),(TyInt,deb)]
+				(* ここで載せてみる *)
+				[TConst(CString(debug_data2str deb)),(TyStr,deb)]
 			),(rt,deb)) in
 			let re = TLet(na,te1,(
 				List.fold_right (fun ((cond,bind,_),(x,_,_,d)) ne -> 

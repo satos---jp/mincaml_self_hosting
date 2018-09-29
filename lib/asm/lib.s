@@ -228,17 +228,23 @@ loop:
 	ret
 
 
-estr:
-	db "match failure", 10, 0
+
 	
 print_string_err:
 	push ebp
 	mov ebp,esp
 	sub esp,8
-	
 	mov eax,[ebp+0x8]
 	mov [ebp-0x4],eax
 	xor ecx,ecx
+
+	test eax,0x20000000
+	jz print_string_err_loop
+	
+	xor eax,0x20000000
+	add eax,4
+	mov [ebp-0x4],eax
+
 print_string_err_loop:
 	mov eax,[ebp-0x4]
 	mov cl,[eax]
@@ -257,8 +263,14 @@ print_string_err_loop:
 	pop ebp
 	ret
 
+estr:
+	db "match failure at ", 10, 0
+
 raise_match_failure_:
 	push estr
+	call print_string_err
+	add esp,4
+	push dword [esp+4]
 	call print_string_err
 	add esp,4
 	int 0x3

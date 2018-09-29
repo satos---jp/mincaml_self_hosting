@@ -1,4 +1,4 @@
-type state = int list
+type state = (int * (string list)) list
 type node = int
 type edge = int * int list * int list
 type nfa = int * int * int * (char * (node * edge list) list) list
@@ -16,9 +16,8 @@ let rec assoc_opt y xs =
 		)
 	| [] -> None
 
-let trans  (_,_,ts) = ts
-let fin   (_,gr,_) = gr
-
+let trans (_,_,_,ts) = ts
+let ends (_,x,_,_) = x
 
 let rec unique v = 
 	match v with
@@ -72,7 +71,7 @@ let rec collect_trans s ts =
 	| [] -> []
 	| (x,d) :: xs -> (
 			let r = collect_trans s xs in
-			if x = i then d :: r else r
+			if x = i then d @ r else r
 		) 
 
 let init_mems ids ms = 
@@ -125,10 +124,20 @@ let step g sts c =
 		) sts))
 	)
 
-let isaccept x gr = x = gr
+let i2s i = Char.escaped (Char.chr (i+48))
+let state2str st = 
+	let rec f v = 
+		match v with
+		| [] -> ""
+		| (d,_) :: ds -> (i2s d) ^ " " ^ (f ds)
+	in
+		f st
+
+let isaccept g st = 
+	print_string ("{ " ^ (state2str st) ^ " }");
+	print_char 10;
+	List.mem_assoc (ends g) st
 
 let isnill st = (st = [])
-
-let startstate (s,gr,gs) = s
 
 

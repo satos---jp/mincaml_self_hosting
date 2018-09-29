@@ -75,8 +75,8 @@ let changext fn ext1 ext2 =
 let compile file = 
 	ivprint (Printf.sprintf "compile %s" file);
 	let tast = Source2ast.src2ast file in
-	print_string (top2str tast);
-	print_string "parsed"; print_newline ();
+	vprint top2str tast;
+	ivprint "parsed";
 	
 	let spec = (
 		if Sys.file_exists (changext file ".ml" ".mli") then
@@ -145,9 +145,9 @@ let output_stub files =
 	) ^ (
 		"section .bss\n" ^
 		"global_heap:\n" ^
-		"\tresb 1000\n" ^ 
+		"\tresb 100000\n" ^ 
 		"heap:\n" ^
-		"\tresb 10000\n" ^ 
+		"\tresb 100000\n" ^ 
 		"section .data\n" ^
 		"section .text\n" ^
 		"_start:\n" ^
