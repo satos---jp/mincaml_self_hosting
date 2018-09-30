@@ -64,3 +64,5 @@ main.ml
 tes.mll
 src/lex/nfa.ml
 src/lex/nfa.mli
+lexer.mll
+tes.py
