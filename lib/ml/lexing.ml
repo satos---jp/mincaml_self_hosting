@@ -7,10 +7,12 @@ type lexbuf = unit -> char
 
 let lexbuf_stdin _ = 
 	let c = read_char () in
+	(*
 	print_string "read char";
 	print_char 10;
 	print_char c;
 	print_char 10;
+	*)
 	Char.chr c
 
 let getc buf = 
@@ -48,10 +50,12 @@ let my_lexing buf data =
 					if Nfa.isaccept nfa state then Some ()
 					else lasp
 				) in
+				(*
 				print_string (if Nfa.isaccept nfa state then "T" else "F");
 				print_char 32;
 				print_string (match tlasp with Some _ -> "Some" | None -> "None");
 				print_char 10;
+				*)
 				if Nfa.isnill ts then
 					match tlasp with
 					| None -> f c xs
@@ -64,10 +68,12 @@ let my_lexing buf data =
 	in
 	let rec circle ss = 
 		let c = getc buf in
+		(*
 		print_string "ciecle";
 		print_char 10;
 		print_string (stats2str ss);
 		print_char 10;
+		*)
 		let tss = f c ss in
 		match tss with
 		| [Gone(p,func)] -> func p

@@ -62,4 +62,5 @@ lexer_sample.mll
 lexer.mli
 main.ml
 tes.mll
-
+src/lex/nfa.ml
+src/lex/nfa.mli

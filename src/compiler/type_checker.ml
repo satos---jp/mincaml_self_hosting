@@ -196,7 +196,7 @@ let rec pattern2env env venv pat pna =
 					| Not_found -> raise (Failure("Undefined variant tag " ^ tag ^ " at " ^ (debug_data2str deb)))
 			) in
 			let ls = List.length tagarg in
-			Printf.printf "%s :: %d\n" tag ls; 
+			ivprint (Printf.sprintf "%s :: %d\n" tag ls); 
 			
 			let nt,ftbind = (
 				if ls == 1 then (
@@ -270,6 +270,23 @@ let constrs2str cs =
 (* TyInt関連は最後にチェックする *)
 let addglobalcs = ref []
 
+let list2str v f =
+	"[" ^ (
+		let rec self w = 
+			match w with
+			| [] -> "]"
+			| [x] -> (f x) ^ "]"
+			| x :: xs -> (f x) ^ ";" ^ (self xs)
+		in 
+			self v
+	)
+
+let print_env v = 
+	print_string "env\n";
+	print_string (list2str v (fun (x,_) -> x));
+	print_string "\n"
+
+
 let rec type_infer venv astdeb env = 
 	let self = type_infer venv in
 	let ast,deb = astdeb in
@@ -280,6 +297,9 @@ let rec type_infer venv astdeb env =
 	| EConst(CString x) -> (TConst(CString x),[],TyStr)
 	| EConst(CChar x) -> (TConst(CChar x),[],TyChar)
 	| EVar(x) -> (
+			(*
+			print_env env;
+			Printf.printf " of %s\n" x; *)
 			try (
 				let tt = List.assoc x env in
 				(TVar((x,(tt,deb))),[],tt)
@@ -730,7 +750,7 @@ let check_ast ast sv =
 							if List.mem (filena ^ ".ml") stdlib_list then
 								(
 									f,
-									(rena,t) :: (na,t) :: env
+									(rena,t) :: env (* TODO(satos) ここ、ちょっと不正確(わざわざopen List とかしてるとバグる) ので直す*)
 									,venv,tyenv,uts
 								)
 							else
@@ -811,7 +831,6 @@ let check_spec env tyenv uts specs =
 	List.fold_left (fun exports spec ->
 		match spec with
 		| SValtype(na,te) -> (
-				(*TODO verify type*)
 				let rena = prefix ^ na in
 				let t = eval_variant tyenv uts te in 
 				try 
@@ -827,7 +846,7 @@ let check_spec env tyenv uts specs =
 		| STypeRename(na,te) -> (
 				(*TODO verify type*)
 				exports
-			)	
+			)
 		| _ -> raise (Failure("Unimplemented in check_spec"))
 	) [] specs
 
@@ -837,8 +856,11 @@ let get_exports () = !exports_list
 
 let global_funcs () = (get_exports ()) @ (List.map fst (get_imports ()))
 
+
 let check ast specs = 
 	externs := [];
+	exports_list := [];
+	
 	let sv = (
 		(fun x -> x),
 		(genv ()),

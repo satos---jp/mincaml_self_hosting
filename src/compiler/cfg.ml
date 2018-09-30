@@ -647,7 +647,9 @@ let rec to_cfgs ast tov istail cfg fn head_label addtoroot =
 			(chd,cts2 @ cts1)
 		)
 	| CVar(x) -> (
-			if List.mem (fst x) (global_funcs ()) then 
+			if List.mem (fst x) (global_funcs ()) && (match fst (snd x) with TyFun _ -> true | _ -> false) then 
+				(* falseとかもglobal_funcsに入りうるので、それはさける *)
+				(* TODO(satos) 名前/設計 がまずそうなので直す *)
 				reccall (CClosure(x,[]))
 			else
 				sres (OpMov(cna2na tov,cna2na x))

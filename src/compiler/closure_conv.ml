@@ -2,6 +2,7 @@ open Knorm
 open Syntax
 open Debug
 open Genint
+open Main_option
 
 let gencname () = Printf.sprintf "@cls_%d" (genint ())
 
@@ -169,7 +170,7 @@ let rec remove_closure known istoplevel ast =
 			(* te1中に出ている、外側由来のものを集める  *)
 			let fvs = unique_name (get_fvs e1 (fn :: (List.map fst known) @ (List.map fst args) @ (global_funcs ()))) in
 			if List.length fvs = 0 then (
-				Printf.printf "%s is closure free\n" fn;
+				ivprint (Printf.sprintf "%s is closure free\n" fn);
 				(* クロージャは(普通)不要。 変数に代入される際に大変になる *)
 				let cn = gencname () in (* 各クロージャで、一時的に作るやつ *)
 				let tknown = (fn,(cn,fun x -> CLet((cn,ft),CClosure((fn,ft),[]),x))) :: known in
@@ -188,8 +189,8 @@ let rec remove_closure known istoplevel ast =
 				let te1 = to_add_closure (reccall e1) in
 				(* 再帰呼び出しのため、自身の特殊なクロージャを作る。後々ediで渡す。 *)
 					(* Printf.printf "name %s :: type %s\n" fn (type2str ft); *)
-					print_string (String.concat " : " (List.map fst fvs));
-					Printf.printf " :: %s .aka %s\n" global_name fn;
+					ivprint (String.concat " : " (List.map fst fvs));
+					ivprint (Printf.sprintf " :: %s .aka %s\n" global_name fn);
 					globals := {fn = (global_name,ft); cvs=fvs; vs=args; cbody=te1} :: !globals;
 					to_add_closure (reccall e2)
 			)

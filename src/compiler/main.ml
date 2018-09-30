@@ -73,7 +73,7 @@ let changext fn ext1 ext2 =
 
 
 let compile file = 
-	ivprint (Printf.sprintf "compile %s" file);
+	Printf.printf "compile %s\n" file;
 	let tast = Source2ast.src2ast file in
 	vprint top2str tast;
 	ivprint "parsed";

@@ -279,11 +279,29 @@ raise_match_failure_:
 not_comparable_str:
 	db "UnComparable", 10, 0
 
+type_checker_broken_str:
+	db "Invalid Compare(of eax vs. ebx) . Maybe Typechecker is broken", 10, 0
+
 data_eq:
 	mov eax,[esp+0x4]
 	mov ebx,[esp+0x8]
+	
+	mov ecx,eax
+	xor ecx,ebx
+	test ecx,0x70000000
+	jz data_eq_valid
+	
+	push eax
+	push ebx
+	push type_checker_broken_str
+	call print_string_err
+	add esp,4
+	pop ebx
+	pop eax
+	int 0x3
+
+data_eq_valid:
 	test eax,0x40000000
-	; int 0x3
 	jz not_int_float
 	cmp eax,ebx
 	sete al

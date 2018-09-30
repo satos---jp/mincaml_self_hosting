@@ -1,7 +1,9 @@
+
 type state = (int * (((string option) * string) list)) list
 type node = int
 type edge = int * int list * int list
 type nfa = int * int * int * (char * (node * edge list) list) list
+
 
 let new_node (a,b,ml,v) = 
 	((a,b,ml+1,v),ml)
@@ -20,12 +22,14 @@ let trans (_,_,_,ts) = ts
 let ends (_,x,_,_) = x
 
 let rec unique v = 
+	v (*
 	match v with
 	| [] -> []
 	| x :: xs -> (
 		let txs = unique xs in
 			if List.mem x txs then txs else x :: txs
 		)
+*)
 
 (*
 state :: (idx,mem) の list
@@ -99,13 +103,30 @@ let rec map2 f v =
 	match v with
 	| x :: xs -> (f x) :: (map2 f xs)
 	| [] -> []
+let rec map3 f v = 
+	match v with
+	| x :: xs -> (f x) :: (map2 f xs)
+	| [] -> []
 
 let edge_to (t,_,_) = t
 let edge_inits (_,s,_) = s
 let edge_unsets (_,_,s) = s
 
-let step g sts c = 
+let i2s i = Char.escaped (Char.chr (i+48))
+let state2str st = 
+	let rec f v = 
+		match v with
+		| [] -> ""
+		| (d,_) :: ds -> (i2s d) ^ " " ^ (f ds)
+	in
+		f st
+
+let step g st c = 
 	let gts = assoc_opt c (trans g) in
+	(*
+	print_string ("step check { " ^ (state2str st) ^ " } with " ^ (Char.escaped c));
+	print_string (Char.escaped (Char.chr 10));
+	*)
 	match gts with | None -> []
 	| Some ts -> (
 		unique (List.concat (List.map (fun s -> 
@@ -121,21 +142,16 @@ let step g sts c =
 				) in
 				(t,tms)
 			) trs
-		) sts))
+		) st))
 	)
 
-let i2s i = Char.escaped (Char.chr (i+48))
-let state2str st = 
-	let rec f v = 
-		match v with
-		| [] -> ""
-		| (d,_) :: ds -> (i2s d) ^ " " ^ (f ds)
-	in
-		f st
+
 
 let isaccept g st = 
-	print_string ("{ " ^ (state2str st) ^ " }");
-	print_char 10;
+	(*
+	print_string ("isaccept check { " ^ (state2str st) ^ " } with " ^ (i2s (ends g)));
+	print_string (Char.escaped (Char.chr 10));
+	*)
 	List.mem_assoc (ends g) st
 
 let isnill st = (st = [])

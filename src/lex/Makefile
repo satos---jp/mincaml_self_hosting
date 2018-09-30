@@ -15,8 +15,8 @@ LIBS = str
 -include OCamlMakefile
 
 pre_copy:
-	rm nfa.ml
-	rm nfa.mli
+	rm -f nfa.ml
+	rm -f nfa.mli
 	cp ../../lib/ml/nfa.ml ./
 	cp ../../lib/ml/nfa.mli ./
 

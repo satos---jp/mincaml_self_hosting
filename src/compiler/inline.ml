@@ -9,7 +9,7 @@ let rec inline ast fns =
 	| KLetTuple(na,vs,e1) -> KLetTuple(na,vs,inline e1 fns)
 	| KLetRec((fn,fdt),vs,e1,e2) -> (
 			let tfns = if kexp_size e1 < 30 then 
-				(Printf.printf "inlining %s\n" fn; (fn,(vs,e1)) :: fns)
+				(ivprint (Printf.sprintf "inlining %s\n" fn); (fn,(vs,e1)) :: fns)
 			else fns
 			in
 			KLetRec((fn,fdt),vs,inline e1 tfns,inline e2 tfns)
