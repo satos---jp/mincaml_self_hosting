@@ -48,22 +48,13 @@ let update_list v i f =
 	else
 		(i,f []) :: v
 
-
-(* TODO(satos) そろそろ真面目にrank1多相しないといけない... *)
-let update_list_2 v i f = 
-	if List.mem_assoc i v then
-		List.map (fun (x,d) -> (x,if x = i then f d else d)) v
-	else
-		(i,f []) :: v
-
 let nfa_add_edge (a,b,ls,tr) st gl c = 
 	let ne = (gl,[],[]) in
 	let ttr = 
 		update_list tr c (fun w -> 
-			update_list_2 w st (fun v -> ne :: v))
+			update_list w st (fun v -> ne :: v))
 	in
 		(a,b,ls,ttr)
-
 
 
 let state_idx (i,_) = i
@@ -98,15 +89,6 @@ let unset_mems ids ms =
 		) else (b,s)
 	) ms 
 
-(* TODO(後で消す) *)
-let rec map2 f v = 
-	match v with
-	| x :: xs -> (f x) :: (map2 f xs)
-	| [] -> []
-let rec map3 f v = 
-	match v with
-	| x :: xs -> (f x) :: (map2 f xs)
-	| [] -> []
 
 let edge_to (t,_,_) = t
 let edge_inits (_,s,_) = s
@@ -132,7 +114,7 @@ let step g st c =
 		unique (List.concat (List.map (fun s -> 
 			let trs = collect_trans s ts in
 			let nms = state_mems s in
-			map2 (fun e -> 
+			List.map (fun e -> 
 				let t = edge_to e in
 				let tms = (
 					nms |> 

@@ -9,7 +9,7 @@ open Debug
 
 let externs = ref []
 
-let genv_base = List.map (fun (na,t) -> (na,schemize t [])) (
+let genv_base = List.map (fun (na,t) -> (na,schemize t [] [])) (
 [ (* lib.s *)
 	("int_of_float",TyFun([TyFloat],TyInt));
 	("float_of_int",TyFun([TyInt],TyFloat));
@@ -326,12 +326,18 @@ let rec type_infer tyenv venv astdeb env =
 			let subs = unify tyenv c2 in
 			let tte2 = ast_subst subs te2 in
 			let ttt2 = ty_subst subs tt2 in
-			let ts2 = schemize ttt2 env in
+			
+			(* いったんenvをアップデートしないといけなかったりする。(都合で) *)
+			let ts2 = schemize ttt2 env subs in
 
+			print_string ("letdecl " ^ n1 ^ "\n");
+			print_string (constrs2str c2);
+			
 			let te3,c3,tt3,_ = self e3 ((n1,ts2) :: env) in
 			
 			(* TODO(satos) デバッグ用の名前も、多分schemaにしないといけないんだけど面倒なので飛ばす *)
 			(* これc2も外に出さなきゃいけないよね...??(毎回言ってんな...)(c2のうち、不要なのは消しといたほうがよさそう...(計算量的に)) *)
+			(* これ正しくはenvもアップデートされますねここで!?(設計がやばくなりそう)*)
 			(TLet((n1,(ttt2,deb2)),tte2,te3),c2 @ c3,tt3)
 		)
 	| ELetRec(f,ps,e2,e3) -> (
@@ -350,13 +356,13 @@ let rec type_infer tyenv venv astdeb env =
 			let subs = unify tyenv cc2 in
 			let tte2 = ast_subst subs te2 in
 			let tft = ty_subst subs ft in
-			let tfts = schemize tft env in
+			let tfts = schemize tft env subs in
 			
 			(* e3についての推論 *)
 			let te3,c3,tt3,_ = self e3 ((f,tfts) :: env) in
 			(
 				TLetRec((f,(tft,deb2)),List.map (fun (x,t) -> (x,(ty_subst subs t,deb2))) btns,tte2,te3),
-				c3,
+				c2 @ c3, (* やっぱcc2いるよなぁ... *)
 				tt3
 			)
 		)
@@ -659,7 +665,7 @@ let check_ast ast sv =
 					| SValtype(na,te) -> (
 							let rena = (String.capitalize (basename filena)) ^ "@" ^ na in
 							let t = eval_variant tyenv uts te in
-							let ts = schemize t env in
+							let ts = schemize t env [] in (* これはなんだこれは(多分あってるけど) *)
 							externs := (rena,ts) :: (!externs);
 							let td = (t,default_debug_data) in
 							
@@ -712,7 +718,7 @@ let check_ast ast sv =
 							let rast = ast_subst subs tast in
 							let trt = ty_subst subs rt in
 							(* print_string (texp2str rast); *)
-							let trts = schemize trt env in
+							let trts = schemize trt env subs in
 							let sast = fix_partial_apply rast in
 							(
 								(fun y -> f (TLet((na,(trt,default_debug_data)),sast,y),(snd y))),

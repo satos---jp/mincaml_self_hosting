@@ -146,8 +146,8 @@ let instanciate (tvs,t) =
 let list_sub v w = 
 	List.filter (fun x -> not (List.mem x w)) v
 
-let schemize t env = 
-	let env_fvs = List.concat (List.map (fun (_,(svs,s)) -> list_sub (get_fv s) svs) env) in
+let schemize t env subs = (* TODO(satos) うまくすれば、これ不要になるはず(今のだと計算量がにゃーんする) *)
+	let env_fvs = List.concat (List.map (fun (_,(svs,s)) -> list_sub (get_fv (ty_subst subs s)) svs) env) in
 	let tvs = list_sub (get_fv t) env_fvs in
 	(tvs,t)
 

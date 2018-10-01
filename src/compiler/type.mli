@@ -21,7 +21,7 @@ val gentype : unit -> ty
 
 type tyscheme
 val instanciate : tyscheme -> ty
-val schemize : ty -> (string * tyscheme) list -> tyscheme
+val schemize : ty -> (string * tyscheme) list -> (tyvar * ty) list -> tyscheme
 val no_fv_scheme : ty -> tyscheme
 val tyscheme2str : tyscheme -> string
 val ty_scheme_subst : (tyvar * ty) list -> tyscheme -> tyscheme
