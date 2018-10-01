@@ -20,3 +20,5 @@ and texp_base =
 val genvar : unit -> string
 val texp2str : texp -> string
 
+val ast_subst : (tyvar * ty) list -> texp -> texp
+

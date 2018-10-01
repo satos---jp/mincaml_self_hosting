@@ -229,7 +229,8 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 		(Printf.sprintf "\tand %s,0x8fffffff\n" s) ^
 		(Printf.sprintf "\tor  %s,0x10000000\n" s)
 	in
-	let untag_tor ((_,(t,_)) as na) s = 
+	let untag_tor ((x,(t,_)) as na) s = 
+		Printf.printf "untag %s with type %s\n" (namestr2str !x) (type2str t);
 		(Printf.sprintf "\tmov %s,%s\n" s (nd2ps na)) ^
 		(if t = TyInt then
 			(untagi s)
@@ -357,7 +358,8 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 				"; " ^ (debug_data2simple d) ^ "\n"
 			)
 		| OpMov(((n1,(t1,d1)) as nrd),((n2,(t2,d2)) as nad)) -> (
-				if t1 <> t2 then raise (Failure (Printf.sprintf 
+				(* TODO(satos) ここ不正確なので型スキームの同一性判定でやりたい。 *)
+				if not (is_subtype t1 t2) then raise (Failure (Printf.sprintf 
 					"Type mismatch move to %s (%s) : %s from %s (%s) : %s" 
 					(namereg2str nrd) (debug_data2simple d1) (type2str t1) 
 					(namereg2str nad) (debug_data2simple d2) (type2str t2))) else

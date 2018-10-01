@@ -107,7 +107,7 @@ let rec unify tyenv cs =
 			| TyArr a,TyArr b -> self ((a,b,deb) :: xs)
 			| TyFun(vs,b),TyFun(ws,d) -> ( (* 部分適用に対応する。 *)
 					let rec f nvs nws = (
-						match nvs,nws with
+ 						match nvs,nws with
 						| [],[] -> [(b,d,deb)]
 						| [],rws -> [(b,TyFun(rws,d),deb)]
 						| rvs,[] -> [(TyFun(rvs,b),d,deb)]
@@ -128,9 +128,45 @@ let rec unify tyenv cs =
 	)
 
 
+let rec get_fv t = 
+	match t with
+	| TyInt | TyFloat | TyNum | TyStr | TyChar -> []
+	| TyFun (t1s, t2) -> List.concat (List.map get_fv (t2 :: t1s))
+	| TyVar x -> [x]
+	| TyArr t -> get_fv t
+	| TyTuple ts | TyUserDef(_,ts) ->  List.concat (List.map get_fv ts)
+
+
+type tyscheme = tyvar list * ty
+
+let instanciate (tvs,t) = 
+	let sub = List.map (fun x -> (x,TyVar(genint ()))) tvs in
+	ty_subst sub t
+	
+let list_sub v w = 
+	List.filter (fun x -> not (List.mem x w)) v
+
+let schemize t env = 
+	let env_fvs = List.concat (List.map (fun (_,(svs,s)) -> list_sub (get_fv s) svs) env) in
+	let tvs = list_sub (get_fv t) env_fvs in
+	(tvs,t)
+
+let no_fv_scheme t = ([],t)
+
+let tyscheme2str (tvs,t) = 
+	(String.concat " " (List.map tyvar2str tvs)) ^ ". " ^ (type2str t)
+
+let ty_scheme_subst subs (tvs,t) = 
+	let ttvs = List.map (fun _ -> genint ()) tvs in
+	let sub = List.map2 (fun x y -> (x,TyVar(y))) tvs ttvs in
+	(* schemeの中身をalpha変換しておく(キャプチャ防ぐやつ) *)
+	let tt = ty_subst sub t in
+	(ttvs,ty_subst subs tt)
+
 (* ta < tb かを判定する(毎回どっちやねんとなるが) *)
 (* tb　のシグネチャとして ta がありかどうか。 (int -> int ,'a -> 'a) などはあり。 *)
 (* というか ta に適切な型代入をすると tb になるかですね。 *)
+(* TODO(satos) これ型の共変反変をミスってそうですね *)
 
 exception Subtype_false
 

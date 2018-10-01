@@ -9,8 +9,8 @@ open Debug
 
 let externs = ref []
 
-let genv () = [ (* lib.s *)
-
+let genv_base = List.map (fun (na,t) -> (na,schemize t [])) (
+[ (* lib.s *)
 	("int_of_float",TyFun([TyFloat],TyInt));
 	("float_of_int",TyFun([TyInt],TyFloat));
 	(* れいず!! *)
@@ -41,7 +41,9 @@ let genv () = [ (* lib.s *)
 	("Printf@sprintf",TyFun([TyStr],TyVar(genint ())))
 	ランク1多相導入しないとどうしようもなくなってきたな...???
 	*)
-] @ (!externs)
+])
+
+let genv () = genv_base @ (!externs)
 
 
 (*
@@ -97,6 +99,8 @@ Error: This pattern matches values of type 'a * 'b
 *)
 
 
+
+
 (*
 	型環境        env
 	型定義環境    venv : (string * (int * ty * (ty list))) list
@@ -106,7 +110,7 @@ Error: This pattern matches values of type 'a * 'b
 
 (* cond : texp, 
 	 bind : texp -> texp,
-	 tenv : (string * ty) list,
+	 tenv : (string * tyscheme) list,  :: 値多相制限あたりでここは制限されるぽい？
 	 constr : (ty * ty * debug) list
 を返す *)
 (* マッチをif文の連鎖にするので、cond に成功したら (bind e),みたいなかんじで。 *)
@@ -126,7 +130,7 @@ let rec pattern2env env venv pat pna =
 	| PVar(x) -> (
 			true_expr,
 			(fun ((_,ted) as e) -> TLet((x,td),pna,e),ted),
-			[(x,pt)],
+			[(x,no_fv_scheme pt)], (* TODO(satos) ここほんまかっつってる *)
 			[]
 		)
 	| PVariant(tag) -> (
@@ -244,8 +248,14 @@ let print_env v =
 	print_string (list2str v (fun (x,_) -> x));
 	print_string "\n"
 
-let rec type_infer venv astdeb env = 
-	let self = type_infer venv in
+(*
+let多相にするぞい。
+env を (name * ty) から (name * ty_scheme) にする
+*)
+
+
+let rec type_infer tyenv venv astdeb env = 
+	let self = type_infer tyenv venv in
 	let ast,deb = astdeb in
 	let rast,rc,rt = (
 	match ast with
@@ -259,7 +269,8 @@ let rec type_infer venv astdeb env =
 			Printf.printf " of %s\n" x; *)
 			try (
 				let tt = List.assoc x env in
-				(TVar((x,(tt,deb))),[],tt)
+				let ttt = instanciate tt in
+				(TVar((x,(ttt,deb))),[],ttt)
 			)
 			with
 				| Not_found -> raise (Failure("undefined variable " ^ x ^ " at " ^ (debug_data2str deb)))
@@ -312,24 +323,42 @@ let rec type_infer venv astdeb env =
 		)
 	| ELet(n1,e2,e3) -> (
 			let te2,c2,tt2,deb2 = self e2 env in
-			let te3,c3,tt3,_ = self e3 ((n1,tt2) :: env) in
-			(TLet((n1,(tt2,deb2)),te2,te3),c2 @ c3,tt3)
+			let subs = unify tyenv c2 in
+			let tte2 = ast_subst subs te2 in
+			let ttt2 = ty_subst subs tt2 in
+			let ts2 = schemize ttt2 env in
+			
+			let te3,c3,tt3,_ = self e3 ((n1,ts2) :: env) in
+			
+			(* TODO(satos) デバッグ用の名前も、多分schemaにしないといけないんだけど面倒なので飛ばす *)
+			(TLet((n1,(ttt2,deb2)),tte2,te3),c3,tt3)
 		)
 	| ELetRec(f,ps,e2,e3) -> (
 			let ns = List.map (fun x -> match x with | PVar v -> v | _ -> raise (Failure "Shouldn't reach here")) ps in
 			
 			let frt = gentype () in
-			let tns = List.map (fun x -> (x,gentype ())) ns in
-			let ft = TyFun(List.map (fun (_,x) -> x) tns,frt) in 
-			(* f : tns -> frt *)
-			
-			let te2,c2,tt2,deb2 = self e2 (tns @ [(f,ft)] @ env) in
+			let btns = List.map (fun x -> (x,gentype ())) ns in
+			let tns = List.map (fun (a,b) -> (a,no_fv_scheme b)) btns in
+			let ft = TyFun(List.map (fun (_,x) -> x) btns,frt) in 
+			let fts = no_fv_scheme ft in
+			(* ここ、ftとtnsどっちも自由変数なしでいいんだっけ...??(いやさすがに制約がなくなりそうなのでよいか) *)
+			let te2,c2,tt2,deb2 = self e2 (tns @ [(f,fts)] @ env) in
 			(* これは、関数名より変数名の方が先に調べられるみたい *) 
+			
+			print_string ("function " ^ f ^ "\n");
+			print_string (constrs2str c2);
+			
+			let cc2 = (tt2,frt,deb2) :: c2 in
+			let subs = unify tyenv cc2 in
+			let tte2 = ast_subst subs te2 in
+			let tft = ty_subst subs ft in
+			let tfts = schemize tft env in
+			
 			(* e3についての推論 *)
-			let te3,c3,tt3,_ = self e3 ((f,ft) :: env) in
+			let te3,c3,tt3,_ = self e3 ((f,tfts) :: env) in
 			(
-				TLetRec((f,(ft,deb2)),List.map (fun (x,t) -> (x,(t,deb2))) tns,te2,te3),
-				(tt2,frt,deb2) :: c2 @ c3,
+				TLetRec((f,(tft,deb2)),List.map (fun (x,t) -> (x,(ty_subst subs t,deb2))) btns,tte2,te3),
+				c3,
 				tt3
 			)
 		)
@@ -353,10 +382,20 @@ let rec type_infer venv astdeb env =
 		)
 	| ELetTuple(ns,e1,e2) -> (
 			let te1,c1,tt1,deb1 = self e1 env in
-			let tns = List.map (fun x -> (x,gentype ())) ns in
+			(*
+			let subs = unify tyenv c1 in
+			let tte1 = ast_subst subs te1 in
+			let ttt1 = ty_subst subs tt1 in
+			let ts1 = schemize ttt1 env in
+			TODO(satos) なんかここいる気がするがわかんない
+			*)
+			
+			let btns = List.map (fun x -> (x,gentype ())) ns in
+			let tns = List.map (fun (a,b) -> (a,no_fv_scheme b)) btns in
+			
 			let te2,c2,tt2,_ = self e2 (tns @ env) in
-				(TLetTuple(List.map (fun (x,t) -> (x,(t,deb1))) tns,te1,te2),
-				(tt1,TyTuple(List.map (fun (_,x) -> x) tns),deb1) :: c1 @ c2,tt2)
+				(TLetTuple(List.map (fun (x,t) -> (x,(t,deb1))) btns,te1,te2),
+				(tt1,TyTuple(List.map (fun (_,x) -> x) btns),deb1) :: c2,tt2)
 		)
 	| EVariant(tag,es) -> (
 			let tagn,tagty,args = (
@@ -381,11 +420,26 @@ let rec type_infer venv astdeb env =
 			 tagty)
 		)
 	| EMatch(ep,ps) -> (
+			(*
+			# let p = match (fun f x -> x) with f -> (f 3,f true);;
+			val p : ('_a -> '_a) * ('_b -> '_b) = (<fun>, <fun>)
+			# let x = fst p;;
+			val x : '_a -> '_a = <fun>
+			# x 6;;
+			- : int = 6
+			# p;;
+			- : (int -> int) * ('_a -> '_a) = (<fun>, <fun>)
+			
+			なんもわからん...(ここで多相の値制限が入るっぽい)(TODO(satos) あとで対応する)
+			*)
+			
 			(* if文に訳する *)
 			let te1,c1,tt1,deb1 = self ep env in
 			let na = genvar (),(tt1,deb1) in
 			let nav = TVar(na),(tt1,deb1) in
 			(* ニュアンスは関数とその適用がめっちゃある感じ *)
+			
+			(* ここのletで多相はどうなるんだ...みたいな気分になる *) 
 			let tet =  List.map (fun (pat,e) ->  
 				let cond,bind,aenv,cs = pattern2env env venv pat nav in
 				let tenv = aenv @ env in
@@ -420,23 +474,6 @@ let rec type_infer venv astdeb env =
 
 
 
-let rec ast_subst subs (ast,(nt,deb)) = 
-	let f = ast_subst subs in
-	let mf = List.map f in
-	let nf (x,(t,d)) = (x,(ty_subst subs t,d)) in
-	let mnf = List.map nf in
-	let tast = match ast with
-	| TConst _ -> ast
-	| TVar(na) -> TVar(nf na)
-	| TOp(op,es) -> TOp(op,mf es)
-	| TIf(e1,e2,e3) -> TIf(f e1,f e2,f e3)
-	| TLet(na,e1,e2) -> TLet(nf na,f e1,f e2)
-	| TLetRec(na,vs,e1,e2) -> TLetRec(nf na,mnf vs,f e1,f e2)
-	| TApp(e1,es) -> TApp(f e1,mf es)
-	| TTuple(es) -> TTuple(mf es)
-	| TLetTuple(vs,e1,e2) -> TLetTuple(mnf vs,f e1,f e2)
-	in
-		(tast,(ty_subst subs nt,deb))
 
 type ('a, 'b) either = Left of 'a | Right of 'b
 
@@ -624,19 +661,20 @@ let check_ast ast sv =
 					| SValtype(na,te) -> (
 							let rena = (String.capitalize (basename filena)) ^ "@" ^ na in
 							let t = eval_variant tyenv uts te in
-							externs := (rena,t) :: (!externs);
+							let ts = schemize t env in
+							externs := (rena,ts) :: (!externs);
 							let td = (t,default_debug_data) in
 							
 							if List.mem (filena ^ ".ml") stdlib_list then
 								(
 									f,
-									(rena,t) :: env (* TODO(satos) ここ、ちょっと不正確(わざわざopen List とかしてるとバグる) ので直す*)
+									(rena,ts) :: env (* TODO(satos) ここ、ちょっと不正確(わざわざopen List とかしてるとバグる) ので直す*)
 									,venv,tyenv,uts
 								)
 							else
 								(
 									(fun y -> f (TLet((na,td),(TVar((rena,td)),td),y),(snd y))),
-									(na,t) :: env
+									(na,ts) :: env
 									,venv,tyenv,uts
 								)
 						)
@@ -654,7 +692,7 @@ let check_ast ast sv =
 			addglobalcs := [];
 			match ast with
 			| FExpr e -> ((
-					let tast,tc,rt,_ = type_infer venv e env in
+					let tast,tc,rt,_ = type_infer tyenv venv e env in
 					(* print_type rt;
 					print_constrs tc; *)
 					let subs = unify tyenv (tc @ !addglobalcs) in
@@ -666,7 +704,7 @@ let check_ast ast sv =
 			| FDecl de -> (
 					match de with
 					| DLet(na,e) -> (
-							let tast,tc,rt,_ = type_infer venv e env in
+							let tast,tc,rt,_ = type_infer tyenv venv e env in
 							ivprint "\ntype infer";
 							ivprint (Printf.sprintf "FDecl DLet %s" na);
 							vprint texp2str tast;
@@ -675,10 +713,12 @@ let check_ast ast sv =
 							let subs = unify tyenv (tc @ !addglobalcs) in
 							let rast = ast_subst subs tast in
 							let trt = ty_subst subs rt in
+							print_string (texp2str rast);
+							let trts = schemize trt env in
 							let sast = fix_partial_apply rast in
 							(
 								(fun y -> f (TLet((na,(trt,default_debug_data)),sast,y),(snd y))),
-								((na,trt) :: env),
+								((na,trts) :: env),
 								venv,tyenv,uts
 							)
 						)
@@ -714,7 +754,8 @@ let check_spec env tyenv uts specs =
 				let rena = prefix ^ na in
 				let t = eval_variant tyenv uts te in 
 				try 
-					let et = List.assoc na env in
+					let ets = List.assoc na env in
+					let et = instanciate ets in
 					if is_subtype t et then
 						(na,rena,t) :: exports
 					else

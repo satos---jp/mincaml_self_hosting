@@ -44,3 +44,21 @@ let texp2str ast =
 		String.concat "\n" (List.map (fun (d,s) -> (String.make (d*2) ' ') ^ s) ss) ^ "\n"
 
 
+
+let rec ast_subst subs (ast,(nt,deb)) = 
+	let f = ast_subst subs in
+	let mf = List.map f in
+	let nf (x,(t,d)) = (x,(ty_subst subs t,d)) in
+	let mnf = List.map nf in
+	let tast = match ast with
+	| TConst _ -> ast
+	| TVar(na) -> TVar(nf na)
+	| TOp(op,es) -> TOp(op,mf es)
+	| TIf(e1,e2,e3) -> TIf(f e1,f e2,f e3)
+	| TLet(na,e1,e2) -> TLet(nf na,f e1,f e2)
+	| TLetRec(na,vs,e1,e2) -> TLetRec(nf na,mnf vs,f e1,f e2)
+	| TApp(e1,es) -> TApp(f e1,mf es)
+	| TTuple(es) -> TTuple(mf es)
+	| TLetTuple(vs,e1,e2) -> TLetTuple(mnf vs,f e1,f e2)
+	in
+		(tast,(ty_subst subs nt,deb))
