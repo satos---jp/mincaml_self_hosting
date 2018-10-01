@@ -327,11 +327,12 @@ let rec type_infer tyenv venv astdeb env =
 			let tte2 = ast_subst subs te2 in
 			let ttt2 = ty_subst subs tt2 in
 			let ts2 = schemize ttt2 env in
-			
+
 			let te3,c3,tt3,_ = self e3 ((n1,ts2) :: env) in
 			
 			(* TODO(satos) デバッグ用の名前も、多分schemaにしないといけないんだけど面倒なので飛ばす *)
-			(TLet((n1,(ttt2,deb2)),tte2,te3),c3,tt3)
+			(* これc2も外に出さなきゃいけないよね...??(毎回言ってんな...)(c2のうち、不要なのは消しといたほうがよさそう...(計算量的に)) *)
+			(TLet((n1,(ttt2,deb2)),tte2,te3),c2 @ c3,tt3)
 		)
 	| ELetRec(f,ps,e2,e3) -> (
 			let ns = List.map (fun x -> match x with | PVar v -> v | _ -> raise (Failure "Shouldn't reach here")) ps in
@@ -344,9 +345,6 @@ let rec type_infer tyenv venv astdeb env =
 			(* ここ、ftとtnsどっちも自由変数なしでいいんだっけ...??(いやさすがに制約がなくなりそうなのでよいか) *)
 			let te2,c2,tt2,deb2 = self e2 (tns @ [(f,fts)] @ env) in
 			(* これは、関数名より変数名の方が先に調べられるみたい *) 
-			
-			print_string ("function " ^ f ^ "\n");
-			print_string (constrs2str c2);
 			
 			let cc2 = (tt2,frt,deb2) :: c2 in
 			let subs = unify tyenv cc2 in
@@ -713,7 +711,7 @@ let check_ast ast sv =
 							let subs = unify tyenv (tc @ !addglobalcs) in
 							let rast = ast_subst subs tast in
 							let trt = ty_subst subs rt in
-							print_string (texp2str rast);
+							(* print_string (texp2str rast); *)
 							let trts = schemize trt env in
 							let sast = fix_partial_apply rast in
 							(
