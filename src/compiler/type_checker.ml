@@ -1,52 +1,10 @@
-open Syntax
-open Debug
 open Main_option
-open Genint
 open Source2ast
 open Spec
 open Type
-
-exception TypeError of ty * ty * Debug.debug_data
-
-let genvar () = Printf.sprintf "@tc_%d" (genint ())
-
-let name2str (na,ty) = na ^ " : " ^ (type2str ty)
-
-type name = string * (ty * debug_data)
-
-type texp = texp_base * (ty * debug_data)
-and texp_base =
-  | TConst of const
-  | TVar       of name
-  | TOp        of optype * (texp list)
-  | TIf        of texp * texp * texp
-  | TLet       of name * texp * texp
-  | TLetRec    of name * (name list) * texp * texp
-  | TApp       of texp * (texp list)
-  | TTuple     of (texp list)
-  | TLetTuple  of (name list) * texp * texp
-
-let tdname2str (na,(ty,d)) = na ^ " : " ^ (type2str ty) ^ " : " ^ (debug_data2str d)
-
-let rec texp2str_base astdeb d = 
-	let ast,_ = astdeb in
-	match ast with
-	| TConst x -> [(d,const2str x)]
-	| TVar(x) -> [(d,"Var " ^ (tdname2str x))]
-	| TOp(op,es) -> (d,op2str op) :: List.concat (List.map (fun x -> (texp2str_base x (d+1))) es)
-	| TIf(e1,e2,e3) -> (
-			(d,"If") :: (texp2str_base e1 (d+1))
-				@ [(d,"Then")] @ (texp2str_base e2 (d+1)) @ [(d,"Else")] @ (texp2str_base e3 (d+1))
-		)
-	| TLet(na,e1,e2) -> (d,"Let " ^ (tdname2str na) ^ " =") :: (texp2str_base e1 (d+1)) @ [(d,"In")] @ (texp2str_base e2 d)
-	| TLetRec(na,vs,e1,e2) -> (d,"LetRec " ^ (tdname2str na) ^ " || " ^ (String.concat " | " (List.map tdname2str vs)) ^  " =") :: (texp2str_base e1 (d+1)) @ [(d,"In")] @ (texp2str_base e2 d)
-	| TApp(e1,es) -> (d,"App ") :: (texp2str_base e1 (d+1)) @ List.concat (List.map (fun x -> (texp2str_base x (d+2))) es)
-	| TTuple(es) -> (d,"( ") :: List.concat (List.map (fun x -> (texp2str_base x (d+1))) es) @ [(d," )")]
-	| TLetTuple(vs,e1,e2) -> (d,"Let " ^ (String.concat " , " (List.map tdname2str vs)) ^ " = ") :: (texp2str_base e1 (d+1)) @ [(d,"In")] @ (texp2str_base e2 d)
-
-let texp2str ast = 
-	let ss = texp2str_base ast 0 in
-		String.concat "\n" (List.map (fun (d,s) -> (String.make (d*2) ' ') ^ s) ss) ^ "\n"
+open Type_expr
+open Syntax
+open Debug
 
 
 let externs = ref []
@@ -286,7 +244,6 @@ let print_env v =
 	print_string (list2str v (fun (x,_) -> x));
 	print_string "\n"
 
-
 let rec type_infer venv astdeb env = 
 	let self = type_infer venv in
 	let ast,deb = astdeb in
@@ -461,83 +418,6 @@ let rec type_infer venv astdeb env =
 
 
 
-let print_subs subs =
-	print_string "[\n";
-	List.iter (fun (a,b) -> 
-		Printf.printf "%s => %s\n" (tyvar2str a) (type2str b);
-	) subs;
-	print_string "]\n"
-
-
-let rec ty_var_appear t v =
-        match t with
-        | TyInt | TyFloat | TyNum | TyStr | TyChar -> false
-        | TyFun (t1s, t2) -> List.exists (fun x -> ty_var_appear x v) (t2 :: t1s)
-        | TyVar x -> x = v
-        | TyArr t -> (ty_var_appear t v)
-        | TyTuple ts | TyUserDef(_,ts) -> List.fold_left (fun r -> fun t -> r || (ty_var_appear t v)) false ts
-
-let rec ty_subst subs t =
-	match t with
-	| TyInt | TyFloat | TyNum | TyStr | TyChar -> t
-	| TyVar(nb) -> (
-		try 
-			let tt = (List.assoc nb subs) in 
-				if List.length subs = 1 then tt else 
-					ty_subst subs tt
-		with
-			| Not_found -> t
-		)
-	| TyArr x -> TyArr(ty_subst subs x )
-	| TyFun(ps,q) -> TyFun(List.map (fun p -> ty_subst subs p) ps,ty_subst subs q)
-	| TyTuple ps -> TyTuple(List.map (fun x -> ty_subst subs x) ps)
-	| TyUserDef(na,ts) -> TyUserDef(na,List.map (fun x -> ty_subst subs x) ts)
-
-let rec constrs_subst s cs =
-        match cs with
-        | [] -> []
-        | (x,y,d) :: xs -> (ty_subst [s] x,ty_subst [s] y,d) :: (constrs_subst s xs)
-
-(* constrs_subst のとこでO(n^2) かかっていそう。 *)
-let rec unify tyenv cs = 
-	(* print_constrs cs; *)
-	let self = unify tyenv in
-	match cs with
-	| [] -> []
-	| (t1,t2,deb) :: xs -> if t1 == t2 then self xs else (
-		(*
-		print_string ((String.concat ";" (List.map (fun (a,b) -> a) tyenv)) ^ "\n"); 
-		Printf.printf "%s @ %s\n"  (type2str t1) (type2str t2);
-		*)
-		try 
-			match t1,t2 with
-			| TyVar x,y | y,TyVar x -> (
-					if ty_var_appear y x then 
-						raise (TypeError(t1,t2,deb)) else 
-						(x,y) :: (self (constrs_subst (x,y) xs)) 
-				)
-			| TyArr a,TyArr b -> self ((a,b,deb) :: xs)
-			| TyFun(vs,b),TyFun(ws,d) -> ( (* 部分適用に対応する。 *)
-					let rec f nvs nws = (
-						match nvs,nws with
-						| [],[] -> [(b,d,deb)]
-						| [],rws -> [(b,TyFun(rws,d),deb)]
-						| rvs,[] -> [(TyFun(rvs,b),d,deb)]
-						| v :: rvs,w :: rws -> (v,w,deb) :: f rvs rws
-					) in
-				self ((f vs ws) @ xs)
-				)
-			| TyTuple ps,TyTuple qs -> self ((List.map2 (fun a b -> (a,b,deb)) ps qs) @ xs)
-			(* 多相性のために追加する *)
-			| TyNum,TyInt | TyInt,TyNum | TyNum,TyFloat | TyFloat,TyNum -> self xs
-			| TyUserDef(a,ps),TyUserDef(b,qs) when a = b -> self ((List.map2 (fun p q -> (p,q,deb)) ps qs) @ xs)
-			| TyUserDef(a,[]),b | b,TyUserDef(a,[]) when List.mem_assoc a tyenv -> (
-					self ((List.assoc a tyenv,b,deb) :: xs)
-				)
-			| _ -> raise (TypeError(t1,t2,deb))
-		with 
-			| Invalid_argument("List.map2") -> raise (TypeError(t1,t2,deb))
-	)
 
 
 let rec ast_subst subs (ast,(nt,deb)) = 

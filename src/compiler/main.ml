@@ -2,6 +2,7 @@ open Syntax
 open Source2ast
 open Preprocess
 open Type_checker
+open Type_expr
 open Knorm
 open Closure_conv
 open Virtual

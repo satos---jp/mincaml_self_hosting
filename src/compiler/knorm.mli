@@ -1,7 +1,7 @@
 open Syntax
 open Debug
 open Type
-open Type_checker
+open Type_expr
 
 type name = string * (ty * debug_data)
 

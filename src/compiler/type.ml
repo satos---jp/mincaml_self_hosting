@@ -49,6 +49,85 @@ let print_type t = print_string ((type2str t) ^ "\n")
 
 let gentype () = TyVar(genint ())
 
+let print_subs subs =
+	print_string "[\n";
+	List.iter (fun (a,b) -> 
+		Printf.printf "%s => %s\n" (tyvar2str a) (type2str b);
+	) subs;
+	print_string "]\n"
+
+let rec ty_var_appear t v =
+        match t with
+        | TyInt | TyFloat | TyNum | TyStr | TyChar -> false
+        | TyFun (t1s, t2) -> List.exists (fun x -> ty_var_appear x v) (t2 :: t1s)
+        | TyVar x -> x = v
+        | TyArr t -> (ty_var_appear t v)
+        | TyTuple ts | TyUserDef(_,ts) -> List.fold_left (fun r -> fun t -> r || (ty_var_appear t v)) false ts
+
+let rec ty_subst subs t =
+	match t with
+	| TyInt | TyFloat | TyNum | TyStr | TyChar -> t
+	| TyVar(nb) -> (
+		try 
+			let tt = (List.assoc nb subs) in 
+				if List.length subs = 1 then tt else 
+					ty_subst subs tt
+		with
+			| Not_found -> t
+		)
+	| TyArr x -> TyArr(ty_subst subs x )
+	| TyFun(ps,q) -> TyFun(List.map (fun p -> ty_subst subs p) ps,ty_subst subs q)
+	| TyTuple ps -> TyTuple(List.map (fun x -> ty_subst subs x) ps)
+	| TyUserDef(na,ts) -> TyUserDef(na,List.map (fun x -> ty_subst subs x) ts)
+
+let rec constrs_subst s cs =
+        match cs with
+        | [] -> []
+        | (x,y,d) :: xs -> (ty_subst [s] x,ty_subst [s] y,d) :: (constrs_subst s xs)
+
+exception TypeError of ty * ty * Debug.debug_data
+(* constrs_subst のとこでO(n^2) かかっていそう。 *)
+let rec unify tyenv cs = 
+	(* print_constrs cs; *)
+	let self = unify tyenv in
+	match cs with
+	| [] -> []
+	| (t1,t2,deb) :: xs -> if t1 == t2 then self xs else (
+		(*
+		print_string ((String.concat ";" (List.map (fun (a,b) -> a) tyenv)) ^ "\n"); 
+		Printf.printf "%s @ %s\n"  (type2str t1) (type2str t2);
+		*)
+		try 
+			match t1,t2 with
+			| TyVar x,y | y,TyVar x -> (
+					if ty_var_appear y x then 
+						raise (TypeError(t1,t2,deb)) else 
+						(x,y) :: (self (constrs_subst (x,y) xs)) 
+				)
+			| TyArr a,TyArr b -> self ((a,b,deb) :: xs)
+			| TyFun(vs,b),TyFun(ws,d) -> ( (* 部分適用に対応する。 *)
+					let rec f nvs nws = (
+						match nvs,nws with
+						| [],[] -> [(b,d,deb)]
+						| [],rws -> [(b,TyFun(rws,d),deb)]
+						| rvs,[] -> [(TyFun(rvs,b),d,deb)]
+						| v :: rvs,w :: rws -> (v,w,deb) :: f rvs rws
+					) in
+				self ((f vs ws) @ xs)
+				)
+			| TyTuple ps,TyTuple qs -> self ((List.map2 (fun a b -> (a,b,deb)) ps qs) @ xs)
+			(* 多相性のために追加する *)
+			| TyNum,TyInt | TyInt,TyNum | TyNum,TyFloat | TyFloat,TyNum -> self xs
+			| TyUserDef(a,ps),TyUserDef(b,qs) when a = b -> self ((List.map2 (fun p q -> (p,q,deb)) ps qs) @ xs)
+			| TyUserDef(a,[]),b | b,TyUserDef(a,[]) when List.mem_assoc a tyenv -> (
+					self ((List.assoc a tyenv,b,deb) :: xs)
+				)
+			| _ -> raise (TypeError(t1,t2,deb))
+		with 
+			| Invalid_argument("List.map2") -> raise (TypeError(t1,t2,deb))
+	)
+
+
 (* ta < tb かを判定する(毎回どっちやねんとなるが) *)
 (* tb　のシグネチャとして ta がありかどうか。 (int -> int ,'a -> 'a) などはあり。 *)
 (* というか ta に適切な型代入をすると tb になるかですね。 *)
