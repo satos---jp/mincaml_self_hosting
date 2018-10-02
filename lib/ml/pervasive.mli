@@ -5,6 +5,7 @@ val read_float : unit -> float
 val true : bool
 val false : bool
 
+val stdin : int
 (*
 type 'a option = 
 	| Some of 'a

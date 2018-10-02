@@ -9,5 +9,5 @@ val my_lexing : lexbuf -> (nfa * (unit -> 'a)) list -> 'a
 
 
 
-val lexbuf_stdin : lexbuf
+val from_channel : int -> lexbuf
 

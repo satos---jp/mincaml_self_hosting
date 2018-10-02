@@ -5,15 +5,22 @@
 
 type lexbuf = unit -> char
 
-let lexbuf_stdin _ = 
-	let c = read_char () in
-	(*
-	print_string "read char";
-	print_char 10;
-	print_char c;
-	print_char 10;
-	*)
-	Char.chr c
+let from_channel ch = 
+	if ch = stdin then (
+		let rec f _ = 
+			let c = read_char () in
+			(*
+			print_string "read char";
+			print_char 10;
+			print_char c;
+			print_char 10;
+			*)
+			Char.chr c
+		in
+			f
+	) else (
+		raise_match_failure ""
+	)
 
 let getc buf = 
 	buf ()
@@ -82,7 +89,7 @@ let my_lexing buf data =
 				print_char 10;
 				print_string (stats2str tss);
 				print_char 10;
-				raise_match_failure ()
+				raise_match_failure ""
 			)
 		| _ -> circle tss 
 	in

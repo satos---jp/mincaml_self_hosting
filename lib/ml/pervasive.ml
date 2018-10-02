@@ -47,3 +47,6 @@ let rec print_hex_err x =
 	if x = 0 then print_char_err 48
 	else (if x < 0 then print_char_err 45; print_hex_err_base (0-x) else print_hex_err_base x)
 
+
+
+let stdin = 1 (* TODO(satos) さすがにやばいのでどうにかする *)

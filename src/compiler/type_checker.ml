@@ -14,7 +14,7 @@ let genv_base = List.map (fun (na,t) -> (na,schemize t [] [])) (
 	("int_of_float",TyFun([TyFloat],TyInt));
 	("float_of_int",TyFun([TyInt],TyFloat));
 	(* れいず!! *)
-	("raise_match_failure",TyFun([TyTuple([])],TyTuple([])));
+	("raise_match_failure",TyFun([gentype ()],gentype ()));
 
 ] @ [ (* lib_string.s *)
 
