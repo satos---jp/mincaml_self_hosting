@@ -8,13 +8,15 @@ let nooptimization = ref false
 let asmsin_asmint = ref false
 let check_array_boundary = ref false
 
+let output_assembler = ref false
+let output_header = ref false
+
 (* tortesia用のオプションだった *)
 let tortesia = ref false
 let all_stack = ref false
 let in_out_assembler = ref false
 
 
-let output_assembler = ref false
 
 let argparse files = 
 	Arg.parse [
@@ -29,6 +31,7 @@ let argparse files =
 		("-cab",Arg.Set check_array_boundary,"check boundary of array for x86");
 		
 		("-s",Arg.Set output_assembler,"output .s file");
+		("-mli",Arg.Set output_header,"output .mli file");
 				
 	] (fun fn -> files := (!files) @ [fn]) (Printf.sprintf "Usage: %s filename\n" Sys.argv.(0))
 

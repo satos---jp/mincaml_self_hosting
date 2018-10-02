@@ -168,8 +168,8 @@ tyarg_expr:
 
 tyapp_expr:
 	| tybase_expr        { $1 }
-	| tybase_expr var { ETTyApp([$1],$2) }
-	| LPAR tyarg_expr RPAR var { ETTyApp($2,$4) }
+	| tybase_expr var { ETApp([$1],$2) }
+	| LPAR tyarg_expr RPAR var { ETApp($2,$4) }
 
 tytuple_comma_expr:
 	| tytuple_comma_expr TIMES tyapp_expr 	{ $1 @ [$3] }
@@ -188,7 +188,7 @@ tyfun_args:
 
 tyfun_expr:
 	| tytuple_expr { $1 }
-	| tyfun_args RARROW tytuple_expr { ETTyFun($1,$3) }
+	| tyfun_args RARROW tytuple_expr { ETFun($1,$3) }
 
 type_expr:
 	| tyfun_expr 

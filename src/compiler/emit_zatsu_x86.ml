@@ -359,7 +359,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 			)
 		| OpMov(((n1,(t1,d1)) as nrd),((n2,(t2,d2)) as nad)) -> (
 				(* TODO(satos) ここ不正確なので型スキームの同一性判定でやりたい。 *)
-				if not (is_subtype t1 t2) then raise (Failure (Printf.sprintf 
+				if not (is_subtype t1 t2 && is_subtype t2 t1) then raise (Failure (Printf.sprintf 
 					"Type mismatch move to %s (%s) : %s from %s (%s) : %s" 
 					(namereg2str nrd) (debug_data2simple d1) (type2str t1) 
 					(namereg2str nad) (debug_data2simple d2) (type2str t2))) else

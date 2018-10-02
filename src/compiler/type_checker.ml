@@ -604,8 +604,6 @@ let eval_variant udtenv uts te =
 	let rec eval_variant_ udtenv te = 
 		let f = eval_variant_ udtenv in
 		match te with
-		| ETInt -> TyInt
-		| ETFloat -> TyFloat
 		| ETVar na -> (
 				(* TODO このへんガバ *)
 				(* 実行時間はアレだが、ここで展開しないとemit時にintを展開することになる *)
@@ -620,9 +618,9 @@ let eval_variant udtenv uts te =
 			)
 		| ETTyParam na -> na2t na
 		| ETTuple ts -> TyTuple(List.map f ts)
-		| ETTyFun(t1,t2) -> TyFun(List.map f t1,f t2)
+		| ETFun(t1,t2) -> TyFun(List.map f t1,f t2)
 		(* TODO ここ数があってるかチェックする *)
-		| ETTyApp(ts,constr) -> TyUserDef(constr,(List.map f ts))
+		| ETApp(ts,constr) -> TyUserDef(constr,(List.map f ts))
 	in
 		eval_variant_ udtenv te
 
@@ -818,3 +816,52 @@ let check ast specs =
 		(tast tf)
 
 
+
+
+
+let rec ty2type_expr t = 
+	let self = ty2type_expr in
+	match t with
+	| TyInt -> ETVar("int")
+	| TyFloat -> ETVar("float")
+	| TyStr -> ETVar("string")
+	| TyChar -> ETVar("char")
+	| TyFun(ps,q) -> ETFun(List.map self ps,self q)
+	| TyTuple(ts) -> ETTuple(List.map self ts)
+
+let export_header ast = 
+	externs := [];
+	exports_list := [];
+	
+	let sv = (
+		(fun x -> x),
+		(genv ()),
+		(variantenv ()),
+		(user_defined_type_env ()),
+		(defined_types ())
+	) in
+	let _,env,_,_,_ = check_ast ast sv in
+	
+	let top_names = List.concat (List.map (fun x -> 
+		match x with
+		| FExpr _ -> []
+		| FDecl(d) -> (
+			match d with
+			| DLetRec(na,_,_) -> [na]
+			| DLet(na,_) -> [na]
+			| DOpen(na) -> [] (* TODO(satos) クリティカルなヴァリアント定義の場合はいるようになる *)
+		)
+	) ast) in
+	let tenv = List.filter (fun (na,_) -> List.mem na top_names) env in
+	List.iter (fun (na,_) -> Printf.printf "val %s\n" na) tenv;
+	
+	List.map (fun (na,ts) -> 
+		let t = instanciate ts in
+		SValtype(na,ty2type_expr t)
+	) tenv 
+	
+	
+	
+	
+	
+	

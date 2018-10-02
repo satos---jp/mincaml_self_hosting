@@ -125,6 +125,26 @@ let compile_to_sfile fn =
 	close_out oc;
 	sfn
 
+
+let get_header file = 
+	Printf.printf "compile %s\n" file;
+	let tast = Source2ast.src2ast file in
+	vprint top2str tast;
+	ivprint "parsed";
+	let astp = Preprocess.preprocess tast in
+	let hs = Type_checker.export_header astp in
+	print_string "typed";  print_newline ();
+	Spec.top2header hs
+
+let compile_to_header fn = 
+	let hfn = changext fn ".ml" ".mli" in
+	(if Sys.file_exists hfn then raise (Failure (Printf.sprintf "%s already exists" hfn)) else ());
+	let head = get_header fn in
+	let oc = open_out hfn in
+	output_string oc head;
+	close_out oc;
+	hfn
+
 let output_stub files =	
 	let ens = List.map (fun fn -> 
 		let ts = (
@@ -179,8 +199,9 @@ let _ =
 	) else (
 		if !output_assembler then (
 			let _ = List.map compile_to_sfile !files in ()
+		) else if !output_header then (
+			let _ = List.map compile_to_header !files in ()
 		) else (
-					
 			files := "lib/ml/pervasive.ml" :: stdlib_list @ !files;
 			output_stub !files;
 			files := !files @ [

@@ -93,14 +93,19 @@ and expr_base =
   | EVariant   of variant_tag * expr list
 
 type type_expr = 
-	| ETInt
-	| ETFloat
 	| ETVar     of name (* ふつうに、 int とか list とか *)
 	| ETTyParam  of name (* 'a とかの、型多相のためのやつ *)
 	| ETTuple   of type_expr list
-	| ETTyFun   of (type_expr list) * type_expr (* 部分適用できないのでクリティカル *)
-	| ETTyApp   of (type_expr list) * name
+	| ETFun   of (type_expr list) * type_expr (* 部分適用できないのでクリティカル *)
+	| ETApp   of (type_expr list) * name
 
+let rec type_expr2header te = 
+	let self = type_expr2header in
+	match te with
+	| ETVar na -> na
+	| ETFun(ts,t) -> "(" ^ (String.concat " -> " (List.map self (ts @ [t]))) ^ ")"
+	| ETTuple([]) -> "unit"
+	| ETTuple(ts) -> "(" ^ (String.concat " * " (List.map self ts)) ^ ")"
 
 type decl = 
   | DLet        of name * expr

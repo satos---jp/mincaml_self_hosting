@@ -8,3 +8,4 @@ type spec_decl =
 
 type top = spec_decl list
 
+val top2header : top -> string

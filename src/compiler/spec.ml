@@ -20,3 +20,13 @@ let check_type_definition tyenv specs =
 	) [] specs
 	これは先でいいやろ
 *)
+
+
+let top2header vs = 
+	String.concat "" (List.map (fun x -> 
+		match x with
+		| SValtype(na,te) -> (
+				Printf.sprintf "val %s : %s\n" na (type_expr2header te)
+			)
+	) vs)
+
