@@ -8,6 +8,7 @@ type ty =
 	| TyStr
 	| TyChar
 	| TyNum  (* int も float もこれの部分型 *)
+	| TyRef of ty (* 参照 *)
 	| TyVar of tyvar
 	| TyArr of ty
 	| TyFun of (ty list) * ty

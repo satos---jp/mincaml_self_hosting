@@ -10,6 +10,7 @@ type ty =
 	| TyStr
 	| TyChar
 	| TyNum  (* int も float もこれの部分型 *)
+	| TyRef of ty (* 参照 *)
 	| TyVar of tyvar
 	| TyArr of ty
 	| TyFun of (ty list) * ty
@@ -20,7 +21,7 @@ let tyvar2str v = Printf.sprintf "'a%d" v
 
 let rec type2str_with_pa t =
         match t with
-        | TyInt | TyFloat | TyStr | TyChar | TyVar _ | TyTuple _ | TyNum | TyUserDef _ -> type2str t
+        | TyInt | TyFloat | TyStr | TyChar | TyVar _ | TyTuple _ | TyNum | TyUserDef _ | TyRef _ -> type2str t
         | TyFun _ | TyArr _ -> "(" ^ (type2str t) ^ ")"
 
 and type2str t =
@@ -30,6 +31,7 @@ and type2str t =
 	| TyStr -> "string"
 	| TyChar -> "char"
 	| TyNum -> "number"
+	| TyRef t -> Printf.sprintf "Ref %s" (type2str_with_pa t)
 	| TyVar v -> tyvar2str v
 	| TyFun (t1, t2) -> (
 		Printf.sprintf "%s -> %s" 
@@ -61,7 +63,7 @@ let rec ty_var_appear t v =
         | TyInt | TyFloat | TyNum | TyStr | TyChar -> false
         | TyFun (t1s, t2) -> List.exists (fun x -> ty_var_appear x v) (t2 :: t1s)
         | TyVar x -> x = v
-        | TyArr t -> (ty_var_appear t v)
+        | TyArr t | TyRef t -> (ty_var_appear t v)
         | TyTuple ts | TyUserDef(_,ts) -> List.fold_left (fun r -> fun t -> r || (ty_var_appear t v)) false ts
 
 let rec ty_subst subs t =
@@ -75,6 +77,7 @@ let rec ty_subst subs t =
 		with
 			| Not_found -> t
 		)
+	| TyRef x -> TyRef(ty_subst subs x )
 	| TyArr x -> TyArr(ty_subst subs x )
 	| TyFun(ps,q) -> TyFun(List.map (fun p -> ty_subst subs p) ps,ty_subst subs q)
 	| TyTuple ps -> TyTuple(List.map (fun x -> ty_subst subs x) ps)
@@ -104,7 +107,7 @@ let rec unify tyenv cs =
 						raise (TypeError(t1,t2,deb)) else 
 						(x,y) :: (self (constrs_subst (x,y) xs)) 
 				)
-			| TyArr a,TyArr b -> self ((a,b,deb) :: xs)
+			| TyArr a,TyArr b | TyRef a, TyRef b -> self ((a,b,deb) :: xs)
 			| TyFun(vs,b),TyFun(ws,d) -> ( (* 部分適用に対応する。 *)
 					let rec f nvs nws = (
  						match nvs,nws with
@@ -133,7 +136,7 @@ let rec get_fv t =
 	| TyInt | TyFloat | TyNum | TyStr | TyChar -> []
 	| TyFun (t1s, t2) -> List.concat (List.map get_fv (t2 :: t1s))
 	| TyVar x -> [x]
-	| TyArr t -> get_fv t
+	| TyArr t | TyRef t -> get_fv t
 	| TyTuple ts | TyUserDef(_,ts) ->  List.concat (List.map get_fv ts)
 
 

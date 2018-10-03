@@ -29,6 +29,7 @@
 %token CONS LBRACKET RBRACKET
 %token VAL COLON OPEN QUOTE
 %token ATMARK CARET FLAG
+%token COLONEQ EXCLAMATION
  
 /* 下のほうが強い */
 /* left とか right とかは演算子のみに効果があるっぽいな？？？ */
@@ -39,6 +40,7 @@
 %right RARROW
 %right if_assoc
 %right arrow_assoc
+%right COLONEQ
 %nonassoc list_semi_assoc
 %nonassoc tuple_assoc
 %nonassoc variant_tuple_assoc
@@ -50,6 +52,7 @@
 %right CONS
 %left PLUS MINUS FPLUS FMINUS
 %left TIMES DIV FTIMES FDIV 
+%nonassoc EXCLAMATION
 %nonassoc variant_def_tuple_type_exprs_assoc /* TIMESより強くないといけない */
 %left app_assoc  /* appの結合の強さはこれくらいで、の指示 */
 %nonassoc variant_app_assoc
@@ -337,6 +340,10 @@ Error: This expression has type float but an expression was expected of type
 		{ debug (EApp(debug (EVar("String@@")),[$1;$3])) }
 	| expr FLAG expr
 		{ debug (EApp($3,[$1])) }
+	| expr COLONEQ expr
+		{ debug (EApp(debug (EVar("@ref@set")),[$1;$3])) }
+	| EXCLAMATION expr
+		{ debug (EApp(debug (EVar("@ref@get")),[$2])) }
 	| error
 		{ failwith ("parse failure at " ^ debug_data2str (get_debug_data ())) }
 ;

@@ -15,7 +15,9 @@ let genv_base = List.map (fun (na,t) -> (na,schemize t [] [])) (
 	("float_of_int",TyFun([TyInt],TyFloat));
 	(* れいず!! *)
 	("raise_match_failure",TyFun([gentype ()],gentype ()));
-
+	("ref",let t = gentype() in TyFun([t],TyRef(t)));
+	("@ref@get",let t = gentype() in TyFun([TyRef(t)],t));
+	("@ref@set",let t = gentype() in TyFun([TyRef(t);t],TyTuple([])));
 ] @ [ (* lib_string.s *)
 
 	("String@@",TyFun([TyStr;TyStr],TyStr));
@@ -585,6 +587,7 @@ let user_defined_type_env () = !user_defined_types
 let defined_types () = [
 	("list",1);
 	("option",1);
+	("ref",1);
 ] @ List.map (fun (t,_) -> (t,0)) (user_defined_type_env ())
 
 

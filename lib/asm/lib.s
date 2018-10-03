@@ -4,6 +4,10 @@ global int_of_float
 global float_of_int
 global raise_match_failure
 
+global ref
+global @ref@set
+global @ref@get
+
 global data_eq
 
 extern print_char_err
@@ -22,6 +26,19 @@ raise_match_failure:
 	dd raise_match_failure_p
 raise_match_failure_p:
 	dd raise_match_failure_
+
+ref:
+	dd ref_p
+ref_p:
+	dd ref_
+@ref@set:
+	dd @ref@set_p
+@ref@set_p:
+	dd @ref@set_
+@ref@get:
+	dd @ref@get_p
+@ref@get_p:
+	dd @ref@get_
 
 two:
 	dd 2.0
@@ -377,6 +394,28 @@ ret_eq:
 ret_neq:
 	mov eax,0
 	ret
+
+
+ref_:
+	; TODO(satos) mallocするよーにする
+	mov eax,esi
+	add esi,4
+	mov ebx,[esp+0x4]
+	mov [eax],ebx
+	ret
+
+@ref@get_:
+	mov eax,[esp+0x4]
+	mov eax,[eax]
+	ret
+
+@ref@set_:
+	mov eax,[esp+0x4]
+	mov ebx,[esp+0x8]
+	mov [eax],ebx
+	ret
+
+
 	
 
 

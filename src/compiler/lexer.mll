@@ -71,6 +71,8 @@ let true = 1 とかがあるのでエラーになる。
 | "of"         { Parser.OF }
 | "::"         { Parser.CONS }
 | "val"        { Parser.VAL }
+| ":="         { Parser.COLONEQ }
+| "!"          { Parser.EXCLAMATION }
 | ":"          { Parser.COLON }
 | "open"       { Parser.OPEN }
 | "'"          { Parser.QUOTE }
