@@ -3,31 +3,60 @@
 あとはそれをデータとしてよしなに。
 *)
 
-type lexbuf = unit -> char
+type lexbuf = (unit -> char) * (int -> unit)
 
 let from_channel ch = 
 	if ch = stdin then (
-		let rec f _ = 
-			let c = read_char () in
+		let rs = ref [] in
+		let np = ref 0 in
+		let f _ = 
+			(if List.length (!rs) <= !np then
+				let c = read_char () in
+				(*
+				print_string "read char";
+				print_char 10;
+				print_char c;
+				print_char 10;
+				*)
+				rs := !rs @ [Char.chr c]
+			else ());
+			let p = !np in
+			np := p + 1;
+			let r = List.nth (!rs) p in
 			(*
-			print_string "read char";
-			print_char 10;
-			print_char c;
+			print_string "return ";
+			print_char (Char.code r);
 			print_char 10;
 			*)
-			Char.chr c
+			r
 		in
-			f
+		let g t = 
+			let rec sub i = 
+				if i = 0 then ()
+				else (rs := match !rs with x :: xs -> xs; sub (i-1))
+			in
+			 sub t;
+			 np := 0
+		in
+			(f,g)
 	) else (
-		raise_match_failure ""
+		raise_match_failure "invalid number for from_channel"
 	)
 
 let getc buf = 
-	buf ()
+	let (g,_) = buf in g ()
+
+let ungets buf t = 
+	(*
+	print_string "unget ";
+	print_int t;
+	print_char 10;
+	*)
+	let (_,h) = buf in h t
 
 type rule_state = 
-	| Going of state * nfa * (unit option) * (unit -> 'a)
-	| Gone  of unit * (unit -> 'a)
+	| Going of state * nfa * ((unit * int) option) * (unit -> 'a)
+	| Gone  of (unit * int) * (unit -> 'a)
 
 
 let i2s i = Char.escaped (Char.chr (i+48))
@@ -49,52 +78,52 @@ let stats2str ss =
 
 
 let my_lexing buf data = 
-	let rec f c states = 
+	let rec f t c states = 
+		let self = f t c in
 		match states with
 		| (Going(state,nfa,lasp,func)) :: xs -> (
 				let ts = Nfa.step nfa state c in
 				let tlasp = (
-					if Nfa.isaccept nfa state then Some ()
+					if Nfa.isaccept nfa state then Some(((),t))
 					else lasp
 				) in
-				(*
-				print_string (if Nfa.isaccept nfa state then "T" else "F");
-				print_char 32;
-				print_string (match tlasp with Some _ -> "Some" | None -> "None");
-				print_char 10;
-				*)
+				
 				if Nfa.isnill ts then
 					match tlasp with
-					| None -> f c xs
+					| None -> self xs
 					| Some p -> [Gone(p,func)]
 				else
-					Going(ts,nfa,tlasp,func) :: f c xs
+					Going(ts,nfa,tlasp,func) :: self xs
 			)
 		| (Gone(a,b)) :: _ -> [Gone(a,b)]
 		| [] -> [] 
 	in
-	let rec circle ss = 
+	let rec circle t ss = 
 		let c = getc buf in
+		let tss = f t c ss in
 		(*
 		print_string "ciecle";
 		print_char 10;
-		print_string (stats2str ss);
+		print_string (stats2str tss);
 		print_char 10;
 		*)
-		let tss = f c ss in
 		match tss with
-		| [Gone(p,func)] -> func p
+		| [Gone(p,func)] -> (
+				let (d,t) = p in
+				ungets buf t;
+				func d
+			)
 		| [] -> (
 				print_string "lexing failed";
 				print_char 10;
 				print_string (stats2str tss);
 				print_char 10;
-				raise_match_failure ""
+				raise_match_failure "lexing failed"
 			)
-		| _ -> circle tss 
+		| _ -> circle (t+1) tss 
 	in
 	let starts = 
 		List.map (fun (nfa,func) -> Going([(0,[])],nfa,None,func)) data 
 	in 
-		circle starts
+		circle 0 starts
 

@@ -4,7 +4,7 @@ type edge = int * int list * int list
 type nfa = int * int * int * (char * (node * edge list) list) list
 *)
 
-type lexbuf = unit -> char
+type lexbuf = (unit -> char) * (int -> unit)
 val my_lexing : lexbuf -> (nfa * (unit -> 'a)) list -> 'a
 
 

@@ -44,3 +44,15 @@ let rec mapi f v =
 		| x :: xs -> (f i x) :: mapi_base (i+1) xs
 	in
 		mapi_base 0 v
+
+let rec nth v i = 
+	match v with
+	| [] -> (
+			raise_match_failure "invalid List.nth length"
+		)
+	| x :: xs -> if i = 0 then x else nth xs (i-1) 
+
+let rec length v = 
+	match v with
+	| [] -> 0
+	| x :: xs -> (length xs) + 1
