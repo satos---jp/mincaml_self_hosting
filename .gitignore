@@ -66,3 +66,10 @@ src/lex/nfa.ml
 src/lex/nfa.mli
 lexer.mll
 tes.py
+o.ml
+x.mli
+x.mly
+tes.mli
+tes.mly
+syntax.mli
+yacc_sample.ml
