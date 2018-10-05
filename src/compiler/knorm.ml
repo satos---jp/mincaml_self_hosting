@@ -129,7 +129,7 @@ let rec knorm (ast,nt) =
 					| Oleq -> KIf(CmpLt,vt2,vt1,k3,k4)
 					| Ogt -> KIf(CmpLt,vt2,vt1,k4,k3)
 					| Olt -> KIf(CmpLt,vt1,vt2,k4,k3)
-					| _ -> raise (Failure "shouldn't reach here")
+					| _ -> raise (Failure "shouldn't reach here in knorm op")
 					)
 				)
 			)

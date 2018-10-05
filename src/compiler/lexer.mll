@@ -80,6 +80,7 @@ let true = 1 とかがあるのでエラーになる。
 | "]"          { Parser.RBRACKET }
 | "@"          { Parser.ATMARK }
 | "^"          { Parser.CARET }
+| "and"        { Parser.AND }
 | digit+ "." digit*(['E''e']['+''-']?digit+)? as f { Parser.FLOAT(float_of_string f) }
 | digit+ as n  { Parser.INT (int_of_string n) }
 | ident  as id { Parser.ID id }

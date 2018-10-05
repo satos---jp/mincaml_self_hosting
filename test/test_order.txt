@@ -28,6 +28,7 @@ char.ml
 lib_list.ml -i lib_list_i.txt
 ref.ml
 lex_1.mll main_1.ml -i lex_1_i.txt
+let_rec_and.ml
 
 ; floatまわりが合わないのでこれは一旦無視する
 ftoi_itof.ml

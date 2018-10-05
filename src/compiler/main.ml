@@ -86,6 +86,8 @@ let compile file =
 	) in
 	
 	let astp = Preprocess.preprocess tast in
+	print_string "preprocessed";  print_newline ();
+	vprint top2str astp;
 	let ast2 = Type_checker.check astp spec in
 	print_string "typed";  print_newline ();
 	vprint texp2str ast2;

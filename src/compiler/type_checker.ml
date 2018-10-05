@@ -342,8 +342,8 @@ let rec type_infer tyenv venv astdeb env =
 			(* これ正しくはenvもアップデートされますねここで!?(設計がやばくなりそう)*)
 			(TLet((n1,(ttt2,deb2)),tte2,te3),c2 @ c3,tt3)
 		)
-	| ELetRec(f,ps,e2,e3) -> (
-			let ns = List.map (fun x -> match x with | PVar v -> v | _ -> raise (Failure "Shouldn't reach here")) ps in
+	| ELetRec([f,ps,e2],e3) -> (
+			let ns = List.map (fun x -> match x with | PVar v -> v | _ -> raise (Failure "Shouldn't reach here in type_checker ELetRec")) ps in
 			
 			let frt = gentype () in
 			let btns = List.map (fun x -> (x,gentype ())) ns in
@@ -850,7 +850,6 @@ let export_header ast =
 		| FExpr _ -> []
 		| FDecl(d) -> (
 			match d with
-			| DLetRec(na,_,_) -> [na]
 			| DLet(na,_) -> [na]
 			| DOpen(na) -> [] (* TODO(satos) クリティカルなヴァリアント定義の場合はいるようになる *)
 		)

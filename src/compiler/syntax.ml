@@ -85,7 +85,7 @@ and expr_base =
   | EOp        of optype * (expr list)
   | EIf        of expr * expr * expr
   | ELet       of name * expr * expr
-  | ELetRec    of name * (pattern list) * expr * expr
+  | ELetRec    of (name * (pattern list) * expr) list * expr (* and連鎖のやつのため *)
   | EApp       of expr * (expr list)
   | ETuple     of (expr list)
   | ELetTuple  of (name list) * expr * expr
@@ -109,7 +109,7 @@ let rec type_expr2header te =
 
 type decl = 
   | DLet        of name * expr
-  | DLetRec     of name * (name list) * expr
+  | DLetRec     of (name * (pattern list) * expr) list
   | DTypeRename of name * type_expr
   | DVariant    of name * ((variant_tag * (type_expr list)) list)
   | DOpen       of name
@@ -142,7 +142,11 @@ let rec expr2str_base astdeb d =
 				@ [(d,"Then")] @ (expr2str_base e2 (d+1)) @ [(d,"Else")] @ (expr2str_base e3 (d+1))
 		)
 	| ELet(na,e1,e2) -> (d,"Let " ^ na ^ " =") :: (expr2str_base e1 (d+1)) @ [(d,"In")] @ (expr2str_base e2 (d+1))
-	| ELetRec(na,vs,e1,e2) -> (d,"LetRec " ^ na ^ " =") :: (expr2str_base e1 (d+1)) @ [(d,"In")] @ (expr2str_base e2 (d+1))
+	| ELetRec(e1s,e2) -> (
+			(List.concat (List.map (fun (na,vs,e1) -> 
+					(d,"LetRec " ^ na ^ " =") :: (expr2str_base e1 (d+1))
+		 	) e1s)) @ [(d,"In")] @ (expr2str_base e2 (d+1))
+		)
 	| EApp(e1,es) -> (d,"App ") :: (expr2str_base e1 (d+1)) @ List.concat (List.map (fun x -> (expr2str_base x (d+2))) es)
 	| ETuple(es) -> (d,"( ") :: List.concat (List.map (fun x -> (expr2str_base x (d+1))) es) @ [(d," )")]
 	| ELetTuple(vs,e1,e2) -> (d,"Let " ^ (String.concat " , " vs) ^ " = ") :: (expr2str_base e1 (d+1)) @ [(d,"In")] @ (expr2str_base e2 (d+1))
@@ -161,7 +165,10 @@ let decl2str de =
 	let d = 0 in
 	match de with
 	| DLet(na,e) -> (d,"DLet " ^ na ^ " =") :: (expr2str_base e (d+1))
-	| DLetRec(na,vs,e) -> (d,"DLetRec " ^ na ^ " =") :: (expr2str_base e (d+1))
+	| DLetRec es -> (
+			List.concat (List.map (fun (na,vs,e) -> 
+				(d,"DLetRec " ^ na ^ " =") :: (expr2str_base e (d+1))
+			) es))
 	| DVariant(na,tts) -> (d,"DVariant " ^ na ^ " =") :: (
 			List.concat (List.map (fun (tag,ts) -> (d+1,"| " ^ tag ^ " of ") :: (
 				[(d+2,Printf.sprintf "len of %d" (List.length ts))]

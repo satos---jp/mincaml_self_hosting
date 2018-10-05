@@ -29,7 +29,8 @@
 %token CONS LBRACKET RBRACKET
 %token VAL COLON OPEN QUOTE
 %token ATMARK CARET FLAG
-%token COLONEQ EXCLAMATION
+%token COLONEQ EXCLAMATION 
+%token AND
  
 /* 下のほうが強い */
 /* left とか right とかは演算子のみに効果があるっぽいな？？？ */
@@ -84,16 +85,22 @@ decl_exprs:
 	| decl decl_exprs { FDecl($1) :: $2 }
 ;
 
+
+let_rec_body:
+	| ID rec_vars EQ expr { $1,$2,$4 }
+;
+
+let_rec_and_list:
+	| LET REC let_rec_body { [$3] }
+	| let_rec_and_list AND let_rec_body { $1 @ [$3] }
+;
+
 decl:
 	| LET ID EQ expr           { DLet($2,$4) }
-	/* これ多分parse時点で let rec f x1 x2 ... =  を let f = (let rec f x1 x2 ... in f) にしたほうが楽*/
-	| LET REC ID rec_vars EQ expr { 
-			(* DLetRec(List.hd $3,List.tl $3,$5) *) 
-			DLet($3,debug (ELetRec($3,$4,$6,(debug (EVar($3))))))
-		}
+	| let_rec_and_list         { DLetRec($1) }
 	| LET ID rec_vars EQ expr { 
 			(* とりあえず意味は壊れるがやっていく *) 
-			DLet($2,debug (ELetRec($2,$3,$5,(debug (EVar($2))))))
+			DLetRec([$2,$3,$5])
 		}
 	| TYPE var EQ type_expr    { DTypeRename($2,$4) }
 	| TYPE var EQ variant_defs { DVariant($2,$4) }
@@ -305,10 +312,10 @@ Error: This expression has type float but an expression was expected of type
 	| LET ID EQ expr IN expr
 		{ debug (ELet($2,$4,$6)) }
 	| LET REC ID rec_vars EQ expr IN expr 
-		{  debug (ELetRec($3,$4,$6,$8)) }
+		{  debug (ELetRec([$3,$4,$6],$8)) }
 /* カリー化できないらしい!! (まあMinCamlプログラミングがつらくなる) */
 	| LET ID rec_vars EQ expr IN expr 
-		{  debug (ELetRec($2,$3,$5,$7)) }
+		{  debug (ELetRec([$2,$3,$5],$7)) }
 /* とりあえず増やす(型推論がガバガバだが) */
 	| simple_expr app_exprs
 		%prec app_assoc
@@ -326,7 +333,7 @@ Error: This expression has type float but an expression was expected of type
 	| FUN rec_vars RARROW expr
 		%prec fun_assoc
 		{ let fn = gen_fun_name () in
-			debug (ELetRec(fn,$2,$4,debug (EVar(fn)))) }
+			debug (ELetRec([fn,$2,$4],debug (EVar(fn)))) }
 	| MATCH expr WITH cases
 		{ debug (EMatch($2,$4)) }
 	| variant_expr 

@@ -144,7 +144,7 @@ let extract_folds rules =
 		"\t\t)"
 	) rules)) ^
 	"\n"
-	
+
 let conv (header,precs,rules) =
 	let _,type_token_s,token2id_s = conv_prec precs in
 	header ^ 

@@ -43,7 +43,7 @@ and expr_base =
   | EOp        of optype * (expr list)
   | EIf        of expr * expr * expr
   | ELet       of name * expr * expr
-  | ELetRec    of name * (pattern list) * expr * expr
+  | ELetRec    of (name * (pattern list) * expr) list * expr (* and連鎖のやつのため *)
   | EApp       of expr * (expr list)
   | ETuple     of (expr list)
   | ELetTuple  of (name list) * expr * expr
@@ -61,7 +61,7 @@ val type_expr2header : type_expr -> string
 
 type decl = 
   | DLet        of name * expr
-  | DLetRec     of name * (name list) * expr
+  | DLetRec     of (name * (pattern list) * expr) list
   | DTypeRename of name * type_expr
   | DVariant    of name * ((variant_tag * (type_expr list)) list) 
   | DOpen       of name
