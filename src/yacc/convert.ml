@@ -81,11 +81,6 @@ let list2str v f =
 	)
 
 
-type parsingact = 
-	| Shift of int * int
-	| Reduce of int * int
-
-type rl_item = (int * int) * (int list) * (int list) (* symbol/rule/dotより前/dotより後 *)
 
 
 let find_idx a v = 
@@ -109,24 +104,120 @@ let enumerate v = List.mapi (fun i x -> (x,i)) v
 
 
 
+let rec assoc_update (x,a) v = 
+	match v with
+	| [] -> [(x,a)]
+	| (y,b) :: xs -> if x = y then (x,a) :: xs else (y,b) :: (assoc_update (x,a) xs)
 
-
-
+(*
 let resum2str v = 
 	match v with
-	| Reduce(i,j) -> Printf.sprintf "Reduce[%d,%d]" i j
-	| Shift(i,j) -> Printf.sprintf "Shift[%d,%d]" i j
+	| Reduce_data(vs,i,j) -> Printf.sprintf "Reduce{%s,%d,%d}" (list2str vs string_of_int) i j
+	| Shift_data(i,j) -> Printf.sprintf "Shift{%d,%d}" i j
+*)
+
+let same_state v w = 
+	let same_item (ka,_) (kb,_) = (ka = kb) in
+	List.for_all (fun x -> List.exists (same_item x) v) w &&
+	List.for_all (fun x -> List.exists (same_item x) w) v
+		
+let find_same_state_with_idx a v = 
+	let rec f i v = 
+		match v with
+		| [] -> None
+		| x :: xs -> if same_state x a then Some i else f (i+1) xs
+	in
+		f 0 v
+
+let rec update_nth v i d = 
+	match v with
+	| x :: xs -> if i = 0 then d :: xs else x :: (update_nth xs (i-1) d)
+
+
+(* vからappendして作ったようなものもアップデートされるようにしたい *)
+(* すなわち、
+	let v = [1;2]
+	let w = append_fs k v;
+	append_fs v x;
+	のとき、
+	wにx分が増えてほしい
+*)
+
+(*
+vが上書きされる
+wは上書きされない
+wが上書きされたらvも上書きされる
+変則unionfind的なやつですね
+*)
+
+type 'a union_node = 
+	| Node of ((int list) ref)
+	| Data of 'a
+
+let union = ref []
+
+let append_fs v w =
+	if v = w then () else (
+		match List.nth !union v with
+		| Node ds -> (
+				if List.mem w !ds then () else (
+					ds := w :: !ds
+				)
+			)
+	)
+
+let unit_fs x = 
+	let d = Data x in
+	let i = List.length !union in
+	union := !union @ [d];
+	union := !union @ [Node(ref [i])];
+	(i+1)
+	
+let copy_from_fs x = 
+	let i = List.length !union in
+	union := !union @ [Node(ref [x])];
+	i
+
+let fs2list i =
+	let gone = ref [] in
+	let rec f i = 
+		if List.mem i !gone then [] else (
+			gone := i :: !gone;
+			(* Printf.printf "get %d\n" i; *)
+			let v = List.nth !union i in
+			match v with
+			| Data x -> [x]
+			| Node ds -> unique (List.concat (List.map f !ds))
+		)
+	in
+		f i
+
+
+type parsingact = 
+	| Shift_data of int * int (* 入力として記号iが来たら状態jに遷移する *)
+	| Reduce_data of int * int * int (* 入力記号がvs中のとき、シンボルiのj番めのルールでreduceする *)
+
+type rl_item = ((int * int) * (int list) * (int list)) * ((int list) ref) (* symbol/rule/dotより前/dotより後/follow集合 *)
+
+
+let merge_state v w = 
+	List.iter (fun (k,av) -> 
+		let v = List.assoc k v in
+		append_fs v av
+	) w
 
 (* table :: 状態stでi番めのデータが降ってきた際にshift/reduceするやつ *)
 let make_table rules sym2i i2sym tokens startsym = 
-	let rl2str ((i,j),ss,ts) = (
+	let rl2str (((i,j),ss,ts),fs) = (
 	(*
 		(Printf.sprintf "{(%d,%d),%s,%s} " i j (list2str ss string_of_int) (list2str ts string_of_int)) ^
 	*)
-		(Printf.sprintf "{(%s,%d),%s,%s}" (i2sym i) j (list2str ss i2sym) (list2str ts i2sym))
+		(Printf.sprintf "{(%s,%d),%s,%s:%s}" (i2sym i) j (list2str ss i2sym) (list2str ts i2sym) (list2str (fs2list fs) i2sym))
 	)
 	in
 	let irules = List.map (fun (s,d) -> (* Printf.printf "rule %s idx %d\n" s (sym2i s); *) sym2i s,d) rules in
+	
+	
 	let rec saturate v ds = 
 		(* Printf.printf "%s\n" (rl2str d); *)
 		let self = saturate in
@@ -134,43 +225,79 @@ let make_table rules sym2i i2sym tokens startsym =
 		| [] -> v
 		| d :: rds -> (
 				let v = self v rds in
-				if List.mem d v then v
-				else match d with
-				| _,_,[] -> d :: v
-				| _,_,x :: xs -> (
-					(* Printf.printf "search by %d\n" x; *)
-					let nru = try List.assoc x irules with Not_found -> [] in
-					List.fold_left (fun r ((syms,_),j) -> 
-						let isyms = List.map sym2i syms in
-						self r [((x,j),[],isyms)]
-					) (d :: v) (enumerate nru)
-				)
+				try 
+					(* ここでLALR(1)にする *)
+					let kd,dv = d in
+					let otf = List.assoc kd v in
+					append_fs otf dv;
+					v
+				with
+					| Not_found -> (
+						match d with
+						| (_,_,[]),_ -> d :: v
+						| (_,_,x :: xs),fo -> (
+							(* Printf.printf "search by %d\n" x; *)
+							let nru = try List.assoc x irules with Not_found -> [] in
+							let tfo = match xs with [] -> (copy_from_fs fo) | p :: _ -> unit_fs p in
+							List.fold_left (fun r ((syms,_),j) -> 
+								let isyms = List.map sym2i syms in
+								self r [((x,j),[],isyms),tfo]
+							) (d :: v) (enumerate nru)
+						)
+					)
 			)
 	in
 	let vs = ref [] in
 	let es = ref [] in
+	let vses2str () = 
+		(List.combine !vs !es) |> 
+		(List.mapi (fun i (v,e) ->
+			(Printf.sprintf "state %d:\n\t" i) ^ 
+			(v |>
+			(List.filter (fun ((_,be,_),_) -> be <> [])) |> 
+			(List.map rl2str) |>
+			String.concat "\n\t") ^ 
+			"\nwith edge\n" ^
+			(list2str (!e) (fun d -> 
+				match d with
+				| Reduce_data(vs,i,j) -> Printf.sprintf "Reduce[%s,%s,%d]" (list2str (fs2list vs) i2sym) (i2sym i) j
+				| Shift_data(i,j) -> Printf.sprintf "Shift[%s,%d]" (i2sym i) j
+			)) ^ "\n"
+		)) |>
+		(String.concat "")
+  in
 	let rec add_state_node it = 
 		let self = add_state_node in
 		let tit = saturate [] it in
-		match find_idx tit (!vs) with
-		| Some t -> t
+		match find_same_state_with_idx tit (!vs) with
+		| Some t -> (
+				let d = List.nth !vs t in
+				merge_state d tit;
+				t
+			)
 		| None -> (
+				(*
+				Printf.printf "%s\n" (vses2str ());
+				print_string "========================================\n";
+				*)
 				let rt = List.length !vs in
 				vs := (!vs) @ [tit];
 				let ne = ref [] in
 				es := !es @ [ne];
-				ne := List.concat (List.map (fun ((p,q),be,af) -> 
+				(* 終了していて、reduceするアイテム *)
+				ne := List.concat (List.map (fun (((p,q),be,af),fo) -> 
 					match af with
-					| [] -> [Reduce(p,q)]
+					| [] -> [Reduce_data(fo,p,q)]
 					| _ -> []
 				) tit);
 				
+				(* 終了していなくて、shiftするアイテム *)
 				let samexs = ref [] in
-				List.iter (fun ((p,q),be,af) -> 
+				List.iter (fun (((p,q),be,af),fo) -> 
 					match af with
 					| [] -> ()
 					| x :: xs -> (
-							let d = ((p,q),be @ [x],xs) in
+							let d = (((p,q),be @ [x],xs),fo) in
 							try 
 								let v = List.assoc x !samexs in
 								v := d :: !v
@@ -178,30 +305,15 @@ let make_table rules sym2i i2sym tokens startsym =
 								| Not_found -> samexs := (x,ref [d]) :: !samexs
 						)
 				) tit;
-				ne := !ne @ (List.map (fun (x,ds) -> let nt = self !ds in Shift(x,nt)) !samexs);
+				ne := !ne @ (List.map (fun (x,ds) -> let nt = self !ds in Shift_data(x,nt)) !samexs);
 				rt
 			)
 	in
-	let stp = add_state_node [(((sym2i "@start_start"),-1),[],[sym2i startsym])] in
+	let stp = add_state_node [(((sym2i "@start_start"),-1),[],[sym2i startsym]),(unit_fs (sym2i "@end_end"))] in
 	
 	(* let v = x :: xs in List.nth (List.length xs) が x と違うの罠過ぎませんか??? *)
 	
-	let ds = 
-		(List.combine !vs !es) |> 
-		(List.mapi (fun i (v,e) ->
-			(Printf.sprintf "state %d:\n\t" i) ^ 
-			(v |>
-			(List.map rl2str) |>
-			String.concat "\n\t") ^ 
-			"\nwith edge\n" ^
-			(list2str (!e) (fun d -> 
-				match d with
-				| Reduce(i,j) -> Printf.sprintf "Reduce[%s,%d]" (i2sym i) j
-				| Shift(i,j) -> Printf.sprintf "Shift[%s,%d]" (i2sym i) j
-			)) ^ "\n"
-		)) |>
-		(String.concat "")
-  in
+	let ds = vses2str () in
 	Printf.printf "%s\n" ds;
 	(*
 	list2str !es (fun e -> 
