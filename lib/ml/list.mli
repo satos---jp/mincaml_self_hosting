@@ -8,3 +8,5 @@ val mem_assoc : 'a -> ('a * 'b) list -> bool
 val mapi : (int -> 'a -> 'b) -> 'a list -> 'b list
 val nth : 'a list -> int -> 'a
 val length : 'a list -> int
+val exists : ('a -> bool) -> 'a list -> bool
+val rev : 'a list -> 'a list

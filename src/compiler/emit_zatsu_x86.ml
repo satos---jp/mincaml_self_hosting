@@ -230,7 +230,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 		(Printf.sprintf "\tor  %s,0x10000000\n" s)
 	in
 	let untag_tor ((x,(t,_)) as na) s = 
-		Printf.printf "untag %s with type %s\n" (namestr2str !x) (type2str t);
+		ivprint (Printf.sprintf "untag %s with type %s\n" (namestr2str !x) (type2str t));
 		(Printf.sprintf "\tmov %s,%s\n" s (nd2ps na)) ^
 		(if t = TyInt then
 			(untagi s)

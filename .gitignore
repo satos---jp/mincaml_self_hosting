@@ -74,3 +74,5 @@ tes.mly
 syntax.mli
 yacc_sample.ml
 x.output
+syntax.ml
+big_program_tes/*

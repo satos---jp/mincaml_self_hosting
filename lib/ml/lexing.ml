@@ -25,7 +25,7 @@ let from_channel ch =
 			let r = List.nth (!rs) p in
 			(*
 			print_string "return ";
-			print_char (Char.code r);
+			print_int r;
 			print_char 10;
 			*)
 			r
@@ -55,8 +55,8 @@ let ungets buf t =
 	let (_,h) = buf in h t
 
 type rule_state = 
-	| Going of state * nfa * ((unit * int) option) * (unit -> 'a)
-	| Gone  of (unit * int) * (unit -> 'a)
+	| Going of state * nfa * ((string list * int) option) * (string list -> 'a)
+	| Gone  of (string list * int) * (string list -> 'a)
 
 
 let i2s i = Char.escaped (Char.chr (i+48))
@@ -84,7 +84,7 @@ let my_lexing buf data =
 		| (Going(state,nfa,lasp,func)) :: xs -> (
 				let ts = Nfa.step nfa state c in
 				let tlasp = (
-					if Nfa.isaccept nfa state then Some(((),t))
+					if Nfa.isaccept nfa state then Some((Nfa.get_mem_from_state nfa state,t))
 					else lasp
 				) in
 				
@@ -123,7 +123,10 @@ let my_lexing buf data =
 		| _ -> circle (t+1) tss 
 	in
 	let starts = 
-		List.map (fun (nfa,func) -> Going([(0,[])],nfa,None,func)) data 
+		List.map (fun (nfa,func,mem_ls) -> 
+			let start_state = Nfa.nfa2start_state nfa mem_ls in
+			Going(start_state,nfa,None,func)
+		) data 
 	in 
 		circle 0 starts
 

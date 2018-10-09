@@ -175,7 +175,12 @@ exception Subtype_false
 
 let rec is_sub env ta tb = 
 	let self = is_sub env in
-	let multi_check tas tbs = List.iter2 self tas tbs in
+	let multi_check tas tbs = 
+		try 
+			List.iter2 self tas tbs
+		with
+			| Invalid_argument s -> failwith ("invalid argument of " ^ s ^ " in is_sub@type.ml")
+	in
 	if ta = tb then () else 
 	match ta,tb with
 	| TyVar a, tb | tb, TyVar a -> (

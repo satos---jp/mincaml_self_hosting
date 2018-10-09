@@ -6,14 +6,19 @@ Parser.toplevel Lexer.main (Lexing.from_channel stdin)
 val my_parsing : data -> (unit -> 'a) -> ('a -> int) -> dataから決まる型
 *)
 
+(*
+type 'a parsing_data = 
+	| Token of 'a                
+	| Datum of int * data list 
+*)
 
-type 'a data = 
-	| Token of 'a                (* token のやつ *)
-	| Datum of int * int * data list (* データとしてはi番めのやつで、そのうち規則jによって縮約された *)
+(* token のやつ *)
+(* 規則iによって縮約された *)
 
 type parsingact = 
 	| Shift of int
 	| Reduce of int
+	| Error
 
 let rec split_list v p = 
 	if p = 0 then ([],v) else 
@@ -24,15 +29,15 @@ let rec split_list v p =
 		)
 
 let my_parsing (istoplevel,rules,table) lexfun token2id = 
-	let get_act st i = (* 状態stからi番めのデータが降ってきた際の挙動 *)
+	let get_act st x = (* 状態stからデータxが降ってきた際の挙動 *)
 		let qt = List.nth table st in
-		let act = List.nth qt i in
+		let act = List.nth qt (token2id x) in
 		act
 	in
 	let rec steps vs st = 
 		match vs with
 		| x :: xs -> (
-				let act = get_act st (token2id x) in
+				let act = get_act st x in
 				match act with
 				| Shift tst -> steps xs tst
 				| Reduce d -> Some d
@@ -44,10 +49,11 @@ let my_parsing (istoplevel,rules,table) lexfun token2id =
 		let td = steps (List.rev vs) st in
 		match td with
 		| Some x -> (
-				let (ls,f) = List.nth rules x in
-				let v,w = split_list vs ls in
-				if istoplevel x then f v
-				else circle ((f v) :: w)
+				let ls = List.nth rules x in (* 頭ls個を縮約する *)
+				let (v,w) = split_list vs ls in
+				let fv = Datum(x,v) in
+				if istoplevel x then fv
+				else circle (fv :: w)
 			)
 		| None -> circle ((lexfun ()) :: vs)
 	in

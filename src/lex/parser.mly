@@ -2,8 +2,18 @@
 	open Syntax
 	
 	let cstr2char s = 
-		assert (String.length s = 1);
-		String.get s 1
+		let c1 = String.get s 0 in
+		if c1 = '\\' then (
+			assert (String.length s = 2);
+			let c2 = String.get s 1 in  (* このへんがコンパイラととともに受け継がれていく情報 *)
+			if c2 = 'n' then '\n'
+			else if c2 = 't' then '\t'
+			else if c2 = 'r' then '\r'
+			else failwith (Printf.sprintf "Unknown escape sequence '%s'" s)
+		) else (
+			assert (String.length s = 1);
+			c1
+		)
 %}
 
 %token <string> CHAR

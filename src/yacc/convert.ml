@@ -10,18 +10,20 @@ let collect_start pcs =
 	) [] pcs
 
 let conv_prec pcs = 
-	let sv = (0,"","") in
-	List.fold_left (fun ((idn,type_token_s,token2id_s) as r) pc -> 
+	let sv = (0,"","",[]) in
+	List.fold_left (fun ((idn,type_token_s,token2id_s,tokens) as r) pc -> 
 		match pc with
 		| PToken s -> (
 				idn+1,
 				type_token_s ^ (Printf.sprintf "| %s\n" s),
-				token2id_s   ^ (Printf.sprintf "| %s -> %d\n" s idn)
+				token2id_s   ^ (Printf.sprintf "| %s -> %d\n" s idn),
+				(s,0) :: tokens
 			)
 		| PTToken(et,s) -> (
 				idn+1,
 				type_token_s ^ (Printf.sprintf "| %s of %s\n" s et),
-				token2id_s   ^ (Printf.sprintf "| %s _ -> %d\n" s idn)
+				token2id_s   ^ (Printf.sprintf "| %s _ -> %d\n" s idn),
+				(s,1) :: tokens
 			)
 		| PStart _ | PType _  -> r
 	) sv pcs
@@ -43,7 +45,7 @@ let extract_folds_from_precs pcs =
 		| PTToken(et,s) -> (
 				(Printf.sprintf "let %s d =\n" (sym2funname s)) ^
 				"\tmatch d with\n" ^
-				"\t| Token t -> t\n\n"
+				(Printf.sprintf "\t| Token t -> match t with %s(x) -> x\n\n" s)
 			)
 		| _ -> ""
 	) pcs))
@@ -52,7 +54,7 @@ let extract_folds rules =
 	"let rec " ^ (String.concat "\n\nand " (List.map (fun (na,rls) ->  
 		(Printf.sprintf "%s d =\n" (sym2funname na)) ^
 		"\tmatch d with\n" ^
-		"\t| Datum(_,i,ds) -> (\n" ^
+		"\t| Datum(i,ds) -> (\n" ^
 		"\t\t\t" ^ (String.concat "" (List.mapi (fun i (syms,(co,ds)) -> 
 			let uds = unique ds in
 			(Printf.sprintf "if i = %d then (\n" i) ^
@@ -193,7 +195,7 @@ let fs2list i =
 		f i
 
 
-type parsingact = 
+type parsingact_before = 
 	| Shift_data of int * int (* 入力として記号iが来たら状態jに遷移する *)
 	| Reduce_data of int * int * int (* 入力記号がvs中のとき、シンボルiのj番めのルールでreduceする *)
 
@@ -206,8 +208,20 @@ let merge_state v w =
 		append_fs v av
 	) w
 
+type parsingact = 
+	| Shift of int
+	| Reduce of int
+	| Error
+
+let parsingact2str pa = 
+	match pa with
+	| Shift(x) -> Printf.sprintf "Shift(%d)" x
+	| Reduce(x) -> Printf.sprintf "Reduce(%d)" x
+	| Error -> Printf.sprintf "Error"
+	
+
 (* table :: 状態stでi番めのデータが降ってきた際にshift/reduceするやつ *)
-let make_table rules sym2i i2sym tokens startsym = 
+let make_table rules sym2i i2sym i_sym_data rule2idx startsym = 
 	let rl2str (((i,j),ss,ts),fs) = (
 	(*
 		(Printf.sprintf "{(%d,%d),%s,%s} " i j (list2str ss string_of_int) (list2str ts string_of_int)) ^
@@ -315,27 +329,52 @@ let make_table rules sym2i i2sym tokens startsym =
 	
 	let ds = vses2str () in
 	Printf.printf "%s\n" ds;
-	(*
 	list2str !es (fun e -> 
-		list2str e (fun d -> 
-			resum2str d
+		let te = (let rec f i = if i = 0 then [] else (ref Error) :: (f (i-1)) in f (List.length !i_sym_data)) in
+		let te_update i v = 
+			(* Printf.printf "nth %d of %s\n" i (i2sym i); *)
+			let d = List.nth te i in
+			match !d with
+			| Error -> d := v
+			| Shift _ | Reduce _ -> (
+				Printf.printf "conflict\n"
+			)
+		in
+		List.iter (fun d -> 
+			match d with
+			| Shift_data(i,j) -> te_update i (Shift(j))
+			| Reduce_data(vs,j,k) -> (
+					if k < 0 then () else (
+						List.iter (fun i -> te_update i (Reduce(rule2idx (i2sym j) k))) (fs2list vs)
+					)
+				)
+		) !e;
+		list2str te (fun d -> 
+			parsingact2str !d
 		)
-	) *)
-	""
+	)
 
 
 
+let get_rule2idx rules = 
+	let ls = ref [] in
+	let v = List.fold_left (fun r (na,ds) -> 
+		let t = List.length !ls in
+		List.iter (fun (d,_) -> ls := !ls @ [List.length d]) ds;
+		(na,(List.mapi (fun i _ -> i + t) ds)) :: r
+	) [] rules in
+	(fun i j -> Printf.printf "%s %d\n" i j; List.nth (List.assoc i v) j),!ls
 
-let gen_int = let c = ref 0 in (fun () -> c := !c+1; !c)
 
 
 (* reduce_rules :: t番めのreduce規則についてで、 (ls,f) の組。 ls は縮約される記号の長さを、fはかかる関数を返す *)
 
 
 let conv (header,precs,rules) =
-	let _,type_token_s,token2id_s = conv_prec precs in
+	let _,type_token_s,token2id_s,tokens = conv_prec precs in
 	let starts = collect_start precs in
-	let sym2i,i2sym = 
+	let rule2idx,rule_ls = get_rule2idx rules in
+	let sym2i,i2sym,i_sym_data = 
 		let d = ref [] in 
 		(fun x -> 
 			match find_idx x !d with 
@@ -347,17 +386,20 @@ let conv (header,precs,rules) =
 				) 
 			| Some t -> t
 		),
-		(fun x -> List.nth !d x) 
+		(fun x -> List.nth !d x) ,
+		d
 	in
+	let _ = List.map (fun (x,_) -> sym2i x) tokens in
 	header ^ 
 	"type token = \n" ^ type_token_s ^ 
 	"let token2id d = match d with\n" ^ token2id_s ^ "\n" ^
 	(extract_folds_from_precs precs) ^
-	(extract_folds rules) ^
+	(extract_folds rules) ^ "\n" ^
 	(starts |> List.map (fun s -> 
-			"let table_" ^ s ^ " = \n" ^ (make_table rules sym2i i2sym () s)
-		) |> String.concat "")
+			"let table_" ^ s ^ " = \n" ^ (make_table rules sym2i i2sym i_sym_data rule2idx s)
+		) |> String.concat "") ^ "\n" ^
+	"let rules = " ^ (list2str rule_ls string_of_int) ^ "\n"
 
 
 
-
+let gen_int = let c = ref 0 in (fun () -> c := !c+1; !c)

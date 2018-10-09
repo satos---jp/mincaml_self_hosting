@@ -56,3 +56,14 @@ let rec length v =
 	match v with
 	| [] -> 0
 	| x :: xs -> (length xs) + 1
+
+let rec exists f v = 
+	match v with
+	| [] -> false
+	| x :: xs -> if f x then true else exists f xs
+
+let rev v = 
+	match v with
+	| [] -> []
+	| x :: xs -> append (rev xs) [x]
+

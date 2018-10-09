@@ -25,7 +25,7 @@ let reduce_funcs = [
 	Assoc.assoc;
 	Remove_tuple.remove;
 	Const_fold.folder;
-	Common_sube_elim.elimer;
+	(* Common_sube_elim.elimer; TODO(satoS) これやっぱり残念ぽいのでよくする(大テーブルとかがだめ) *)
 	Beta.beter;
 	Elim_unused.elim_unused;
 ]
@@ -168,9 +168,9 @@ let output_stub files =
 	) ^ (
 		"section .bss\n" ^
 		"global_heap:\n" ^
-		"\tresb 100000\n" ^ 
+		"\tresb 1000000\n" ^ 
 		"heap:\n" ^
-		"\tresb 100000\n" ^ 
+		"\tresb 1000000\n" ^ 
 		"section .data\n" ^
 		"section .text\n" ^
 		"_start:\n" ^

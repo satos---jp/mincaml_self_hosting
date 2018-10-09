@@ -332,8 +332,8 @@ let rec type_infer tyenv venv astdeb env =
 			(* いったんenvをアップデートしないといけなかったりする。(都合で) *)
 			let ts2 = schemize ttt2 env subs in
 
-			print_string ("letdecl " ^ n1 ^ "\n");
-			print_string (constrs2str c2);
+			ivprint ("letdecl " ^ n1 ^ "\n");
+			ivprint (constrs2str c2);
 			
 			let te3,c3,tt3,_ = self e3 ((n1,ts2) :: env) in
 			
@@ -571,6 +571,8 @@ let variantenv () = [
 	("@Cons",(fun x -> let t = gentype x in (1,TyUserDef("list",[t]),[t;TyUserDef("list",[t])])));
 	("Some",(fun x -> let t = gentype x in (0,TyUserDef("option",[t]),[t])));
 	("None",(fun x -> let t = gentype x in (1,TyUserDef("option",[t]),[])));
+	("Token",(fun x -> let t = gentype x in (0,TyUserDef("parsing_data",[t]),[t])));
+	("Datum",(fun x -> let t = gentype x in (1,TyUserDef("parsing_data",[t]),[TyInt;TyUserDef("list",[TyUserDef("parsing_data",[t])])])));
 ]
 
 let user_defined_types = ref [
@@ -588,6 +590,7 @@ let defined_types () = [
 	("list",1);
 	("option",1);
 	("ref",1);
+	("parsing_data",1);
 ] @ List.map (fun (t,_) -> (t,0)) (user_defined_type_env ())
 
 
@@ -662,6 +665,19 @@ let check_ast ast sv =
 			let rec update_by_open filena = 
 				let specs = open2spec filena in
 				List.fold_left (fun (f,env,venv,tyenv,uts) spec ->
+					let update_by_variant na ts =                                                  (* TODO ここ若干ガバ *)
+						let tts = List.map (fun (tg,te) -> (tg,List.map (fun x -> eval_variant tyenv ((na,0) :: uts) x) te)) ts in
+						let ttts = List.mapi (fun i (tg,tes) -> 
+							(tg,(fun _ -> (i,TyUserDef(na,[]),tes)))
+						) tts
+						in
+						(
+							f,env,
+							ttts @ venv,
+							tyenv,
+							(na,0) :: uts
+						)
+					in
 					match spec with
 					| SValtype(na,te) -> (
 							let rena = (String.capitalize (basename filena)) ^ "@" ^ na in
@@ -691,6 +707,7 @@ let check_ast ast sv =
 								(na,0) :: uts
 							)
 						)
+					| SVariant(na,ts) -> update_by_variant na ts
 					| _ -> raise (Failure("Unimplemented in open"))
 				) (f,env,venv,tyenv,uts) specs
 			in
@@ -771,6 +788,10 @@ let check_spec env tyenv uts specs =
 			)
 		| STypeRename(na,te) -> (
 				(*TODO verify type*)
+				exports
+			)
+		| SVariant(na,ts) -> (
+				(*TODO verify variant*)
 				exports
 			)
 		| _ -> raise (Failure("Unimplemented in check_spec"))

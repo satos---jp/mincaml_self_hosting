@@ -4,4 +4,9 @@ Parser.toplevel Lexer.main (Lexing.from_channel stdin)
 
 *)
 
-val my_parsing : 
+type parsingact = 
+	| Shift of int
+	| Reduce of int
+	| Error
+
+val my_parsing : int -> int
