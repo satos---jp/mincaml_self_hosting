@@ -329,6 +329,7 @@ let make_table rules sym2i i2sym i_sym_data rule2idx startsym =
 	
 	let ds = vses2str () in
 	Printf.printf "%s\n" ds;
+	
 	list2str !es (fun e -> 
 		let te = (let rec f i = if i = 0 then [] else (ref Error) :: (f (i-1)) in f (List.length !i_sym_data)) in
 		let te_update i v = 
@@ -363,7 +364,7 @@ let get_rule2idx rules =
 		List.iter (fun (d,_) -> ls := !ls @ [List.length d]) ds;
 		(na,(List.mapi (fun i _ -> i + t) ds)) :: r
 	) [] rules in
-	(fun i j -> Printf.printf "%s %d\n" i j; List.nth (List.assoc i v) j),!ls
+	(fun i j -> (* Printf.printf "%s %d\n" i j; *) List.nth (List.assoc i v) j),!ls
 
 
 
@@ -381,7 +382,7 @@ let conv (header,precs,rules) =
 			| None -> (
 					let r = List.length !d in 
 					d := !d @ [x]; 
-					Printf.printf "add %s as %d\n" x r; 
+					(* Printf.printf "add %s as %d\n" x r; *)
 					r
 				) 
 			| Some t -> t

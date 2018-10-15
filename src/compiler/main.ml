@@ -73,10 +73,10 @@ let changext fn ext1 ext2 =
 
 
 
-let compile file = 
+let load_source file = 
 	Printf.printf "compile %s\n" file;
-	let tast = Source2ast.src2ast file in
-	vprint top2str tast;
+	let ast,opens = Source2ast.src2ast file in
+	vprint top2str ast;
 	ivprint "parsed";
 	
 	let spec = (
@@ -84,11 +84,13 @@ let compile file =
 			Source2ast.open2spec (changext file ".ml" "")
 		else []
 	) in
-	
-	let astp = Preprocess.preprocess tast in
+		(file,ast,spec,opens)
+
+let compile (file,ast,spec,opens) =
+	let astp = Preprocess.preprocess ast in
 	print_string "preprocessed";  print_newline ();
 	vprint top2str astp;
-	let ast2 = Type_checker.check astp spec in
+	let ast2 = Type_checker.check file astp spec opens in
 	print_string "typed";  print_newline ();
 	vprint texp2str ast2;
 	let kn = Alpha.alpha_conv (Knorm.knorm ast2) [] in
@@ -114,14 +116,25 @@ let compile file =
 	let vrt = Virtual.to_virtual cls in
 	print_string "virtualized";  print_newline ();
 	vprint virt2str vrt;
-	let asm = Emit_zatsu_x86.vir2asm vrt (Type_checker.get_imports ()) (Type_checker.get_exports ()) in
+	let asm = Emit_zatsu_x86.vir2asm vrt (Type_checker.get_imports ()) (Type_checker.get_exports ()) (basename file) in
 	vprint (fun x -> x) asm;
 	asm
 
 
-let compile_to_sfile fn = 
+
+(* TODO(satos) 設計がつらいので直す *)
+let filename_to_sfile fn = 
 	let sfn = changext fn ".ml" ".s" in
-	let asm = compile fn in
+	let asm = fn |> load_source |> compile in
+	let oc = open_out sfn in
+	output_string oc asm;
+	close_out oc;
+	sfn
+
+
+let ast_spec_to_sfile (fn,ast,spec,opens) = 
+	let sfn = changext fn ".ml" ".s" in
+	let asm = compile (fn,ast,spec,opens) in
 	let oc = open_out sfn in
 	output_string oc asm;
 	close_out oc;
@@ -130,11 +143,11 @@ let compile_to_sfile fn =
 
 let get_header file = 
 	Printf.printf "compile %s\n" file;
-	let tast = Source2ast.src2ast file in
+	let tast,opens = Source2ast.src2ast file in
 	vprint top2str tast;
 	ivprint "parsed";
 	let astp = Preprocess.preprocess tast in
-	let hs = Type_checker.export_header astp in
+	let hs = Type_checker.export_header file astp opens in
 	print_string "typed";  print_newline ();
 	Spec.top2header hs
 
@@ -149,10 +162,10 @@ let compile_to_header fn =
 
 let output_stub files =	
 	let ens = List.map (fun fn -> 
+		Printf.printf "stub %s\n" fn;
 		let ts = (
 			if hasext fn ".ml" then fn
-			else if hasext fn ".s" then changext fn ".s" ".ml"
-			else raise (Failure (Printf.sprintf "%s is not .ml nor .s file" fn))
+			else raise (Failure (Printf.sprintf "%s is not .o file" fn))
 		) in
 		(basename ts) ^ "main"
 	) files 
@@ -200,10 +213,24 @@ let _ =
 		Printf.printf "Usage: %s filename\n" Sys.argv.(0)
 	) else (
 		if !output_assembler then (
-			let _ = List.map compile_to_sfile !files in ()
+			let _ = List.map filename_to_sfile !files in ()
 		) else if !output_header then (
 			let _ = List.map compile_to_header !files in ()
 		) else (
+			
+(*
+let stdlib_list = ["lib/ml/list.ml"; "lib/ml/string.ml"; "lib/ml/nfa.ml"; "lib/ml/lexing.ml"]
+
+(*
+let now_lib_list = ref [] 
+*)
+
+let stdlib_mli_list = ["lib/ml/char.ml"; "lib/ml/list.ml"; "lib/ml/string.ml"; "lib/ml/nfa.ml"; "lib/ml/lexing.ml"]
+*)
+
+			
+			
+			(*
 			files := "lib/ml/pervasive.ml" :: stdlib_list @ !files;
 			output_stub !files;
 			files := !files @ [
@@ -211,18 +238,67 @@ let _ =
 				"lib/asm/lib.s"; "lib/asm/libio_linux.s"; 
 				"stub.s"
 			];
+			*)
+
+			let stdlib_open_list = [
+				("Lexing",(true,false));
+				("Nfa",(true,false));
+				("List",(true,false));
+				("String",(true,true));
+				("Char",(false,true));
+				("Pervasive",(true,true))
+			] in
 			
-			let ofs = List.map (fun fn -> 
-				let sfn = (
-					if hasext fn ".ml" then compile_to_sfile fn
-					else if hasext fn ".s" then fn
-					else raise (Failure (Printf.sprintf "%s is not .ml nor .s file" fn))
-				) in
+			let asm_files = ref ["lib/asm/libio_linux.s";"stub.s"] in
+			let open2fn s = 
+				let bfn = String.lowercase s in
+				if List.mem_assoc s stdlib_open_list then (
+					let hasml,hass = List.assoc s stdlib_open_list in
+					(if hass then
+						let afn = "lib/asm/" ^ bfn ^ ".s" in
+						if not (List.mem afn !asm_files) then
+							asm_files := afn :: !asm_files
+						else ()
+					else ());
+					if hasml then Some("lib/ml/" ^ bfn ^ ".ml") else None
+				) else (
+					Some(bfn ^ ".ml")
+				)
+			in
+			
+			(* TODO(satos) いったん循環参照checkはommitする *)
+			let db_check = ref [] in
+			let rec f rems = 
+				match rems with
+				| [] -> []
+				| None :: xs -> f xs
+				| Some(x) :: xs -> (
+					if List.mem x !db_check then f xs else (
+						Printf.printf "open %s\n" x;
+						db_check := x :: !db_check;
+						assert (hasext x ".ml");
+						let (_,_,_,opens) as d = load_source x in
+						Printf.printf "%s :: %s\n" x (String.concat " @@ " opens);
+						let tos = List.map open2fn opens in
+						(x,d) :: (f (xs @ tos))
+					)
+				)
+			in
+			
+			let fn_ast_specs = f (List.map (fun x -> Some x) (List.rev !files)) in
+			List.iter (fun (fn,astspec) -> 
+				let sfn = ast_spec_to_sfile astspec in
+				Printf.printf "make sfile %s\n" sfn;
+				asm_files := sfn :: !asm_files
+			) fn_ast_specs;
+			
+			output_stub (List.rev (List.map fst fn_ast_specs));
+			let ofs = List.map (fun sfn -> 
 				let ofn = changext sfn ".s" ".o" in
 				let d = exec_command (Printf.sprintf "nasm %s -f elf32 -g -o %s" sfn ofn) in
 				if d = 0 then ofn
 				else raise (Failure (Printf.sprintf "nasm for %s failed" sfn))
-			) !files
+			) !asm_files
 			in
 			let fs = String.concat " " ofs in
 			let _ = exec_command (Printf.sprintf "gcc -m32 -nostdlib %s -o %s" fs !output_filename) in ()

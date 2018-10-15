@@ -26,9 +26,6 @@ let genv_base = List.map (fun (na,t) -> (na,schemize t [] [])) (
 
 ] @ [ (* char.s *)
 
-	("Char@code",TyFun([TyChar],TyInt));
-	("Char@chr",TyFun([TyInt],TyChar));
-	("Char@escaped",TyFun([TyChar],TyStr));
 
 ] @ [ (* libio_linux.s *)
 
@@ -638,7 +635,7 @@ Error: The type abbreviation a is cyclic
 
 
 
-let check_ast ast sv = 
+let check_ast nowna ast sv opens = 
 	try (
 		(* 
 			f :: プログラム全体, 
@@ -647,7 +644,62 @@ let check_ast ast sv =
 			tyenv :: 型のrenameデータ, 
 			uts :: 定義済みの型集合
 		*)
-		
+
+		let rec update_by_open sv filena isexplicit = 
+			let specs = open2spec filena in
+			List.fold_left (fun (f,env,venv,tyenv,uts) spec ->
+				let update_by_variant na ts =                                                  (* TODO ここ若干ガバ *)
+					let tts = List.map (fun (tg,te) -> (tg,List.map (fun x -> eval_variant tyenv ((na,0) :: uts) x) te)) ts in
+					let ttts = List.mapi (fun i (tg,tes) -> 
+						(tg,(fun _ -> (i,TyUserDef(na,[]),tes)))
+					) tts
+					in
+					(
+						f,env,
+						ttts @ venv,
+						tyenv,
+						(na,0) :: uts
+					)
+				in
+				match spec with
+				| SValtype(na,te) -> (
+						let rena = (String.capitalize (basename filena)) ^ "@" ^ na in
+						let t = eval_variant tyenv uts te in
+						let ts = schemize t env [] in (* TODO(satos) これはなんだこれは(多分あってるけど) *)
+						(* TODO(satos) ここ、.s と .ml 両方あるstringのための応急処置 *)
+						(if filena = "String" && nowna = "lib/ml/string.ml" then () else externs := (rena,ts) :: (!externs));
+						let td = (t,default_debug_data) in
+						
+						if not isexplicit then
+							(
+								f,
+								(rena,ts) :: env 
+								,venv,tyenv,uts
+							)
+						else
+							(
+								(fun y -> f (TLet((na,td),(TVar((rena,td)),td),y),(snd y))),
+								(na,ts) :: env
+								,venv,tyenv,uts
+							)
+					)
+				| STypeRename(na,te) -> (
+						let t = eval_variant tyenv uts te in
+						(
+							f,env,venv,
+							(na,t) :: tyenv,
+							(na,0) :: uts
+						)
+					)
+				| SVariant(na,ts) -> update_by_variant na ts
+				| SOpen(na) -> ( (* 必要なのは型のrename情報だけなはずなので、それのみをimportする*)
+						let (_,_,tvenv,ttyenv,tuts) = update_by_open (f,env,venv,tyenv,uts) na true in
+						(f,env,tvenv,ttyenv,tuts)
+					)
+				| _ -> raise (Failure("Unimplemented in open"))
+			) sv specs
+		in
+		let tsv = List.fold_left (fun r fn -> update_by_open r fn false) sv opens in
 		List.fold_left (fun (f,env,venv,tyenv,uts) ast ->
 			let update_by_variant na ts =                                                  (* TODO ここ若干ガバ *)
 				let tts = List.map (fun (tg,te) -> (tg,List.map (fun x -> eval_variant tyenv ((na,0) :: uts) x) te)) ts in
@@ -661,55 +713,6 @@ let check_ast ast sv =
 					tyenv,
 					(na,0) :: uts
 				)
-			in
-			let rec update_by_open filena = 
-				let specs = open2spec filena in
-				List.fold_left (fun (f,env,venv,tyenv,uts) spec ->
-					let update_by_variant na ts =                                                  (* TODO ここ若干ガバ *)
-						let tts = List.map (fun (tg,te) -> (tg,List.map (fun x -> eval_variant tyenv ((na,0) :: uts) x) te)) ts in
-						let ttts = List.mapi (fun i (tg,tes) -> 
-							(tg,(fun _ -> (i,TyUserDef(na,[]),tes)))
-						) tts
-						in
-						(
-							f,env,
-							ttts @ venv,
-							tyenv,
-							(na,0) :: uts
-						)
-					in
-					match spec with
-					| SValtype(na,te) -> (
-							let rena = (String.capitalize (basename filena)) ^ "@" ^ na in
-							let t = eval_variant tyenv uts te in
-							let ts = schemize t env [] in (* これはなんだこれは(多分あってるけど) *)
-							externs := (rena,ts) :: (!externs);
-							let td = (t,default_debug_data) in
-							
-							if List.mem (filena ^ ".ml") stdlib_list then
-								(
-									f,
-									(rena,ts) :: env (* TODO(satos) ここ、ちょっと不正確(わざわざopen List とかしてるとバグる) ので直す*)
-									,venv,tyenv,uts
-								)
-							else
-								(
-									(fun y -> f (TLet((na,td),(TVar((rena,td)),td),y),(snd y))),
-									(na,ts) :: env
-									,venv,tyenv,uts
-								)
-						)
-					| STypeRename(na,te) -> (
-							let t = eval_variant tyenv uts te in
-							(
-								f,env,venv,
-								(na,t) :: tyenv,
-								(na,0) :: uts
-							)
-						)
-					| SVariant(na,ts) -> update_by_variant na ts
-					| _ -> raise (Failure("Unimplemented in open"))
-				) (f,env,venv,tyenv,uts) specs
 			in
 			addglobalcs := [];
 			match ast with
@@ -745,7 +748,7 @@ let check_ast ast sv =
 							)
 						)
 					| DVariant(na,ts) -> update_by_variant na ts
-					| DOpen(na) -> update_by_open na
+					| DOpen(na) -> update_by_open (f,env,venv,tyenv,uts) na true
 					| DTypeRename(na,te) -> (
 							let t = eval_variant tyenv uts te in
 							(
@@ -756,7 +759,7 @@ let check_ast ast sv =
 							)
 						)
 				)
-		) sv ast
+		) tsv ast
 	) with
 		| TypeError(t1,t2,deb) -> 
 			raise (Failure(Printf.sprintf 	
@@ -764,8 +767,8 @@ let check_ast ast sv =
 
 
 
-let check_spec env tyenv uts specs = 
-	let fn = !filename in
+let check_spec fn env tyenv uts specs = 
+	let fn = basename fn in
 	let ls = String.length fn in
 	let hn = (String.sub fn 0 (ls-3)) in
 	let prefix = (String.capitalize hn) ^ "@" in
@@ -775,6 +778,7 @@ let check_spec env tyenv uts specs =
 		| SValtype(na,te) -> (
 				let rena = prefix ^ na in
 				let t = eval_variant tyenv uts te in 
+				Printf.printf "export %s with type %s\n" na (type2str t);
 				try 
 					let ets = List.assoc na env in
 					let et = instanciate ets in
@@ -784,7 +788,7 @@ let check_spec env tyenv uts specs =
 						(print_string (Printf.sprintf "variable %s decled with type %s is not subtype of actual type %s in %s.mli\n" na (type2str t) (type2str et) hn);
 						failwith (Printf.sprintf "variable %s decled with type %s is not subtype of actual type %s in %s.mli" na (type2str t) (type2str et) hn))
 				with
-					| Not_found -> failwith (Printf.sprintf "Undefined variable %s in %s.mli" na hn)
+					| Not_found -> failwith (Printf.sprintf "Undefined variable %s in %s.ml required in .mli" na hn)
 			)
 		| STypeRename(na,te) -> (
 				(*TODO verify type*)
@@ -792,6 +796,10 @@ let check_spec env tyenv uts specs =
 			)
 		| SVariant(na,ts) -> (
 				(*TODO verify variant*)
+				exports
+			)
+		| SOpen(na) -> (
+				(*TODO verify open*)
 				exports
 			)
 		| _ -> raise (Failure("Unimplemented in check_spec"))
@@ -804,10 +812,9 @@ let get_exports () = !exports_list
 let global_funcs () = (get_exports ()) @ (List.map fst (get_imports ()))
 
 
-let check ast specs = 
+let check fn ast specs opens = 
 	externs := [];
 	exports_list := [];
-	
 	let sv = (
 		(fun x -> x),
 		(genv ()),
@@ -815,10 +822,10 @@ let check ast specs =
 		(user_defined_type_env ()),
 		(defined_types ())
 	) in
-	let tast,env,_,ttyenv,tuts = check_ast ast sv in
+	let tast,env,_,ttyenv,tuts = check_ast fn ast sv opens in
 	ivprint "\ntexp without exports";
 	vprint texp2str (tast (TTuple([]),(TyInt,default_debug_data)));
-	let exports = check_spec env ttyenv tuts specs in
+	let exports = check_spec fn env ttyenv tuts specs in
 	
 	exports_list := List.map (fun (_,rena,t) -> rena) exports;
 	
@@ -853,7 +860,7 @@ let rec ty2type_expr t =
 	| TyFun(ps,q) -> ETFun(List.map self ps,self q)
 	| TyTuple(ts) -> ETTuple(List.map self ts)
 
-let export_header ast = 
+let export_header fn ast opens = 
 	externs := [];
 	exports_list := [];
 	
@@ -864,7 +871,7 @@ let export_header ast =
 		(user_defined_type_env ()),
 		(defined_types ())
 	) in
-	let _,env,_,_,_ = check_ast ast sv in
+	let _,env,_,_,_ = check_ast fn ast sv opens in (* TODO(satos) ここ、必要な分はheaderでopenさせるようにする *)
 	
 	let top_names = List.concat (List.map (fun x -> 
 		match x with

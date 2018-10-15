@@ -8,7 +8,7 @@ val get_exports  : unit -> string list
 val get_imports  : unit -> (string * tyscheme) list
 
 (* 型情報は消していいので、これ以降はtexpのままでいいはず。 *)
-val check : Syntax.top -> Spec.top -> texp
+val check : string -> Syntax.top -> Spec.top -> string list -> texp
 
-val export_header :  Syntax.top -> Spec.top
+val export_header :  string -> Syntax.top -> string list -> Spec.top
 

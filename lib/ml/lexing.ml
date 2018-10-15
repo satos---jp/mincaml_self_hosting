@@ -3,6 +3,8 @@
 あとはそれをデータとしてよしなに。
 *)
 
+open Nfa
+
 type lexbuf = (unit -> char) * (int -> unit)
 
 let from_channel ch = 

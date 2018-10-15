@@ -143,9 +143,7 @@ variant_def:
 	| variant_name OF constr_args { ($1,$3) }
 ;
 
-variant_name:
-	| VARIANT_ID { $1 }
-;
+
 
 /*
 	int list * int list -> int list は
@@ -230,6 +228,8 @@ simple_expr:
 	| LBRACKET RBRACKET 
 		{ debug (EVariant("@Nil",[])) }
 	| LBRACKET list_expr RBRACKET 
+		{ List.fold_left (fun r x -> debug (EVariant("@Cons",[x;r]))) (debug (EVariant("@Nil",[]))) $2 }
+	| LBRACKET list_expr SEMI RBRACKET 
 		{ List.fold_left (fun r x -> debug (EVariant("@Cons",[x;r]))) (debug (EVariant("@Nil",[]))) $2 }
 ;
 
@@ -342,9 +342,11 @@ Error: This expression has type float but an expression was expected of type
 		{ debug (EVariant("@Cons",[$1;$3])) }
 
 	| expr ATMARK expr
-		{ debug (EApp(debug (EVar("List@append")),[$1;$3])) }
+		{ implicit_open "List";
+			debug (EApp(debug (EVar("List@append")),[$1;$3])) }
 	| expr CARET expr
-		{ debug (EApp(debug (EVar("String@@")),[$1;$3])) }
+		{ implicit_open "String";
+			debug (EApp(debug (EVar("String@@")),[$1;$3])) }
 	| expr FLAG expr
 		{ debug (EApp($3,[$1])) }
 	| expr COLONEQ expr
@@ -487,9 +489,17 @@ rec_vars:
 
 expr_var:
 	| var { $1 }
- 	| variant_name DOT ID 
+ 	| VARIANT_ID DOT ID 
   	%prec path_name_prec
-  	{ $1 ^ "@" ^ $3 (* とりあえずこんな処理で(capitalizeされてるので) *) } 
+  	{ implicit_open $1;
+  		$1 ^ "@" ^ $3 (* とりあえずこんな処理で(capitalizeされてるので) *) } 
+;
+
+variant_name:
+	| VARIANT_ID { $1 }
+	| VARIANT_ID DOT VARIANT_ID 
+		{ implicit_open $1;
+			$1 ^ "@" ^ $3 (* とりあえずこんな処理で(capitalizeされてるので) *) } 
 ;
 
 var:

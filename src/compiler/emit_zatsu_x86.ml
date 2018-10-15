@@ -580,10 +580,10 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 *)
 
 
-let vir2asm (funs,rd,globvars) externs exports = 
+let vir2asm (funs,rd,globvars) externs exports fn = 
 	on_exports := (init_exs exports);
 	on_externs := (init_exs (List.map fst externs));
-	let start_name = !filename ^ "main" in
+	let start_name = fn ^ "main" in
 	main_name_str := start_name;
 	"BITS 32\n" ^
 	(String.concat "" (List.map (fun (s,_) -> 

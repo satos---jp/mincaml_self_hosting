@@ -5,7 +5,7 @@ type spec_decl =
   | SValtype    of name * type_expr
   | STypeRename of name * type_expr
   | SVariant    of name * ((variant_tag * (type_expr list)) list) 
-  | SOpen       of name
+  | SOpen       of name 
 
 type top = spec_decl list
 
@@ -29,4 +29,10 @@ let top2header vs =
 				Printf.sprintf "val %s : %s\n" na (type_expr2header te)
 			)
 	) vs)
+
+let spec_open_list = ref []
+
+let implicit_open s = 
+	spec_open_list := s :: !spec_open_list
+
 

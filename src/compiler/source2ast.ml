@@ -11,29 +11,24 @@ let basename s =
 	with
 		| Not_found -> s
 
-let stdlib_list = ["lib/ml/list.ml"; "lib/ml/string.ml"; "lib/ml/nfa.ml"; "lib/ml/lexing.ml"] (* ; "lib/ml/parsing.ml"] *)
-
 let src2ast fname = 
 	let ic = open_in fname in
 	Debug.filename := (basename fname);
+	spec_open_list := [];
 	let ast = Parser.toplevel Lexer.main (Lexing.from_channel ic) in
-	let rec f v acc = 
-		match v with
-		| s :: xs -> (
-				if !filename = (basename s) then (List.rev acc) @ ast
-				else (
-					let ls = String.length s in
-					f xs (FDecl(DOpen(String.sub s 0 (ls-3))) :: acc)
-				)
-			)
-		| [] -> (List.rev acc) @ ast
-	in
-		f ("lib/ml/pervasive.ml" :: stdlib_list) []
+	if fname <> "lib/ml/pervasive.ml" then 
+		let tast = FDecl(DOpen("Pervasive")) :: ast in (* TODO(satos) ここmainに回したい *)
+		(tast,("Pervasive" :: !spec_open_list))
+	else
+		(ast,!spec_open_list)
+		
+(* TODO(satos) ここもmainに回したい *)
 
-
+let lib_files = ["Pervasive";"List";"String";"Char";"Nfa";"Lexing"]
 let open2spec fname = 
 	let tfn = String.lowercase fname ^ ".mli" in
-	let ic = open_in tfn in
+	let rfn = (if List.mem fname lib_files then "lib/ml/" else "") ^ tfn in
+	let ic = open_in rfn in
 	(* Debug.filename := tfn; *)
 	Parser.specification_list Lexer.main (Lexing.from_channel ic)
 
