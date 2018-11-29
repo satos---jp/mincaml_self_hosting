@@ -477,9 +477,34 @@ let rec type_infer tyenv venv astdeb env =
 
 
 
+let rec forall_samelen f v w = 
+	let self = forall_samelen f in
+	match v,w with
+	| [],[] -> true
+	| (x :: xs),(y :: ys) -> (f x y) && (self xs ys)
+	| _ -> false
+
+(* 型の"型"が同じかどうか *)
+let rec same_type_type a b = 
+	let self = same_type_type in
+	match a,b with
+	| TyArr(at),TyArr(bt) | TyRef(at),TyRef(bt) -> self at bt
+	| TyFun(ats,at),TyFun(bts,bt) -> (self at bt) && (forall_samelen self ats bts)
+	| TyTuple(ats),TyTuple(bts) -> (forall_samelen self ats bts)
+	| TyUserDef(_,ats),TyUserDef(_,bts) -> (forall_samelen self ats bts)
+	| _ -> true
+
+(* 
+	部分適用を解消するべき点は2つある(今のとこ)
+	・ f x1 ... xn で と fの型と個数があっていないとき
+	・ 一種のキャストが入るとき (たとえば、 引数 xk での型があってないとき) (型の等式制約解消時に発生しうる)
+*) 
+
+
 
 type ('a, 'b) either = Left of 'a | Right of 'b
 
+(* この関数の返り値のtは変更しない。 *)
 let rec fix_partial_apply (ast,(t,deb)) =  
 	let f = fix_partial_apply in
 	let mf = List.map f in
@@ -489,47 +514,158 @@ let rec fix_partial_apply (ast,(t,deb)) =
 	| TIf(e1,e2,e3) -> TIf(f e1,f e2,f e3)
 	| TLet(na,e1,e2) -> TLet(na,f e1,f e2)
 	| TLetRec(na,vs,e1,e2) -> TLetRec(na,vs,f e1,f e2)
-	| TApp(e1,e2) -> (
-		let ((_,(t,d) as td) as ftd) = f e1 in
-		let es = mf e2 in
-		let raise_invalid () = 
-			raise (Failure(Printf.sprintf "Invalid apply for %s with (%s) at %s" 
-					(type2str t) (String.concat ", " (List.map (fun (_,(t,_)) -> (type2str t)) es)) (debug_data2str d)
-			))
-		in
-		let rtes,rd = (
-				match t with
-				| TyFun(vs,rd) -> (
-						(let rec f ntvs nes acc = (
-							match ntvs,nes with
-							| _,[] -> Left ntvs
-							| [],_ -> Right(nes,acc)
-							| v :: vs,e :: res -> f vs res (acc @ [e])
-						) in f vs es []),rd
-					)
-				| _ -> raise_invalid ()
-			) in
-			(match rtes with
-			| Left [] | Right([],_) -> TApp(ftd,es)
-			| Right(res,acc) -> (
-					let te1 = (TApp(e1,acc),(rd,deb)) in
-					let tast,_ = fix_partial_apply (TApp(te1,res),(t,deb)) in
-						tast
-				)
-			| Left rts -> (
-					(* rtsが空でないなら、 App ftd es を、 let rec tmpf rts_1 rts_2 .. rts_n = ftd (es @ rts_1 rts_2 .. rts_n) in tmpf に変更する *)
-					let tmpftd = (TyFun(rts,rd),deb) in
-					let tmpf = (genvar (),tmpftd) in
-					let tmpvs = List.map (fun t -> (genvar (),(t,deb))) rts in
-					let te1 = TApp(ftd,es @ (List.map (fun ((_,td) as natd) -> ((TVar natd),td)) tmpvs)) in
-					TLetRec(tmpf,tmpvs,(te1,tmpftd),(TVar(tmpf),tmpftd))
-				)
-			)
-		)
 	| TTuple(es) -> TTuple(mf es)
 	| TLetTuple(vs,e1,e2) -> TLetTuple(vs,f e1,f e2)
+	| TApp(e1,e2) -> (
+			let raise_invalid () = 
+					raise (Failure(Printf.sprintf "Invalid apply for %s with (%s) at %s" 
+							(type2str t) (String.concat ", " (List.map (fun (_,(t,_)) -> (type2str t)) e2)) (debug_data2str deb)
+					))
+			in
+			(* t1 に vt1 ... vtn を適用した型と t の型が一致するように t1 の型を変更する ので、 t1 は vt1 -> vt2 -> ... vtn -> t になるはず *)
+			let es = mf e2 in
+			let est = TyFun(List.map (fun (_,(t,_)) -> t) es,t) in
+			let te1 = cast_to raise_invalid (f e1) est in
+				TApp(te1,es)
+		)
 	in
 		(tast,(t,deb))
+
+
+		
+(* ft 型のastを tt型 にする*)
+(* TyFunの引数分だけが違っているはず *)
+and cast_to raisefun ((ast,(ft,deb)) as astdeb) tt = 
+	let self = cast_to raisefun in
+	let rec ts2ns = 
+		function 
+		| [] -> []
+		| t :: xs -> (genvar (),(t,deb)) :: (ts2ns xs)
+	in
+	let n2ve ((_,td) as na) = (TVar(na),td) in
+	if same_type_type ft tt then astdeb else
+	match ft,tt with
+	| TyFun(ats,at),TyFun(bts,bt) when (List.length ats) = (List.length bts) -> (
+			(*
+			print_string ("samelen ast :: " ^ (texp2str astdeb) ^ "\n");
+			*)
+			(* 逆η簡約する. let tf xs' = f xs in tf. *)
+			let xsp = ts2ns bts in
+			let xs = List.map2 self (List.map n2ve xsp) ats in
+			
+			let tftd = tt,deb in
+			let tfn= (genvar (),tftd) in
+			TLetRec(tfn,xsp,
+				(self (TApp(astdeb,xs),(at,deb)) bt),
+				(n2ve tfn)
+			),(tt,deb)
+		)
+	| TyFun(ats,at),TyFun(bts,bt) -> (
+		(*
+		print_string ("difflen ast :: " ^ (texp2str astdeb));
+		print_string ("totype :: " ^ (type2str tt) ^ "\n\n");
+		*)
+		let lats = List.length ats in
+		let lbts = List.length bts in
+		if lats > lbts then (
+			(* f: A -> B -> C を A -> (B -> C) にするには、 let tf x = (let ttf y = f x y in ttf) in tf *)
+			let tys,txs = 
+				let rec g = 
+					function
+					| ps,[] -> ps,[]
+					| p :: pxs,_ :: qxs -> let rs,ss = g (pxs,qxs) in rs,(p :: ss)
+				in
+					g (ats,bts)
+			in
+			let xs,ys = ts2ns txs,ts2ns tys in
+			let tftd = (TyFun(txs,TyFun(tys,at)),deb) in
+			let ttftd = (TyFun(tys,at),deb) in
+			let tfn= (genvar (),tftd) in
+			let ttfn = (genvar (),ttftd) in
+			let tast = TLetRec(tfn,xs,
+				(TLetRec(ttfn,ys,
+					(TApp(astdeb,List.map n2ve (xs @ ys)),(at,deb)),
+					(n2ve ttfn)),ttftd),
+				(n2ve tfn)
+			),tftd in
+			self tast tt
+		) else (
+			(* f: A -> (B -> C) を A -> B -> C にするには、 let tf x' y' = (f x)' y' in tf *)
+			let tys,txs = 
+				let rec g = 
+					function
+					| [],qs -> qs,[]
+					| _ :: pxs,q :: qxs -> let rs,ss = g (pxs,qxs) in rs,(q :: ss)
+				in
+					g (ats,bts)
+			in
+			let xsp,ysp = ts2ns txs,ts2ns tys in
+			let tftd = tt,deb in
+			let tfn= (genvar (),tftd) in
+			TLetRec(tfn,xsp @ ysp,
+				(TApp(
+					(self (TApp(
+						astdeb,
+						List.map2 self (List.map n2ve xsp) ats
+					),(at,deb)) (TyFun(tys,bt))),
+					(List.map n2ve ysp)
+				),(bt,deb)),
+				(n2ve tfn)
+			),tftd
+			(*
+			let d = lbts - lats in
+			let advs = List.map (fun t -> (genvar (),t)) dts in
+			let tft = TyFun(
+			let tfn = (genvar (),tft) in
+			let fx = TApp(astdeb,xs), in
+			TLetRec(tfn,
+				TApp(ast,v1s),
+			((TLet(tfn,TLetRec(tf,tmpvs,(te1,tmpftd),(TVar(tmpf),tmpftd)),(t,deb))
+			
+			
+				let te1 = (TApp(e1,acc),(rd,deb)) in
+				let tast,_ = fix_partial_apply (TApp(te1,res),(t,deb)) in
+					tast
+			)
+			*)
+		)
+	)
+			
+	(*
+	| TyFun(vs,rd),TyFun(es,_) -> (
+			(let rec f ntvs nes acc = (
+			match ntvs,nes with
+			| _,[] -> Left ntvs
+			| [],_ -> Right(nes,acc)
+			| v :: vs,e :: res -> f vs res (acc @ [e])
+			) in f vs es []),rd
+		
+		| _ -> astdeb (* TODO(satos) ここ、型について再帰的にしないといけない気がしますね... *)
+	in
+	(* Left  vs     は e1 の型が余る(部分適用) *)
+	(* Right es,acc は e1 の型が足りなくなる(過剰適用) *)
+	(match rtes with
+	| Left [] | Right([],_) -> (
+			(* 引数側のキャストを解決する *)
+			(* f: A -> (B -> C) を A -> B -> C にするには、 let tf x y = (f x) y in tf *)
+			(* f: A -> B -> C を A -> (B -> C) にするには、 let tf x = (let ttf y = f x y in ttf) in tf *)
+			TApp(ftd,es)
+		)
+	| Right(res,acc) -> (
+			let te1 = (TApp(e1,acc),(rd,deb)) in
+			let tast,_ = fix_partial_apply (TApp(te1,res),(t,deb)) in
+				tast
+		)
+	| Left rts -> (
+			(* rtsが空でないなら、 App ftd es を、 let rec tmpf rts_1 rts_2 .. rts_n = ftd (es @ rts_1 rts_2 .. rts_n) in tmpf に変更する *)
+			let tmpftd = (TyFun(rts,rd),deb) in
+			let tmpf = (genvar (),tmpftd) in
+			let tmpvs = List.map (fun t -> (genvar (),(t,deb))) rts in
+			let te1 = TApp(ftd,es @ (List.map (fun ((_,td) as natd) -> ((TVar natd),td)) tmpvs)) in
+			let tast,_ = fix_partial_apply (TLetRec(tmpf,tmpvs,(te1,tmpftd),(TVar(tmpf),tmpftd)),(t,deb)) in
+				tast
+		)
+	*)
 
 
 (*
@@ -569,7 +705,7 @@ let variantenv () = [
 	("Some",(fun x -> let t = gentype x in (0,TyUserDef("option",[t]),[t])));
 	("None",(fun x -> let t = gentype x in (1,TyUserDef("option",[t]),[])));
 	("Token",(fun x -> let t = gentype x in (0,TyUserDef("parsing_data",[t]),[t])));
-	("Datum",(fun x -> let t = gentype x in (1,TyUserDef("parsing_data",[t]),[TyInt;TyUserDef("list",[TyUserDef("parsing_data",[t])])])));
+	("Datum",(fun x -> let t = gentype x in (1,TyUserDef("parsing_data",[t]),[TyInt;TyInt;TyUserDef("list",[TyUserDef("parsing_data",[t])])])));
 ]
 
 let user_defined_types = ref [
@@ -645,8 +781,15 @@ let check_ast nowna ast sv opens =
 			uts :: 定義済みの型集合
 		*)
 
-		let rec update_by_open sv filena isexplicit = 
-			let specs = open2spec filena in
+		let rec update_by_open sv filena isexplicit = (* open Hoge は explicit open, Hoge.huga は implicit open *)
+			Printf.printf "update_by_open %s\n" filena;
+			let specs,opens = open2spec filena in
+			let tsv = List.fold_left (fun r fn -> update_by_open r fn false) sv opens in
+			(*
+			Printf.printf "update_by_open_tsv %s\n" filena;
+			let (_,_,_,_,uts) = tsv in
+			List.iter (fun (s,i) -> Printf.printf "uts : %s : %s,%d\n" filena s i) uts;
+			*)
 			List.fold_left (fun (f,env,venv,tyenv,uts) spec ->
 				let update_by_variant na ts =                                                  (* TODO ここ若干ガバ *)
 					let tts = List.map (fun (tg,te) -> (tg,List.map (fun x -> eval_variant tyenv ((na,0) :: uts) x) te)) ts in
@@ -654,12 +797,21 @@ let check_ast nowna ast sv opens =
 						(tg,(fun _ -> (i,TyUserDef(na,[]),tes)))
 					) tts
 					in
-					(
-						f,env,
-						ttts @ venv,
-						tyenv,
-						(na,0) :: uts
-					)
+						if isexplicit then 
+							(
+								f,env,
+								ttts @ venv,
+								tyenv,
+								(na,0) :: uts
+							)
+						else
+							let rena = (String.capitalize (basename filena)) ^ "@" ^ na in
+							( (* TODO(satos) ここもガバですね(あとで直す)*)
+								f,env,
+								(List.map (fun (s,v) -> ((String.capitalize (basename filena)) ^ "@" ^ s),v) ttts) @ venv,
+								tyenv,
+								(na,0) :: (rena,0) :: uts
+							)
 				in
 				match spec with
 				| SValtype(na,te) -> (
@@ -667,29 +819,37 @@ let check_ast nowna ast sv opens =
 						let t = eval_variant tyenv uts te in
 						let ts = schemize t env [] in (* TODO(satos) これはなんだこれは(多分あってるけど) *)
 						(* TODO(satos) ここ、.s と .ml 両方あるstringのための応急処置 *)
-						(if filena = "String" && nowna = "lib/ml/string.ml" then () else externs := (rena,ts) :: (!externs));
+						(if filena = "String" && nowna = (!path_to_library ^ "/ml/string.ml") then () else externs := (rena,ts) :: (!externs));
 						let td = (t,default_debug_data) in
 						
-						if not isexplicit then
-							(
-								f,
-								(rena,ts) :: env 
-								,venv,tyenv,uts
-							)
-						else
+						if isexplicit then
 							(
 								(fun y -> f (TLet((na,td),(TVar((rena,td)),td),y),(snd y))),
 								(na,ts) :: env
 								,venv,tyenv,uts
 							)
+						else
+							(
+								f,
+								(rena,ts) :: env 
+								,venv,tyenv,uts
+							)
 					)
 				| STypeRename(na,te) -> (
 						let t = eval_variant tyenv uts te in
-						(
-							f,env,venv,
-							(na,t) :: tyenv,
-							(na,0) :: uts
-						)
+						let rena = (String.capitalize (basename filena)) ^ "@" ^ na in
+						if isexplicit then 
+							(
+								f,env,venv,
+								(na,t) :: tyenv,
+								(na,0) :: uts
+							)
+						else
+							( (* TODO(satos) ここもガバですね(あとで直す)*)
+								f,env,venv,
+								(na,t) :: (rena,t) :: tyenv,
+								(na,0) :: (rena,0) :: uts
+							)
 					)
 				| SVariant(na,ts) -> update_by_variant na ts
 				| SOpen(na) -> ( (* 必要なのは型のrename情報だけなはずなので、それのみをimportする*)
@@ -697,7 +857,7 @@ let check_ast nowna ast sv opens =
 						(f,env,tvenv,ttyenv,tuts)
 					)
 				| _ -> raise (Failure("Unimplemented in open"))
-			) sv specs
+			) tsv specs
 		in
 		let tsv = List.fold_left (fun r fn -> update_by_open r fn false) sv opens in
 		List.fold_left (fun (f,env,venv,tyenv,uts) ast ->
@@ -723,6 +883,7 @@ let check_ast nowna ast sv opens =
 					let subs = unify tyenv (tc @ !addglobalcs) in
 					(* print_subs subs; *)
 					let rast = ast_subst subs tast in
+					(* print_string ("Before fix partial apply" ^ (texp2str tast)); *)
 					let sast = fix_partial_apply rast in
 					(fun y -> f (TLet(("_",(rt,default_debug_data)),sast,y),(snd y)))
 				),env,venv,tyenv,uts)
@@ -738,7 +899,7 @@ let check_ast nowna ast sv opens =
 							let subs = unify tyenv (tc @ !addglobalcs) in
 							let rast = ast_subst subs tast in
 							let trt = ty_subst subs rt in
-							(* print_string (texp2str rast); *)
+							(* print_string ("Before fix partial apply" ^ (texp2str rast)); *)
 							let trts = schemize trt env subs in
 							let sast = fix_partial_apply rast in
 							(
@@ -859,6 +1020,8 @@ let rec ty2type_expr t =
 	| TyChar -> ETVar("char")
 	| TyFun(ps,q) -> ETFun(List.map self ps,self q)
 	| TyTuple(ts) -> ETTuple(List.map self ts)
+	| TyUserDef(s,ts) -> ETApp(List.map self ts,s)
+	| TyVar v  -> ETVar(tyvar2str v)
 
 let export_header fn ast opens = 
 	externs := [];
@@ -880,6 +1043,7 @@ let export_header fn ast opens =
 			match d with
 			| DLet(na,_) -> [na]
 			| DOpen(na) -> [] (* TODO(satos) クリティカルなヴァリアント定義の場合はいるようになる *)
+			| DTypeRename(na,te) -> [] (* TODO(satos) あとでする *)
 		)
 	) ast) in
 	let tenv = List.filter (fun (na,_) -> List.mem na top_names) env in

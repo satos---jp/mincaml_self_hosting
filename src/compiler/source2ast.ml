@@ -2,6 +2,7 @@ open Syntax
 open Parser
 open Debug
 open Spec
+open Main_option
 
 let basename s = 
 	try
@@ -16,20 +17,26 @@ let src2ast fname =
 	Debug.filename := (basename fname);
 	spec_open_list := [];
 	let ast = Parser.toplevel Lexer.main (Lexing.from_channel ic) in
-	if fname <> "lib/ml/pervasive.ml" then 
+	let opens = !spec_open_list in
+	spec_open_list := [];
+	if fname <> (!path_to_library ^ "/ml/pervasive.ml") then 
 		let tast = FDecl(DOpen("Pervasive")) :: ast in (* TODO(satos) ここmainに回したい *)
-		(tast,("Pervasive" :: !spec_open_list))
+		(tast,("Pervasive" :: opens))
 	else
-		(ast,!spec_open_list)
-		
+		(ast,opens)
+
 (* TODO(satos) ここもmainに回したい *)
 
-let lib_files = ["Pervasive";"List";"String";"Char";"Nfa";"Lexing"]
+let lib_files = ["Pervasive";"List";"String";"Char";"Nfa";"Lexing";"Parsing"]
 let open2spec fname = 
 	let tfn = String.lowercase fname ^ ".mli" in
-	let rfn = (if List.mem fname lib_files then "lib/ml/" else "") ^ tfn in
+	let rfn = (if List.mem fname lib_files then !path_to_library ^ "/ml/" else "") ^ tfn in
 	let ic = open_in rfn in
 	(* Debug.filename := tfn; *)
-	Parser.specification_list Lexer.main (Lexing.from_channel ic)
+	spec_open_list := [];
+	let ast = Parser.specification_list Lexer.main (Lexing.from_channel ic) in
+	let opens = !spec_open_list in
+	spec_open_list := [];
+	(ast,opens)
 
 

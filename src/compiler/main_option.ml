@@ -10,6 +10,7 @@ let check_array_boundary = ref false
 
 let output_assembler = ref false
 let output_header = ref false
+let path_to_library = ref "lib"
 
 (* tortesia用のオプションだった *)
 let tortesia = ref false
@@ -32,6 +33,7 @@ let argparse files =
 		
 		("-s",Arg.Set output_assembler,"output .s file");
 		("-mli",Arg.Set output_header,"output .mli file");
+		("-l",Arg.Set_string path_to_library,"path to library");
 				
 	] (fun fn -> files := (!files) @ [fn]) (Printf.sprintf "Usage: %s filename\n" Sys.argv.(0))
 

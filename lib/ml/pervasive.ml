@@ -48,5 +48,28 @@ let rec print_hex_err x =
 	else (if x < 0 then print_char_err 45; print_hex_err_base (0-x) else print_hex_err_base x)
 
 
+let string_of_bool b = if b then "true" else "false"
+let string_of_int i = 
+	let g x = Char.escaped (Char.chr (x+48)) in
+	let rec f x = 
+		if x < 10 then (if 0 < x then g x else "") else
+			((string_of_int (x/10)) ^
+			(g (mod_ x 10)))
+	in
+		if i = 0 then "0"
+		else (if i < 0 then "-" ^ (f (-i)) else f i)
 
+
+let int_of_string s = 31415
+(*
+	let rec f acc i = 
+		let n = Char.code (String.get s i) in
+			if (n-47)*(58-n)>0 then f (acc*10+(n-48)) (i+1) else acc
+	in
+		let c = Char.code (String.get s 0) in
+			if c = 45 then -(f 0) else (
+				if (c-47)*(58-c)>0 then f (c-48) 1 else read_int x)
+*)
 let stdin = 1 (* TODO(satos) さすがにやばいのでどうにかする *)
+
+

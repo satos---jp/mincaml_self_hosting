@@ -79,12 +79,12 @@ let load_source file =
 	vprint top2str ast;
 	ivprint "parsed";
 	
-	let spec = (
+	let spec,sopens = (
 		if Sys.file_exists (changext file ".ml" ".mli") then
 			Source2ast.open2spec (changext file ".ml" "")
-		else []
+		else [],[]
 	) in
-		(file,ast,spec,opens)
+		(file,ast,spec,(opens @ sopens)) (* TODO(satos) ここガバなのでどうにかしたいですね(そもそもtoplevelの型を変えるとか？)*)
 
 let compile (file,ast,spec,opens) =
 	let astp = Preprocess.preprocess ast in
@@ -117,7 +117,7 @@ let compile (file,ast,spec,opens) =
 	print_string "virtualized";  print_newline ();
 	vprint virt2str vrt;
 	let asm = Emit_zatsu_x86.vir2asm vrt (Type_checker.get_imports ()) (Type_checker.get_exports ()) (basename file) in
-	vprint (fun x -> x) asm;
+	ivprint asm;
 	asm
 
 
@@ -218,29 +218,9 @@ let _ =
 			let _ = List.map compile_to_header !files in ()
 		) else (
 			
-(*
-let stdlib_list = ["lib/ml/list.ml"; "lib/ml/string.ml"; "lib/ml/nfa.ml"; "lib/ml/lexing.ml"]
-
-(*
-let now_lib_list = ref [] 
-*)
-
-let stdlib_mli_list = ["lib/ml/char.ml"; "lib/ml/list.ml"; "lib/ml/string.ml"; "lib/ml/nfa.ml"; "lib/ml/lexing.ml"]
-*)
-
-			
-			
-			(*
-			files := "lib/ml/pervasive.ml" :: stdlib_list @ !files;
-			output_stub !files;
-			files := !files @ [
-				"lib/asm/char.s"; "lib/asm/lib_string.s";  
-				"lib/asm/lib.s"; "lib/asm/libio_linux.s"; 
-				"stub.s"
-			];
-			*)
-
+			let libp = !path_to_library in
 			let stdlib_open_list = [
+				("Parsing",(true,false));
 				("Lexing",(true,false));
 				("Nfa",(true,false));
 				("List",(true,false));
@@ -249,24 +229,25 @@ let stdlib_mli_list = ["lib/ml/char.ml"; "lib/ml/list.ml"; "lib/ml/string.ml"; "
 				("Pervasive",(true,true))
 			] in
 			
-			let asm_files = ref ["lib/asm/libio_linux.s";"stub.s"] in
+			let asm_files = ref [libp ^ "/asm/libio_linux.s";"stub.s"] in
 			let open2fn s = 
 				let bfn = String.lowercase s in
 				if List.mem_assoc s stdlib_open_list then (
 					let hasml,hass = List.assoc s stdlib_open_list in
 					(if hass then
-						let afn = "lib/asm/" ^ bfn ^ ".s" in
+						let afn = libp ^ "/asm/" ^ bfn ^ ".s" in
 						if not (List.mem afn !asm_files) then
 							asm_files := afn :: !asm_files
 						else ()
 					else ());
-					if hasml then Some("lib/ml/" ^ bfn ^ ".ml") else None
+					if hasml then Some(libp ^ "/ml/" ^ bfn ^ ".ml") else None
 				) else (
 					Some(bfn ^ ".ml")
 				)
 			in
 			
 			(* TODO(satos) いったん循環参照checkはommitする *)
+			(* これたぶんcheckするようにするとpervasive.ml がやられますね *)
 			let db_check = ref [] in
 			let rec f rems = 
 				match rems with

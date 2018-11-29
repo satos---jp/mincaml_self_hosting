@@ -158,9 +158,10 @@ variant_def:
 	で。
 */
 
+/* TODO(satos) このへんの名前expr_varとか直す */
 tybase_expr:
- 	| var                         { ETVar($1) }
- 	| QUOTE var                   { ETTyParam($2) }
+ 	| expr_var                         { ETVar($1) }
+ 	| QUOTE expr_var                   { ETTyParam($2) }
 	| LPAR type_expr RPAR { $2 }
 ;
 

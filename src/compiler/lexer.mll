@@ -14,7 +14,7 @@ let bigalpha = ['A'-'Z']
 let ident = smallalpha (alpha | digit)* 
 let variant_ident = bigalpha (alpha | digit)* 
 
-let char_special_chars = ['\\' '+' '=' '.' '<' '(' ')' '[' ']' ';' '^' ':' '%' ' ' ',' '{' '}']
+let char_special_chars = ['\\' '+' '=' '.' '<' '(' ')' '[' ']' ';' '^' ':' '%' ' ' ',' '{' '}' '#' '-']
 
 let string_chars = (digit|alpha|char_special_chars|'\'')
 

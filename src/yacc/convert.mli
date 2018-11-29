@@ -1,5 +1,5 @@
 open Syntax
 
-val conv : top -> string
+val conv : top -> string * string
 
 

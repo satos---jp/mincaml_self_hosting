@@ -3,11 +3,24 @@ open Syntax
 (* PType... -> mliを作るためにいるっぽい(parserはmliを作れる!!) *)
 
 let collect_start pcs = 
-	List.fold_left (fun v pc -> 
+	let ns = List.fold_left (fun v pc -> 
 		match pc with
 		| PStart x -> x :: v
 		| _ -> v
 	) [] pcs
+	in
+	let ts = List.fold_left (fun v pc -> 
+		match pc with
+		| PType(et,s) -> (s,et) :: v
+		| _ -> v
+	) [] pcs
+	in
+	List.map (fun s -> 
+		try 
+			(s,List.assoc s ts)
+		with | Not_found -> 
+			failwith ("start symbol " ^ s ^ " should have type declation")
+	) ns
 
 let conv_prec pcs = 
 	let sv = (0,"","",[]) in
@@ -53,15 +66,21 @@ let extract_folds_from_precs pcs =
 let extract_folds rules = 
 	"let rec " ^ (String.concat "\n\nand " (List.map (fun (na,rls) ->  
 		(Printf.sprintf "%s d =\n" (sym2funname na)) ^
+		
+		(Printf.sprintf "\tprint_string \"%s\"; print_char 10;\n" (sym2funname na)) ^
+		
 		"\tmatch d with\n" ^
-		"\t| Datum(i,ds) -> (\n" ^
+		"\t| Datum(k,i,ds) -> (\n" ^
+		
+		"\tprint_int k; print_char 32; print_int i; print_char 10;\n" ^
+		
 		"\t\t\t" ^ (String.concat "" (List.mapi (fun i (syms,(co,ds)) -> 
 			let uds = unique ds in
 			(Printf.sprintf "if i = %d then (\n" i) ^
 			(String.concat "" (List.map (fun p -> 			
 				(* Printf.printf "%d of %d\n" p (List.length syms); *)
 				let sm = List.nth syms (p-1) in
-				(Printf.sprintf "\t\t\t\tlet _%d = %s (List.nth ds %d) in\n" p (sym2funname sm) p)
+				(Printf.sprintf "\t\t\t\tlet _%d = %s (List.nth ds %d) in\n" p (sym2funname sm) (p-1))
 			) uds)) ^
 			"\t\t\t\t\t(" ^ co ^ ")\n" ^
 			"\t\t\t) else "
@@ -210,18 +229,19 @@ let merge_state v w =
 
 type parsingact = 
 	| Shift of int
-	| Reduce of int
+	| Reduce of int * int
 	| Error
 
 let parsingact2str pa = 
 	match pa with
-	| Shift(x) -> Printf.sprintf "Shift(%d)" x
-	| Reduce(x) -> Printf.sprintf "Reduce(%d)" x
+	| Shift(x) -> Printf.sprintf "Parsing.Shift(%d)" x
+	| Reduce(x,y) -> Printf.sprintf "Parsing.Reduce(%d,%d)" x y
 	| Error -> Printf.sprintf "Error"
 	
 
 (* table :: 状態stでi番めのデータが降ってきた際にshift/reduceするやつ *)
-let make_table rules sym2i i2sym i_sym_data rule2idx startsym = 
+(* table は、大きさを縮めるために 各 st にたいして (i,move) の組とする (型は (int * parsingact) list )*)
+let make_table rules sym2i i2sym i_sym_data startsym = 
 	let rl2str (((i,j),ss,ts),fs) = (
 	(*
 		(Printf.sprintf "{(%d,%d),%s,%s} " i j (list2str ss string_of_int) (list2str ts string_of_int)) ^
@@ -330,15 +350,14 @@ let make_table rules sym2i i2sym i_sym_data rule2idx startsym =
 	let ds = vses2str () in
 	Printf.printf "%s\n" ds;
 	
-	list2str !es (fun e -> 
+	list2str (List.mapi (fun i e -> (i,e)) !es) (fun (idx,e) -> 
 		let te = (let rec f i = if i = 0 then [] else (ref Error) :: (f (i-1)) in f (List.length !i_sym_data)) in
 		let te_update i v = 
-			(* Printf.printf "nth %d of %s\n" i (i2sym i); *)
 			let d = List.nth te i in
 			match !d with
 			| Error -> d := v
 			| Shift _ | Reduce _ -> (
-				Printf.printf "conflict\n"
+				failwith "conflict\n"
 			)
 		in
 		List.iter (fun d -> 
@@ -346,17 +365,18 @@ let make_table rules sym2i i2sym i_sym_data rule2idx startsym =
 			| Shift_data(i,j) -> te_update i (Shift(j))
 			| Reduce_data(vs,j,k) -> (
 					if k < 0 then () else (
-						List.iter (fun i -> te_update i (Reduce(rule2idx (i2sym j) k))) (fs2list vs)
+						List.iter (fun i -> te_update i (Reduce(j,k))) (fs2list vs)
 					)
 				)
 		) !e;
-		list2str te (fun d -> 
-			parsingact2str !d
-		)
+		(Printf.sprintf "(* %d *) " idx) ^
+		(list2str (te |> (List.mapi (fun i d -> (i,d))) |> (List.filter (fun (_,d) -> !d <> Error))) (fun (i,d) -> 
+			Printf.sprintf "(%d,%s)" (if i = (sym2i "@end_end") then -1 else i) (parsingact2str !d)
+		)) ^ "\n"
 	)
 
 
-
+(*
 let get_rule2idx rules = 
 	let ls = ref [] in
 	let v = List.fold_left (fun r (na,ds) -> 
@@ -365,7 +385,7 @@ let get_rule2idx rules =
 		(na,(List.mapi (fun i _ -> i + t) ds)) :: r
 	) [] rules in
 	(fun i j -> (* Printf.printf "%s %d\n" i j; *) List.nth (List.assoc i v) j),!ls
-
+*)
 
 
 (* reduce_rules :: t番めのreduce規則についてで、 (ls,f) の組。 ls は縮約される記号の長さを、fはかかる関数を返す *)
@@ -374,7 +394,8 @@ let get_rule2idx rules =
 let conv (header,precs,rules) =
 	let _,type_token_s,token2id_s,tokens = conv_prec precs in
 	let starts = collect_start precs in
-	let rule2idx,rule_ls = get_rule2idx rules in
+	(* let rule2idx,rule_ls = get_rule2idx rules in *)
+	let rule_ls = rules |> List.map (fun (_,d) -> d |> List.map (fun (x,_) -> List.length x)) in
 	let sym2i,i2sym,i_sym_data = 
 		let d = ref [] in 
 		(fun x -> 
@@ -382,7 +403,7 @@ let conv (header,precs,rules) =
 			| None -> (
 					let r = List.length !d in 
 					d := !d @ [x]; 
-					(* Printf.printf "add %s as %d\n" x r; *)
+					Printf.printf "add %s as %d\n" x r;
 					r
 				) 
 			| Some t -> t
@@ -390,17 +411,31 @@ let conv (header,precs,rules) =
 		(fun x -> List.nth !d x) ,
 		d
 	in
-	let _ = List.map (fun (x,_) -> sym2i x) tokens in
-	header ^ 
-	"type token = \n" ^ type_token_s ^ 
-	"let token2id d = match d with\n" ^ token2id_s ^ "\n" ^
-	(extract_folds_from_precs precs) ^
-	(extract_folds rules) ^ "\n" ^
-	(starts |> List.map (fun s -> 
-			"let table_" ^ s ^ " = \n" ^ (make_table rules sym2i i2sym i_sym_data rule2idx s)
-		) |> String.concat "") ^ "\n" ^
-	"let rules = " ^ (list2str rule_ls string_of_int) ^ "\n"
-
+	let _ = List.map (fun (s,_) -> sym2i s) rules in
+	let _ = tokens |> List.rev |> List.map (fun (x,_) -> sym2i x)  in (* これtokens上下逆になってんな *)
+	let body = (
+		header ^ 
+		"type token = \n" ^ type_token_s ^ 
+		"let token2id d = match d with\n" ^ token2id_s ^ "\n" ^
+		(extract_folds_from_precs precs) ^
+		(extract_folds rules) ^ "\n" ^
+		(starts |> List.map (fun (s,_) -> 
+				"let table_" ^ s ^ " = \n" ^ (make_table rules sym2i i2sym i_sym_data s)
+			) |> String.concat "") ^ "\n" ^
+		"let rules = " ^ (list2str rule_ls (fun x -> list2str x string_of_int)) ^ "\n" ^
+		(Printf.sprintf "let data2id d = match d with Token x -> (token2id x) + %d | Datum(i,_,_) -> i \n" (List.length rules)) ^
+		(starts |> List.map (fun (s,_) -> 
+				(* let my_parsing (istoplevel,rules,table) lexfun token2id =  *)
+				Printf.sprintf "let %s buf chan = fold_%s (Parsing.my_parsing ((fun i -> i = %d),rules,table_%s) (fun _ -> buf chan) data2id)\n" s s (sym2i s) s
+			) |> String.concat "") ^ "\n"
+	) in
+	let head = (
+		"type token = \n" ^ type_token_s ^
+		(starts |> List.map (fun (s,t) -> 
+				"val " ^ s ^ " : " ^ "(((unit -> char) * (int -> unit)) -> token) -> Lexing.lexbuf -> " ^  t
+			) |> String.concat "") ^ "\n"
+	) in
+	(body,head)
 
 
 let gen_int = let c = ref 0 in (fun () -> c := !c+1; !c)

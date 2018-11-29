@@ -67,3 +67,7 @@ let rev v =
 	| [] -> []
 	| x :: xs -> append (rev xs) [x]
 
+let assoc a v =
+	match v with
+	| (x,t) :: xs -> if x = a then t else assoc a xs
+	| [] -> raise_match_failure "List.assoc failed with Not_found"

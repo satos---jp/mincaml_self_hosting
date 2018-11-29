@@ -33,6 +33,7 @@ let top2header vs =
 let spec_open_list = ref []
 
 let implicit_open s = 
+	if List.mem s !spec_open_list then () else 
 	spec_open_list := s :: !spec_open_list
 
 

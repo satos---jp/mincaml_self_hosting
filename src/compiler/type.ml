@@ -122,6 +122,16 @@ let rec unify tyenv cs =
 			(* 多相性のために追加する *)
 			| TyNum,TyInt | TyInt,TyNum | TyNum,TyFloat | TyFloat,TyNum -> self xs
 			| TyUserDef(a,ps),TyUserDef(b,qs) when a = b -> self ((List.map2 (fun p q -> (p,q,deb)) ps qs) @ xs)
+			(* TODO(satos) 型名もうまくやる必要がありますね... *)
+			| TyUserDef(a,ps),TyUserDef(b,qs) when (
+					let f s = 
+						let s = "@" ^ s in
+						let d = String.rindex s '@' in 
+						let ls = String.length s in
+						String.sub s (d+1) (ls-d-1)
+					in
+					 (f a) = (f b)
+				) -> self ((List.map2 (fun p q -> (p,q,deb)) ps qs) @ xs)
 			| TyUserDef(a,[]),b | b,TyUserDef(a,[]) when List.mem_assoc a tyenv -> (
 					self ((List.assoc a tyenv,b,deb) :: xs)
 				)
@@ -195,6 +205,15 @@ let rec is_sub env ta tb =
 	| TyFun(p,q),TyFun(r,s) -> multi_check (q :: p) (s :: r)
 	| TyTuple p, TyTuple r -> multi_check p r
 	| TyUserDef(tag1,ps),TyUserDef(tag2,rs) when tag1 = tag2 -> multi_check ps rs
+	| TyUserDef(tag1,ps),TyUserDef(tag2,rs) when (
+			let f s = 
+				let s = "@" ^ s in
+				let d = String.rindex s '@' in 
+				let ls = String.length s in
+				String.sub s (d+1) (ls-d-1)
+			in
+			 (f tag1) = (f tag2)
+		) -> multi_check ps rs
 	| _ -> raise Subtype_false
 
 let is_subtype ta tb = 

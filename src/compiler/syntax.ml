@@ -106,6 +106,7 @@ let rec type_expr2header te =
 	| ETFun(ts,t) -> "(" ^ (String.concat " -> " (List.map self (ts @ [t]))) ^ ")"
 	| ETTuple([]) -> "unit"
 	| ETTuple(ts) -> "(" ^ (String.concat " * " (List.map self ts)) ^ ")"
+	| ETApp(ts,s) -> (match ts with [] -> "" | _ -> "(" ^ (String.concat " " (List.map self ts)) ^ ") ") ^ s
 
 type decl = 
   | DLet        of name * expr
@@ -131,6 +132,14 @@ let rec pat2str_base pat d =
 	| PVariantApp(na,pa) -> (d,"PVariantApp " ^ na) :: pat2str_base pa (d+2)
 	| PTuple(ps) -> (d,"(") :: List.concat (List.map (fun x -> pat2str_base x (d+2)) ps) @ [(d,")")]
 
+let rec pat2str_oneline pat = 
+	let self = pat2str_oneline in
+	match pat with
+	| PVar na -> "PVar " ^ na
+	| PVariant    na -> "PVariant(" ^ na ^ ")"
+	| PVariantApp(na,pa) -> "PVariantApp(" ^ na ^ "," ^ (self pa) ^ ")"
+	| PTuple(ps) -> "(" ^ (String.concat "," (List.map self ps)) ^ ")"
+
 let rec expr2str_base astdeb d = 
 	let ast,_ = astdeb in
 	match ast with
@@ -144,7 +153,7 @@ let rec expr2str_base astdeb d =
 	| ELet(na,e1,e2) -> (d,"Let " ^ na ^ " =") :: (expr2str_base e1 (d+1)) @ [(d,"In")] @ (expr2str_base e2 (d+1))
 	| ELetRec(e1s,e2) -> (
 			(List.concat (List.map (fun (na,vs,e1) -> 
-					(d,"LetRec " ^ na ^ " =") :: (expr2str_base e1 (d+1))
+					(d,"LetRec " ^ na ^ "(" ^ (String.concat "," (List.map pat2str_oneline vs)) ^ ")" ^ " =") :: (expr2str_base e1 (d+1))
 		 	) e1s)) @ [(d,"In")] @ (expr2str_base e2 (d+1))
 		)
 	| EApp(e1,es) -> (d,"App ") :: (expr2str_base e1 (d+1)) @ List.concat (List.map (fun x -> (expr2str_base x (d+2))) es)

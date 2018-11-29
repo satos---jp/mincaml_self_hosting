@@ -88,6 +88,7 @@ call時にpushしたりする
 let on_glob_vars = ref []
 let heap_diff = ref 0
 let init_globvars gvs = 
+	heap_diff := 0;
 	on_glob_vars := List.fold_left (fun r -> fun x -> 
 		heap_diff := !heap_diff+4;
 		(x,!heap_diff-4) :: r
@@ -132,7 +133,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 			raise (Failure "var should be on the stack or closure")
 		)
 		| GVar x -> (
-			try ("global_heap",List.assoc x !on_glob_vars)
+			try ("local_heap",List.assoc x !on_glob_vars)
 			with | Not_found -> 
 			try (
 				(* 高速化っぽいことができるはず *)
@@ -182,7 +183,8 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 				(Printf.sprintf "\tmov eax,[%s]\n" na) ^ 
 				(Printf.sprintf "\tmov [extern_list+%d],eax\n" p)
 			) !on_externs)) ^ *)
-			(Printf.sprintf "\tadd esi,%d\n" !heap_diff)  
+			(* (Printf.sprintf "\tadd esi,%d\n" !heap_diff) *)
+			""
 		)else "")
 	in
 	let epilogue = 
@@ -583,13 +585,14 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 let vir2asm (funs,rd,globvars) externs exports fn = 
 	on_exports := (init_exs exports);
 	on_externs := (init_exs (List.map fst externs));
+	init_globvars globvars;
+	consts := "";
 	let start_name = fn ^ "main" in
 	main_name_str := start_name;
 	"BITS 32\n" ^
 	(String.concat "" (List.map (fun (s,_) -> 
 		"extern " ^ s ^ "\n"
 	) externs)) ^
-	"extern global_heap\n" ^
 	"extern data_eq\n" ^
 	(String.concat "" (List.map (fun s -> 
 		"global " ^ s ^ "\n"
@@ -606,11 +609,12 @@ let vir2asm (funs,rd,globvars) externs exports fn =
 	"section .bss\n" ^
 	"extern_list:\n" ^
 	(Printf.sprintf "\tresb %d\n" ((List.length externs) * 4)) ^
+	"local_heap:\n" ^
+	(Printf.sprintf "\tresb %d\n" (!heap_diff * 4)) ^
 	
 	"section .text\n" ^
 	"global " ^ start_name ^ "\n" ^ 
 	(
-		init_globvars globvars;
 		let f s = if !debugmode then add_inscount s else s in
 		(String.concat "" (List.map (fun x -> f (func2asm x)) (List.rev funs))) ^
 		(f (func2asm {fn=(start_name,(TyVar(-1),default_debug_data)); vs=[]; regs=[]; cvs=[]; body=rd}))
