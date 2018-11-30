@@ -79,6 +79,11 @@ let stats2str ss =
 	) ss)) ^ "]"
 
 
+(*
+1. longest match
+2. fist match
+*)
+
 let my_lexing buf data = 
 	let rec f t c states = 
 		let self = f t c in
@@ -93,11 +98,11 @@ let my_lexing buf data =
 				if Nfa.isnill ts then
 					match tlasp with
 					| None -> self xs
-					| Some p -> [Gone(p,func)]
+					| Some p -> (Gone(p,func)) :: self xs
 				else
 					Going(ts,nfa,tlasp,func) :: self xs
 			)
-		| (Gone(a,b)) :: _ -> [Gone(a,b)]
+		| (Gone(a,b)) :: xs -> (Gone(a,b)) :: self xs
 		| [] -> [] 
 	in
 	let rec circle t ss = 
@@ -110,11 +115,13 @@ let my_lexing buf data =
 		print_char 10;
 		*)
 		match tss with
+		(*
 		| [Gone(p,func)] -> (
 				let (d,t) = p in
 				ungets buf t;
 				func d
 			)
+		*)
 		| [] -> (
 				print_string "lexing failed";
 				print_char 10;
@@ -122,7 +129,26 @@ let my_lexing buf data =
 				print_char 10;
 				raise_match_failure "lexing failed"
 			)
-		| _ -> circle (t+1) tss 
+		(*　TODO(satos) このへん勢いで書いたのでわりとあやしそう *)
+		| _ -> (
+				if List.for_all (fun v -> match v with Gone(_,_) -> true | _ -> false) tss then (
+					let longest = ref None in
+					let _ = List.fold_left (fun ls x -> 
+						match x with
+						| Gone((d,t),func) -> (
+								if t < ls then ls else (
+									longest := Some x;
+									t
+								)
+							)
+					) (-1) tss in
+					match !longest with
+					| Some (Gone((d,t),func)) -> (
+						ungets buf t;
+						func d
+					)
+				) else (circle (t+1) tss)
+			)
 	in
 	let starts = 
 		List.map (fun (nfa,func,mem_ls) -> 

@@ -50,16 +50,10 @@ let rec assoc_opt a v =
 	| [] -> None
 	| (b,x) :: xs -> if a = b then Some x else assoc_opt a xs
 
-(*
-((int -> int) * UsrDef(list,int) * UsrDef(list,UsrDef(list,(int * UsrDef(parsingact,))))) -> (() -> 'a239) -> (UsrDef(parsing_data,'a239) -> int) -> UsrDef(parsing_data,'a239)
-((int -> int) * UsrDef(list,'a241) * UsrDef(list,UsrDef(list,(int * UsrDef(option,'a242))))) -> (() -> 'a240) -> (UsrDef(parsing_data,'a240) -> int) -> UsrDef(parsing_data,'a240) in parsing.mli
-*)
-
-
 let rec data2str data2id d = 
 	let self = data2str data2id in
 	match d with
-	| Token i -> "Token[" ^ (string_of_int i) ^ "]" (* 型推論ばぐってるよなぁ... *)
+	| Token _ -> "Token[" ^ (string_of_int (data2id d)) ^ "]"
 	| Datum(i,j,vs) -> "Datum(" ^ (string_of_int i) ^ "," ^ (string_of_int j) ^ "," ^  (list2str vs self) ^ ")"
 
 let my_parsing (istoplevel,rulelens,table) lexfun data2id = 
@@ -84,17 +78,19 @@ let my_parsing (istoplevel,rulelens,table) lexfun data2id =
 		| Some x -> x
 	in
 	let rec steps vs st = 
-		
+		(*
 		print_string ("state " ^ (string_of_int st));
 		print_char 10;
 		print_string (list2str vs (fun x -> string_of_int (data2id x)));
 		print_char 10;
-		
+		*)
 		match autoact st with
 		| Some x -> (
+				(*
 				print_string ("autoact at state " ^ (string_of_int st));
 				print_char 10;
-				Some x
+				*)
+				Some((x,true))
 			)
 		| None -> (
 			match vs with
@@ -102,7 +98,7 @@ let my_parsing (istoplevel,rulelens,table) lexfun data2id =
 					let act = get_act st x in
 					match act with
 					| Shift tst -> steps xs tst
-					| Reduce(i,j) -> Some((i,j))
+					| Reduce(i,j) -> Some(((i,j),false))
 				)
 			| [] -> None
 		)
@@ -111,20 +107,38 @@ let my_parsing (istoplevel,rulelens,table) lexfun data2id =
 		let st = 0 in
 		let td = steps vs st in
 		match td with
-		| Some((i,j)) -> (
+		| Some((i,j),isauto) -> (
+				(*
 				print_string ("reduce[" ^ (string_of_int i) ^ "," ^ (string_of_int j) ^ "]");
+				*)
+				let ls = List.nth (List.nth rulelens i) j in (* 後ろ1個除いた頭ls個を縮約する *)
+				let als = List.length vs in
+				(*
+				print_string (" split_length " ^ (string_of_int ls));
 				print_char 10;
-				let ls = List.nth (List.nth rulelens i) j in (* 頭ls個を縮約する *)
-				let (v,w) = split_list vs ls in
-				let fv = Datum(i,j,v) in
-				if istoplevel i then fv
-				else circle (fv :: w)
+				print_int ls;
+				*)
+				
+				if isauto then (
+					let (v,w) = split_list vs (als-ls) in
+					let fv = Datum(i,j,w) in
+					if istoplevel i then fv
+					else circle (List.rev (v @ [fv]))
+				) else (
+					let (v,ws) = split_list vs (als-ls-1) in
+					let (w,rw) = split_list ws ls in
+					let fv = Datum(i,j,w) in
+					if istoplevel i then fv
+					else circle (v @ [fv] @ rw)
+				)
 			)
 		| None -> circle (vs @ [Token (lexfun ())])
 	in
 	let res = circle [] in
+	(*
 	print_string (data2str data2id res);
 	print_char 10;
+	*)
 	res
 
 

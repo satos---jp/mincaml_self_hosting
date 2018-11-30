@@ -29,7 +29,7 @@ let bigalpha = ['A'-'Z']
 let ident = smallalpha (alpha | digit)* 
 
 (* スプチャってスプラチャージャーぽくないですか *)
-let spcha = ['\'' '\\' '+' '=' '.' '<' '(' ')' ';' '^' ':']
+let spcha = ['\'' '\\' '+' '*' '/' '-' '=' '.' '<' '>' '(' ')' ';' '^' ':']
 
 let string_chars = (digit|alpha|' '|spcha)
 let char_chars = (digit|alpha|' '|spcha)

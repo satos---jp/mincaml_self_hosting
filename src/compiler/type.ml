@@ -167,7 +167,7 @@ let schemize t env subs = (* TODO(satos) うまくすれば、これ不要にな
 let no_fv_scheme t = ([],t)
 
 let tyscheme2str (tvs,t) = 
-	(String.concat " " (List.map tyvar2str tvs)) ^ ". " ^ (type2str t)
+	"[" ^ (String.concat " " (List.map tyvar2str tvs)) ^ ". " ^ (type2str t) ^ "]"
 
 let ty_scheme_subst subs (tvs,t) = 
 	let ttvs = List.map (fun _ -> genint ()) tvs in

@@ -11,9 +11,19 @@ if os.system('cd ../src/lex; make > /dev/null'):
 	print('lexer make failed')
 	exit(-1)
 
+if os.system('cd ../src/yacc; make > /dev/null'):
+	print('yacc make failed')
+	exit(-1)
+
 os.system('cp ../main ./')
 os.system('cp ../my_lex ./')
-os.system('cp ../lib/ ./ -r')
+os.system('cp ../my_yacc ./')
+os.system('mkdir lib')
+os.system('mkdir lib/asm')
+os.system('mkdir lib/ml')
+os.system('cp ../lib/asm/*.s ./lib/asm/')
+os.system('cp ../lib/ml/*.ml ./lib/ml/')
+os.system('cp ../lib/ml/*.mli ./lib/ml/')
 
 with open('test_order.txt','r') as fp:
 	ts = fp.read()

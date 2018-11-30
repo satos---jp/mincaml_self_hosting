@@ -196,7 +196,7 @@ let rec pattern2env env venv pat pna =
 					let na = (genvar (),(nt,deb)) in
 					let cond, bind, tenv, cs = self pat (TVar(na),(nt,deb)) in
 					((
-						(TIf(rcond,cond,false_expr),(TyInt,deb)),
+						(TIf(rcond,(TLet(na,(TOp(OGetTuple(i),[pna]),(nt,deb)),cond),(TyInt,deb)),false_expr),(TyInt,deb)),
 						(fun ((_,ted) as e) -> TLet(na,
 							(TOp(OGetTuple(i),[pna]),(nt,deb))
 						,(bind (rbind e))),ted),
@@ -211,8 +211,8 @@ let rec pattern2env env venv pat pna =
 let rec constrs2str_sub cs =
 	match cs with
 	| [] -> ""
-	| (x,y,_) :: xs -> (
-			(Printf.sprintf "(%s , %s)\n" (type2str x) (type2str y)) ^
+	| (x,y,d) :: xs -> (
+			(Printf.sprintf "(%s , %s) : %s\n" (type2str x) (type2str y) (debug_data2str d)) ^
       (constrs2str_sub xs)
      )
 
@@ -329,7 +329,7 @@ let rec type_infer tyenv venv astdeb env =
 			(* いったんenvをアップデートしないといけなかったりする。(都合で) *)
 			let ts2 = schemize ttt2 env subs in
 
-			ivprint ("letdecl " ^ n1 ^ "\n");
+			ivprint ("letdecl " ^ n1 ^ "as scheme" ^ (tyscheme2str ts2) ^ "\n");
 			ivprint (constrs2str c2);
 			
 			let te3,c3,tt3,_ = self e3 ((n1,ts2) :: env) in
@@ -391,14 +391,15 @@ let rec type_infer tyenv venv astdeb env =
 			let ttt1 = ty_subst subs tt1 in
 			let ts1 = schemize ttt1 env in
 			TODO(satos) なんかここいる気がするがわかんない
+			とゆーか微妙にバグってるね？ 
 			*)
 			
-			let btns = List.map (fun x -> (x,gentype ())) ns in
+			let btns = List.map (fun x -> (x,gentype ())) ns in 
 			let tns = List.map (fun (a,b) -> (a,no_fv_scheme b)) btns in
 			
 			let te2,c2,tt2,_ = self e2 (tns @ env) in
 				(TLetTuple(List.map (fun (x,t) -> (x,(t,deb1))) btns,te1,te2),
-				(tt1,TyTuple(List.map (fun (_,x) -> x) btns),deb1) :: c2,tt2)
+				(tt1,TyTuple(List.map (fun (_,x) -> x) btns),deb1) :: c1 @ c2,tt2)
 		)
 	| EVariant(tag,es) -> (
 			let tagn,tagty,args = (

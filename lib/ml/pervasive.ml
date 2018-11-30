@@ -60,16 +60,18 @@ let string_of_int i =
 		else (if i < 0 then "-" ^ (f (-i)) else f i)
 
 
-let int_of_string s = 31415
-(*
+let int_of_string s =
+	(* print_string ("Ios{ " ^ s ^ " }"); *)
 	let rec f acc i = 
-		let n = Char.code (String.get s i) in
-			if (n-47)*(58-n)>0 then f (acc*10+(n-48)) (i+1) else acc
+		if String.length s <= i then acc else 
+		let n = Char.code (String.get s i) in f (acc*10+(n-48)) (i+1)
 	in
 		let c = Char.code (String.get s 0) in
-			if c = 45 then -(f 0) else (
-				if (c-47)*(58-c)>0 then f (c-48) 1 else read_int x)
-*)
+			if c = 45 then -(f 0 1) else (
+				if (c-47)*(58-c)>0 then f (c-48) 1
+				else raise_match_failure ("invalid int_of_string{" ^ s ^ "}")
+			)
+
 let stdin = 1 (* TODO(satos) さすがにやばいのでどうにかする *)
 
 

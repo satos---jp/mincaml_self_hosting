@@ -181,9 +181,9 @@ let output_stub files =
 	) ^ (
 		"section .bss\n" ^
 		"global_heap:\n" ^
-		"\tresb 1000000\n" ^ 
+		"\tresb 0x4000000\n" ^ 
 		"heap:\n" ^
-		"\tresb 1000000\n" ^ 
+		"\tresb 0x4000000\n" ^ 
 		"section .data\n" ^
 		"section .text\n" ^
 		"_start:\n" ^

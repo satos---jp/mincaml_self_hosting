@@ -66,14 +66,14 @@ let extract_folds_from_precs pcs =
 let extract_folds rules = 
 	"let rec " ^ (String.concat "\n\nand " (List.map (fun (na,rls) ->  
 		(Printf.sprintf "%s d =\n" (sym2funname na)) ^
-		
+		(*
 		(Printf.sprintf "\tprint_string \"%s\"; print_char 10;\n" (sym2funname na)) ^
-		
+		*)
 		"\tmatch d with\n" ^
 		"\t| Datum(k,i,ds) -> (\n" ^
-		
+		(*
 		"\tprint_int k; print_char 32; print_int i; print_char 10;\n" ^
-		
+		*)
 		"\t\t\t" ^ (String.concat "" (List.mapi (fun i (syms,(co,ds)) -> 
 			let uds = unique ds in
 			(Printf.sprintf "if i = %d then (\n" i) ^
@@ -187,12 +187,20 @@ let append_fs v w =
 			)
 	)
 
-let unit_fs x = 
-	let d = Data x in
+
+let rec range a b = 
+	if a < b then a :: (range (a+1) b) else []
+
+let unit_fs xs = 
+	(* xの先頭にありうるような終端記号すべてを追加する *)
 	let i = List.length !union in
-	union := !union @ [d];
-	union := !union @ [Node(ref [i])];
-	(i+1)
+	List.iter (fun x -> 
+		let d = Data x in
+		union := !union @ [d]
+	) xs;
+	let ti = List.length !union in
+	union := !union @ [Node(ref (range i ti))];
+	ti
 	
 let copy_from_fs x = 
 	let i = List.length !union in
@@ -242,6 +250,28 @@ let parsingact2str pa =
 (* table :: 状態stでi番めのデータが降ってきた際にshift/reduceするやつ *)
 (* table は、大きさを縮めるために 各 st にたいして (i,move) の組とする (型は (int * parsingact) list )*)
 let make_table rules sym2i i2sym i_sym_data startsym = 
+	(* symbol x が先頭となるようなセットを返す *)
+	let firstset x = 
+		let res = ref [] in
+		let gone = ref [] in
+		let rec f nv = 
+			if List.mem nv !gone then () else (
+				gone := nv :: !gone;
+				try 
+					let nrs = List.assoc (i2sym nv) rules in
+					List.iter (fun (sls,_) -> 
+						match sls with
+						| a :: _ -> f (sym2i a)
+						| _ -> failwith ("Null rule is prohibited (at " ^ (i2sym nv) ^ ")")
+					) nrs
+				with
+					| Not_found -> res := nv :: !res
+			)
+		in
+		f x;
+		!res 
+	in		
+	
 	let rl2str (((i,j),ss,ts),fs) = (
 	(*
 		(Printf.sprintf "{(%d,%d),%s,%s} " i j (list2str ss string_of_int) (list2str ts string_of_int)) ^
@@ -250,7 +280,6 @@ let make_table rules sym2i i2sym i_sym_data startsym =
 	)
 	in
 	let irules = List.map (fun (s,d) -> (* Printf.printf "rule %s idx %d\n" s (sym2i s); *) sym2i s,d) rules in
-	
 	
 	let rec saturate v ds = 
 		(* Printf.printf "%s\n" (rl2str d); *)
@@ -272,7 +301,7 @@ let make_table rules sym2i i2sym i_sym_data startsym =
 						| (_,_,x :: xs),fo -> (
 							(* Printf.printf "search by %d\n" x; *)
 							let nru = try List.assoc x irules with Not_found -> [] in
-							let tfo = match xs with [] -> (copy_from_fs fo) | p :: _ -> unit_fs p in
+							let tfo = match xs with [] -> (copy_from_fs fo) | p :: _ -> unit_fs (firstset p) in
 							List.fold_left (fun r ((syms,_),j) -> 
 								let isyms = List.map sym2i syms in
 								self r [((x,j),[],isyms),tfo]
@@ -301,6 +330,12 @@ let make_table rules sym2i i2sym i_sym_data startsym =
 		(String.concat "")
   in
 	let rec add_state_node it = 
+		(*
+		print_string "its ::\n";
+		List.iter (fun d -> 
+			print_string ("add node " ^ (rl2str d) ^ "\n")
+		) it;
+		*)
 		let self = add_state_node in
 		let tit = saturate [] it in
 		match find_same_state_with_idx tit (!vs) with
@@ -343,7 +378,7 @@ let make_table rules sym2i i2sym i_sym_data startsym =
 				rt
 			)
 	in
-	let stp = add_state_node [(((sym2i "@start_start"),-1),[],[sym2i startsym]),(unit_fs (sym2i "@end_end"))] in
+	let stp = add_state_node [(((sym2i "@start_start"),-1),[],[sym2i startsym]),(unit_fs [(sym2i "@end_end")])] in
 	
 	(* let v = x :: xs in List.nth (List.length xs) が x と違うの罠過ぎませんか??? *)
 	

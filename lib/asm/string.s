@@ -1,5 +1,7 @@
 BITS 32
 
+extern raise_match_failure
+
 global String@@
 global String@length
 global String@get
@@ -17,6 +19,9 @@ String@get:
 	dd String@get_p
 String@get_p:
 	dd String@get_
+
+@invalid_get_error:
+	db "invalid String@get at", 0
 
 section .text
 
@@ -99,7 +104,10 @@ String@get_:
 	ret
 
 raise_Invalid_argument:
-	int 0x3
+	push dword @invalid_get_error
+	mov eax,dword [raise_match_failure+0]
+	mov edi,[eax+4]
+	call [eax]
 
 
 

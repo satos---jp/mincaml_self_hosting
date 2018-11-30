@@ -71,3 +71,8 @@ let assoc a v =
 	match v with
 	| (x,t) :: xs -> if x = a then t else assoc a xs
 	| [] -> raise_match_failure "List.assoc failed with Not_found"
+
+let for_all f v =
+	match v with
+	| x :: xs -> if f x then for_all f xs else false
+	| [] -> true
