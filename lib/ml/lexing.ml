@@ -158,3 +158,7 @@ let my_lexing buf data =
 	in 
 		circle 0 starts
 
+
+(* TODO(satos) ちゃんとする *)
+let new_line x = ()
+

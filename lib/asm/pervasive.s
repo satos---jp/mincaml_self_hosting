@@ -3,6 +3,7 @@ BITS 32
 global int_of_float
 global float_of_int
 global raise_match_failure
+global failwith
 
 global ref
 global @ref@set
@@ -25,6 +26,11 @@ float_of_int_p:
 raise_match_failure:
 	dd raise_match_failure_p
 raise_match_failure_p:
+	dd raise_match_failure_
+	
+failwith:
+	dd failwith_p
+failwith_p:
 	dd raise_match_failure_
 
 ref:

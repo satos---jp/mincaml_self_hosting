@@ -14,6 +14,7 @@ type regexp =
 	| RCons  of regexp list
 	| RAs    of regexp * string
 	| RAll
+	| REof
 
 type decllist = (idname * regexp) list
 
@@ -26,3 +27,4 @@ type rules = (entname * (argname list) * entries) list
 
 type top = decllist * rules
 
+val initial_env : unit -> decllist

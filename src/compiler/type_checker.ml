@@ -15,6 +15,8 @@ let genv_base = List.map (fun (na,t) -> (na,schemize t [] [])) (
 	("float_of_int",TyFun([TyInt],TyFloat));
 	(* れいず!! *)
 	("raise_match_failure",TyFun([gentype ()],gentype ()));
+	("failwith",TyFun([TyStr],gentype ()));
+
 	("ref",let t = gentype() in TyFun([t],TyRef(t)));
 	("@ref@get",let t = gentype() in TyFun([TyRef(t)],t));
 	("@ref@set",let t = gentype() in TyFun([TyRef(t);t],TyTuple([])));
@@ -164,8 +166,8 @@ let rec pattern2env env venv pat pna =
 					List.hd tagarg,
 					(fun nt -> 
 							(TOp(OGetTuple(0),[
-								TOp(OGetTuple(1),[pna]),(nt,deb)
-							]),(TyTuple([nt]),deb)))
+								TOp(OGetTuple(1),[pna]),(TyTuple([nt]),deb)
+							]),(nt,deb)))
 				) else (
 					match ps with
 					| PTuple rps when (List.length rps == ls) -> (
@@ -247,6 +249,12 @@ let print_env v =
 	print_string (list2str v (fun (x,_) -> x));
 	print_string "\n"
 
+
+
+let get_format_string_type s = 
+	 Some (fun t -> TyFun([TyStr],t))
+
+
 (*
 let多相にするぞい。
 env を (name * ty) から (name * ty_scheme) にする
@@ -260,7 +268,13 @@ let rec type_infer tyenv venv astdeb env =
 	match ast with
 	| EConst(CFloat x) -> (TConst(CFloat x),[],TyFloat)
 	| EConst(CInt x) -> (TConst(CInt x),[],TyInt)
-	| EConst(CString x) -> (TConst(CString x),[],TyStr)
+	| EConst(CString x) -> (
+			(TConst(CString x),[],TyStr (*
+				(match get_format_string_type x with 
+				| Some f -> let v = gentype () in TyUserDef("format",[f v;v])
+				| None -> TyStr) *)
+			)
+		)
 	| EConst(CChar x) -> (TConst(CChar x),[],TyChar)
 	| EVar(x) -> (
 			(*
@@ -631,6 +645,30 @@ and cast_to raisefun ((ast,(ft,deb)) as astdeb) tt =
 			*)
 		)
 	)
+	| TyUserDef(atn,ats),TyUserDef(btn,bts) -> (
+			assert (atn = btn);
+			let tagn = (genvar (),(TyInt,deb)) in
+			let etagn = TVar(tagn),(TyInt,deb) in
+			let bodn = (genvar (),(TyTuple(ats),deb)) in
+			let ebodn = TVar(bodn),(TyTuple(ats),deb) in
+			TLet(tagn,
+				(TOp(OGetTuple(0),[astdeb]),(TyInt,deb)),
+			(TLet(bodn,
+				(TOp(OGetTuple(1),[astdeb]),(TyTuple(ats),deb)),
+				(TTuple([etagn; self ebodn (TyTuple(bts))]),(tt,deb))
+			),(tt,deb))),(tt,deb)
+		)
+	| TyTuple(ats),TyTuple(bts) -> (
+			assert (List.length ats = List.length bts); 
+			
+			let tmpvs = List.map (fun t -> (genvar (),(t,deb))) ats in  
+			List.fold_left (fun r (i,(v,td)) -> 
+				TLet((v,td),(TOp(OGetTuple(i),[astdeb]),td),r),(tt,deb)
+			) (
+				TTuple(List.map2 (fun (v,td) ntt -> self (TVar(v,td),td) ntt) tmpvs bts),(tt,deb)
+			) (List.mapi (fun i d -> (i,d)) tmpvs)
+		)
+	| _ -> failwith (Printf.printf "cast from %s to %s is not implemented yet" (type2str ft) (type2str tt); "") 
 			
 	(*
 	| TyFun(vs,rd),TyFun(es,_) -> (
@@ -700,6 +738,9 @@ type type_def =
 	| TDVariant of ((variant_tag * (ty list)) list)
 	| TDNull
 
+let rec range n f = 
+	if n < 0 then [] else (f n) :: (range (n-1) f) 
+
 let variantenv () = [
 	("@Nil",(fun x -> let t = gentype x in (0,TyUserDef("list",[t]),[])));
 	("@Cons",(fun x -> let t = gentype x in (1,TyUserDef("list",[t]),[t;TyUserDef("list",[t])])));
@@ -707,7 +748,11 @@ let variantenv () = [
 	("None",(fun x -> let t = gentype x in (1,TyUserDef("option",[t]),[])));
 	("Token",(fun x -> let t = gentype x in (0,TyUserDef("parsing_data",[t]),[t])));
 	("Datum",(fun x -> let t = gentype x in (1,TyUserDef("parsing_data",[t]),[TyInt;TyInt;TyUserDef("list",[TyUserDef("parsing_data",[t])])])));
-]
+] @ (
+	(* let rec - and - のための *)
+	(range 30 (fun i -> (Printf.sprintf "@Func%d" i,(fun x -> (i,TyUserDef("@lra_functions",[]),[]))))) @
+	(range 30 (fun i -> (Printf.sprintf "@Retval%d" i,(fun x -> let ts = range 30 (fun _ -> gentype x) in (i,TyUserDef("@lra_retvals",ts),[List.nth ts i])))))
+)
 
 let user_defined_types = ref [
 	("int",TyInt);
@@ -725,6 +770,10 @@ let defined_types () = [
 	("option",1);
 	("ref",1);
 	("parsing_data",1);
+	("format",2); (* TODO(satos) OCamlに合わせるなら3. *)
+	(* let rec - and - のための *)
+	("@lra_functions",0);
+	("@lra_retvals",30);
 ] @ List.map (fun (t,_) -> (t,0)) (user_defined_type_env ())
 
 

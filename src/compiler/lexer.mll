@@ -25,6 +25,18 @@ rule main = parse
 | "(*"         { comment lexbuf }
 | '"' (string_chars* as str) '"' { Parser.STRING str }
 | '\'' ((char_special_chars | string_chars) as c) '\'' { Parser.CHAR c }
+| "\'\\" (("x00" | "xff" | "n" | "t" | "r" | "'" | "\\") as v) '\'' { 
+		Parser.CHAR(
+			if v = "n" then '\n' else 
+			if v = "t" then '\t' else 
+			if v = "r" then '\r' else 
+			if v = "'" then '\'' else 
+			if v = "\\" then '\\' else 
+			if v = "x00" then Char.chr(0) else 
+			if v = "xff" then Char.chr(0xff) else 
+			Char.chr(-1)
+		)
+	}
 | "let"        { Parser.LET }
 | "rec"        { Parser.REC }
 | "in"         { Parser.IN }

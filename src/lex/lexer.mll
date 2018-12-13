@@ -29,17 +29,18 @@ let bigalpha = ['A'-'Z']
 let ident = smallalpha (alpha | digit)* 
 
 (* スプチャってスプラチャージャーぽくないですか *)
-let spcha = ['\'' '\\' '+' '*' '/' '-' '=' '.' '<' '>' '(' ')' ';' '^' ':']
+let spcha = ['\'' '\\' '+' '*' '/' '-' '=' '.' '<' '>' '(' ')' '{' '}' ';' '^' ':' '\'' '|' '[' ']' '^']
 
 let string_chars = (digit|alpha|' '|spcha)
-let char_chars = (digit|alpha|' '|spcha)
+let char_chars = (digit|alpha|' '|spcha|'"')
 
 rule main = parse
 | "\n" { Lexing.new_line lexbuf; main lexbuf }
 | space+       { main lexbuf }
 | "(*"         { comment lexbuf }
 | '"' (string_chars* as str) '"' { Parser.STRING str }
-| '\'' (('\\'? char_chars) as str) '\'' { Parser.CHAR str }
+| '\'' (('\\' char_chars | char_chars) as str) '\'' { Parser.CHAR str }
+(* TODO(satos) ここ、あとで ('\\'? char_chars) に戻したい *)
 (*
 | '{' (string_chars* as str) '}' { Parser.CODE str }
 *)
@@ -61,7 +62,7 @@ rule main = parse
 | "+"          { Parser.PLUS }
 | ident  as id { Parser.ID id }
 | eof          { Parser.EOF }
-| _            { failwith ("Unknown Token: " ^ Lexing.lexeme lexbuf)}
+| (_ as s)     { failwith ("Unknown Token: " ^ (Char.escaped s))}
 
 and comment = parse
 | "\n" { Lexing.new_line lexbuf; comment lexbuf }

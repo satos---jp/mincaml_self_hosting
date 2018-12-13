@@ -160,7 +160,9 @@ let rec expr2str_base astdeb d =
 	| ETuple(es) -> (d,"( ") :: List.concat (List.map (fun x -> (expr2str_base x (d+1))) es) @ [(d," )")]
 	| ELetTuple(vs,e1,e2) -> (d,"Let " ^ (String.concat " , " vs) ^ " = ") :: (expr2str_base e1 (d+1)) @ [(d,"In")] @ (expr2str_base e2 (d+1))
 	| EMatch(e,pes) -> (d,"match") :: (expr2str_base e (d+2)) @ [(d,"with")] @ (
-			List.concat (List.map (fun x -> (d+1,"|") :: (pat2str_base (fst x) (d+2))) pes)
+			List.concat (List.map (fun (np,ne) -> 
+				(d+1,"|") :: (pat2str_base np (d+2)) @ [(d+1,"->")] @ (expr2str_base ne (d+2))
+			) pes)
 		)
 	| EVariant(tag,es) -> (d,Printf.sprintf "Variant %s" tag) :: List.concat (List.map (fun x -> (expr2str_base x (d+2))) es)
  

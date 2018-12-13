@@ -27,7 +27,7 @@ let src2ast fname =
 
 (* TODO(satos) ここもmainに回したい *)
 
-let lib_files = ["Pervasive";"List";"String";"Char";"Nfa";"Lexing";"Parsing"]
+let lib_files = ["Pervasive";"List";"String";"Char";"Nfa";"Lexing";"Parsing";"Printf"]
 let open2spec fname = 
 	let tfn = String.lowercase fname ^ ".mli" in
 	let rfn = (if List.mem fname lib_files then !path_to_library ^ "/ml/" else "") ^ tfn in

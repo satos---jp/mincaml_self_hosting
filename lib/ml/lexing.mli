@@ -9,6 +9,7 @@ open Nfa
 type lexbuf = (unit -> char) * (int -> unit)
 val my_lexing : lexbuf -> (nfa * ((string list) -> 'a) * int) list -> 'a
 
+val new_line : lexbuf -> unit
 
 
 val from_channel : int -> lexbuf

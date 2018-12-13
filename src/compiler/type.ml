@@ -135,6 +135,8 @@ let rec unify tyenv cs =
 			| TyUserDef(a,[]),b | b,TyUserDef(a,[]) when List.mem_assoc a tyenv -> (
 					self ((List.assoc a tyenv,b,deb) :: xs)
 				)
+			(* Format string 用 *)
+			| TyStr,TyUserDef("format",_) | TyUserDef("format",_),TyStr -> self xs
 			| _ -> raise (TypeError(t1,t2,deb))
 		with 
 			| Invalid_argument("List.map2") -> raise (TypeError(t1,t2,deb))
@@ -202,6 +204,8 @@ let rec is_sub env ta tb =
 					)
 		)
 	| TyNum,TyInt | TyNum,TyFloat -> ()
+	(* Format string 用 *)
+	| TyStr,TyUserDef("format",_) | TyUserDef("format",_),TyStr -> ()
 	| TyFun(p,q),TyFun(r,s) -> multi_check (q :: p) (s :: r)
 	| TyTuple p, TyTuple r -> multi_check p r
 	| TyUserDef(tag1,ps),TyUserDef(tag2,rs) when tag1 = tag2 -> multi_check ps rs

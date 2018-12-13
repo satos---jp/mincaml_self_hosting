@@ -1,0 +1,253 @@
+add toplevel as 0
+add cset_expr as 1
+add cset_exprs as 2
+add simple_regexp as 3
+add star_plus_regexp as 4
+add regexp_cons_list as 5
+add regexp_or_list as 6
+add regexp_expr as 7
+add let_expr as 8
+add let_exprs as 9
+add entry_exprs as 10
+add args_eq as 11
+add rule_exprs as 12
+add CHAR as 13
+add STRING as 14
+add CODE as 15
+add ID as 16
+add AS as 17
+add AND as 18
+add PARSE as 19
+add RULE as 20
+add EQ as 21
+add LET as 22
+add RBRA as 23
+add LBRA as 24
+add RPAR as 25
+add LPAR as 26
+add BAR as 27
+add PLUS as 28
+add UNSCO as 29
+add MINUS as 30
+add STAR as 31
+add EOF as 32
+add @end_end as 33
+add @start_start as 34
+state 0:
+	
+with edge
+[Shift[toplevel,1];Shift[let_exprs,2];Shift[let_expr,43];Shift[LET,45];Shift[RULE,49]]
+state 1:
+	{(@start_start,-1),[toplevel],[]:[@end_end]}
+with edge
+[Reduce[[@end_end],@start_start,-1]]
+state 2:
+	{(toplevel,0),[let_exprs],[rule_exprs]:[@end_end]}
+with edge
+[Shift[rule_exprs,3];Shift[ID,4]]
+state 3:
+	{(toplevel,0),[let_exprs;rule_exprs],[]:[@end_end]}
+with edge
+[Reduce[[@end_end],toplevel,0]]
+state 4:
+	{(rule_exprs,0),[ID],[args_eq;PARSE;entry_exprs]:[@end_end]}
+	{(rule_exprs,1),[ID],[args_eq;PARSE;entry_exprs;AND;rule_exprs]:[@end_end]}
+with edge
+[Shift[ID,5];Shift[EQ,7];Shift[args_eq,8]]
+state 5:
+	{(args_eq,0),[ID],[args_eq]:[PARSE]}
+with edge
+[Shift[args_eq,6];Shift[ID,5];Shift[EQ,7]]
+state 6:
+	{(args_eq,0),[ID;args_eq],[]:[PARSE]}
+with edge
+[Reduce[[PARSE],args_eq,0]]
+state 7:
+	{(args_eq,1),[EQ],[]:[PARSE]}
+with edge
+[Reduce[[PARSE],args_eq,1]]
+state 8:
+	{(rule_exprs,1),[ID;args_eq],[PARSE;entry_exprs;AND;rule_exprs]:[@end_end]}
+	{(rule_exprs,0),[ID;args_eq],[PARSE;entry_exprs]:[@end_end]}
+with edge
+[Shift[PARSE,9]]
+state 9:
+	{(rule_exprs,0),[ID;args_eq;PARSE],[entry_exprs]:[@end_end]}
+	{(rule_exprs,1),[ID;args_eq;PARSE],[entry_exprs;AND;rule_exprs]:[@end_end]}
+with edge
+[Shift[BAR,10];Shift[entry_exprs,40]]
+state 10:
+	{(entry_exprs,0),[BAR],[regexp_expr;CODE]:[@end_end;AND]}
+	{(entry_exprs,1),[BAR],[regexp_expr;CODE;entry_exprs]:[@end_end;AND]}
+with edge
+[Shift[star_plus_regexp,11];Shift[CHAR,12];Shift[STRING,13];Shift[ID,14];Shift[LBRA,15];Shift[LPAR,23];Shift[UNSCO,28];Shift[simple_regexp,29];Shift[regexp_cons_list,32];Shift[regexp_or_list,34];Shift[regexp_expr,37]]
+state 11:
+	{(regexp_cons_list,0),[star_plus_regexp],[]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR]}
+with edge
+[Reduce[[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR],regexp_cons_list,0]]
+state 12:
+	{(simple_regexp,0),[CHAR],[]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR;PLUS;STAR]}
+with edge
+[Reduce[[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR;PLUS;STAR],simple_regexp,0]]
+state 13:
+	{(simple_regexp,1),[STRING],[]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR;PLUS;STAR]}
+with edge
+[Reduce[[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR;PLUS;STAR],simple_regexp,1]]
+state 14:
+	{(simple_regexp,2),[ID],[]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR;PLUS;STAR]}
+with edge
+[Reduce[[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR;PLUS;STAR],simple_regexp,2]]
+state 15:
+	{(simple_regexp,3),[LBRA],[cset_exprs;RBRA]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR;PLUS;STAR]}
+with edge
+[Shift[cset_exprs,16];Shift[CHAR,18];Shift[cset_expr,21]]
+state 16:
+	{(simple_regexp,3),[LBRA;cset_exprs],[RBRA]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR;PLUS;STAR]}
+with edge
+[Shift[RBRA,17]]
+state 17:
+	{(simple_regexp,3),[LBRA;cset_exprs;RBRA],[]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR;PLUS;STAR]}
+with edge
+[Reduce[[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR;PLUS;STAR],simple_regexp,3]]
+state 18:
+	{(cset_expr,0),[CHAR],[]:[RBRA;CHAR]}
+	{(cset_expr,1),[CHAR],[MINUS;CHAR]:[RBRA;CHAR]}
+with edge
+[Reduce[[RBRA;CHAR],cset_expr,0];Shift[MINUS,19]]
+state 19:
+	{(cset_expr,1),[CHAR;MINUS],[CHAR]:[RBRA;CHAR]}
+with edge
+[Shift[CHAR,20]]
+state 20:
+	{(cset_expr,1),[CHAR;MINUS;CHAR],[]:[RBRA;CHAR]}
+with edge
+[Reduce[[RBRA;CHAR],cset_expr,1]]
+state 21:
+	{(cset_exprs,0),[cset_expr],[]:[RBRA]}
+	{(cset_exprs,1),[cset_expr],[cset_exprs]:[RBRA]}
+with edge
+[Reduce[[RBRA],cset_exprs,0];Shift[cset_exprs,22];Shift[CHAR,18];Shift[cset_expr,21]]
+state 22:
+	{(cset_exprs,1),[cset_expr;cset_exprs],[]:[RBRA]}
+with edge
+[Reduce[[RBRA],cset_exprs,1]]
+state 23:
+	{(simple_regexp,4),[LPAR],[regexp_expr;RPAR]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR;PLUS;STAR]}
+with edge
+[Shift[regexp_expr,24];Shift[star_plus_regexp,11];Shift[CHAR,12];Shift[STRING,13];Shift[ID,14];Shift[LBRA,15];Shift[LPAR,23];Shift[UNSCO,28];Shift[simple_regexp,29];Shift[regexp_cons_list,32];Shift[regexp_or_list,34]]
+state 24:
+	{(simple_regexp,4),[LPAR;regexp_expr],[RPAR]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR;PLUS;STAR]}
+	{(regexp_expr,0),[regexp_expr],[AS;ID]:[RULE;LET;CODE;AS;RPAR]}
+with edge
+[Shift[AS,25];Shift[RPAR,27]]
+state 25:
+	{(regexp_expr,0),[regexp_expr;AS],[ID]:[RULE;LET;CODE;AS;RPAR]}
+with edge
+[Shift[ID,26]]
+state 26:
+	{(regexp_expr,0),[regexp_expr;AS;ID],[]:[RULE;LET;CODE;AS;RPAR]}
+with edge
+[Reduce[[RULE;LET;CODE;AS;RPAR],regexp_expr,0]]
+state 27:
+	{(simple_regexp,4),[LPAR;regexp_expr;RPAR],[]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR;PLUS;STAR]}
+with edge
+[Reduce[[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR;PLUS;STAR],simple_regexp,4]]
+state 28:
+	{(simple_regexp,5),[UNSCO],[]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR;PLUS;STAR]}
+with edge
+[Reduce[[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR;PLUS;STAR],simple_regexp,5]]
+state 29:
+	{(star_plus_regexp,0),[simple_regexp],[]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR]}
+	{(star_plus_regexp,1),[simple_regexp],[STAR]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR]}
+	{(star_plus_regexp,2),[simple_regexp],[PLUS]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR]}
+with edge
+[Reduce[[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR],star_plus_regexp,0];Shift[PLUS,30];Shift[STAR,31]]
+state 30:
+	{(star_plus_regexp,2),[simple_regexp;PLUS],[]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR]}
+with edge
+[Reduce[[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR],star_plus_regexp,2]]
+state 31:
+	{(star_plus_regexp,1),[simple_regexp;STAR],[]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR]}
+with edge
+[Reduce[[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR],star_plus_regexp,1]]
+state 32:
+	{(regexp_or_list,0),[regexp_cons_list],[]:[RULE;LET;CODE;BAR;RPAR;AS]}
+	{(regexp_cons_list,1),[regexp_cons_list],[star_plus_regexp]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR]}
+with edge
+[Reduce[[RULE;LET;CODE;BAR;RPAR;AS],regexp_or_list,0];Shift[star_plus_regexp,33];Shift[CHAR,12];Shift[STRING,13];Shift[ID,14];Shift[LBRA,15];Shift[LPAR,23];Shift[UNSCO,28];Shift[simple_regexp,29]]
+state 33:
+	{(regexp_cons_list,1),[regexp_cons_list;star_plus_regexp],[]:[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR]}
+with edge
+[Reduce[[RULE;LET;CODE;BAR;RPAR;AS;UNSCO;LPAR;LBRA;ID;STRING;CHAR],regexp_cons_list,1]]
+state 34:
+	{(regexp_expr,1),[regexp_or_list],[]:[RULE;LET;CODE;RPAR;AS]}
+	{(regexp_or_list,1),[regexp_or_list],[BAR;regexp_cons_list]:[RULE;LET;CODE;BAR;RPAR;AS]}
+with edge
+[Reduce[[RULE;LET;CODE;RPAR;AS],regexp_expr,1];Shift[BAR,35]]
+state 35:
+	{(regexp_or_list,1),[regexp_or_list;BAR],[regexp_cons_list]:[RULE;LET;CODE;BAR;RPAR;AS]}
+with edge
+[Shift[star_plus_regexp,11];Shift[CHAR,12];Shift[STRING,13];Shift[ID,14];Shift[LBRA,15];Shift[LPAR,23];Shift[UNSCO,28];Shift[simple_regexp,29];Shift[regexp_cons_list,36]]
+state 36:
+	{(regexp_or_list,1),[regexp_or_list;BAR;regexp_cons_list],[]:[RULE;LET;CODE;BAR;RPAR;AS]}
+	{(regexp_cons_list,1),[regexp_cons_list],[star_plus_regexp]:[UNSCO;LPAR;LBRA;ID;STRING;CHAR;RULE;LET;CODE;BAR;RPAR;AS]}
+with edge
+[Reduce[[RULE;LET;CODE;BAR;RPAR;AS],regexp_or_list,1];Shift[star_plus_regexp,33];Shift[CHAR,12];Shift[STRING,13];Shift[ID,14];Shift[LBRA,15];Shift[LPAR,23];Shift[UNSCO,28];Shift[simple_regexp,29]]
+state 37:
+	{(entry_exprs,1),[BAR;regexp_expr],[CODE;entry_exprs]:[@end_end;AND]}
+	{(regexp_expr,0),[regexp_expr],[AS;ID]:[AS;CODE]}
+	{(entry_exprs,0),[BAR;regexp_expr],[CODE]:[@end_end;AND]}
+with edge
+[Shift[AS,25];Shift[CODE,38]]
+state 38:
+	{(entry_exprs,0),[BAR;regexp_expr;CODE],[]:[@end_end;AND]}
+	{(entry_exprs,1),[BAR;regexp_expr;CODE],[entry_exprs]:[@end_end;AND]}
+with edge
+[Reduce[[@end_end;AND],entry_exprs,0];Shift[entry_exprs,39];Shift[BAR,10]]
+state 39:
+	{(entry_exprs,1),[BAR;regexp_expr;CODE;entry_exprs],[]:[@end_end;AND]}
+with edge
+[Reduce[[@end_end;AND],entry_exprs,1]]
+state 40:
+	{(rule_exprs,1),[ID;args_eq;PARSE;entry_exprs],[AND;rule_exprs]:[@end_end]}
+	{(rule_exprs,0),[ID;args_eq;PARSE;entry_exprs],[]:[@end_end]}
+with edge
+[Reduce[[@end_end],rule_exprs,0];Shift[AND,41]]
+state 41:
+	{(rule_exprs,1),[ID;args_eq;PARSE;entry_exprs;AND],[rule_exprs]:[@end_end]}
+with edge
+[Shift[rule_exprs,42];Shift[ID,4]]
+state 42:
+	{(rule_exprs,1),[ID;args_eq;PARSE;entry_exprs;AND;rule_exprs],[]:[@end_end]}
+with edge
+[Reduce[[@end_end],rule_exprs,1]]
+state 43:
+	{(let_exprs,0),[let_expr],[let_exprs]:[ID]}
+with edge
+[Shift[let_exprs,44];Shift[let_expr,43];Shift[LET,45];Shift[RULE,49]]
+state 44:
+	{(let_exprs,0),[let_expr;let_exprs],[]:[ID]}
+with edge
+[Reduce[[ID],let_exprs,0]]
+state 45:
+	{(let_expr,0),[LET],[ID;EQ;regexp_expr]:[RULE;LET]}
+with edge
+[Shift[ID,46]]
+state 46:
+	{(let_expr,0),[LET;ID],[EQ;regexp_expr]:[RULE;LET]}
+with edge
+[Shift[EQ,47]]
+state 47:
+	{(let_expr,0),[LET;ID;EQ],[regexp_expr]:[RULE;LET]}
+with edge
+[Shift[regexp_expr,48];Shift[star_plus_regexp,11];Shift[CHAR,12];Shift[STRING,13];Shift[ID,14];Shift[LBRA,15];Shift[LPAR,23];Shift[UNSCO,28];Shift[simple_regexp,29];Shift[regexp_cons_list,32];Shift[regexp_or_list,34]]
+state 48:
+	{(let_expr,0),[LET;ID;EQ;regexp_expr],[]:[RULE;LET]}
+	{(regexp_expr,0),[regexp_expr],[AS;ID]:[AS;RULE;LET]}
+with edge
+[Reduce[[RULE;LET],let_expr,0];Shift[AS,25]]
+state 49:
+	{(let_exprs,1),[RULE],[]:[ID]}
+with edge
+[Reduce[[ID],let_exprs,1]]
+

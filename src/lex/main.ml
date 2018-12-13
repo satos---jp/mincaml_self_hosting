@@ -15,7 +15,7 @@ let _ =
 		Printf.printf "Usage: %s filename\n" Sys.argv.(0)
 	) else (
 		let ast = src2ast (List.hd files) in 
-		let he,bo = conv ast in 
+		let (he,bo) = conv ast in 
 		Printf.printf "%s" bo
 	)
 

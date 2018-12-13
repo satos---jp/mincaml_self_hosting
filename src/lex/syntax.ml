@@ -14,6 +14,7 @@ type regexp =
 	| RCons  of regexp list
 	| RAs    of regexp * string
 	| RAll
+	| REof
 
 type decllist = (idname * regexp) list
 
@@ -25,6 +26,9 @@ type argname = string
 type rules = (entname * (argname list) * entries) list
 
 type top = decllist * rules
+
+let initial_env _ = 
+	[("eof",REof)]
 
 (*
 Tes.main (Lexing.from_string "hogey");;

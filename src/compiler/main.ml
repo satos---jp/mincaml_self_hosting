@@ -219,7 +219,9 @@ let _ =
 		) else (
 			
 			let libp = !path_to_library in
+			(* Filelname,(.ml exist,.s exist) *)
 			let stdlib_open_list = [
+				("Printf",(false,true));
 				("Parsing",(true,false));
 				("Lexing",(true,false));
 				("Nfa",(true,false));
