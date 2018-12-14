@@ -13,6 +13,7 @@ let str2cs s =
 		else (String.get s i) :: f (i+1)
 	in
 		f 0
+		
 
 
 
@@ -53,6 +54,7 @@ let rec reg2trans env sym2i r g st gl =
 	| RCset cs -> (
 			let tcs = List.concat (List.map cset2cs cs) in
 			List.fold_left (fun ng c ->
+				(* Printf.printf "cset %d\n" (Char.code c); *)
 				nfa_add_edge ng st gl (Char.code c)
 			) g tcs
 		)

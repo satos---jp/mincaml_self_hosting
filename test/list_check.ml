@@ -11,5 +11,7 @@ let rec print_list xs =
 ;;
 
 print_list w;
-print_list (v @ w)
-
+print_list (v @ w);
+List.fold_left (fun r x -> 
+	print_int x
+) () w;

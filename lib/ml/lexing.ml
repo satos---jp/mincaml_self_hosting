@@ -141,7 +141,7 @@ let my_lexing buf data =
 									t
 								)
 							)
-					) (-1) tss in
+					) (-1) (List.rev tss) in
 					match !longest with
 					| Some (Gone((d,t),func)) -> (
 						ungets buf t;

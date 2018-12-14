@@ -27,10 +27,11 @@ let rec mem a v =
 	| [] -> false
 
 
+(* fold_left f v [1;2;3] = f (f (f v 1) 2) 3  *)
 let rec fold_left f r v = 
 	match v with
 	| [] -> r
-	| x :: xs -> f (fold_left f r xs) x
+	| x :: xs -> fold_left f (f r x) xs
 
 let rec mem_assoc x v = 
 	match v with

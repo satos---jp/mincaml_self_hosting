@@ -94,7 +94,8 @@ def exec_x86(fs,ifn,ofn):
 	rm_files = []
 	for f,e in fs:
 		if e == '.mll':
-			os.system('./my_lex ' + (f + e) + ' > ' + f + '.ml')
+			#os.system('../lexer_compile_test/a.out < ' + (f + e) + ' > ' + f + '.ml')
+			os.system('../my_lex ' + (f + e) + ' > ' + f + '.ml')
 			os.system('./main ' + (f + '.ml') + ' -mli')
 			rm_files.append(f + '.ml')
 			rm_files.append(f + '.mli')
