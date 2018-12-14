@@ -92,20 +92,34 @@ let list2str v f =
 			self v
 	)
 
+let rec collect_idx trans =
+	List.fold_left (fun r (k,v) -> 
+		try 
+			let ks = List.assoc v r in
+				(v,(k :: ks)) :: (List.remove_assoc v r)
+		with
+			| Not_found -> (v,[k]) :: r
+	) [] trans
+
+(* nfa_compiled を吐き出すようにする *)
 let nfa2str (st,gl,ma,ts) = 
 	let i2s = string_of_int in
-	(Printf.sprintf "( %d , %s , %d , \n" st (list2str gl i2s) ma) ^
-	list2str ts (fun (c,ss) -> 
-		(Printf.sprintf "( %d ," c) ^ 
-		list2str ss (fun (i,es) -> 
-			(Printf.sprintf "( %d ," i) ^ 
-			list2str es (fun (t,se,use) -> 
-				(Printf.sprintf "( %d ," t) ^ 
-				(list2str se  i2s) ^ "," ^
-				(list2str use i2s) ^ ")"
-			) ^ ")"
-		) ^ ")"
-	) ^ ")"
+	let cts = collect_idx ts in
+	(Printf.sprintf "( %d , %s , %d , (fun x -> " st (list2str gl i2s) ma) ^
+	(String.concat "\n" (List.map (fun (ss,ks) -> 
+		(Printf.sprintf "if List.mem x %s then Some(%s) else " 
+			(list2str ks (Printf.sprintf "%d"))
+			(list2str ss (fun (i,es) -> 
+				(Printf.sprintf "( %d ," i) ^ 
+				list2str es (fun (t,se,use) -> 
+					(Printf.sprintf "( %d ," t) ^ 
+					(list2str se  i2s) ^ "," ^
+					(list2str use i2s) ^ ")"
+				) ^ ")"
+			))
+		)
+	) cts)) ^
+	"None))"
 
 type var_type = 
 	| VStr

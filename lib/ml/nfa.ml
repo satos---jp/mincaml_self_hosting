@@ -12,6 +12,9 @@ type nfa = int * (int list) * int * (int * (node * edge list) list) list
 (* trans は、eof を -1 遷移にします。 *)
 (* trans は、epsilon は -2 遷移 で。 *)
 
+type nfa_compiled = int * (int list) * int * (int -> ((node * edge list) list) option)
+
+
 let eof_move = -1
 let eps_move = -2
 
@@ -186,18 +189,18 @@ let rec saturate_step eps_trans rests s =
 	)
 
 let nfa2start_state g mem_ls = 
-	let etrans = match assoc_opt eps_move (trans g) with Some v -> v | None -> [] in
+	let etrans = match (trans g) eps_move with Some v -> v | None -> [] in
 	let rec f x = if x = 0 then [] else Mem_None :: f (x-1) in
 	let s = (0,f mem_ls) in
 	saturate_step etrans [] s 
 
 let step g st c = 
-	let fr_edge_tr_opt = assoc_opt (Char.code c) (trans g) in
+	let fr_edge_tr_opt = (trans g) (Char.code c) in
 	(*
 	print_string ("step check { " ^ (state2str st) ^ " } with " ^ (Char.escaped c));
 	print_string (Char.escaped (Char.chr 10));
 	*)
-	let etrans = match assoc_opt eps_move (trans g) with Some v -> v | None -> [] in
+	let etrans = match (trans g) eps_move with Some v -> v | None -> [] in
 	match fr_edge_tr_opt with | None -> []
 	| Some fr_edge_tr -> (
 			List.fold_left (fun r s -> 

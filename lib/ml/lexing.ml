@@ -57,7 +57,7 @@ let ungets buf t =
 	let (_,h) = buf in h t
 
 type rule_state = 
-	| Going of state * nfa * ((string list * int) option) * (string list -> 'a)
+	| Going of state * nfa_compiled * ((string list * int) option) * (string list -> 'a)
 	| Gone  of (string list * int) * (string list -> 'a)
 
 
