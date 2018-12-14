@@ -176,7 +176,7 @@ let unfold_let_rec_and astdeb =
 						(ELetRec([na,[PVar(lazyv)],
 							(EMatch(
 								(eapp (evar fsn) [EVariant(ftag,[]),deb]),
-								[PVariantApp(rtag,PVar(patfn)),(eapp epatfn [elazyv])]
+								[[PVariantApp(rtag,PVar(patfn))],(eapp epatfn [elazyv])]
 							),deb)],
 						r),deb)
 					) (
@@ -184,7 +184,7 @@ let unfold_let_rec_and astdeb =
 							(EVar(tagvar),deb),
 							List.map (fun (na,ps,e,ftag,rtag) -> 
 								let dummyfn = genvar () in
-								(PVariant(ftag),
+								([PVariant(ftag)],
 								(EVariant(rtag,[ELetRec([dummyfn,ps,e],(EVar(dummyfn),deb)),deb]),deb))
 							) napsefrtag
 						),deb
@@ -196,7 +196,7 @@ let unfold_let_rec_and astdeb =
 						(ELetRec([na,ps,
 							(EMatch(
 								(eapp (evar fsn) [EVariant(ftag,[]),deb]),
-								[PVariantApp(rtag,PVar(patfn)),(eapp epatfn (List.map (pattern2expr deb) ps))]
+								[[PVariantApp(rtag,PVar(patfn))],(eapp epatfn (List.map (pattern2expr deb) ps))]
 							),deb)],
 						r),deb)
 					) e2 napsefrtag
@@ -225,6 +225,21 @@ let unfold_let_rec_and astdeb =
 	in
 		tast,deb
 
+let unfold_match_pattern astdeb = 
+	let ast,deb = astdeb in
+	let tast = 
+		match ast with
+		| EMatch(e1,eps) -> (
+				EMatch(e1,
+					List.fold_right (fun (ps,e) r -> (* これfold_left だと優先度が逆になってしまう *)
+						(List.map (fun p -> ([p],e)) ps) @ r
+					) eps []
+				)
+			)
+		| _ -> ast
+	in
+		tast,deb
+
 let rec conv_expr conv astdeb = 
 	let ast,deb = (conv astdeb) in
 	let self = conv_expr conv in
@@ -245,7 +260,7 @@ let rec conv_expr conv astdeb =
 
 
 let preprocess_expr astd = 
-	conv_expr (fun x -> x |> unfold_let_rec_and |> unfold_let_bind) astd
+	conv_expr (fun x -> x |> unfold_let_rec_and |> unfold_let_bind |> unfold_match_pattern) astd
 
 
 let rec preprocess_decl de =

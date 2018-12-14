@@ -22,9 +22,11 @@ cp ../srcs/* ./
 #../../main -s parser.ml -l ../../lib
 
 #../../main syntax.ml parser.ml lexer.ml convert.ml main.ml -l ../../lib
-../../main -s lexer.ml -l ../../lib
+#../../main -s lexer.ml -l ../../lib
 #OCAMLRUNPARAM=p ../../main -s lexer.ml -l ../../lib
 #../../main -s syntax.ml -l ../../lib
+../../main -s convert.ml -l ../../lib
+#../../main -s main.ml -l ../../lib
 #OCAMLRUNPARAM=p ../../main -s convert.ml -l ../../lib
 #OCAMLRUNPARAM=p ../../main -s main.ml -l ../../lib
 

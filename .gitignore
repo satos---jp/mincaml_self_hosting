@@ -76,3 +76,6 @@ yacc_sample.ml
 x.output
 syntax.ml
 large_program_tes/*
+lexer_compile_test/*
+!lexer_compile_test/try.sh
+lexer_output_sample.ml

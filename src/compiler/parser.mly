@@ -393,10 +393,15 @@ variant_expr:
 ;
 
 cases:
-	|     pattern RARROW expr { [($1,$3)] }
-	| BAR pattern RARROW expr { [($2,$4)] }
-	|     pattern RARROW expr BAR cases { ($1,$3) :: $5 }
-	| BAR pattern RARROW expr BAR cases { ($2,$4) :: $6 }
+	|     bar_patterns RARROW expr { [($1,$3)] }
+	| BAR bar_patterns RARROW expr { [($2,$4)] }
+	|     bar_patterns RARROW expr BAR cases { ($1,$3) :: $5 }
+	| BAR bar_patterns RARROW expr BAR cases { ($2,$4) :: $6 }
+;
+
+bar_patterns:
+	| pattern { [$1] }
+	| bar_patterns BAR pattern { $1 @ [$3] }
 ;
 
 /* TODO { as , _ , list , 複数match } に対応 */

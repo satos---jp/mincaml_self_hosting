@@ -47,7 +47,7 @@ and expr_base =
   | EApp       of expr * (expr list)
   | ETuple     of (expr list)
   | ELetTuple  of (name list) * expr * expr
-  | EMatch     of expr * ((pattern * expr) list)
+  | EMatch     of expr * (((pattern list) * expr) list)
   | EVariant   of variant_tag * expr list
 
 type type_expr = 

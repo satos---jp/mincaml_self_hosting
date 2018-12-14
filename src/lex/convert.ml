@@ -22,7 +22,7 @@ let cset2cs se =
 	| CRange(c1,c2) -> (
 			let a = Char.code c1 in
 			let b = Char.code c2 in
-			assert (a <= b);
+			(if (a <= b) then () else failwith "");
 			let rec f i = if i > b then [] else (Char.chr i) :: (f (i+1)) in f a
 		) 
 
@@ -94,11 +94,9 @@ let list2str v f =
 
 let rec collect_idx trans =
 	List.fold_left (fun r (k,v) -> 
-		try 
-			let ks = List.assoc v r in
-				(v,(k :: ks)) :: (List.remove_assoc v r)
-		with
-			| Not_found -> (v,[k]) :: r
+		match assoc_opt v r with
+		| Some ks -> (v,(k :: ks)) :: (List.remove_assoc v r)
+		| None -> (v,[k]) :: r
 	) [] trans
 
 (* nfa_compiled を吐き出すようにする *)
@@ -150,13 +148,13 @@ let gen_sym2i env reg =
 	let res = ref [] in
 	let update_res na t = 
 		match assoc_opt na (!res) with 
-		| Some((i,v)) -> res := (na,(i,merge_var_type v t)) :: (List.remove_assoc na !res)
+		| Some((i,v)) -> res := (na,(i,merge_var_type v t)) :: (List.remove_assoc na (!res))
 		| None -> let ls = List.length (!res) in res := (na,(ls,t)) :: !res
 	in
 	let rec f r = 
 		match r with
 		| RCset _ | RId _ | RStr _ | RAll | REof -> ()
-		| RAs(nr,na) -> f nr; update_res na (get_type_of_reg env nr)
+		| RAs(nr,na) -> (f nr; update_res na (get_type_of_reg env nr))
 		| RStar r | RPlus r -> f r
 		| ROr rs | RCons rs -> List.iter f rs
 	in

@@ -458,7 +458,7 @@ let rec type_infer tyenv venv astdeb env =
 			(* ニュアンスは関数とその適用がめっちゃある感じ *)
 			
 			(* ここのletで多相はどうなるんだ...みたいな気分になる *) 
-			let tet =  List.map (fun (pat,e) ->  
+			let tet =  List.map (fun ([pat],e) ->  
 				let cond,bind,aenv,cs = pattern2env env venv pat nav in
 				let tenv = aenv @ env in
 				(cond,bind,cs),(self e tenv)
