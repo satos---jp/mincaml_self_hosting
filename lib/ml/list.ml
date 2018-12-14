@@ -76,3 +76,12 @@ let for_all f v =
 	match v with
 	| x :: xs -> if f x then for_all f xs else false
 	| [] -> true
+
+let hd v = match v with x :: _ -> x
+let tl v = match v with _ :: xs -> xs
+
+(* OCamlは先頭のみとるっぽい *)
+let rec remove_assoc a v = 
+	match v with
+	| (k,d) :: xs -> if k = a then xs else (k,d) :: (remove_assoc a xs)
+	| [] -> []

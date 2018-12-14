@@ -12,3 +12,6 @@ val exists : ('a -> bool) -> 'a list -> bool
 val rev : 'a list -> 'a list
 val assoc : 'a -> ('a * 'b) list -> 'b
 val for_all : ('a -> bool) -> 'a list -> bool
+val hd : ('a list) -> 'a
+val tl : ('a list) -> ('a list)
+val remove_assoc : 'a -> ('a * 'b) list -> ('a * 'b) list

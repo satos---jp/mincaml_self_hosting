@@ -93,9 +93,9 @@ String@get_:
 	xor ebx,0x40000000
 	mov ecx,dword [eax]
 	test ebx,0x80000000
-	jnz raise_Invalid_argument
+	jnz raise_Invalid_argument_get
 	cmp ebx,ecx
-	jge raise_Invalid_argument
+	jge raise_Invalid_argument_get
 	add eax,4
 	add eax,ebx
 	mov al,byte [eax]
@@ -103,12 +103,11 @@ String@get_:
 	xor eax,0x40000000
 	ret
 
-raise_Invalid_argument:
+raise_Invalid_argument_get:
 	push dword @invalid_get_error
 	mov eax,dword [raise_match_failure+0]
 	mov edi,[eax+4]
 	call [eax]
-
 
 
 

@@ -15,6 +15,19 @@
 		) else (
 			if String.length s = 1 then c1 else failwith (Printf.sprintf "Invalid char '%s'" s)
 		)
+	
+	let rec string_unescape s = 
+		let ls = String.length s in
+		if ls = 0 then ""
+		else (
+			let c1 = String.get s 0 in
+			if c1 = '\\' then (
+				(String.make 1 (cstr2char (String.sub s 0 2))) ^ (string_unescape (String.sub s 2 (ls-2)))
+			)
+			else (
+				(String.sub s 0 1) ^ (string_unescape (String.sub s 1 (ls-1)))
+			)
+		)
 %}
 
 %token <string> CHAR
@@ -34,7 +47,7 @@
 %% 
 
 toplevel:
-  | let_exprs rule_exprs { ($1,$2) }
+  | let_exprs rule_exprs EOF { ($1,$2) }
 ;
 
 cset_expr:
@@ -49,7 +62,7 @@ cset_exprs:
 
 simple_regexp:
 	| CHAR { RCset([CChar(cstr2char $1)]) }
-	| STRING { RStr($1) }
+	| STRING { RStr(string_unescape $1) }
 	| ID     { RId($1) }
 	| LBRA cset_exprs RBRA { RCset($2) }
 	| LPAR regexp_expr RPAR { $2 }

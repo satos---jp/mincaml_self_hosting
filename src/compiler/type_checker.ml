@@ -28,7 +28,6 @@ let genv_base = List.map (fun (na,t) -> (na,schemize t [] [])) (
 
 ] @ [ (* char.s *)
 
-
 ] @ [ (* libio_linux.s *)
 
 	("print_char",TyFun([TyInt],TyTuple([])));

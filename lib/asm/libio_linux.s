@@ -42,14 +42,22 @@ print_char_:
 	int 0x80
 	ret
 
+; eofなら-1を返すようにする
 read_char_:
 	mov edx,1
 	lea ecx,[esp-0x4]
 	mov ebx,0
 	mov eax,3
 	int 0x80
+	test eax,eax
+	jz ret_eof
 	mov eax,[esp-0x4]
 	and eax,0xff
+	or eax,0x40000000
+	ret
+ret_eof:
+	mov eax,-1
+	and eax,0x8fffffff
 	or eax,0x40000000
 	ret
 

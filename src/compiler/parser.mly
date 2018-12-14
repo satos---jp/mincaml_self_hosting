@@ -216,7 +216,7 @@ simple_expr:
 	| FLOAT
 		{ debug (EConst(CFloat $1)) }
 	| STRING
-		{ debug (EConst(CString $1)) }
+		{ debug (EConst(CString (Scanf.unescaped $1))) }
 	| CHAR 
 		{ debug (EConst(CChar $1)) }
 	| expr_var

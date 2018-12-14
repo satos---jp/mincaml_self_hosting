@@ -347,7 +347,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 			)
 		| OpMovi((na,(t,d)),CString(v)) -> assert (t=TyStr || (match t with TyUserDef("format",_) -> true | _ -> false)); (
 				let tag = gen_const () in
-					consts := (!consts) ^ (Printf.sprintf "%s:\n\tdd %d\n\tdb \"%s\"\n" tag (String.length v) v);
+					consts := (!consts) ^ (Printf.sprintf "%s:\n\tdd %d\n\tdb `%s`\n" tag (String.length v) (String.escaped v));
 					(Printf.sprintf "\tmov eax,%s\n" tag) ^
 					(tags "eax") ^
 					Printf.sprintf "\tmov %s,eax\n" (na2s na)
