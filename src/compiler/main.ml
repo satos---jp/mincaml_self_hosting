@@ -180,21 +180,12 @@ let output_stub files =
 		) ens)
 	) ^ (
 		"section .bss\n" ^
-		"global_heap:\n" ^
-		"\tresb 0x4000000\n" ^ 
 		"heap:\n" ^
 		"\tresb 0x4000000\n" ^ 
 		"heap_end:\n" ^
 		"section .data\n" ^
 		"section .text\n" ^
 		"_start:\n" ^
-		"\tmov edx,0\n" ^
-		"\tmov ecx,0x1000\n" ^
-		"\tmov ebx,heap\n" ^
-		"\tsub ebx,0x1000\n" ^
-		"\tand ebx,0xfffff000\n" ^
-		"\tmov eax,125\n" ^
-		"\tint 0x80\n" ^
 		"\tmov edx,0\n" ^
 		"\tmov ecx,0x1000\n" ^
 		"\tmov ebx,heap_end\n" ^

@@ -31,7 +31,7 @@ cp ../srcs/* ./
 
 #OCAMLRUNPARAM=p ../../main -s lexer.ml -l ../../lib
 #../../main -s syntax.ml -l ../../lib
-../../main -s convert.ml -l ../../lib
+#../../main -s convert.ml -l ../../lib
 #../../main -s main.ml -l ../../lib
 #OCAMLRUNPARAM=p ../../main -s convert.ml -l ../../lib
 #OCAMLRUNPARAM=p ../../main -s main.ml -l ../../lib
