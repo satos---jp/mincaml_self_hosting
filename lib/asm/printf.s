@@ -4,6 +4,7 @@ BITS 32
 extern String@@
 extern Pervasive@string_of_int
 extern print_string
+extern lib_malloc
 global Printf@printf
 global Printf@sprintf
 
@@ -55,8 +56,10 @@ sprintf_function_:
 	sub esp,0x20
 	
 	mov dword [ebp-0x8],0
-	mov edx,esi
-	add esi,4
+	push dword 1
+	call lib_malloc
+	add esp,4
+	mov edx,eax
 	mov dword [edx],0
 	xor edx,0x20000000
 	; edi に文字列へのポインタ(通常の関数クロージャと違って例外的)
@@ -78,8 +81,10 @@ conv_loop:
 normal_char:
 	call save_regs
 
-	mov eax,esi
-	add esi,0x8
+	push dword 2
+	call lib_malloc
+	add esp,4
+	
 	mov dword [eax],1
 	mov byte [eax+4],bl
 	xor eax,0x20000000
@@ -163,8 +168,9 @@ conv_loop_end:
 	ret
 
 Printf@sprintf_:
-	mov eax,esi
-	add esi,0x8
+	push dword 2
+	call lib_malloc
+	add esp,4
 	mov dword [eax],sprintf_function_
 	mov ebx,[esp+0x4]
 	mov dword [eax+4],ebx
@@ -190,8 +196,9 @@ printf_function_:
 	ret
 
 Printf@printf_:
-	mov eax,esi
-	add esi,0x8
+	push dword 2
+	call lib_malloc
+	add esp,4
 	mov dword [eax],printf_function_
 	mov ebx,[esp+0x4]
 	mov dword [eax+4],ebx

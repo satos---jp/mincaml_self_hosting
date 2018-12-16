@@ -173,27 +173,15 @@ let output_stub files =
 	let asm = (
 		"BITS 32\n" ^ 
 		"global _start\n" ^
-		"global global_heap\n"
+		"extern heap_init\n"
 	) ^ (
 		String.concat "" (List.map (fun s -> 
 			"extern " ^ s ^ "\n"
 		) ens)
 	) ^ (
-		"section .bss\n" ^
-		"heap:\n" ^
-		"\tresb 0x4000000\n" ^ 
-		"heap_end:\n" ^
-		"section .data\n" ^
 		"section .text\n" ^
 		"_start:\n" ^
-		"\tmov edx,0\n" ^
-		"\tmov ecx,0x1000\n" ^
-		"\tmov ebx,heap_end\n" ^
-		"\tsub ebx,0x1000\n" ^
-		"\tand ebx,0xfffff000\n" ^
-		"\tmov eax,125\n" ^
-		"\tint 0x80\n" ^
-		"\tmov esi,heap\n"
+		"\tcall heap_init\n"
 	) ^ (
 		(* これ、解決順が重要。 *)
 		String.concat "" (List.map (fun s -> 
@@ -238,7 +226,7 @@ let _ =
 				("Pervasive",(true,true))
 			] in
 			
-			let asm_files = ref [libp ^ "/asm/libio_linux.s";"stub.s"] in
+			let asm_files = ref [libp ^ "/asm/malloc.s";libp ^ "/asm/libio_linux.s";"stub.s"] in
 			let open2fn s = 
 				let bfn = String.lowercase s in
 				if List.mem_assoc s stdlib_open_list then (

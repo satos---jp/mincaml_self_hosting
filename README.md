@@ -6,7 +6,7 @@ src/compiler, src/lex, src/yacc で make をすると、それぞれ一番上に
 テストが test フォルダ内で ./tester.py を叩くと走ります。
 
 # 進捗
-lexer(https://github.com/satos---jp/mincaml_self_hosting/tree/master/src/lex)に関してbootstrapが(細かな部分を除いて)できた。(ハズ)
+lexer( https://github.com/satos---jp/mincaml_self_hosting/tree/master/src/lex )に関してbootstrapが(細かな部分を除いて)できた。(ハズ)
 
 # mincamlからの拡張
 - let多相

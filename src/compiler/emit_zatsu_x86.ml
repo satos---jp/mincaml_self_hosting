@@ -154,15 +154,16 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 	let na2s x = pt2s (na2pt x) in
 	let nd2ps (na,_) = na2s na in
 	let nd2ds (_,(_,d)) = (debug_data2simple d) in
-	let make_vs_on_heap vs = (
+	let make_vs_on_heap vs regname tmpreg = (
 		let nl = ref 0 in
 		let cs = 
 			(String.concat "" (List.map (fun (na,nt) ->
 			let (p,l) = na2pt na in
 				nl := !nl + 4;
-				(Printf.sprintf "\tmov eax,%s\n\tmov dword [esi%+d],eax\n" (pt2s (p,l)) (!nl-4))
+				(Printf.sprintf "\tmov %s,%s\n" tmpreg (pt2s (p,l))) ^ 
+				(Printf.sprintf "\tmov dword [%s%+d],%s\n" regname (!nl-4) tmpreg) 
 			) vs)) in
-		cs ^ (Printf.sprintf "\tadd esi,%d\n" !nl)
+		cs
 	) in
 	let eprintc x = (
 		(Printf.sprintf "\tpush %d\n" x) ^
@@ -395,22 +396,28 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 			)
 	*)
 		| OpMakeTuple(nad,vs) -> (
-				(Printf.sprintf "\tmov %s,esi\n" (nd2ps nad)) ^ 
-				(Printf.sprintf "\tmov dword [esi],%d\n" (List.length vs)) ^ 
-				"\tadd esi,4\n" ^
-				(make_vs_on_heap vs) ^ 
+				(Printf.sprintf "\tpush dword %d\n" (1 + (List.length vs))) ^ 
+				"\tcall lib_malloc\n" ^
+				"\tadd esp,4\n" ^
+				(Printf.sprintf "\tmov %s,eax\n" (nd2ps nad)) ^ 
+				(Printf.sprintf "\tmov dword [eax],%d\n" (List.length vs)) ^ 
+				"\tadd eax,4\n" ^
+				(make_vs_on_heap vs "eax" "ebx") ^ 
 				(Printf.sprintf "\tmov eax,%s\n" (nd2ps nad)) ^
 				(tagt "eax") ^ 
 				(Printf.sprintf "\tmov %s,eax\n" (nd2ps nad)) ^
 				"; " ^ (nd2ds nad) ^ "\n"
 			)
 		| OpMakeCls(nad,((fn,_) as fnd),vs) -> (
-				"\tmov edx,esi\n" ^ 
-				(make_vs_on_heap vs) ^
-				"\tmov dword [esi+4],edx\n" ^ 
-				(Printf.sprintf "\tmov dword [esi],%s\n" fn) ^ 
-				(Printf.sprintf "\tmov %s,esi\n" (nd2ps nad)) ^ 
-				"\tadd esi,8\n"^
+				(Printf.sprintf "\tpush dword %d\n" ((List.length vs) + 2)) ^ 
+				"\tcall lib_malloc\n" ^
+				"\tadd esp,4\n" ^
+				(Printf.sprintf "\tmov %s,eax\n" (nd2ps nad)) ^ 
+				(Printf.sprintf "\tmov dword [eax],%s\n" fn) ^ 
+				"\tmov edx,eax\n" ^ 
+				"\tadd eax,8\n" ^
+				"\tmov dword [edx+4],eax\n" ^ 
+				(make_vs_on_heap vs "eax" "ebx") ^
 				"; " ^ (nd2ds nad) ^ " "^ (nd2ds fnd) ^ "\n"
 			)
 		| OpApp(istail,isdir,nad,((fn,_) as fnd),vs) -> (
@@ -534,16 +541,23 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 						 	| OArrCrt -> (
 									let la = genlabel () in
 									let lb = genlabel () in
-									"\tmov ecx,esi\n" ^
+									"\tpush eax\n" ^
+									"\tpush eax\n" ^
+									"\tcall lib_malloc\n" ^
+									"\tadd esp,4\n" ^
+									"\tmov edx,eax\n" ^
+									"\tpop eax\n" ^
+									"\tmov ecx,edx\n" ^
 									(if !check_array_boundary then (
-										"\tmov dword [esi],eax\n" ^ 
-										"\tadd esi,4\n"
+										(failwith "Unimplemented check_array_boundary yet.") ^
+										"\tmov dword [edx],eax\n" ^ 
+										"\tadd edx,4\n"
 									) else "") ^
 									"\ttest eax,eax\n" ^
 									(Printf.sprintf "\tje %s\n" lb) ^
 									(Printf.sprintf "%s:\n" la) ^ 
-									"\tmov dword [esi],ebx\n" ^
-									"\tadd esi,4\n" ^
+									"\tmov dword [edx],ebx\n" ^
+									"\tadd edx,4\n" ^
 									"\tsub eax,1\n" ^
 									(Printf.sprintf "\tjne %s\n" la) ^
 									(Printf.sprintf "%s:\n" lb) ^ 
@@ -594,6 +608,7 @@ let vir2asm (funs,rd,globvars) externs exports fn =
 		"extern " ^ s ^ "\n"
 	) externs)) ^
 	"extern data_eq\n" ^
+	"extern lib_malloc\n" ^
 	(String.concat "" (List.map (fun s -> 
 		"global " ^ s ^ "\n"
 	) exports)) ^

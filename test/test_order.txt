@@ -31,6 +31,7 @@ lex_1.mll main_1.ml -i lex_1_i.txt
 let_rec_and.ml
 lex_2.mll main_2.ml -i lex_2_i.txt
 partial_apply.ml
+printf.ml
 
 
 ; floatまわりが合わないのでこれは一旦無視する

@@ -1,6 +1,7 @@
 BITS 32
 
 extern raise_match_failure
+extern lib_malloc
 
 global String@@
 global String@length
@@ -25,7 +26,6 @@ String@get_p:
 
 section .text
 
-; TODO ヒープから取ってくる際に、ちゃんと関数を呼ぶようにする
 String@@_:
 	mov ebx,dword [esp+4]
 	xor ebx,0x20000000
@@ -35,12 +35,15 @@ String@@_:
 	mov edx,dword [ecx]
 	add edx,eax
 	
-	push esi
-	mov eax,esi
-	mov dword [eax],edx
-	add esi,edx
-	add esi,4
+	mov eax,edx
+	sar eax,2
+	add eax,2
+	push eax
+	call lib_malloc
+	add esp,4
+	push eax ; TODO(satos) これ忘れると手前でセグフォるのにゃーんなのでもっときれいに書き直す
 	
+	mov dword [eax],edx
 	add eax,4
 	
 	mov ebx,dword [esp+8]

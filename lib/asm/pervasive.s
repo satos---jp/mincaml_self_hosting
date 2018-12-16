@@ -12,6 +12,7 @@ global @ref@get
 global data_eq
 
 extern print_char_err
+extern lib_malloc
 
 section .data
 int_of_float:
@@ -403,9 +404,9 @@ ret_neq:
 
 
 ref_:
-	; TODO(satos) mallocするよーにする
-	mov eax,esi
-	add esi,4
+	push dword 1
+	call lib_malloc
+	add esp,4
 	mov ebx,[esp+0x4]
 	mov [eax],ebx
 	ret
