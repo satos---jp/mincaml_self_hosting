@@ -280,7 +280,7 @@ let _ =
 			) !asm_files
 			in
 			let fs = String.concat " " ofs in
-			let _ = exec_command (Printf.sprintf "gcc -m32 -nostdlib %s -o %s" fs !output_filename) in ()
+			let _ = exec_command (Printf.sprintf "gcc -m32 -nostdlib %s %s -o %s" fs (Printf.sprintf "%s/C/malloc_c.o" libp) !output_filename) in ()
 		)
 	)
 

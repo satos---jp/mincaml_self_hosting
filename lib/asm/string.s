@@ -2,6 +2,7 @@ BITS 32
 
 extern raise_match_failure
 extern lib_malloc
+extern gen_string_malloc_c
 
 global String@@
 global String@length
@@ -39,6 +40,7 @@ String@@_:
 	sar eax,2
 	add eax,2
 	push eax
+	mov dword [gen_string_malloc_c],1 ; TODO(satos) これ消したい気持ちはある
 	call lib_malloc
 	add esp,4
 	push eax ; TODO(satos) これ忘れると手前でセグフォるのにゃーんなのでもっときれいに書き直す

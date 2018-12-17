@@ -30,6 +30,8 @@ cp ../srcs/* ./
 
 #../../main syntax.ml parser.ml lexer.ml convert.ml main.ml -l ../../lib
 
+cp ../stub.s ./
+
 #OCAMLRUNPARAM=p ../../main -s lexer.ml -l ../../lib
 #../../main -s syntax.ml -l ../../lib
 #../../main -s convert.ml -l ../../lib
@@ -40,12 +42,12 @@ cp ../srcs/* ./
 #exit
 
 (cd ../../lib/ml;
-../../main -s parsing.ml -l ../;
+#../../main -s parsing.ml -l ../;
 #../../main -s pervasive.ml -l ../;
 #../../main -s string.ml -l ../;
 #exit
 #../../main -s list.ml -l ../;
-../../main -s nfa.ml -l ../;
+#../../main -s nfa.ml -l ../;
 nasm nfa.s -f elf32 -g -o nfa.o;
 #../../main -s lexing.ml -l ../;
 nasm parsing.s -f elf32 -g -o parsing.o;
@@ -71,6 +73,6 @@ nasm convert.s -f elf32 -g -o convert.o
 nasm main.s -f elf32 -g -o main.o
 nasm stub.s -f elf32 -g -o stub.o
 echo "nasmed src"
-gcc -m32 -nostdlib ../../lib/ml/nfa.o ../../lib/ml/parsing.o ../../lib/ml/list.o ../../lib/ml/lexing.o ../../lib/ml/string.o ../../lib/ml/pervasive.o syntax.o lexer.o parser.o convert.o main.o ../../lib/asm/char.o ../../lib/asm/string.o ../../lib/asm/malloc.o ../../lib/asm/printf.o ../../lib/asm/pervasive.o ../../lib/asm/libio_linux.o stub.o -o a.out
+gcc -m32 -nostdlib ../../lib/ml/nfa.o ../../lib/ml/parsing.o ../../lib/ml/list.o ../../lib/ml/lexing.o ../../lib/ml/string.o ../../lib/ml/pervasive.o syntax.o lexer.o parser.o convert.o main.o ../../lib/asm/char.o ../../lib/asm/string.o ../../lib/asm/malloc.o ../../lib/C/malloc_c.o ../../lib/asm/printf.o ../../lib/asm/pervasive.o ../../lib/asm/libio_linux.o stub.o -o a.out
 mv a.out ../a.out
 

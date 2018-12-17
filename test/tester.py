@@ -25,6 +25,10 @@ os.system('cp ../lib/asm/*.s ./lib/asm/')
 os.system('cp ../lib/ml/*.ml ./lib/ml/')
 os.system('cp ../lib/ml/*.mli ./lib/ml/')
 
+#TODO(satos) あとで消したい...
+os.system('mkdir lib/C')
+os.system('cp ../lib/C/*.o ./lib/C/')
+
 with open('test_order.txt','r') as fp:
 	ts = fp.read()
 	datum = ts.split('\n')

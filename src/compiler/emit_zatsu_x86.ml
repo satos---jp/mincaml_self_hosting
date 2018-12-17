@@ -185,7 +185,8 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 				(Printf.sprintf "\tmov [extern_list+%d],eax\n" p)
 			) !on_externs)) ^ *)
 			(* (Printf.sprintf "\tadd esi,%d\n" !heap_diff) *)
-			""
+			"\tpush heap_check_data_end\n\tpush heap_check_data_start\n\tcall register_localheap\n\tadd esp,8\n" ^
+			"\tpush heap_check_bss_end\n\tpush heap_check_bss_start\n\tcall register_localheap\n\tadd esp,8\n"
 		)else "")
 	in
 	let epilogue = 
@@ -196,8 +197,7 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 					"\tmov ebx,[eax]\n" ^ 
 					(Printf.sprintf "\tmov [export_list+%d],ebx\n" p) ^ 
 					"\tadd eax,4\n"
-				) (List.rev !on_exports)))
-		) else "") ^
+				) (List.rev !on_exports)))		) else "") ^
 		(Printf.sprintf "\tadd esp,%d\n\tpop ebp\n\tret\n" (snd lvs_st))
 	in
 	
@@ -409,15 +409,17 @@ let func2asm {fn=(fn,_); vs=vs1; cvs=vs2; body={ops=ops; vs=localvs}} =
 				"; " ^ (nd2ds nad) ^ "\n"
 			)
 		| OpMakeCls(nad,((fn,_) as fnd),vs) -> (
-				(Printf.sprintf "\tpush dword %d\n" ((List.length vs) + 2)) ^ 
+				(Printf.sprintf "\tpush dword %d\n" (List.length vs)) ^ 
+				"\tcall lib_malloc\n" ^
+				"\tadd esp,4\n" ^
+				"\tmov ecx,eax\n" ^ 
+				(make_vs_on_heap vs "eax" "ebx") ^
+				"\tpush dword 2\n" ^
 				"\tcall lib_malloc\n" ^
 				"\tadd esp,4\n" ^
 				(Printf.sprintf "\tmov %s,eax\n" (nd2ps nad)) ^ 
 				(Printf.sprintf "\tmov dword [eax],%s\n" fn) ^ 
-				"\tmov edx,eax\n" ^ 
-				"\tadd eax,8\n" ^
-				"\tmov dword [edx+4],eax\n" ^ 
-				(make_vs_on_heap vs "eax" "ebx") ^
+				"\tmov dword [eax+4],ecx\n" ^ 
 				"; " ^ (nd2ds nad) ^ " "^ (nd2ds fnd) ^ "\n"
 			)
 		| OpApp(istail,isdir,nad,((fn,_) as fnd),vs) -> (
@@ -609,23 +611,31 @@ let vir2asm (funs,rd,globvars) externs exports fn =
 	) externs)) ^
 	"extern data_eq\n" ^
 	"extern lib_malloc\n" ^
+	"extern register_localheap\n" ^
 	(String.concat "" (List.map (fun s -> 
 		"global " ^ s ^ "\n"
 	) exports)) ^
 	
 	"section .data\n" ^
 	!consts ^
+	"align 4\n" ^
+	"heap_check_data_start:\n" ^
 	"export_list:\n" ^
 	(String.concat "" (List.map (fun s -> 
 		(Printf.sprintf "%s:\n" s) ^
 		"\tdd 0\n"
 	) exports)) ^
+	"heap_check_data_end:\n" ^
 	
 	"section .bss\n" ^
+	"heap_check_bss_start:\n" ^
 	"extern_list:\n" ^
 	(Printf.sprintf "\tresb %d\n" ((List.length externs) * 4)) ^
 	"local_heap:\n" ^
 	(Printf.sprintf "\tresb %d\n" (!heap_diff * 4)) ^
+	"heap_check_bss_end:\n" ^
+	
+	(* heap_check_start  から heap_check_end までがヒープ範囲 (.dataと.bssに分ければ大丈夫だよね？) *)
 	
 	"section .text\n" ^
 	"global " ^ start_name ^ "\n" ^ 
