@@ -28,9 +28,9 @@ cp ../srcs/* ./
 #exit
 #exit
 
-#../../main syntax.ml parser.ml lexer.ml convert.ml main.ml -l ../../lib
+../../main syntax.ml parser.ml lexer.ml convert.ml main.ml -l ../../lib
 
-cp ../stub.s ./
+#cp ../stub.s ./
 
 #OCAMLRUNPARAM=p ../../main -s lexer.ml -l ../../lib
 #../../main -s syntax.ml -l ../../lib
@@ -39,7 +39,7 @@ cp ../stub.s ./
 #OCAMLRUNPARAM=p ../../main -s convert.ml -l ../../lib
 #OCAMLRUNPARAM=p ../../main -s main.ml -l ../../lib
 
-#exit
+exit
 
 (cd ../../lib/ml;
 #../../main -s parsing.ml -l ../;

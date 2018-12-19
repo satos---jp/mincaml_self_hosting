@@ -8,7 +8,7 @@ type spec_decl =
 
 type top = spec_decl list
 
-val top2header : top -> string
+val top2header : top -> (string list) -> string
 
 val spec_open_list : (string list) ref
 val implicit_open : string -> unit

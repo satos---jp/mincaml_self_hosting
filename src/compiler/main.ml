@@ -149,7 +149,7 @@ let get_header file =
 	let astp = Preprocess.preprocess tast in
 	let hs = Type_checker.export_header file astp opens in
 	print_string "typed";  print_newline ();
-	Spec.top2header hs
+	Spec.top2header hs opens
 
 let compile_to_header fn = 
 	let hfn = changext fn ".ml" ".mli" in
@@ -245,25 +245,70 @@ let _ =
 			
 			(* TODO(satos) いったん循環参照checkはommitする *)
 			(* これたぶんcheckするようにするとpervasive.ml がやられますね *)
-			let db_check = ref [] in
-			let rec f rems = 
-				match rems with
-				| [] -> []
-				| None :: xs -> f xs
-				| Some(x) :: xs -> (
-					if List.mem x !db_check then f xs else (
-						Printf.printf "open %s\n" x;
-						db_check := x :: !db_check;
-						assert (hasext x ".ml");
-						let (_,_,_,opens) as d = load_source x in
-						Printf.printf "%s :: %s\n" x (String.concat " @@ " opens);
-						let tos = List.map open2fn opens in
-						(x,d) :: (f (xs @ tos))
-					)
-				)
-			in
+			(* 初手pervasive.ml 解放はやっていいはず。あとはdagになりそう *)
+			(* というか別にDAGだったら入力ファイル順番気にしなくていいのでは？？？ *)
 			
-			let fn_ast_specs = f (List.map (fun x -> Some x) (List.rev !files)) in
+			(* fn_ast_specs は、上から順に依存関係がない *)
+			let fn_ast_specs = 
+				let db_check = ref [] in
+				let rec add_open na = 
+					try
+						List.assoc na (!db_check)
+					with
+						| Not_found -> (
+							assert (hasext na ".ml");
+							Printf.printf "open %s\n" na;
+							let nc = ref 0 in
+							let nv = ref [] in
+							let (_,_,_,opens) as d = load_source na in
+							db_check := (na,(nv,nc,d)) :: !db_check;
+							Printf.printf "%s :: %s\n" na (String.concat " @@ " opens);
+							let tos = List.fold_left (fun r x -> match x with None -> r | Some d -> d :: r) [] (List.map open2fn opens) in
+							List.iter (fun x -> 
+								if x = na || na = libp ^ "/ml/pervasive.ml" then () else (
+									Printf.printf "Depend from %s to %s\n" na x; 
+									let p,_,_ = add_open x in
+									p := na :: !p;
+									nc := !nc + 1
+								)
+							) tos;
+							
+							(if na = libp ^ "/ml/pervasive.ml" then (
+								nc := 0
+							) else ());
+							(nv,nc,d)
+						)
+				in
+				(* TODO(satos) なんかもう手続き型なんだよな... *)
+				List.iter (fun x -> let _ = add_open x in ()) !files;
+				List.iter (fun (na,(p,q,_)) -> 
+					Printf.printf "Depend edge :: %s :: (%s),%d\n" na (String.concat "," !p) !q
+				) !db_check;
+				let result = ref [] in
+				let rec remove_some ds = 
+					match ds with
+					| [] -> []
+					| (na,(p,q,r)) :: xs -> (
+							if !q > 0 then (na,(p,q,r)) :: (remove_some xs) 
+							else (
+								result := (na,r) :: !result;
+								List.iter (fun x -> 
+									let _,t,_ = List.assoc x !db_check in
+									t := !t - 1;
+								) !p;
+								xs
+							)
+						)
+				in
+				let rec loop () = 
+					db_check := remove_some !db_check;
+					match !db_check with
+					| [] -> ()
+					| _ -> loop ()
+				in
+					loop ();
+					!result
+			in
 			
 			List.iter (fun (fn,astspec) -> 
 				let sfn = ast_spec_to_sfile astspec in

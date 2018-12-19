@@ -104,7 +104,7 @@ decl:
 		}
 	| TYPE var EQ type_expr    { DTypeRename($2,$4) }
 	| TYPE var EQ variant_defs { DVariant($2,$4) }
-	| OPEN variant_name        { DOpen($2) }
+	| OPEN variant_name        { implicit_open $2; DOpen($2) }
 ;
 
 
@@ -117,7 +117,7 @@ specification:
 	| VAL var COLON type_expr  { SValtype($2,$4)    }
 	| TYPE var EQ type_expr    { STypeRename($2,$4) }
 	| TYPE var EQ variant_defs { SVariant($2,$4) }
-	| OPEN variant_name        { SOpen($2)       }
+	| OPEN variant_name        { implicit_open $2; SOpen($2) }
 ;
 
 

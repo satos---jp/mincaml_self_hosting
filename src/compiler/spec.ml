@@ -22,13 +22,17 @@ let check_type_definition tyenv specs =
 *)
 
 
-let top2header vs = 
-	String.concat "" (List.map (fun x -> 
+let top2header vs opens = 
+	(String.concat "" (List.map (fun x -> 
+		Printf.sprintf "Open %s\n" x
+	) opens)) ^ 
+	(String.concat "" (List.map (fun x -> 
 		match x with
 		| SValtype(na,te) -> (
-				Printf.sprintf "val %s : %s\n" na (type_expr2header te)
+				let cf = (try let _ = String.index na '@' in (fun s -> "(* " ^ s ^ " *)") with Not_found -> (fun s -> s)) in
+				(cf (Printf.sprintf "val %s : %s" na (type_expr2header te))) ^ "\n"
 			)
-	) vs)
+	) vs))
 
 let spec_open_list = ref []
 
