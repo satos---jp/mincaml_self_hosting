@@ -24,7 +24,7 @@ let check_type_definition tyenv specs =
 
 let top2header vs opens = 
 	(String.concat "" (List.map (fun x -> 
-		Printf.sprintf "Open %s\n" x
+		Printf.sprintf "open %s\n" x
 	) opens)) ^ 
 	(String.concat "" (List.map (fun x -> 
 		match x with

@@ -81,3 +81,15 @@ lexer_compile_test/*
 !lexer_compile_test/compile.sh
 lexer_output_sample.ml
 tes.c
+
+
+compiler_compile_test/
+compiler_parser.ml
+compiler_parser.mli
+compiler_parser.mly
+compiler_parser.output
+lexer_parser.ml
+lexer_parser.mli
+lexer_parser.mly
+parser_compile_test/
+

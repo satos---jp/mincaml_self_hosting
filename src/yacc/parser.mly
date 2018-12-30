@@ -54,7 +54,8 @@ symbol_act_list:
 ;
 
 symbol_act:
-	| tag_symbol_list ACTION { ($1,$2) }
+	| tag_symbol_list ACTION { ($1,(None,$2)) }
+	| tag_symbol_list PCPREC tag_symbol ACTION { ($1,((Some $3),$4)) }
 ;
 
 tag_symbol_list:
@@ -69,6 +70,7 @@ tag_symbol:
 constr_list:
 	| constr { [$1] }
 	| constr_list constr { $1 @ [ $2 ] }
+;
 
 constr:
 	| ID { $1 }
@@ -81,6 +83,7 @@ typexpr:
 symbol_list:
 	| symbol { [$1] }
 	| symbol_list symbol { $1 @ [ $2 ] }
+;
 
 symbol:
 	| ID { $1 }

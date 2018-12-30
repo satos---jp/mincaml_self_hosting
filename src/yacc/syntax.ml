@@ -15,7 +15,7 @@ type code = string
 type action = code * (int list)
 
 type nonterminal = string
-type rule = nonterminal * (symbol list * action) list
+type rule = nonterminal * (symbol list * ((symbol option) * action)) list
 
 type header = string
 type top = header * (prec list) * (rule list)

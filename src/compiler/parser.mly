@@ -32,13 +32,18 @@
 %token COLONEQ EXCLAMATION 
 %token AND
  
-/* 下のほうが強い */
-/* left とか right とかは演算子のみに効果があるっぽいな？？？ */
+
+%nonassoc only_variant_name_simple_expr prec_tytuple_times_expr simple_variant_name_pattern type_expr_prec tyfun_arrow_expr_prec 
+
+/* TODO(satos) VARIANT_ID の優先度をどうにかする (そのまま付け加えると A B みたいのがだめになる)*/
+
+/* これらは、先読みできるなら待って読んだほうがいいやつ。 */
+
 %left IN
 %nonassoc fun_assoc
 %right SEMI
 %nonassoc LET
-%right RARROW
+%left RARROW
 %right if_assoc
 %right arrow_assoc
 %right COLONEQ
@@ -58,12 +63,13 @@
 %left app_assoc  /* appの結合の強さはこれくらいで、の指示 */
 %nonassoc variant_app_assoc
 %nonassoc NOT
-/*
 %left DOT
-*/
 %nonassoc array_assoc
 %nonassoc unary_minus
 %nonassoc path_name_prec
+
+/* これらは、待たないやつ(simple_exprなので強めに結合する) */
+%nonassoc INT ID FLOAT STRING CHAR LPAR RPAR LBRACKET LBRACKET 
 
 
 %start toplevel 
@@ -130,10 +136,10 @@ variant_defs:
 
 
 constr_args:
-	| tyapp_expr
+	| type_expr
 		%prec variant_def_tuple_type_exprs_assoc
 		{ [$1] }
-	| constr_args TIMES tyapp_expr
+	| constr_args TIMES type_expr
 		%prec variant_def_tuple_type_exprs_assoc
 		{ $1 @ [$3] }
 ;
@@ -156,53 +162,64 @@ variant_def:
 	tybase_expr
 	
 	で。
+	#	–
+	*	–
+	->	right
+	as	– 
+*/
+
+/*
+typexpr	::=	' ident  
+ 	∣	 _  
+ 	∣	 typeconstr  
+ 	∣	 ( typexpr )  
+ 	∣	 [[?]label-name:]  typexpr ->  typexpr  
+ 	∣	 typexpr  { * typexpr }+  
+ 	∣	 typexpr  typeconstr  
+ 	∣	 ( typexpr  { , typexpr } )  typeconstr 
+ 
+ をサポートする。
 */
 
 /* TODO(satos) このへんの名前expr_varとか直す */
-tybase_expr:
- 	| expr_var                         { ETVar($1) }
- 	| QUOTE expr_var                   { ETTyParam($2) }
-	| LPAR type_expr RPAR { $2 }
-;
 
-
-/*
-reduce/reduce は
-(int) list のとられかたについて。
-*/
 
 tyarg_expr:
-	| tybase_expr            { [$1] }
-	| tyarg_expr COMMA tybase_expr { $1 @ [$3] }
-
-tyapp_expr:
-	| tybase_expr        { $1 }
-	| tybase_expr var { ETApp([$1],$2) }
-	| LPAR tyarg_expr RPAR var { ETApp($2,$4) }
-
-tytuple_comma_expr:
-	| tytuple_comma_expr TIMES tyapp_expr 	{ $1 @ [$3] }
-	| tyapp_expr TIMES tyapp_expr	    { [$1; $3] }
+	| type_expr            
+		%prec type_expr_prec
+		{ [$1] }
+	| tyarg_expr COMMA type_expr { $1 @ [$3] }
 ;
 
-tytuple_expr:
-	| tyapp_expr        { $1 }
-	| tytuple_comma_expr { ETTuple($1) }
-
-/* 部分的用できないので、ここがクリティカルに効いてきてしまう */
-tyfun_args:
-	| tytuple_expr { [$1] }
-	| tyfun_args RARROW tytuple_expr { $1 @ [$3] }
+tytuple_times_expr:
+	| tytuple_times_expr TIMES type_expr 	{ $1 @ [$3] }
+	| type_expr TIMES type_expr	    { [$1; $3] }
 ;
 
-tyfun_expr:
-	| tytuple_expr { $1 }
-	| tyfun_args RARROW tytuple_expr { ETFun($1,$3) }
+/* 部分的用できないので、ここ分けないとクリティカルに効いてきてしまう */
+tyfun_arrow_expr:
+	| tyfun_arrow_expr RARROW type_expr { let a,b = $1 in (a @ [b],$3) }
+	| type_expr RARROW type_expr { ([$1],$3) }
+;
+
+/* applyとかできるのはこれだけ、にするやつ。 */
+simple_type_expr:
+ 	| expr_var                         { ETVar($1) }
+ 	| QUOTE expr_var                   { ETTyParam($2) }
+	| LPAR type_expr RPAR              { $2 }
+;
 
 type_expr:
-	| tyfun_expr 
-		{ $1 }
-
+	| simple_type_expr                 { $1 }
+	| tytuple_times_expr               
+		%prec prec_tytuple_times_expr
+		{ ETTuple($1) }
+	| tyfun_arrow_expr                 
+		%prec tyfun_arrow_expr_prec
+		{ let a,b = $1 in ETFun(a,b) }
+	| type_expr var                    { ETApp([$1],$2) }
+	| LPAR tyarg_expr RPAR var         { ETApp($2,$4) }
+;
 
 /* simple_expr のみが、関数適用に使える。 */
 
@@ -225,6 +242,7 @@ simple_expr:
 		%prec array_assoc
 		{ debug (EOp(OArrRead,[$1;$4])) }
 	| variant_name
+		%prec only_variant_name_simple_expr
 		{ debug (EVariant($1,[])) }
 	| LBRACKET RBRACKET 
 		{ debug (EVariant("@Nil",[])) }
@@ -456,10 +474,18 @@ list_pattern:
 		{ $3 :: $1 }
 ;
 
+/*
+# fun p -> match p with A A x -> x;;
+- : 'a x x -> 'a = <fun>
+くらいの結合らしい。
+*/
+
 pattern:
 	| var                  { PVar($1) }
 	| LPAR pattern RPAR    { $2 }
-	| variant_name         { PVariant($1) }
+	| variant_name         	
+		%prec simple_variant_name_pattern
+		{ PVariant($1) }
 	| variant_name pattern
 		%prec variant_apply_pattern
 		{ PVariantApp($1,$2) }
