@@ -64,6 +64,10 @@ def exec_ocaml(fs,ifn,ofn):
 		if e == '.mll':
 			os.system('ocamllex ' + (f + e))
 			rm_files.append(f + '.ml')
+		elif e == '.mly':
+			os.system('ocamlyacc ' + (f + e))
+			rm_files.append(f + '.ml')
+			rm_files.append(f + '.mli')
 	
 	fs = list(map(lambda x: x[0] + '.ml',fs))
 	
@@ -102,6 +106,11 @@ def exec_x86(fs,ifn,ofn):
 			os.system('../my_lex ' + (f + e) + ' > ' + f + '.ml')
 			os.system('./main ' + (f + '.ml') + ' -mli')
 			rm_files.append(f + '.ml')
+			rm_files.append(f + '.mli')
+		elif e == '.mly':
+			os.system('../my_yacc ' + (f + e) + ' > ' + f + '.output')
+			rm_files.append(f + '.ml')
+			rm_files.append(f + '.output')
 			rm_files.append(f + '.mli')
 		rm_files.append(f + '.s')
 	
@@ -151,7 +160,7 @@ for d in datum:
 		break
 
 	os.system('rm -f *.o')
-	os.system('rm -f *.s')	
+	os.system('rm -f *.s')
 
 os.system('rm -r lib')
 os.system('rm -f tmp.ml')
